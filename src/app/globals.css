@@ -1,0 +1,79 @@
+@import "tailwindcss";
+
+/* Nightclub Booking System - Dark Theme */
+:root {
+  --background: hsl(0 0% 4%);
+  --foreground: hsl(0 0% 98%);
+  
+  --card: hsl(0 0% 10%);
+  --card-foreground: hsl(0 0% 98%);
+  
+  --popover: hsl(0 0% 8%);
+  --popover-foreground: hsl(0 0% 98%);
+  
+  --primary: hsl(180 100% 50%);
+  --primary-foreground: hsl(0 0% 0%);
+  
+  --secondary: hsl(0 0% 15%);
+  --secondary-foreground: hsl(0 0% 98%);
+  
+  --muted: hsl(0 0% 18%);
+  --muted-foreground: hsl(0 0% 65%);
+  
+  --accent: hsl(280 100% 60%);
+  --accent-foreground: hsl(0 0% 98%);
+  
+  --destructive: hsl(0 72% 50%);
+  --destructive-foreground: hsl(0 0% 98%);
+  
+  --border: hsl(0 0% 20%);
+  --input: hsl(0 0% 20%);
+  --ring: hsl(180 100% 50%);
+  
+  --success: hsl(142 71% 45%);
+  --success-foreground: hsl(0 0% 98%);
+  
+  --warning: hsl(38 92% 50%);
+  --warning-foreground: hsl(0 0% 10%);
+  
+  --info: hsl(199 89% 48%);
+  --info-foreground: hsl(0 0% 98%);
+  
+  --radius: 0.75rem;
+  
+  --sidebar-background: hsl(0 0% 6%);
+  --sidebar-foreground: hsl(0 0% 98%);
+  --sidebar-primary: hsl(180 100% 50%);
+  --sidebar-primary-foreground: hsl(0 0% 0%);
+  --sidebar-accent: hsl(0 0% 15%);
+  --sidebar-accent-foreground: hsl(0 0% 98%);
+  --sidebar-border: hsl(0 0% 15%);
+  --sidebar-ring: hsl(180 100% 50%);
+}
+
+* {
+  border-color: var(--border);
+}
+
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+  font-family: system-ui, -apple-system, sans-serif;
+}
+
+/* Utility classes */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* Glass card effect */
+.glass-card {
+  background: rgba(26, 26, 26, 0.8);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
