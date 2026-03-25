@@ -8,6 +8,8 @@ const PROTECTED_ROUTES = [
   '/door',
   '/staff',
   '/workflow',
+  '/guest-lists',
+  '/venues',
 ];
 
 // Routes that are always accessible (public routes)
@@ -18,7 +20,7 @@ const PUBLIC_ROUTES = [
   '/auth',
 ];
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   // Create response and Supabase client

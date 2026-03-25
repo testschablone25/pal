@@ -42,6 +42,20 @@ export default function Home() {
             </p>
             <span className="text-violet-400 text-sm mt-2 inline-block">→ Open Workflow</span>
           </a>
+          <a href="/guest-lists" className="p-6 bg-zinc-900 border border-zinc-800 rounded-lg hover:border-violet-600 transition-colors">
+            <h2 className="text-xl font-semibold mb-2 text-white">Guest Lists</h2>
+            <p className="text-sm text-zinc-400">
+              Guest list management, VIP entries, plus ones
+            </p>
+            <span className="text-violet-400 text-sm mt-2 inline-block">→ View Guest Lists</span>
+          </a>
+          <a href="/venues" className="p-6 bg-zinc-900 border border-zinc-800 rounded-lg hover:border-violet-600 transition-colors">
+            <h2 className="text-xl font-semibold mb-2 text-white">Venues</h2>
+            <p className="text-sm text-zinc-400">
+              Venue management, locations, and capacity
+            </p>
+            <span className="text-violet-400 text-sm mt-2 inline-block">→ View Venues</span>
+          </a>
         </div>
       </div>
     </main>
