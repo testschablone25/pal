@@ -96,14 +96,16 @@ export default function DashboardPage() {
   const fetchDashboardData = async () => {
     setLoading(true);
     try {
-      // Use the API route that handles auth server-side
-      const response = await fetch('/api/dashboard');
+      // Get current user first
+      const { data: { user }, error: authError } = await supabase.auth.getUser();
       
-      if (response.status === 401) {
+      if (authError || !user) {
         router.push('/login');
         return;
       }
 
+      // Fetch all dashboard data via API with user_id
+      const response = await fetch(`/api/dashboard?user_id=${user.id}`);
       const data = await response.json();
       
       setProfile(data.profile || null);
