@@ -96,119 +96,23 @@ export default function DashboardPage() {
   const fetchDashboardData = async () => {
     setLoading(true);
     try {
-      // 1. Get current user
-      const { data: { user }, error: authError } = await supabase.auth.getUser();
+      // Use the API route that handles auth server-side
+      const response = await fetch('/api/dashboard');
       
-      if (authError || !user) {
+      if (response.status === 401) {
         router.push('/login');
         return;
       }
 
-      // 2. Get profile
-      const { data: profileData } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', user.id)
-        .single();
-
-      setProfile(profileData || { id: user.id, email: user.email!, full_name: null });
-
-      // 3. Get user role
-      const { data: roleData } = await supabase
-        .from('user_roles')
-        .select('role')
-        .eq('user_id', user.id)
-        .single();
-
-      setUserRole(roleData?.role || null);
-
-      // 4. Get staff record (if user is staff)
-      const { data: staffData } = await supabase
-        .from('staff')
-        .select('*')
-        .eq('profile_id', user.id)
-        .single();
-
-      setStaffRecord(staffData);
-
-      // 5. Get tasks assigned to user
-      const { data: tasksData, error: tasksError } = await supabase
-        .from('tasks')
-        .select(`
-          *,
-          events (name, date)
-        `)
-        .eq('assignee_id', user.id)
-        .in('status', ['todo', 'in_progress', 'review']);
-
-      if (tasksError) {
-        console.error('Tasks error:', tasksError);
-      }
-      setTasks(tasksData || []);
-
-      // 6. Get events where user has shifts (instead of "this week's events")
-      let eventsForShifts: Event[] = [];
-      if (staffData) {
-        // Get user's upcoming shifts with event details
-        const { data: shiftsData } = await supabase
-          .from('shifts')
-          .select(`
-            *,
-            events (id, name, date, door_time, end_time, status)
-          `)
-          .eq('staff_id', staffData.id)
-          .gte('end_time', new Date().toISOString())
-          .order('start_time');
-
-        setShifts(shiftsData || []);
-
-        // Extract unique events from shifts
-        const eventMap = new Map<string, Event>();
-        for (const shift of shiftsData || []) {
-          const event = shift.events as any;
-          if (event && !eventMap.has(event.id)) {
-            eventMap.set(event.id, {
-              id: event.id,
-              name: event.name,
-              date: event.date,
-              door_time: event.door_time,
-              end_time: event.end_time,
-              status: event.status,
-            });
-          }
-        }
-        eventsForShifts = Array.from(eventMap.values());
-      }
-      setEvents(eventsForShifts);
-
-      // 7. Get colleagues for upcoming shifts
-      if (staffData) {
-        const { data: allShiftsData } = await supabase
-          .from('shifts')
-          .select('event_id')
-          .eq('staff_id', staffData.id)
-          .gte('end_time', new Date().toISOString());
-
-        if (allShiftsData && allShiftsData.length > 0) {
-          const eventIds = [...new Set(allShiftsData.map((s: any) => s.event_id))];
-          const { data: colleagueShifts } = await supabase
-            .from('shifts')
-            .select(`
-              *,
-              events (name, date),
-              staff (
-                id,
-                role,
-                profiles (full_name, email)
-              )
-            `)
-            .in('event_id', eventIds)
-            .neq('staff_id', staffData.id)
-            .order('start_time');
-
-          setColleagues(colleagueShifts || []);
-        }
-      }
+      const data = await response.json();
+      
+      setProfile(data.profile || null);
+      setUserRole(data.userRole || null);
+      setStaffRecord(data.staffRecord || null);
+      setTasks(data.tasks || []);
+      setEvents(data.events || []);
+      setShifts(data.shifts || []);
+      setColleagues(data.colleagues || []);
     } catch (error) {
       console.error('Dashboard error:', error);
     } finally {
