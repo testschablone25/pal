@@ -29,11 +29,11 @@ const artists = [
 ];
 
 const events = [
-  { name: 'PAL Opening Night', date: '2026-04-04', door_time: '22:00', end_time: '06:00', status: 'published', max_capacity: 800 },
+  { name: 'PAL First Encounters', date: '2026-04-04', door_time: '22:00', end_time: '06:00', status: 'published', max_capacity: 800 },
   { name: 'Techno Friday', date: '2026-04-11', door_time: '23:00', end_time: '07:00', status: 'published', max_capacity: 800 },
   { name: 'Deep Sunday', date: '2026-04-12', door_time: '20:00', end_time: '04:00', status: 'published', max_capacity: 600 },
   { name: 'Industrial Night', date: '2026-04-18', door_time: '23:00', end_time: '07:00', status: 'draft', max_capacity: 800 },
-  { name: 'PAL Anniversary', date: '2026-04-25', door_time: '22:00', end_time: '08:00', status: 'draft', max_capacity: 1000 },
+  { name: 'SNAG 1Y Anniversary', date: '2026-04-25', door_time: '22:00', end_time: '08:00', status: 'draft', max_capacity: 1000 },
 ];
 
 const staffRoles = ['bar', 'security', 'door', 'vip', 'cloakroom', 'sound', 'light'];
@@ -151,7 +151,7 @@ async function seedDatabase() {
 
   // 4. Create performances for first event
   console.log('\n🎵 Creating performances...');
-  const firstEventId = eventIds['PAL Opening Night'];
+  const firstEventId = eventIds['PAL First Encounters'];
   if (firstEventId) {
     const performances = [
       { artist_name: 'Dax J', start_time: '22:00', end_time: '00:00', stage: 'main', order_index: 0 },
