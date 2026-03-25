@@ -8,12 +8,12 @@
 
 import { createClient } from '@supabase/supabase-js';
 
-// Supabase configuration
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://cysoyvyjrhiukklxjqfe.supabase.co';
-const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_SERVICE_KEY;
+// Supabase configuration - hardcoded for script execution
+const supabaseUrl = 'https://cysoyvyjrhiukklxjqfe.supabase.co';
+const supabaseServiceKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN5c295dnlqcmhpdWtrbHhqcWZlIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3NDM4NjM5MCwiZXhwIjoyMDg5OTYyMzkwfQ.ysvNV81rBkFdYEonu9yj6T3R14kwyiqxuKqCMJKPksQ';
 
-if (!supabaseServiceKey) {
-  console.error('Error: SUPABASE_SERVICE_ROLE_KEY environment variable is required');
+if (!supabaseUrl || !supabaseServiceKey) {
+  console.error('Error: Missing Supabase configuration');
   process.exit(1);
 }
 

@@ -73,9 +73,9 @@ export default function WorkflowPage() {
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
   const [isDetailOpen, setIsDetailOpen] = useState(false);
   const [isCreateOpen, setIsCreateOpen] = useState(false);
-  const [filterPriority, setFilterPriority] = useState<string>('');
-  const [filterAssignee, setFilterAssignee] = useState<string>('');
-  const [filterEvent, setFilterEvent] = useState<string>('');
+  const [filterPriority, setFilterPriority] = useState<string>('all');
+  const [filterAssignee, setFilterAssignee] = useState<string>('all');
+  const [filterEvent, setFilterEvent] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [events, setEvents] = useState<Event[]>([]);
   const [profiles, setProfiles] = useState<Profile[]>([]);
@@ -133,9 +133,9 @@ export default function WorkflowPage() {
 
   const filteredTasks = useMemo(() => {
     return tasks.filter((task) => {
-      if (filterPriority && task.priority !== filterPriority) return false;
-      if (filterAssignee && task.assignee_id !== filterAssignee) return false;
-      if (filterEvent && task.event_id !== filterEvent) return false;
+      if (filterPriority !== 'all' && task.priority !== filterPriority) return false;
+      if (filterAssignee !== 'all' && task.assignee_id !== filterAssignee) return false;
+      if (filterEvent !== 'all' && task.event_id !== filterEvent) return false;
       if (searchQuery) {
         const query = searchQuery.toLowerCase();
         return (
@@ -267,9 +267,9 @@ export default function WorkflowPage() {
   };
 
   const clearFilters = () => {
-    setFilterPriority('');
-    setFilterAssignee('');
-    setFilterEvent('');
+    setFilterPriority('all');
+    setFilterAssignee('all');
+    setFilterEvent('all');
     setSearchQuery('');
   };
 
@@ -315,7 +315,7 @@ export default function WorkflowPage() {
                 <SelectValue placeholder="Filter by priority" />
               </SelectTrigger>
               <SelectContent className="bg-zinc-900 border-zinc-800">
-                <SelectItem value="">All priorities</SelectItem>
+                <SelectItem value="all">All priorities</SelectItem>
                 <SelectItem value="low">Low</SelectItem>
                 <SelectItem value="medium">Medium</SelectItem>
                 <SelectItem value="high">High</SelectItem>
@@ -327,7 +327,7 @@ export default function WorkflowPage() {
                 <SelectValue placeholder="Filter by assignee" />
               </SelectTrigger>
               <SelectContent className="bg-zinc-900 border-zinc-800">
-                <SelectItem value="">All assignees</SelectItem>
+                <SelectItem value="all">All assignees</SelectItem>
                 {profiles.map((profile) => (
                   <SelectItem key={profile.id} value={profile.id}>
                     {profile.full_name || profile.email || 'Unknown'}
@@ -340,7 +340,7 @@ export default function WorkflowPage() {
                 <SelectValue placeholder="Filter by event" />
               </SelectTrigger>
               <SelectContent className="bg-zinc-900 border-zinc-800">
-                <SelectItem value="">All events</SelectItem>
+                <SelectItem value="all">All events</SelectItem>
                 {events.map((event) => (
                   <SelectItem key={event.id} value={event.id}>
                     {event.name}
