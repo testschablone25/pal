@@ -132,52 +132,65 @@ export default function DashboardPage() {
       setStaffRecord(staffData);
 
       // 5. Get tasks assigned to user
-      const { data: tasksData } = await supabase
+      const { data: tasksData, error: tasksError } = await supabase
         .from('tasks')
         .select(`
           *,
           events (name, date)
         `)
         .eq('assignee_id', user.id)
-        .in('status', ['todo', 'in_progress', 'review'])
-        .order('priority', { ascending: false });
+        .in('status', ['todo', 'in_progress', 'review']);
 
+      if (tasksError) {
+        console.error('Tasks error:', tasksError);
+      }
       setTasks(tasksData || []);
 
-      // 6. Get this week's events
-      const now = new Date();
-      const weekStart = startOfWeek(now, { weekStartsOn: 1 });
-      const weekEnd = endOfWeek(now, { weekStartsOn: 1 });
-
-      const { data: eventsData } = await supabase
-        .from('events')
-        .select('*')
-        .gte('date', format(weekStart, 'yyyy-MM-dd'))
-        .lte('date', format(weekEnd, 'yyyy-MM-dd'))
-        .order('date');
-
-      setEvents(eventsData || []);
-
-      // 7. Get user's shifts (if staff)
-      let userShifts: Shift[] = [];
+      // 6. Get events where user has shifts (instead of "this week's events")
+      let eventsForShifts: Event[] = [];
       if (staffData) {
+        // Get user's upcoming shifts with event details
         const { data: shiftsData } = await supabase
           .from('shifts')
           .select(`
             *,
-            events (name, date)
+            events (id, name, date, door_time, end_time, status)
           `)
           .eq('staff_id', staffData.id)
-          .gte('end_time', now.toISOString())
-          .order('start_time')
-          .limit(10);
+          .gte('end_time', new Date().toISOString())
+          .order('start_time');
 
-        userShifts = shiftsData || [];
-        setShifts(userShifts);
+        setShifts(shiftsData || []);
 
-        // 8. Get colleagues for upcoming shifts
-        if (userShifts.length > 0) {
-          const eventIds = [...new Set(userShifts.map(s => s.event_id))];
+        // Extract unique events from shifts
+        const eventMap = new Map<string, Event>();
+        for (const shift of shiftsData || []) {
+          const event = shift.events as any;
+          if (event && !eventMap.has(event.id)) {
+            eventMap.set(event.id, {
+              id: event.id,
+              name: event.name,
+              date: event.date,
+              door_time: event.door_time,
+              end_time: event.end_time,
+              status: event.status,
+            });
+          }
+        }
+        eventsForShifts = Array.from(eventMap.values());
+      }
+      setEvents(eventsForShifts);
+
+      // 7. Get colleagues for upcoming shifts
+      if (staffData) {
+        const { data: allShiftsData } = await supabase
+          .from('shifts')
+          .select('event_id')
+          .eq('staff_id', staffData.id)
+          .gte('end_time', new Date().toISOString());
+
+        if (allShiftsData && allShiftsData.length > 0) {
+          const eventIds = [...new Set(allShiftsData.map((s: any) => s.event_id))];
           const { data: colleagueShifts } = await supabase
             .from('shifts')
             .select(`
@@ -415,7 +428,7 @@ export default function DashboardPage() {
             <CardHeader className="flex flex-row items-center justify-between pb-3">
               <CardTitle className="flex items-center gap-2">
                 <Calendar className="h-5 w-5 text-violet-400" />
-                Parties diese Woche
+                Meine nächsten Partys
               </CardTitle>
               <Link href="/events">
                 <Button variant="ghost" size="sm" className="text-zinc-400 hover:text-white">
