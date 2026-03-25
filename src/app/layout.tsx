@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import { NavBar } from "@/components/nav-bar";
 
 export const metadata: Metadata = {
   title: "PAL - Nightclub Booking System",
@@ -12,9 +13,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className="antialiased">
-        {children}
+    <html lang="de">
+      <body className="antialiased bg-zinc-950 text-white min-h-screen">
+        <NavBar />
+        <main>
+          {children}
+        </main>
       </body>
     </html>
   );
