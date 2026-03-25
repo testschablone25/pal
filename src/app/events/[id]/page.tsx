@@ -5,7 +5,9 @@ import { useParams, useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { RunningOrder } from '@/components/running-order';
+import { PerformanceForm } from '@/components/performance-form';
 import { format } from 'date-fns';
 import { 
   CalendarDays, 
@@ -15,9 +17,11 @@ import {
   Edit,
   Download,
   Share2,
-  Trash2
+  Trash2,
+  Plus
 } from 'lucide-react';
 import Link from 'next/link';
+import { useToast } from '@/hooks/use-toast';
 
 interface Event {
   id: string;
@@ -40,6 +44,9 @@ export default function EventDetailPage() {
   const eventId = params.id as string;
   const [event, setEvent] = useState<Event | null>(null);
   const [loading, setLoading] = useState(true);
+  const [addPerformanceOpen, setAddPerformanceOpen] = useState(false);
+  const [refreshKey, setRefreshKey] = useState(0);
+  const { toast } = useToast();
 
   useEffect(() => {
     fetchEvent();
@@ -98,6 +105,27 @@ export default function EventDetailPage() {
       default:
         return 'bg-violet-600';
     }
+  };
+
+  const handleAddPerformance = () => {
+    setAddPerformanceOpen(true);
+  };
+
+  const handlePerformanceSuccess = (performance: any) => {
+    setAddPerformanceOpen(false);
+    setRefreshKey((prev) => prev + 1);
+    toast({
+      title: 'Performance added',
+      description: 'The performance has been added to the running order.',
+    });
+  };
+
+  const handlePerformanceError = (error: string) => {
+    toast({
+      variant: 'destructive',
+      title: 'Error',
+      description: error,
+    });
   };
 
   if (loading) {
@@ -215,10 +243,25 @@ export default function EventDetailPage() {
       )}
 
       {/* Running Order */}
-      <RunningOrder eventId={eventId} />
+      <RunningOrder 
+        key={refreshKey}
+        eventId={eventId} 
+        onAddPerformance={handleAddPerformance}
+      />
 
-      {/* Add Performance Modal placeholder */}
-      {/* TODO: Implement modal for adding performance */}
+      {/* Add Performance Modal */}
+      <Dialog open={addPerformanceOpen} onOpenChange={setAddPerformanceOpen}>
+        <DialogContent className="bg-zinc-900 border-zinc-800">
+          <DialogHeader>
+            <DialogTitle>Add Performance</DialogTitle>
+          </DialogHeader>
+          <PerformanceForm
+            eventId={eventId}
+            onSuccess={handlePerformanceSuccess}
+            onError={handlePerformanceError}
+          />
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

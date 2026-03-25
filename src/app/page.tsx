@@ -4,7 +4,7 @@ export default function Home() {
       <div className="max-w-4xl mx-auto">
         <h1 className="text-4xl font-bold mb-4 text-white">PAL - Nightclub Booking System</h1>
         <p className="text-lg text-zinc-400 mb-8">
-          Welcome to the PAL system. Phase 2 complete!
+          Welcome to the PAL system. All modules implemented!
         </p>
         <div className="grid gap-4 md:grid-cols-2">
           <a href="/artists" className="p-6 bg-zinc-900 border border-zinc-800 rounded-lg hover:border-violet-600 transition-colors">
@@ -28,13 +28,20 @@ export default function Home() {
             </p>
             <span className="text-violet-400 text-sm mt-2 inline-block">→ Open Scanner</span>
           </a>
-          <div className="p-6 bg-zinc-900 border border-zinc-800 rounded-lg opacity-50">
+          <a href="/staff" className="p-6 bg-zinc-900 border border-zinc-800 rounded-lg hover:border-violet-600 transition-colors">
             <h2 className="text-xl font-semibold mb-2 text-white">Staff Planning</h2>
             <p className="text-sm text-zinc-400">
               Shift scheduling, availability, labor law compliance
             </p>
-            <span className="text-zinc-500 text-sm mt-2 inline-block">Coming in Phase 3</span>
-          </div>
+            <span className="text-violet-400 text-sm mt-2 inline-block">→ View Staff</span>
+          </a>
+          <a href="/workflow" className="p-6 bg-zinc-900 border border-zinc-800 rounded-lg hover:border-violet-600 transition-colors">
+            <h2 className="text-xl font-semibold mb-2 text-white">Workflow</h2>
+            <p className="text-sm text-zinc-400">
+              Kanban board, task management, team coordination
+            </p>
+            <span className="text-violet-400 text-sm mt-2 inline-block">→ Open Workflow</span>
+          </a>
         </div>
       </div>
     </main>
