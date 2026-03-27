@@ -1,19 +1,18 @@
 /**
  * Create test users for each role in the PAL system
  * 
- * Roles: admin, manager, promoter, artist, staff, guest
+ * Roles: admin, manager, booker, promoter, artist, staff, guest
  * 
  * Run with: npx tsx scripts/create-test-users.ts
  */
 
 import { createClient } from '@supabase/supabase-js';
 
-// Supabase configuration - hardcoded for script execution
-const supabaseUrl = 'https://cysoyvyjrhiukklxjqfe.supabase.co';
-const supabaseServiceKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN5c295dnlqcmhpdWtrbHhqcWZlIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3NDM4NjM5MCwiZXhwIjoyMDg5OTYyMzkwfQ.ysvNV81rBkFdYEonu9yj6T3R14kwyiqxuKqCMJKPksQ';
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
 if (!supabaseUrl || !supabaseServiceKey) {
-  console.error('Error: Missing Supabase configuration');
+  console.error('Error: Missing NEXT_PUBLIC_SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY');
   process.exit(1);
 }
 
@@ -24,41 +23,49 @@ const supabase = createClient(supabaseUrl, supabaseServiceKey, {
   },
 });
 
+const defaultTestPassword = process.env.PAL_TEST_USER_PASSWORD || "changeme";
+
 // Test users configuration
 const testUsers = [
   {
     email: 'admin@pal.test',
-    password: 'TestAdmin123!',
+    password: defaultTestPassword,
     full_name: 'Admin User',
     role: 'admin' as const,
   },
   {
     email: 'manager@pal.test',
-    password: 'TestManager123!',
+    password: defaultTestPassword,
     full_name: 'Manager User',
     role: 'manager' as const,
   },
   {
+    email: 'booker@pal.test',
+    password: defaultTestPassword,
+    full_name: 'Lena Müller',
+    role: 'booker' as const,
+  },
+  {
     email: 'promoter@pal.test',
-    password: 'TestPromoter123!',
+    password: defaultTestPassword,
     full_name: 'Promoter User',
     role: 'promoter' as const,
   },
   {
     email: 'artist@pal.test',
-    password: 'TestArtist123!',
+    password: defaultTestPassword,
     full_name: 'Artist User',
     role: 'artist' as const,
   },
   {
     email: 'staff@pal.test',
-    password: 'TestStaff123!',
-    full_name: 'Staff User',
+    password: defaultTestPassword,
+    full_name: 'Tom Hartmann',
     role: 'staff' as const,
   },
   {
     email: 'guest@pal.test',
-    password: 'TestGuest123!',
+    password: defaultTestPassword,
     full_name: 'Guest User',
     role: 'guest' as const,
   },

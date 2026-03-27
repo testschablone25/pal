@@ -1,6 +1,9 @@
 'use client';
 
+'use client';
+
 import { useState, useEffect, useMemo } from 'react';
+import { createClient } from '@/lib/supabase/browser';
 import {
   DndContext,
   DragOverlay,
@@ -98,7 +101,15 @@ export default function WorkflowPage() {
   const fetchTasks = async () => {
     setLoading(true);
     try {
-      const response = await fetch('/api/tasks');
+      const supabase = createClient();
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      let url = '/api/tasks';
+      if (user) {
+        url += `?my_tasks=true&user_id=${user.id}`;
+      }
+      
+      const response = await fetch(url);
       const data = await response.json();
       setTasks(data.tasks || []);
     } catch (error) {

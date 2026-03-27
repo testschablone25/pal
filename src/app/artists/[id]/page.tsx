@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -8,6 +8,60 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { ArrowLeft, MapPin, Music, Mail, Phone, ExternalLink, Pencil } from 'lucide-react';
 import Link from 'next/link';
+import { RiderViewer } from '@/components/rider-viewer';
+
+interface EquipmentItem {
+  name: string;
+  quantity: number;
+  artist_brings: boolean;
+  notes?: string;
+}
+
+interface TechRider {
+  equipment: EquipmentItem[];
+  audio: {
+    inputs_needed: number;
+    monitor_type: string;
+    special_requirements?: string;
+  };
+  transport?: {
+    flights_needed: boolean;
+    priority_boarding: boolean;
+    baggage_requirements?: string;
+    origin_city?: string;
+  };
+  technical_notes?: string;
+}
+
+interface HospitalityRider {
+  accommodation?: {
+    required: boolean;
+    nights: number;
+    room_type: string;
+    check_in?: string;
+    check_out?: string;
+    location_preference?: string;
+  };
+  catering?: {
+    meals: string[];
+    dietary: string[];
+    drinks: {
+      alcopops: boolean;
+      spirits: string[];
+      mixers: string[];
+      water: boolean;
+    };
+    special_requests?: string;
+  };
+  transport_ground?: {
+    car_service: boolean;
+    pickup_time?: string;
+    pickup_location?: string;
+    return_required: boolean;
+    vehicle_type?: string;
+  };
+  hospitality_notes?: string;
+}
 
 interface Artist {
   id: string;
@@ -19,6 +73,8 @@ interface Artist {
   contact_email: string | null;
   contact_phone: string | null;
   promo_pack_url: string | null;
+  tech_rider: TechRider | null;
+  hospitality_rider: HospitalityRider | null;
   created_at: string;
   updated_at: string;
 }
@@ -153,6 +209,15 @@ export default function ArtistDetailPage() {
               </CardContent>
             </Card>
           )}
+
+          {/* Rider Viewer */}
+          <RiderViewer
+            artistId={artist.id}
+            artistName={artist.name}
+            techRider={artist.tech_rider}
+            hospitalityRider={artist.hospitality_rider}
+            onRiderUpdated={() => window.location.reload()}
+          />
 
           {artist.promo_pack_url && (
             <Card className="bg-zinc-900 border-zinc-800">

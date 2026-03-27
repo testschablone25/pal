@@ -22,8 +22,38 @@
 | **Run a single e2e spec** | `npx playwright test src/test/e2e/homepage.spec.ts` |
 | Run e2e in headed mode | `npx playwright test --headed` |
 | Run all tests (unit + e2e) | `npm test` |
+| **Dead code detection** | `npm run knip` |
+| **Auto-fix unused exports** | `npm run knip:fix` |
 
-Always run `npm run lint` and the relevant test suite after making changes.
+Always run `npm run lint`, `npm run knip`, `npm run jscpd`, and the relevant test suite after making changes.
+
+---
+
+## Dead Code Detection
+
+**Knip** is configured to detect unused code, files, and dependencies:
+
+- Configuration: `knip.json`
+- Detects: unused files, dependencies, devDependencies, and exports
+- UI components in `src/components/ui/**` are ignored (shadcn/ui primitives)
+- Test files are excluded from unused file detection
+
+Run `npm run knip` before committing to ensure no dead code is introduced.
+
+---
+
+## Duplicate Code Detection
+
+**jscpd** is configured to detect copy-paste and duplicate code:
+
+- Configuration: `.jscpd.json`
+- Threshold: 10% duplication limit
+- Min lines: 5 (minimum duplicate block size)
+- Min tokens: 50 (prevents false positives on small patterns)
+- Reporters: HTML, console, and JSON outputs
+- UI components and tests are ignored
+
+Run `npm run jscpd` to check for duplicate code before committing.
 
 ---
 
@@ -102,5 +132,21 @@ src/
   hooks/        # Custom React hooks
   lib/          # Utilities, Supabase clients, domain logic
   test/         # Test files (unit, integration, e2e)
-  middleware.ts # Auth route guards
+  proxy.ts      # Auth middleware (route guards)
 ```
+
+---
+
+## Coding Standards & Context
+Follow the conventions documented in:
+- `.factory/rules/typescript.md` - TypeScript and React patterns
+- `.factory/rules/testing.md` - Testing conventions
+- `.factory/rules/supabase.md` - Supabase client usage and API patterns
+- `.factory/rules/ui-styling.md` - Dark theme, component usage, language conventions
+- `.factory/memories.md` - Architecture decisions, known issues, implementation status
+
+## Plans & Roadmap
+Detailed implementation plans are in `.sisyphus/plans/`:
+- `nightclub-booking-system-mvp-plan.md` - Full 6-phase MVP execution plan
+- `pal-implementation-continuation.md` - Current continuation plan (Auth, Staff, Workflow)
+- `nightclub-booking-system-review.md` - Gap analysis and regulatory review

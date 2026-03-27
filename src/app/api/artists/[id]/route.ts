@@ -62,7 +62,9 @@ export async function PUT(
       contact_email,
       contact_phone,
       promo_pack_url,
-      documents
+      documents,
+      tech_rider,
+      hospitality_rider
     } = body;
 
     const { data, error } = await supabase
@@ -76,7 +78,9 @@ export async function PUT(
         contact_email,
         contact_phone,
         promo_pack_url,
-        documents
+        documents,
+        tech_rider,
+        hospitality_rider
       })
       .eq('id', id)
       .select()

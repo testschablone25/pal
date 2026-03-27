@@ -1,0 +1,25 @@
+{
+  "threshold": 10,
+  "reporters": ["html", "console", "json"],
+  "ignore": [
+    "**/.git/**",
+    "**/node_modules/**",
+    "**/dist/**",
+    "**/build/**",
+    "**/.next/**",
+    "**/coverage/**",
+    "**/test/**",
+    "**/*.test.ts",
+    "**/*.test.tsx",
+    "**/src/components/ui/**",
+    "**/report/**"
+  ],
+  "absolute": false,
+  "gitignore": true,
+  "format": ["typescript", "javascript", "tsx"],
+  "minLines": 5,
+  "minTokens": 50,
+  "maxLines": 500,
+  "maxSize": "100kb",
+  "exitCode": 1
+}

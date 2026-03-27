@@ -17,6 +17,8 @@ export async function GET(request: NextRequest) {
     const eventId = searchParams.get('event_id');
     const limit = searchParams.get('limit') || '100';
     const offset = searchParams.get('offset') || '0';
+    const myTasks = searchParams.get('my_tasks'); // Filter by current user
+    const userId = searchParams.get('user_id'); // Current user ID
 
     let query = supabase
       .from('tasks')
@@ -45,7 +47,10 @@ export async function GET(request: NextRequest) {
     if (priority) {
       query = query.eq('priority', priority);
     }
-    if (assigneeId) {
+    // If my_tasks=true, filter by user_id; otherwise use assignee_id if provided
+    if (myTasks === 'true' && userId) {
+      query = query.eq('assignee_id', userId);
+    } else if (assigneeId) {
       query = query.eq('assignee_id', assigneeId);
     }
     if (eventId) {

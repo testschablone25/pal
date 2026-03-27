@@ -160,7 +160,7 @@ export default function DashboardPage() {
     return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
   };
 
-  // Group tasks by today vs this week
+  // Group tasks by today vs this week vs other (including tasks without event dates)
   const todayTasks = tasks.filter(t => {
     if (!t.events?.date) return false;
     return isToday(parseISO(t.events.date));
@@ -172,6 +172,15 @@ export default function DashboardPage() {
     const now = new Date();
     const weekEnd = endOfWeek(now, { weekStartsOn: 1 });
     return !isToday(taskDate) && taskDate <= weekEnd;
+  });
+
+  // Other tasks: tasks without event dates or with future event dates (beyond this week)
+  const otherTasks = tasks.filter(t => {
+    if (!t.events?.date) return true; // Tasks without events go here
+    const taskDate = parseISO(t.events.date);
+    const now = new Date();
+    const weekEnd = endOfWeek(now, { weekStartsOn: 1 });
+    return taskDate > weekEnd; // Future events beyond this week
   });
 
   // Get today's shifts
@@ -319,6 +328,43 @@ export default function DashboardPage() {
                         {weekTasks.length > 3 && (
                           <p className="text-xs text-zinc-500 text-center">
                             +{weekTasks.length - 3} weitere
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Other tasks (without event dates or future events) */}
+                  {otherTasks.length > 0 && (
+                    <div>
+                      <h4 className="text-sm font-medium text-zinc-400 mb-2">
+                        {todayTasks.length > 0 || weekTasks.length > 0 ? 'Weitere Aufgaben' : 'Alle Aufgaben'}
+                      </h4>
+                      <div className="space-y-2">
+                        {otherTasks.slice(0, 5).map(task => (
+                          <div key={task.id} className="flex items-center gap-3 p-2 bg-zinc-800/30 rounded-lg">
+                            {getStatusIcon(task.status)}
+                            <span className="flex-1 text-sm text-zinc-300 truncate">{task.title}</span>
+                            <div className="flex items-center gap-2">
+                              {task.events?.date && (
+                                <span className="text-xs text-zinc-500">
+                                  {format(parseISO(task.events.date), 'dd.MM')}
+                                </span>
+                              )}
+                              {!task.events?.date && (
+                                <Badge variant="outline" className="text-xs border-zinc-700">
+                                  Allgemein
+                                </Badge>
+                              )}
+                              <Badge className={`text-xs ${getPriorityColor(task.priority)}`}>
+                                {task.priority}
+                              </Badge>
+                            </div>
+                          </div>
+                        ))}
+                        {otherTasks.length > 5 && (
+                          <p className="text-xs text-zinc-500 text-center">
+                            +{otherTasks.length - 5} weitere
                           </p>
                         )}
                       </div>
