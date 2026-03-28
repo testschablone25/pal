@@ -309,37 +309,144 @@ ACTION NEEDED:
     venueEquipmentList += `\n\nREFERENCED IMAGES (check rider PDF):\n${techRider.referenced_images.slice(0, 3).join('\n')}`;
   }
 
-  if (venueEquipmentList || venueSupplies.length > 0) {
-    const artistList = artistBrings.length > 0
-      ? artistBrings.map((item) => `- ${item.name} (x${item.quantity})`).join('\n')
-      : 'None specified';
+  const audioInfo = techRider?.audio;
+  const hasAudioSetup = (audioInfo?.inputs_needed && audioInfo.inputs_needed > 2) || 
+    audioInfo?.preferred_mixers?.length || 
+    audioInfo?.special_requirements;
 
-    const optionalList = artistOptional.length > 0
-      ? artistOptional.map((item) => `- ${item.name} (x${item.quantity})${item.notes ? ` (${item.notes})` : ''}`).join('\n')
-      : '';
+  if (hasAudioSetup) {
+    const mixerList = audioInfo.preferred_mixers?.length
+      ? audioInfo.preferred_mixers
+          .slice()
+          .sort((a, b) => a.priority - b.priority)
+          .map(m => `${m.priority === 1 ? '✓' : m.priority === 2 ? '○' : '○'} ${m.model}${m.required_features ? ` (${m.required_features})` : ''}`)
+          .join('\n')
+      : 'Not specified';
 
     tasks.push({
-      title: `🔧 Venue Equipment & Stage Setup: ${artistName}`,
-      description: `Artist ${artistName} requires equipment for ${eventName} (${eventDate}).
+      title: `🎚️ Audio Setup: ${artistName}`,
+      description: `Audio setup requirements for ${artistName} at ${eventName} (${eventDate}).
 
-VENUE MUST SUPPLY:
-${venueEquipmentList || 'No specific equipment listed'}
+INPUTS NEEDED: ${audioInfo.inputs_needed || 2}
+MONITOR TYPE: ${audioInfo.monitor_type || 'booth'}
+${audioInfo.special_requirements ? `SPECIAL REQUIREMENTS: ${audioInfo.special_requirements}` : ''}
 
-ARTIST BRINGS:
-${artistList}
-${optionalList ? `\nOPTIONAL (Artist brings if needed):\n${optionalList}` : ''}
-
-AUDIO SETUP:
-- Inputs needed: ${techRider?.audio?.inputs_needed || 2}
-- Monitor type: ${techRider?.audio?.monitor_type || 'booth'}
-${techRider?.audio?.special_requirements ? `- Special requirements: ${techRider.audio.special_requirements}` : ''}
+MIXER PREFERENCES:
+${mixerList}
 
 ACTION NEEDED:
-1. Verify ALL venue-supplied equipment is available
-2. Check stage setup: monitors, power outlets, tables, laptop stands
-3. Confirm mixer has USB connectivity for MacBook (CRITICAL)
-4. Check referenced images in rider PDF for setup details
-5. If ANY item missing → notify booker immediately`,
+1. Verify mixer availability (check USB connectivity for MacBook)
+2. Confirm input channel count matches requirements
+3. Set up monitor wedges/IEMs as specified
+4. Test audio before artist soundcheck`,
+      priority: 'high',
+      assignment_target: 'sound',
+      category: 'equipment',
+    });
+  }
+
+  const stageSetupData = techRider?.stage_setup;
+  const hasStageSetup = stageSetupData?.monitors?.length || 
+    stageSetupData?.power?.length || 
+    stageSetupData?.furniture?.length;
+
+  if (hasStageSetup) {
+    const monitorsList = stageSetupData.monitors?.length
+      ? stageSetupData.monitors.map(m => `- ${m.type}: ${m.quantity} (${m.location})`).join('\n')
+      : 'None';
+    const powerList = stageSetupData.power?.length
+      ? stageSetupData.power.map(p => `- ${p.type}: ${p.quantity}`).join('\n')
+      : 'None';
+    const furnitureList = stageSetupData.furniture?.length
+      ? stageSetupData.furniture.map(f => `- ${f.type}: ${f.quantity}${f.dimensions ? ` (${f.dimensions})` : ''}`).join('\n')
+      : 'None';
+
+    tasks.push({
+      title: `🎭 Stage Setup: ${artistName}`,
+      description: `Stage setup requirements for ${artistName} at ${eventName} (${eventDate}).
+
+MONITORS:
+${monitorsList}
+
+POWER:
+${powerList}
+
+FURNITURE:
+${furnitureList}
+
+ACTION NEEDED:
+1. Set up monitors as specified
+2. Verify power distribution for equipment
+3. Arrange furniture per requirements
+4. Check referenced images in rider PDF`,
+      priority: 'high',
+      assignment_target: 'sound',
+      category: 'equipment',
+    });
+  }
+
+  const backlineData = techRider?.backline;
+  const hasBackline = backlineData?.cdjs?.length || 
+    backlineData?.turntables?.length || 
+    backlineData?.mixer_minimum_requirements;
+
+  if (hasBackline) {
+    const cdjsList = backlineData.cdjs?.length
+      ? backlineData.cdjs.map(c => `- ${c.model}: ${c.quantity}`).join('\n')
+      : 'None';
+    const turntablesList = backlineData.turntables?.length
+      ? backlineData.turntables.map(t => `- ${t.model}: ${t.quantity}`).join('\n')
+      : 'None';
+
+    tasks.push({
+      title: `💿 Backline Setup: ${artistName}`,
+      description: `Backline requirements for ${artistName} at ${eventName} (${eventDate}).
+
+CDJs:
+${cdjsList}
+
+TURNTABLES:
+${turntablesList}
+
+MIXER MINIMUM REQUIREMENTS:
+${backlineData.mixer_minimum_requirements || 'None specified'}
+
+ACTION NEEDED:
+1. Verify backline equipment availability
+2. Set up as specified
+3. Test equipment before soundcheck`,
+      priority: 'medium',
+      assignment_target: 'sound',
+      category: 'equipment',
+    });
+  }
+
+  if (venueSupplies.length > 0) {
+    const venueList = venueSupplies
+      .map(item => `- ${item.name} (x${item.quantity})${item.notes ? ` - ${item.notes}` : ''}`)
+      .join('\n');
+
+    const artistListText = artistBrings.length > 0
+      ? artistBrings.map(i => `- ${i.name} (x${i.quantity})`).join('\n')
+      : 'None';
+    const optionalListText = artistOptional.length > 0
+      ? artistOptional.map(i => `- ${i.name} (x${i.quantity})${i.notes ? ` (${i.notes})` : ''}`).join('\n')
+      : 'None';
+
+    tasks.push({
+      title: `📦 Venue Equipment: ${artistName}`,
+      description: `Venue must supply the following for ${artistName} at ${eventName} (${eventDate}):
+
+${venueList}
+
+ARTIST BRINGS:
+${artistListText}
+${optionalListText !== 'None' ? `\nOPTIONAL:\n${optionalListText}` : ''}
+
+ACTION NEEDED:
+1. Verify all equipment is available
+2. Set up before soundcheck
+3. Notify booker if anything is missing`,
       priority: 'high',
       assignment_target: 'sound',
       category: 'equipment',
@@ -352,6 +459,26 @@ ACTION NEEDED:
     const soundNotes = perfReqs.staff.sound_tech_notes || '';
     const hasSpecificTime = perfReqs.staff.specific_time !== null;
     const hasParty = perfReqs.staff.party_mentioned !== null;
+    const hasGranularStaffInfo = perfReqs.staff.soundcheck_required || perfReqs.staff.set_required;
+
+    if (!hasGranularStaffInfo) {
+      tasks.push({
+        title: `👨‍🔧 Arrange sound technician: ${artistName}`,
+        description: `Artist ${artistName} requires a sound technician for ${eventName} (${eventDate}).
+
+NOTES:
+${soundNotes || 'Sound technician required for soundcheck and full set.'}
+
+ACTION NEEDED:
+1. Assign a qualified sound technician
+2. Confirm availability for soundcheck and full set
+3. Get exact timing from artist management`,
+        priority: 'high',
+        assignment_target: 'sound',
+        category: 'equipment',
+        needs_refining: true,
+      });
+    }
 
     if (perfReqs.staff.soundcheck_required) {
       tasks.push({
@@ -404,6 +531,26 @@ ACTION NEEDED:
     const lightNotes = perfReqs.staff.lighting_tech_notes || '';
     const hasSpecificTime = perfReqs.staff.specific_time !== null;
     const hasParty = perfReqs.staff.party_mentioned !== null;
+    const hasGranularLightInfo = perfReqs.staff.soundcheck_required || perfReqs.staff.set_required;
+
+    if (!hasGranularLightInfo) {
+      tasks.push({
+        title: `💡 Arrange lighting technician: ${artistName}`,
+        description: `Artist ${artistName} requires a lighting technician for ${eventName} (${eventDate}).
+
+NOTES:
+${lightNotes || 'Lighting technician required for full set.'}
+
+ACTION NEEDED:
+1. Assign a qualified lighting technician
+2. Confirm lighting cues with artist management
+3. Get set timing for lighting programming`,
+        priority: 'high',
+        assignment_target: 'light',
+        category: 'equipment',
+        needs_refining: true,
+      });
+    }
 
     if (perfReqs.staff.soundcheck_required) {
       tasks.push({
