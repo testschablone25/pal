@@ -402,17 +402,31 @@ export default function WorkflowPage() {
                     {event.name}
                   </SelectItem>
                 ))}
-              </SelectContent>
-            </Select>
-            <Button
-              variant={showMyTasksOnly ? "default" : "outline"}
-              onClick={() => setShowMyTasksOnly(!showMyTasksOnly)}
-              className={showMyTasksOnly ? "bg-violet-600 hover:bg-violet-700" : "border-zinc-800"}
-            >
-              <Filter className="h-4 w-4 mr-2" />
-              {showMyTasksOnly ? "My Tasks" : "All Tasks"}
-            </Button>
-          </div>
+                  </SelectContent>
+                </Select>
+                <Button
+                  variant={showMyTasksOnly ? "default" : "outline"}
+                  onClick={() => setShowMyTasksOnly(!showMyTasksOnly)}
+                  className={showMyTasksOnly ? "bg-violet-600 hover:bg-violet-700" : "border-zinc-800"}
+                >
+                  <Filter className="h-4 w-4 mr-2" />
+                  {showMyTasksOnly ? "My Tasks" : "All Tasks"}
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    setFilterPriority("all");
+                    setFilterAssignee("all");
+                    setFilterEvent("all");
+                    setSearchQuery("");
+                    setShowMyTasksOnly(false);
+                  }}
+                  className="border-zinc-800"
+                >
+                  <Filter className="h-4 w-4 mr-2" />
+                  Clear
+                </Button>
+              </div>
         </CardContent>
       </Card>
 
