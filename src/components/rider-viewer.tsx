@@ -178,6 +178,7 @@ export function RiderViewer({
   const [deleting, setDeleting] = useState(false);
   const [lmStudioStatus, setLmStudioStatus] = useState<'checking' | 'connected' | 'disconnected'>('checking');
   const [uploadResult, setUploadResult] = useState<UploadResult | null>(null);
+  const [showTaskSummary, setShowTaskSummary] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [riderType, setRiderType] = useState<'tech' | 'hospitality' | 'both'>('both');
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
@@ -247,19 +248,18 @@ export function RiderViewer({
       const data = await response.json();
 
       if (response.ok) {
-        setUploadResult({
+        const result = {
           success: true,
           warnings: Array.isArray(data.warnings) ? data.warnings : [],
           tasks_created: typeof data.tasks_created === 'number' ? data.tasks_created : 0,
           task_events: Array.isArray(data.task_events) ? data.task_events : [],
-        });
+        };
+        setUploadResult(result);
         setSelectedFile(null);
         
-        // Close dialog and refresh after short delay
-        setTimeout(() => {
-          setIsUploadOpen(false);
-          onRiderUpdated?.();
-        }, 2000);
+        // Show task summary dialog and keep it open
+        setShowTaskSummary(true);
+        setIsUploadOpen(false);
       } else {
         setUploadResult({ success: false, warnings: [data.error || 'Upload failed'] });
       }
@@ -906,6 +906,104 @@ export function RiderViewer({
                 )}
               </Button>
             </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Task Summary Dialog */}
+      <Dialog open={showTaskSummary} onOpenChange={setShowTaskSummary}>
+        <DialogContent className="bg-zinc-900 border-zinc-800 max-w-2xl max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <CheckCircle2 className="h-5 w-5 text-green-400" />
+              Rider Extracted Successfully!
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            {uploadResult && (uploadResult.tasks_created || 0) > 0 ? (
+              <>
+                <div className="p-4 bg-green-950/30 border border-green-700 rounded-lg">
+                  <p className="text-green-400 font-medium">
+                    {uploadResult.tasks_created} task(s) created
+                  </p>
+                </div>
+
+                {uploadResult.task_events && uploadResult.task_events.length > 0 && (
+                  <div className="space-y-4">
+                    {uploadResult.task_events.map((event, eventIndex) => (
+                      <div key={event.event_id || `event-${eventIndex}`} className="p-4 bg-zinc-800/50 rounded-lg border border-zinc-700">
+                        <p className="text-white font-medium mb-2">
+                          {event.event_name} ({event.event_date})
+                        </p>
+                        {event.task_titles && event.task_titles.length > 0 && (
+                          <ul className="space-y-1">
+                            {event.task_titles.map((title, titleIndex) => (
+                              <li key={titleIndex} className="text-zinc-300 text-sm flex items-start gap-2">
+                                <span className="text-green-400 mt-0.5">•</span>
+                                {title}
+                              </li>
+                            ))}
+                          </ul>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {uploadResult.warnings.length > 0 && (
+                  <div className="p-4 bg-yellow-950/30 border border-yellow-700 rounded-lg">
+                    <p className="text-yellow-400 font-medium mb-2">Warnings</p>
+                    <ul className="space-y-1">
+                      {uploadResult.warnings.map((warning, warnIndex) => (
+                        <li key={warnIndex} className="text-yellow-300 text-sm flex items-start gap-2">
+                          <AlertTriangle className="h-4 w-4 mt-0.5 flex-shrink-0" />
+                          {warning}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+
+                <div className="flex gap-3 pt-2">
+                  <Button
+                    onClick={() => {
+                      setShowTaskSummary(false);
+                      onRiderUpdated?.();
+                    }}
+                    className="flex-1 bg-violet-600 hover:bg-violet-700"
+                  >
+                    Go to Workflow
+                  </Button>
+                  <Button
+                    variant="outline"
+                    onClick={() => {
+                      setShowTaskSummary(false);
+                      onRiderUpdated?.();
+                    }}
+                    className="border-zinc-700"
+                  >
+                    Close
+                  </Button>
+                </div>
+              </>
+            ) : (
+              <div className="text-center py-8">
+                <CheckCircle2 className="h-12 w-12 text-green-400 mx-auto mb-4" />
+                <p className="text-white font-medium">Rider data extracted!</p>
+                <p className="text-zinc-400 text-sm mt-1">
+                  No tasks were created - you can manually create tasks in the Workflow page.
+                </p>
+                <Button
+                  onClick={() => {
+                    setShowTaskSummary(false);
+                    onRiderUpdated?.();
+                  }}
+                  className="mt-4 bg-violet-600 hover:bg-violet-700"
+                >
+                  Close
+                </Button>
+              </div>
+            )}
           </div>
         </DialogContent>
       </Dialog>
