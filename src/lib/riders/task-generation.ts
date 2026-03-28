@@ -1029,6 +1029,8 @@ export async function generateRiderTasksForArtist(
   artistId: string,
   eventId?: string
 ): Promise<RiderTaskGenerationResult> {
+  console.log('[TaskGen] Starting for artist:', artistId, 'eventId:', eventId);
+  
   const { data: artistData } = await supabase
     .from('artists')
     .select('id, name, tech_rider, hospitality_rider')
@@ -1044,6 +1046,7 @@ export async function generateRiderTasksForArtist(
   const hospitalityRider = parseHospitalityRider(artist.hospitality_rider);
 
   const targetEvents = await resolveTargetEvents(supabase, artistId, eventId);
+  console.log('[TaskGen] Target events found:', targetEvents.events.length, 'warnings:', targetEvents.warnings);
   if (targetEvents.events.length === 0) {
     return {
       success: true,
@@ -1056,7 +1059,9 @@ export async function generateRiderTasksForArtist(
   const roleContext = await buildRoleContext(supabase);
   const eventResults: EventTaskCreationResult[] = [];
 
+  console.log('[TaskGen] Creating tasks for', targetEvents.events.length, 'events');
   for (const event of targetEvents.events) {
+    console.log('[TaskGen] Processing event:', event.name, event.date);
     const eventResult = await createTasksForEvent(
       supabase,
       roleContext,
@@ -1069,9 +1074,12 @@ export async function generateRiderTasksForArtist(
     eventResults.push(eventResult);
   }
 
+  const totalTasks = eventResults.reduce((sum, event) => sum + event.tasks_created, 0);
+  console.log('[TaskGen] Total tasks created:', totalTasks);
+  
   return {
     success: true,
-    tasks_created: eventResults.reduce((sum, event) => sum + event.tasks_created, 0),
+    tasks_created: totalTasks,
     events: eventResults,
     warnings: [
       ...targetEvents.warnings,
