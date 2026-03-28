@@ -83,6 +83,7 @@ export default function WorkflowPage() {
   const [filterAssignee, setFilterAssignee] = useState<string>('all');
   const [filterEvent, setFilterEvent] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState('');
+  const [showMyTasksOnly, setShowMyTasksOnly] = useState(false);
   const [events, setEvents] = useState<Event[]>([]);
   const [profiles, setProfiles] = useState<Profile[]>([]);
 
@@ -106,6 +107,10 @@ export default function WorkflowPage() {
     fetchProfiles();
   }, []);
 
+  useEffect(() => {
+    fetchTasks();
+  }, [showMyTasksOnly]);
+
   const fetchTasks = async () => {
     setLoading(true);
     try {
@@ -113,7 +118,7 @@ export default function WorkflowPage() {
       const { data: { user } } = await supabase.auth.getUser();
       
       let url = '/api/tasks';
-      if (user) {
+      if (user && showMyTasksOnly) {
         url += `?my_tasks=true&user_id=${user.id}`;
       }
       
@@ -400,12 +405,12 @@ export default function WorkflowPage() {
               </SelectContent>
             </Select>
             <Button
-              variant="outline"
-              onClick={clearFilters}
-              className="border-zinc-800"
+              variant={showMyTasksOnly ? "default" : "outline"}
+              onClick={() => setShowMyTasksOnly(!showMyTasksOnly)}
+              className={showMyTasksOnly ? "bg-violet-600 hover:bg-violet-700" : "border-zinc-800"}
             >
               <Filter className="h-4 w-4 mr-2" />
-              Clear
+              {showMyTasksOnly ? "My Tasks" : "All Tasks"}
             </Button>
           </div>
         </CardContent>
