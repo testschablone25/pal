@@ -218,16 +218,35 @@ export default function WorkflowPage() {
     const activeTask = tasks.find((t) => t.id === activeId);
     if (!activeTask) return;
 
+    const overId = over.id as string;
+    let newStatus: Task["status"] | null = null;
+
+    const overColumn = COLUMNS.find((c) => c.id === overId);
+    if (overColumn) {
+      newStatus = overColumn.status;
+    } else {
+      const overTask = tasks.find((t) => t.id === overId);
+      if (overTask) {
+        newStatus = overTask.status;
+      }
+    }
+
+    if (!newStatus || newStatus === activeTask.status) return;
+
     // Update status in database
     try {
       await fetch(`/api/tasks/${activeId}/status`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ status: activeTask.status }),
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status: newStatus }),
       });
+      setTasks((tasks) =>
+        tasks.map((t) =>
+          t.id === activeId ? { ...t, status: newStatus as Task["status"] } : t
+        )
+      );
     } catch (error) {
-      console.error('Failed to update task status:', error);
-      // Revert on error
+      console.error("Failed to update task status:", error);
       fetchTasks();
     }
   };
@@ -396,7 +415,7 @@ export default function WorkflowPage() {
               >
                 <div
                   className={cn(
-                    'flex-1 min-h-[200px] p-2 rounded-lg border-2 border-dashed transition-colors',
+                    'flex-1 min-h-[200px] p-2 border-2 border-dashed transition-colors',
                     'bg-zinc-950/50 border-zinc-800',
                     activeId && 'border-violet-600/50 bg-violet-950/20'
                   )}

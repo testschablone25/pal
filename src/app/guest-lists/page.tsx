@@ -154,7 +154,7 @@ export default function GuestListsPage() {
                 <select
                   value={newListEventId}
                   onChange={(e) => setNewListEventId(e.target.value)}
-                  className="w-full bg-zinc-950 border-zinc-800 rounded-md p-2 text-white"
+                  className="w-full bg-zinc-950 border-zinc-800 p-2 text-white"
                   required
                 >
                   <option value="">Select an event</option>

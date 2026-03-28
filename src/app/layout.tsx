@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import "@fontsource-variable/montserrat";
 import "./globals.css";
 import { NavBar } from "@/components/nav-bar";
 
@@ -14,7 +15,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="de">
-      <body className="antialiased bg-zinc-950 text-white min-h-screen">
+      <body className="font-[family-name:var(--font-montserrat)] antialiased bg-zinc-950 text-white min-h-screen">
         <NavBar />
         <main>
           {children}

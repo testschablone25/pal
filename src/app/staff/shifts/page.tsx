@@ -96,7 +96,7 @@ const STAFF_ROLES = [
 ];
 
 const ROLE_COLORS: Record<string, string> = {
-  'Bar Staff': 'bg-purple-600',
+  'Bar Staff': 'bg-blue-600',
   'Security': 'bg-red-600',
   'Door Staff': 'bg-orange-600',
   'Cloakroom': 'bg-cyan-600',
@@ -512,7 +512,7 @@ export default function ShiftsPage() {
                     return (
                       <div
                         key={shift.id}
-                        className="flex items-center justify-between p-4 bg-zinc-950 rounded-lg border border-zinc-800"
+                        className="flex items-center justify-between p-4 bg-zinc-950 border border-zinc-800"
                       >
                         <div className="flex items-center gap-4">
                           <div className={`w-2 h-12 rounded ${ROLE_COLORS[shift.role] || 'bg-zinc-600'}`}></div>

@@ -8,21 +8,20 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Skeleton } from '@/components/ui/skeleton';
-import { format, startOfWeek, endOfWeek, isToday, isSameDay, parseISO } from 'date-fns';
+import { format, endOfWeek, isToday, parseISO } from 'date-fns';
 import { de } from 'date-fns/locale';
+import { cn } from '@/lib/utils';
 import {
   User,
   Calendar,
   ClipboardList,
   Users,
   Clock,
-  MapPin,
   ChevronRight,
   LogOut,
   LayoutDashboard,
   CheckCircle2,
   Circle,
-  AlertCircle,
 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -127,12 +126,21 @@ export default function DashboardPage() {
     router.push('/login');
   };
 
-  const getPriorityColor = (priority: string) => {
+  const getPriorityDot = (priority: string) => {
     switch (priority) {
-      case 'urgent': return 'bg-red-600';
+      case 'urgent': return 'bg-red-500';
       case 'high': return 'bg-orange-500';
       case 'medium': return 'bg-blue-500';
-      default: return 'bg-zinc-600';
+      default: return 'bg-zinc-500';
+    }
+  };
+
+  const getPriorityLabel = (priority: string) => {
+    switch (priority) {
+      case 'urgent': return 'Dringend';
+      case 'high': return 'Hoch';
+      case 'medium': return 'Mittel';
+      default: return priority;
     }
   };
 
@@ -147,10 +155,10 @@ export default function DashboardPage() {
   const getRoleBadgeColor = (role: string) => {
     switch (role) {
       case 'admin': return 'bg-red-600';
-      case 'manager': return 'bg-purple-600';
+      case 'manager': return 'bg-green-600';
       case 'promoter': return 'bg-blue-600';
       case 'artist': return 'bg-pink-600';
-      case 'staff': return 'bg-green-600';
+      case 'staff': return 'bg-blue-600';
       default: return 'bg-zinc-600';
     }
   };
@@ -216,7 +224,7 @@ export default function DashboardPage() {
         {/* Header */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <div className="p-3 bg-violet-600/20 rounded-xl">
+            <div className="p-3 bg-violet-600/20">
               <LayoutDashboard className="h-8 w-8 text-violet-400" />
             </div>
             <div>
@@ -299,12 +307,13 @@ export default function DashboardPage() {
                       <h4 className="text-sm font-medium text-violet-400 mb-2">Heute</h4>
                       <div className="space-y-2">
                         {todayTasks.map(task => (
-                          <div key={task.id} className="flex items-center gap-3 p-2 bg-zinc-800/50 rounded-lg">
+                          <div key={task.id} className="flex items-center gap-3 p-2 bg-zinc-800/50">
                             {getStatusIcon(task.status)}
                             <span className="flex-1 text-sm text-white truncate">{task.title}</span>
-                            <Badge className={`text-xs ${getPriorityColor(task.priority)}`}>
-                              {task.priority}
-                            </Badge>
+                            <div className="flex items-center gap-1.5 text-sm font-semibold text-white">
+                              <div className={cn("h-2 w-2 rounded-full", getPriorityDot(task.priority))} />
+                              {getPriorityLabel(task.priority)}
+                            </div>
                           </div>
                         ))}
                       </div>
@@ -317,7 +326,7 @@ export default function DashboardPage() {
                       <h4 className="text-sm font-medium text-zinc-400 mb-2">Diese Woche</h4>
                       <div className="space-y-2">
                         {weekTasks.slice(0, 3).map(task => (
-                          <div key={task.id} className="flex items-center gap-3 p-2 bg-zinc-800/30 rounded-lg">
+                          <div key={task.id} className="flex items-center gap-3 p-2 bg-zinc-800/30">
                             {getStatusIcon(task.status)}
                             <span className="flex-1 text-sm text-zinc-300 truncate">{task.title}</span>
                             <span className="text-xs text-zinc-500">
@@ -342,7 +351,7 @@ export default function DashboardPage() {
                       </h4>
                       <div className="space-y-2">
                         {otherTasks.slice(0, 5).map(task => (
-                          <div key={task.id} className="flex items-center gap-3 p-2 bg-zinc-800/30 rounded-lg">
+                          <div key={task.id} className="flex items-center gap-3 p-2 bg-zinc-800/30">
                             {getStatusIcon(task.status)}
                             <span className="flex-1 text-sm text-zinc-300 truncate">{task.title}</span>
                             <div className="flex items-center gap-2">
@@ -356,9 +365,10 @@ export default function DashboardPage() {
                                   Allgemein
                                 </Badge>
                               )}
-                              <Badge className={`text-xs ${getPriorityColor(task.priority)}`}>
-                                {task.priority}
-                              </Badge>
+                              <div className="flex items-center gap-1.5 text-sm font-semibold text-white">
+                                <div className={cn("h-2 w-2 rounded-full", getPriorityDot(task.priority))} />
+                                {getPriorityLabel(task.priority)}
+                              </div>
                             </div>
                           </div>
                         ))}
@@ -401,7 +411,7 @@ export default function DashboardPage() {
                     const isEventToday = isToday(eventDate);
                     return (
                       <Link key={event.id} href={`/events/${event.id}`}>
-                        <div className={`flex items-center gap-4 p-3 rounded-lg transition-colors ${
+                        <div className={`flex items-center gap-4 p-3 transition-colors ${
                           isEventToday ? 'bg-violet-600/20 border border-violet-600/30' : 'bg-zinc-800/50 hover:bg-zinc-800'
                         }`}>
                           <div className={`text-center min-w-[50px] ${isEventToday ? 'text-violet-400' : 'text-zinc-400'}`}>
@@ -419,13 +429,18 @@ export default function DashboardPage() {
                           </div>
                           <div className="flex flex-col items-end gap-1">
                             {isEventToday && (
-                              <Badge className="bg-violet-600">Heute</Badge>
+                              <div className="flex items-center gap-1.5 text-sm font-semibold text-white">
+                                <div className="h-2 w-2 rounded-full bg-violet-600" />
+                                Heute
+                              </div>
                             )}
-                            <Badge variant="outline" className={
-                              event.status === 'published' ? 'border-green-600 text-green-400' : 'border-yellow-600 text-yellow-400'
-                            }>
+                            <div className="flex items-center gap-1.5 text-sm font-semibold text-white">
+                              <div className={cn(
+                                "h-2 w-2 rounded-full",
+                                event.status === 'published' ? 'bg-green-500' : 'bg-yellow-500'
+                              )} />
                               {event.status}
-                            </Badge>
+                            </div>
                           </div>
                         </div>
                       </Link>
@@ -468,7 +483,7 @@ export default function DashboardPage() {
                       <h4 className="text-sm font-medium text-green-400 mb-2">Heute</h4>
                       <div className="space-y-2">
                         {todayShifts.map(shift => (
-                          <div key={shift.id} className="p-3 bg-green-600/10 border border-green-600/20 rounded-lg">
+                          <div key={shift.id} className="p-3 bg-green-600/10 border border-green-600/20">
                             <div className="flex items-center justify-between mb-1">
                               <span className="font-medium text-white">{shift.events?.name}</span>
                               <Badge className="bg-green-600">{shift.role}</Badge>
@@ -491,7 +506,7 @@ export default function DashboardPage() {
                       <h4 className="text-sm font-medium text-zinc-400 mb-2">Anstehend</h4>
                       <div className="space-y-2">
                         {upcomingShifts.slice(0, 2).map(shift => (
-                          <div key={shift.id} className="p-2 bg-zinc-800/50 rounded-lg">
+                          <div key={shift.id} className="p-2 bg-zinc-800/50">
                             <div className="flex items-center justify-between mb-1">
                               <span className="text-sm text-white">{shift.events?.name}</span>
                               <span className="text-xs text-zinc-500">
@@ -549,7 +564,7 @@ export default function DashboardPage() {
                           {eventColleagues.map(colleague => {
                             const name = colleague.staff?.profiles?.full_name || colleague.staff?.profiles?.email?.split('@')[0] || 'Unknown';
                             return (
-                              <div key={colleague.id} className="flex items-center gap-2 px-3 py-1.5 bg-zinc-800/50 rounded-full">
+                              <div key={colleague.id} className="flex items-center gap-2 px-3 py-1.5 bg-zinc-800/50">
                                 <Avatar className="h-6 w-6">
                                   <AvatarFallback className="text-xs bg-zinc-700">
                                     {getInitials(name)}

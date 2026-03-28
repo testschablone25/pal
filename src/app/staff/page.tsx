@@ -163,7 +163,7 @@ export default function StaffPage() {
 
   const getRoleBadge = (role: string) => {
     const colors: Record<string, string> = {
-      'Bar Staff': 'bg-purple-600/20 text-purple-400 border-purple-600/50',
+      'Bar Staff': 'bg-blue-600/20 text-blue-400 border-blue-600/50',
       'Security': 'bg-red-600/20 text-red-400 border-red-600/50',
       'Door Staff': 'bg-orange-600/20 text-orange-400 border-orange-600/50',
       'Cloakroom': 'bg-cyan-600/20 text-cyan-400 border-cyan-600/50',
@@ -196,7 +196,7 @@ export default function StaffPage() {
           <Card className="bg-zinc-900 border-zinc-800 hover:border-violet-600/50 transition-colors cursor-pointer">
             <CardContent className="pt-6">
               <div className="flex items-center gap-4">
-                <div className="p-3 bg-violet-600/20 rounded-lg">
+                <div className="p-3 bg-violet-600/20">
                   <Users className="h-6 w-6 text-violet-400" />
                 </div>
                 <div>
@@ -212,7 +212,7 @@ export default function StaffPage() {
           <Card className="bg-zinc-900 border-zinc-800 hover:border-violet-600/50 transition-colors cursor-pointer">
             <CardContent className="pt-6">
               <div className="flex items-center gap-4">
-                <div className="p-3 bg-blue-600/20 rounded-lg">
+                <div className="p-3 bg-blue-600/20">
                   <Clock className="h-6 w-6 text-blue-400" />
                 </div>
                 <div>
@@ -228,7 +228,7 @@ export default function StaffPage() {
           <Card className="bg-zinc-900 border-zinc-800 hover:border-violet-600/50 transition-colors cursor-pointer">
             <CardContent className="pt-6">
               <div className="flex items-center gap-4">
-                <div className="p-3 bg-emerald-600/20 rounded-lg">
+                <div className="p-3 bg-emerald-600/20">
                   <Calendar className="h-6 w-6 text-emerald-400" />
                 </div>
                 <div>

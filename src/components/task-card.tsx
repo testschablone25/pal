@@ -3,9 +3,8 @@
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { Card, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { GripVertical, MessageSquare, Calendar } from 'lucide-react';
+import { User } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 export interface Task {
@@ -39,20 +38,20 @@ interface TaskCardProps {
 
 const priorityConfig = {
   low: {
-    label: 'Low',
-    className: 'bg-zinc-600/20 text-zinc-400 border-zinc-600/50',
+    label: 'Niedrig',
+    dotClass: 'bg-zinc-500',
   },
   medium: {
-    label: 'Medium',
-    className: 'bg-blue-600/20 text-blue-400 border-blue-600/50',
+    label: 'Mittel',
+    dotClass: 'bg-blue-500',
   },
   high: {
-    label: 'High',
-    className: 'bg-orange-600/20 text-orange-400 border-orange-600/50',
+    label: 'Hoch',
+    dotClass: 'bg-orange-500',
   },
   urgent: {
-    label: 'Urgent',
-    className: 'bg-red-600/20 text-red-400 border-red-600/50',
+    label: 'Dringend',
+    dotClass: 'bg-red-500',
   },
 };
 
@@ -88,37 +87,31 @@ export function TaskCard({ task, onClick }: TaskCardProps) {
       ref={setNodeRef}
       style={style}
       className={cn(
-        'bg-zinc-900 border-zinc-800 cursor-pointer hover:border-zinc-700 transition-colors',
+        'bg-zinc-900 border-zinc-800 cursor-pointer hover:border-zinc-700 transition-colors rounded-none',
         isDragging && 'opacity-50 shadow-lg shadow-violet-500/20'
       )}
       onClick={onClick}
+      {...attributes}
+      {...listeners}
     >
       <CardContent className="p-3">
         <div className="flex items-start gap-2">
-          {/* Drag Handle */}
-          <button
-            className="mt-1 text-zinc-500 hover:text-zinc-300 cursor-grab active:cursor-grabbing touch-none"
-            {...attributes}
-            {...listeners}
-          >
-            <GripVertical className="h-4 w-4" />
-          </button>
-
           <div className="flex-1 min-w-0">
             {/* Title */}
             <h4 className="text-sm font-medium text-white truncate mb-2">
               {task.title}
             </h4>
 
-            {/* Priority Badge */}
+            {/* Priority and Event */}
             <div className="flex items-center gap-2 mb-2">
-              <Badge variant="outline" className={cn('text-xs', priority.className)}>
+              <div className="flex items-center gap-1.5 text-sm font-semibold text-white">
+                <div className={cn("h-2 w-2 rounded-full", priority.dotClass)} />
                 {priority.label}
-              </Badge>
+              </div>
               {task.event && (
-                <Badge variant="outline" className="bg-violet-600/20 text-violet-400 border-violet-600/50 text-xs">
-                  {task.event.name}
-                </Badge>
+                <div className="text-sm font-semibold text-violet-400">
+                  • {task.event.name}
+                </div>
               )}
             </div>
 
@@ -127,10 +120,10 @@ export function TaskCard({ task, onClick }: TaskCardProps) {
               {/* Assignee Avatar */}
               {task.assignee ? (
                 <div className="flex items-center gap-2">
-                  <Avatar className="h-6 w-6">
-                    <AvatarImage src={task.assignee.avatar_url || undefined} />
-                    <AvatarFallback className="bg-zinc-800 text-zinc-300 text-xs">
-                      {getInitials(task.assignee.full_name)}
+                  <Avatar className="h-6 w-6 rounded-none">
+                    <AvatarImage src={task.assignee.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${task.assignee.full_name}`} className="rounded-none object-cover" />
+                    <AvatarFallback className="bg-zinc-800 text-zinc-300 rounded-none">
+                      <User className="h-3 w-3" />
                     </AvatarFallback>
                   </Avatar>
                   <span className="text-xs text-zinc-400 truncate max-w-[100px]">
