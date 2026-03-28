@@ -41,7 +41,23 @@ Schema:
       "origin_city": ""
     },
     "technical_notes": "",
-    "referenced_images": [""]
+    "referenced_images": [""],
+    "performance_requirements": {
+      "staff": {
+        "sound_tech": false,
+        "sound_tech_notes": "",
+        "lighting_tech": false,
+        "lighting_tech_notes": "",
+        "soundcheck_required": false,
+        "soundcheck_duration_min": null,
+        "set_required": false,
+        "specific_time": null,
+        "party_mentioned": null
+      },
+      "stage": {
+        "requirements": [""]
+      }
+    }
   },
   "hospitality_rider": {
     "accommodation": {
@@ -82,6 +98,12 @@ Rules:
 - Put mixer choices and USB-for-MacBook requirements into audio.preferred_mixers and backline.mixer_minimum_requirements.
 - Put picture or image references into referenced_images.
 - Extract travel requirements, hotel requirements, catering, and ground transport into hospitality_rider.
+- Extract staff timing: soundcheck_required (boolean), soundcheck_duration_min (number or null).
+- Extract if set performance is required: set_required (boolean).
+- Extract specific time mentions: specific_time (string like "22:00" or null).
+- Extract specific party/person mentioned: party_mentioned (name string or null).
+- If no specific time mentioned, set specific_time to null.
+- If no specific person/party mentioned for the task, set party_mentioned to null.
 - If a field is missing, use false, 0, "", or [] instead of omitting it.`;
 
 interface PdfTextRun {
@@ -167,6 +189,11 @@ interface TechRider {
       sound_tech_notes?: string;
       lighting_tech?: boolean;
       lighting_tech_notes?: string;
+      soundcheck_required?: boolean;
+      soundcheck_duration_min?: number | null;
+      set_required?: boolean;
+      specific_time?: string | null;
+      party_mentioned?: string | null;
     };
     stage?: {
       requirements?: string[];

@@ -27,7 +27,7 @@ import { Loader2 } from 'lucide-react';
 const taskSchema = z.object({
   title: z.string().min(1, 'Title is required'),
   description: z.string().optional(),
-  status: z.enum(['todo', 'in_progress', 'review', 'done', 'cancelled']),
+  status: z.enum(['needs_refining', 'todo', 'in_progress', 'review', 'done', 'cancelled']),
   priority: z.enum(['low', 'medium', 'high', 'urgent']),
   assignee_id: z.string().optional(),
   event_id: z.string().optional(),
@@ -63,6 +63,7 @@ interface TaskFormProps {
 }
 
 const STATUSES = [
+  { value: 'needs_refining', label: 'Needs Refining' },
   { value: 'todo', label: 'To Do' },
   { value: 'in_progress', label: 'In Progress' },
   { value: 'review', label: 'Review' },

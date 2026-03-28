@@ -28,7 +28,7 @@ interface Task {
   id: string;
   title: string;
   description: string | null;
-  status: 'todo' | 'in_progress' | 'review' | 'done' | 'cancelled';
+  status: 'needs_refining' | 'todo' | 'in_progress' | 'review' | 'done' | 'cancelled';
   priority: 'low' | 'medium' | 'high' | 'urgent';
   assignee_id: string | null;
   event_id: string | null;
@@ -90,6 +90,7 @@ const priorityConfig = {
 };
 
 const statusConfig = {
+  needs_refining: { label: 'Needs Refining', className: 'bg-orange-600/20 text-orange-400 border-orange-600/50' },
   todo: { label: 'To Do', className: 'bg-zinc-600/20 text-zinc-400 border-zinc-600/50' },
   in_progress: { label: 'In Progress', className: 'bg-blue-600/20 text-blue-400 border-blue-600/50' },
   review: { label: 'Review', className: 'bg-yellow-600/20 text-yellow-400 border-yellow-600/50' },
@@ -180,7 +181,7 @@ export function TaskDetailDialog({
   const handleUpdateTask = async (values: {
     title: string;
     description?: string;
-    status: 'todo' | 'in_progress' | 'review' | 'done' | 'cancelled';
+    status: 'needs_refining' | 'todo' | 'in_progress' | 'review' | 'done' | 'cancelled';
     priority: 'low' | 'medium' | 'high' | 'urgent';
     assignee_id?: string;
     event_id?: string;

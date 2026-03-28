@@ -4,14 +4,14 @@ import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { Card, CardContent } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { User } from 'lucide-react';
+import { User, MessageSquare } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 export interface Task {
   id: string;
   title: string;
   description: string | null;
-  status: 'todo' | 'in_progress' | 'review' | 'done' | 'cancelled';
+  status: 'needs_refining' | 'todo' | 'in_progress' | 'review' | 'done' | 'cancelled';
   priority: 'low' | 'medium' | 'high' | 'urgent';
   assignee_id: string | null;
   event_id: string | null;

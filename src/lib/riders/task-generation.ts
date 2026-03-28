@@ -63,6 +63,11 @@ export interface TechRider {
       sound_tech_notes?: string;
       lighting_tech?: boolean;
       lighting_tech_notes?: string;
+      soundcheck_required?: boolean;
+      soundcheck_duration_min?: number | null;
+      set_required?: boolean;
+      specific_time?: string | null;
+      party_mentioned?: string | null;
     };
     stage?: {
       requirements?: string[];
@@ -101,7 +106,7 @@ export interface HospitalityRider {
 }
 
 type TaskPriority = 'low' | 'medium' | 'high' | 'urgent';
-type TaskCategory = 'flight' | 'equipment' | 'accommodation' | 'transport' | 'catering';
+type TaskCategory = 'flight' | 'equipment' | 'accommodation' | 'transport' | 'catering' | 'staff_soundcheck' | 'staff_set';
 type AssignmentTarget = 'booker' | 'manager' | 'sound' | 'light' | 'logistics_sound';
 
 interface TaskDraft {
@@ -110,6 +115,9 @@ interface TaskDraft {
   priority: TaskPriority;
   assignment_target: AssignmentTarget;
   category: TaskCategory;
+  needs_refining?: boolean;
+  duration_min?: number | null;
+  specific_time?: string | null;
 }
 
 interface UserRoleRow {
@@ -339,50 +347,105 @@ ACTION NEEDED:
   }
 
   const perfReqs = techRider?.performance_requirements;
+
   if (perfReqs?.staff?.sound_tech) {
-    const stageReqs = perfReqs.stage?.requirements?.length
-      ? `\nSTAGE REQUIREMENTS:\n${perfReqs.stage.requirements.map((requirement) => `- ${requirement}`).join('\n')}`
-      : '';
+    const soundNotes = perfReqs.staff.sound_tech_notes || '';
+    const hasSpecificTime = perfReqs.staff.specific_time !== null;
+    const hasParty = perfReqs.staff.party_mentioned !== null;
 
-    tasks.push({
-      title: `👨‍🔧 Arrange sound technician: ${artistName}`,
-      description: `Artist ${artistName} requires a sound technician for ${eventName} (${eventDate}).
+    if (perfReqs.staff.soundcheck_required) {
+      tasks.push({
+        title: `🎛️ Sound Engineer - Soundcheck: ${artistName}`,
+        description: `Sound engineer required for soundcheck with ${artistName} for ${eventName} (${eventDate}).
 
-NOTES:
-${perfReqs.staff.sound_tech_notes || 'Sound technician required for soundcheck and full set.'}
-${stageReqs}
+DETAILS:
+${perfReqs.staff.soundcheck_duration_min ? `Duration: ${perfReqs.staff.soundcheck_duration_min} minutes` : 'Duration: TBD'}
+Time: ${perfReqs.staff.specific_time || 'TBD'}
+Party: ${perfReqs.staff.party_mentioned || 'TBD'}
+${soundNotes ? `Notes: ${soundNotes}` : ''}
 
 ACTION NEEDED:
-1. Assign a qualified sound technician
-2. Ensure availability for soundcheck and full set
-3. Confirm setup details with artist management`,
-      priority: 'high',
-      assignment_target: 'sound',
-      category: 'equipment',
-    });
+1. Assign sound engineer for soundcheck
+2. Confirm exact time with artist management
+3. Update task with specific time when known`,
+        priority: 'high',
+        assignment_target: 'sound',
+        category: 'staff_soundcheck',
+        needs_refining: !hasSpecificTime || !hasParty,
+        duration_min: perfReqs.staff.soundcheck_duration_min || null,
+        specific_time: perfReqs.staff.specific_time || null,
+      });
+    }
+
+    if (perfReqs.staff.set_required) {
+      tasks.push({
+        title: `🎛️ Sound Engineer - Set: ${artistName}`,
+        description: `Sound engineer required for full set by ${artistName} for ${eventName} (${eventDate}).
+
+DETAILS:
+Time: ${perfReqs.staff.specific_time || 'TBD'}
+Party: ${perfReqs.staff.party_mentioned || 'TBD'}
+${soundNotes ? `Notes: ${soundNotes}` : ''}
+
+ACTION NEEDED:
+1. Assign sound engineer for the full set
+2. Confirm set time with artist management
+3. Update task with specific time when known`,
+        priority: 'high',
+        assignment_target: 'sound',
+        category: 'staff_set',
+        needs_refining: !hasSpecificTime || !hasParty,
+        specific_time: perfReqs.staff.specific_time || null,
+      });
+    }
   }
 
   if (perfReqs?.staff?.lighting_tech) {
-    const stageReqs = perfReqs.stage?.requirements?.length
-      ? `\nSTAGE REQUIREMENTS:\n${perfReqs.stage.requirements.map((requirement) => `- ${requirement}`).join('\n')}`
-      : '';
+    const lightNotes = perfReqs.staff.lighting_tech_notes || '';
+    const hasSpecificTime = perfReqs.staff.specific_time !== null;
+    const hasParty = perfReqs.staff.party_mentioned !== null;
 
-    tasks.push({
-      title: `💡 Arrange lighting technician: ${artistName}`,
-      description: `Artist ${artistName} requires a lighting technician for ${eventName} (${eventDate}).
+    if (perfReqs.staff.soundcheck_required) {
+      tasks.push({
+        title: `💡 Lighting Engineer - Soundcheck: ${artistName}`,
+        description: `Lighting engineer required for soundcheck with ${artistName} for ${eventName} (${eventDate}).
 
-NOTES:
-${perfReqs.staff.lighting_tech_notes || 'Lighting technician required for full set.'}
-${stageReqs}
+DETAILS:
+Time: ${perfReqs.staff.specific_time || 'TBD'}
+Party: ${perfReqs.staff.party_mentioned || 'TBD'}
+${lightNotes ? `Notes: ${lightNotes}` : ''}
 
 ACTION NEEDED:
-1. Assign a qualified lighting technician
-2. Ensure lighting cues are prepared for the set
-3. Confirm setup details with artist management`,
-      priority: 'high',
-      assignment_target: 'light',
-      category: 'equipment',
-    });
+1. Assign lighting engineer for soundcheck
+2. Confirm exact time with artist management`,
+        priority: 'high',
+        assignment_target: 'light',
+        category: 'staff_soundcheck',
+        needs_refining: !hasSpecificTime || !hasParty,
+        specific_time: perfReqs.staff.specific_time || null,
+      });
+    }
+
+    if (perfReqs.staff.set_required) {
+      tasks.push({
+        title: `💡 Lighting Engineer - Set: ${artistName}`,
+        description: `Lighting engineer required for full set by ${artistName} for ${eventName} (${eventDate}).
+
+DETAILS:
+Time: ${perfReqs.staff.specific_time || 'TBD'}
+Party: ${perfReqs.staff.party_mentioned || 'TBD'}
+${lightNotes ? `Notes: ${lightNotes}` : ''}
+
+ACTION NEEDED:
+1. Assign lighting engineer for the full set
+2. Confirm set time with artist management`,
+        priority: 'high',
+        assignment_target: 'light',
+        category: 'staff_set',
+        needs_refining: !hasSpecificTime || !hasParty,
+        specific_time: perfReqs.staff.specific_time || null,
+      });
+    }
   }
 
   if (hospitalityRider?.accommodation?.required) {
@@ -686,7 +749,7 @@ async function createTasksForEvent(
       .insert({
         title: draft.title,
         description,
-        status: 'todo',
+        status: draft.needs_refining ? 'needs_refining' : 'todo',
         priority: draft.priority,
         assignee_id: assignment.assigneeId,
         event_id: event.id || null,

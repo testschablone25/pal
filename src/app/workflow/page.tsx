@@ -12,6 +12,7 @@ import {
   PointerSensor,
   useSensor,
   useSensors,
+  useDroppable,
   DragStartEvent,
   DragEndEvent,
   DragOverEvent,
@@ -52,6 +53,7 @@ interface Column {
 }
 
 const COLUMNS: Column[] = [
+  { id: 'needs_refining', title: 'Needs Refining', status: 'needs_refining', color: 'bg-orange-600' },
   { id: 'todo', title: 'To Do', status: 'todo', color: 'bg-zinc-600' },
   { id: 'in_progress', title: 'In Progress', status: 'in_progress', color: 'bg-blue-600' },
   { id: 'review', title: 'Review', status: 'review', color: 'bg-yellow-600' },
@@ -73,6 +75,7 @@ export default function WorkflowPage() {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeId, setActiveId] = useState<string | null>(null);
+  const [activeTaskOriginalStatus, setActiveTaskOriginalStatus] = useState<Task["status"] | null>(null);
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
   const [isDetailOpen, setIsDetailOpen] = useState(false);
   const [isCreateOpen, setIsCreateOpen] = useState(false);
@@ -82,6 +85,11 @@ export default function WorkflowPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [events, setEvents] = useState<Event[]>([]);
   const [profiles, setProfiles] = useState<Profile[]>([]);
+
+  function DroppableColumn({ children, columnId }: { children: React.ReactNode; columnId: string }) {
+    const { setNodeRef } = useDroppable({ id: columnId });
+    return <div ref={setNodeRef}>{children}</div>;
+  }
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -160,6 +168,7 @@ export default function WorkflowPage() {
 
   const tasksByStatus = useMemo(() => {
     const grouped: Record<string, Task[]> = {
+      needs_refining: [],
       todo: [],
       in_progress: [],
       review: [],
@@ -174,7 +183,10 @@ export default function WorkflowPage() {
   }, [filteredTasks]);
 
   const handleDragStart = (event: DragStartEvent) => {
-    setActiveId(event.active.id as string);
+    const activeId = event.active.id as string;
+    const activeTask = tasks.find((t) => t.id === activeId);
+    setActiveId(activeId);
+    setActiveTaskOriginalStatus(activeTask?.status || null);
   };
 
   const handleDragOver = (event: DragOverEvent) => {
@@ -211,6 +223,7 @@ export default function WorkflowPage() {
   const handleDragEnd = async (event: DragEndEvent) => {
     const { active, over } = event;
     setActiveId(null);
+    setActiveTaskOriginalStatus(null);
 
     if (!over) return;
 
@@ -231,15 +244,23 @@ export default function WorkflowPage() {
       }
     }
 
-    if (!newStatus || newStatus === activeTask.status) return;
+    if (!newStatus || newStatus === activeTaskOriginalStatus) return;
 
     // Update status in database
     try {
-      await fetch(`/api/tasks/${activeId}/status`, {
+      const response = await fetch(`/api/tasks/${activeId}/status`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ status: newStatus }),
       });
+
+      if (!response.ok) {
+        const error = await response.json();
+        console.error("API error:", error);
+        fetchTasks();
+        return;
+      }
+
       setTasks((tasks) =>
         tasks.map((t) =>
           t.id === activeId ? { ...t, status: newStatus as Task["status"] } : t
@@ -271,7 +292,7 @@ export default function WorkflowPage() {
   const handleCreateTask = async (values: {
     title: string;
     description?: string;
-    status: 'todo' | 'in_progress' | 'review' | 'done' | 'cancelled';
+    status: 'needs_refining' | 'todo' | 'in_progress' | 'review' | 'done' | 'cancelled';
     priority: 'low' | 'medium' | 'high' | 'urgent';
     assignee_id?: string;
     event_id?: string;
@@ -398,7 +419,7 @@ export default function WorkflowPage() {
         onDragOver={handleDragOver}
         onDragEnd={handleDragEnd}
       >
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
           {COLUMNS.map((column) => (
             <div key={column.id} className="flex flex-col">
               <div className="flex items-center gap-2 mb-4">
@@ -413,13 +434,13 @@ export default function WorkflowPage() {
                 items={tasksByStatus[column.status]?.map((t) => t.id) || []}
                 strategy={verticalListSortingStrategy}
               >
+                <DroppableColumn columnId={column.id}>
                 <div
                   className={cn(
                     'flex-1 min-h-[200px] p-2 border-2 border-dashed transition-colors',
                     'bg-zinc-950/50 border-zinc-800',
                     activeId && 'border-violet-600/50 bg-violet-950/20'
                   )}
-                  data-column-id={column.id}
                 >
                   {loading ? (
                     <div className="space-y-3">
@@ -443,6 +464,7 @@ export default function WorkflowPage() {
                     </div>
                   )}
                 </div>
+                </DroppableColumn>
               </SortableContext>
             </div>
           ))}
