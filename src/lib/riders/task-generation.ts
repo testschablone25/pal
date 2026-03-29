@@ -457,8 +457,8 @@ ACTION NEEDED:
 
   if (perfReqs?.staff?.sound_tech) {
     const soundNotes = perfReqs.staff.sound_tech_notes || '';
-    const hasSpecificTime = perfReqs.staff.specific_time !== null;
-    const hasParty = perfReqs.staff.party_mentioned !== null;
+    const hasSpecificTime = Boolean(perfReqs.staff.specific_time);
+    const hasParty = Boolean(perfReqs.staff.party_mentioned);
     const hasGranularStaffInfo = perfReqs.staff.soundcheck_required || perfReqs.staff.set_required;
 
     if (!hasGranularStaffInfo) {
@@ -529,8 +529,8 @@ ACTION NEEDED:
 
   if (perfReqs?.staff?.lighting_tech) {
     const lightNotes = perfReqs.staff.lighting_tech_notes || '';
-    const hasSpecificTime = perfReqs.staff.specific_time !== null;
-    const hasParty = perfReqs.staff.party_mentioned !== null;
+    const hasSpecificTime = Boolean(perfReqs.staff.specific_time);
+    const hasParty = Boolean(perfReqs.staff.party_mentioned);
     const hasGranularLightInfo = perfReqs.staff.soundcheck_required || perfReqs.staff.set_required;
 
     if (!hasGranularLightInfo) {
