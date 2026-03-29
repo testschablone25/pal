@@ -1141,7 +1141,8 @@ function detectStaffRequirements(pdfText: string): {
   const soundKeywords = [
     'sound engineer', 'sound tech', 'sound technician', 'soundcheck',
     'audio engineer', 'front of house', 'f.o.h', 'foh engineer',
-    'sound operator', 'mix engineer', 'mixer operator'
+    'sound operator', 'mix engineer', 'mixer operator',
+    'technician', 'p.a. system', 'pa system'
   ];
   const soundRequired = soundKeywords.some(kw => text.includes(kw));
   
@@ -1149,7 +1150,7 @@ function detectStaffRequirements(pdfText: string): {
   const lightKeywords = [
     'lighting engineer', 'light engineer', 'lighting tech', 'lighting technician',
     'ld', 'lighting designer', 'lighting operator', 'light operator',
-    'visual engineer', 'vj', 'visual operator'
+    'visual engineer', 'vj', 'visual operator', 'light engineer'
   ];
   const lightRequired = lightKeywords.some(kw => text.includes(kw));
   
@@ -1164,7 +1165,7 @@ function detectStaffRequirements(pdfText: string): {
   }
   
   // Set/performance detection
-  const setKeywords = ['set', 'performance', 'during the show', 'during the set', 'whole set', 'full set', 'entire set'];
+  const setKeywords = ['for set', 'during set', 'during the set', 'whole set', 'full set', 'entire set', 'for the show', 'during the show'];
   const setRequired = setKeywords.some(kw => text.includes(kw));
   
   // Time extraction
