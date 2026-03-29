@@ -1141,8 +1141,7 @@ function detectStaffRequirements(pdfText: string): {
   const soundKeywords = [
     'sound engineer', 'sound tech', 'sound technician', 'soundcheck',
     'audio engineer', 'front of house', 'f.o.h', 'foh engineer',
-    'sound operator', 'mix engineer', 'mixer operator',
-    'technician', 'p.a. system', 'pa system'
+    'sound operator', 'mix engineer', 'mixer operator'
   ];
   const soundRequired = soundKeywords.some(kw => text.includes(kw));
   
@@ -1150,7 +1149,7 @@ function detectStaffRequirements(pdfText: string): {
   const lightKeywords = [
     'lighting engineer', 'light engineer', 'lighting tech', 'lighting technician',
     'ld', 'lighting designer', 'lighting operator', 'light operator',
-    'visual engineer', 'vj', 'visual operator', 'light engineer'
+    'visual engineer', 'vj', 'visual operator'
   ];
   const lightRequired = lightKeywords.some(kw => text.includes(kw));
   
@@ -1172,8 +1171,8 @@ function detectStaffRequirements(pdfText: string): {
   const timeMatch = text.match(/(?:at|from|starting|scheduled for)\s*(\d{1,2}(?::\d{2})?\s*(?:am|pm)?)/i);
   const specificTime = timeMatch ? timeMatch[1] : null;
   
-  // Party/artist name extraction (if mentioned as needing staff)
-  const partyMatch = text.match(/(?:for|with|during)\s+([A-Z][a-z]+(?:\s+[A-Z][a-z]+)*)/);
+  // Party/artist name extraction (if mentioned as needing staff) - use original text for capitalization
+  const partyMatch = pdfText.match(/(?:for|with|during)\s+([A-Z][a-z]+(?:\s+[A-Z][a-z]+)*)/);
   const party = partyMatch ? partyMatch[1] : null;
   
   // Extract notes
