@@ -454,14 +454,18 @@ ACTION NEEDED:
   }
 
   const perfReqs = techRider?.performance_requirements;
+  console.log('[TaskGen] performance_requirements:', JSON.stringify(perfReqs?.staff, null, 2));
 
   if (perfReqs?.staff?.sound_tech) {
+    console.log('[TaskGen] Sound tech detected! soundcheck:', perfReqs.staff.soundcheck_required, 'set:', perfReqs.staff.set_required);
     const soundNotes = perfReqs.staff.sound_tech_notes || '';
     const hasSpecificTime = Boolean(perfReqs.staff.specific_time);
     const hasParty = Boolean(perfReqs.staff.party_mentioned);
     const hasGranularStaffInfo = perfReqs.staff.soundcheck_required || perfReqs.staff.set_required;
+    console.log('[TaskGen] hasSpecificTime:', Boolean(perfReqs.staff.specific_time), 'hasParty:', Boolean(perfReqs.staff.party_mentioned), 'hasGranularStaffInfo:', hasGranularStaffInfo);
 
     if (!hasGranularStaffInfo) {
+      console.log('[TaskGen] Creating fallback sound technician task (needs_refining: true)');
       tasks.push({
         title: `👨‍🔧 Arrange sound technician: ${artistName}`,
         description: `Artist ${artistName} requires a sound technician for ${eventName} (${eventDate}).
@@ -481,6 +485,8 @@ ACTION NEEDED:
     }
 
     if (perfReqs.staff.soundcheck_required) {
+      const needsRefining = !Boolean(perfReqs.staff.specific_time) || !Boolean(perfReqs.staff.party_mentioned);
+      console.log('[TaskGen] Creating soundcheck task, needs_refining:', needsRefining);
       tasks.push({
         title: `🎛️ Sound Engineer - Soundcheck: ${artistName}`,
         description: `Sound engineer required for soundcheck with ${artistName} for ${eventName} (${eventDate}).
