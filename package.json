@@ -12,7 +12,9 @@
     "test": "npm run test:unit && npm run test:e2e",
     "knip": "knip",
     "knip:fix": "knip --fix",
-    "jscpd": "jscpd --config .jscpd.json"
+    "jscpd": "jscpd --config .jscpd.json",
+    "test:rider": "npx tsx scripts/test-rider-upload.ts",
+    "reset:tasks": "npx tsx scripts/delete-all-tasks.ts"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",
