@@ -991,9 +991,7 @@ function buildExtractionResult(parsed: Record<string, unknown>, pdfText: string)
         : []),
       ...imageFallback,
     ]),
-    performance_requirements: isRecord(techData.performance_requirements)
-      ? (techData.performance_requirements as TechRider["performance_requirements"])
-      : undefined,
+    performance_requirements: buildPerformanceRequirements(techData.performance_requirements, pdfText),
   };
 
   if (mixerFallback.minimum_requirements) {
@@ -1093,6 +1091,116 @@ function extractJsonPayload(content: string): Record<string, unknown> | null {
     console.error("[LM Studio] JSON parse failed:", error);
     return null;
   }
+}
+
+function buildPerformanceRequirements(
+  aiExtracted: unknown,
+  pdfText: string
+): TechRider["performance_requirements"] {
+  const aiData = isRecord(aiExtracted) && isRecord(aiExtracted.staff) ? aiExtracted.staff : {};
+  const detected = detectStaffRequirements(pdfText);
+  
+  // Use AI data if available, otherwise use detected data
+  const staff = {
+    sound_tech: Boolean(aiData.sound_tech || detected.sound_tech),
+    sound_tech_notes: toStringValue(aiData.sound_tech_notes) || detected.sound_tech_notes || undefined,
+    lighting_tech: Boolean(aiData.lighting_tech || detected.lighting_tech),
+    lighting_tech_notes: toStringValue(aiData.lighting_tech_notes) || detected.lighting_tech_notes || undefined,
+    soundcheck_required: Boolean(aiData.soundcheck_required || detected.soundcheck_required),
+    soundcheck_duration_min: toNumberValue(aiData.soundcheck_duration_min, detected.soundcheck_duration_min || 0) || detected.soundcheck_duration_min,
+    set_required: Boolean(aiData.set_required || detected.set_required),
+    specific_time: toStringValue(aiData.specific_time) || detected.specific_time || null,
+    party_mentioned: toStringValue(aiData.party_mentioned) || detected.party_mentioned || null,
+  };
+  
+  // Only return if we detected any staff requirements
+  const hasStaffRequirements = staff.sound_tech || staff.lighting_tech;
+  const stageData = isRecord(aiExtracted) && isRecord(aiExtracted.stage)
+    ? { requirements: Array.isArray(aiExtracted.stage.requirements) ? aiExtracted.stage.requirements.map((v: unknown) => toStringValue(v)).filter(Boolean) as string[] : [] }
+    : undefined;
+  
+  return hasStaffRequirements
+    ? { staff, stage: stageData }
+    : undefined;
+}
+
+function detectStaffRequirements(pdfText: string): {
+  sound_tech: boolean;
+  sound_tech_notes: string;
+  lighting_tech: boolean;
+  lighting_tech_notes: string;
+  soundcheck_required: boolean;
+  soundcheck_duration_min: number | null;
+  set_required: boolean;
+  specific_time: string | null;
+  party_mentioned: string | null;
+} {
+  const text = pdfText.toLowerCase();
+  
+  // Sound engineer detection
+  const soundKeywords = [
+    'sound engineer', 'sound tech', 'sound technician', 'soundcheck',
+    'audio engineer', 'front of house', 'f.o.h', 'foh engineer',
+    'sound operator', 'mix engineer', 'mixer operator'
+  ];
+  const soundRequired = soundKeywords.some(kw => text.includes(kw));
+  
+  // Lighting engineer detection  
+  const lightKeywords = [
+    'lighting engineer', 'light engineer', 'lighting tech', 'lighting technician',
+    'ld', 'lighting designer', 'lighting operator', 'light operator',
+    'visual engineer', 'vj', 'visual operator'
+  ];
+  const lightRequired = lightKeywords.some(kw => text.includes(kw));
+  
+  // Soundcheck detection
+  const soundcheckMatch = text.match(/soundcheck\s*(?:for|duration|:)?\s*(?:(\d+)\s*(?:min|mins|minutes|hrs?|hours?))?/i);
+  const soundcheckRequired = soundcheckMatch !== null;
+  let soundcheckDuration = null;
+  if (soundcheckMatch && soundcheckMatch[1]) {
+    const num = parseInt(soundcheckMatch[1]);
+    const unit = text.includes('hour') || text.includes('hr') ? 60 : 1;
+    soundcheckDuration = num * unit;
+  }
+  
+  // Set/performance detection
+  const setKeywords = ['set', 'performance', 'during the show', 'during the set', 'whole set', 'full set', 'entire set'];
+  const setRequired = setKeywords.some(kw => text.includes(kw));
+  
+  // Time extraction
+  const timeMatch = text.match(/(?:at|from|starting|scheduled for)\s*(\d{1,2}(?::\d{2})?\s*(?:am|pm)?)/i);
+  const specificTime = timeMatch ? timeMatch[1] : null;
+  
+  // Party/artist name extraction (if mentioned as needing staff)
+  const partyMatch = text.match(/(?:for|with|during)\s+([A-Z][a-z]+(?:\s+[A-Z][a-z]+)*)/);
+  const party = partyMatch ? partyMatch[1] : null;
+  
+  // Extract notes
+  let soundNotes = '';
+  if (text.includes('30 min') || text.includes('30min')) {
+    soundNotes = 'Soundcheck duration: 30 minutes';
+  }
+  if (text.includes('full set') || text.includes('whole set')) {
+    soundNotes += soundNotes ? '; ' : '';
+    soundNotes += 'Required for full set';
+  }
+  
+  let lightNotes = '';
+  if (text.includes('lighting cues') || text.includes('light show')) {
+    lightNotes = 'Lighting cues required';
+  }
+  
+  return {
+    sound_tech: soundRequired,
+    sound_tech_notes: soundNotes,
+    lighting_tech: lightRequired,
+    lighting_tech_notes: lightNotes,
+    soundcheck_required: soundcheckRequired,
+    soundcheck_duration_min: soundcheckDuration,
+    set_required: setRequired,
+    specific_time: specificTime,
+    party_mentioned: party,
+  };
 }
 
 async function extractWithLMStudio(pdfText: string): Promise<ExtractionResult | null> {
