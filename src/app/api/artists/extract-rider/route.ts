@@ -7,8 +7,8 @@ import { supabaseConfig } from "@/lib/supabase/config";
 
 const supabase = createClient(supabaseConfig.url, supabaseConfig.serviceKey);
 
-const LM_STUDIO_URL = process.env.LM_STUDIO_URL || "http://127.0.0.1:1234/v1";
-const DEFAULT_MODEL = "qwen3.5-2b";
+const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY;
+const OPENROUTER_MODEL = "nvidia/nemotron-3-super-120b-a12b:free";
 
 const EXTRACTION_PROMPT = `Extract technical and hospitality rider data from the PDF text.
 
@@ -1088,7 +1088,6 @@ function extractJsonPayload(content: string): Record<string, unknown> | null {
     const parsed = JSON.parse(jsonString);
     return isRecord(parsed) ? parsed : null;
   } catch (error) {
-    console.error("[LM Studio] JSON parse failed:", error);
     return null;
   }
 }
@@ -1203,29 +1202,24 @@ function detectStaffRequirements(pdfText: string): {
   };
 }
 
-async function extractWithLMStudio(pdfText: string): Promise<ExtractionResult | null> {
+async function extractOpenRouter(pdfText: string): Promise<ExtractionResult> {
+  console.log("[extractOpenRouter] OPENROUTER_API_KEY exists:", !!OPENROUTER_API_KEY);
+
+  if (!OPENROUTER_API_KEY) {
+    throw new Error("OPENROUTER_API_KEY not configured");
+  }
+
   try {
-    let modelName = process.env.LM_STUDIO_MODEL || DEFAULT_MODEL;
-
-    try {
-      const modelsResponse = await fetch(`${LM_STUDIO_URL}/models`, {
-        signal: AbortSignal.timeout(3000),
-      });
-      if (modelsResponse.ok) {
-        const modelsData = await modelsResponse.json();
-        if (Array.isArray(modelsData.data) && modelsData.data[0]?.id) {
-          modelName = modelsData.data[0].id as string;
-        }
-      }
-    } catch {
-      // Use fallback model
-    }
-
-    const response = await fetch(`${LM_STUDIO_URL}/chat/completions`, {
+    const response = await fetch("https://openrouter.ai/v1/chat/completions", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${OPENROUTER_API_KEY}`,
+        "HTTP-Referer": "https://pal-steel.vercel.app",
+        "X-Title": "PAL Rider Extraction",
+      },
       body: JSON.stringify({
-        model: modelName,
+        model: OPENROUTER_MODEL,
         messages: [
           { role: "system", content: EXTRACTION_PROMPT },
           { role: "user", content: pdfText.slice(0, 12000) },
@@ -1238,33 +1232,29 @@ async function extractWithLMStudio(pdfText: string): Promise<ExtractionResult | 
 
     if (!response.ok) {
       const errorText = await response.text();
-      console.error("[LM Studio] HTTP error:", response.status, errorText);
-      return buildExtractionResult({}, pdfText);
+      throw new Error(`OpenRouter API error ${response.status}: ${errorText}`);
     }
 
     const data = await response.json();
     const content = data.choices?.[0]?.message?.content;
 
     if (typeof content !== "string" || !content.trim()) {
-      console.error("[LM Studio] Empty completion");
-      return buildExtractionResult({}, pdfText);
+      throw new Error("Empty completion from OpenRouter");
     }
 
     const parsed = extractJsonPayload(content);
     if (!parsed) {
-      return buildExtractionResult({}, pdfText);
+      throw new Error("Failed to parse JSON from OpenRouter response");
     }
 
     return buildExtractionResult(parsed, pdfText);
   } catch (error) {
-    console.error("LM Studio extraction failed:", error);
-    return buildExtractionResult({}, pdfText);
+    console.error("[extractOpenRouter] Extraction failed:", error);
+    throw error;
   }
 }
 
 function getWarnings(data: ExtractionResult): string[] {
-  const warnings: string[] = [];
-
   if (data.tech_rider.transport?.priority_boarding) {
     warnings.push("Priority boarding required");
   }
@@ -1305,17 +1295,6 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Only PDF files are supported" }, { status: 400 });
     }
 
-    try {
-      const healthCheck = await fetch(`${LM_STUDIO_URL}/models`, {
-        signal: AbortSignal.timeout(5000),
-      });
-      if (!healthCheck.ok) {
-        console.warn("[LM Studio] Health check failed, using PDF fallback extraction only");
-      }
-    } catch {
-      console.warn("[LM Studio] Unreachable, using PDF fallback extraction only");
-    }
-
     const buffer = Buffer.from(await file.arrayBuffer());
     const pdfText = await extractPdfText(buffer);
 
@@ -1323,9 +1302,14 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "PDF text extraction failed" }, { status: 400 });
     }
 
-    const extracted = await extractWithLMStudio(pdfText);
-    if (!extracted) {
-      return NextResponse.json({ error: "Failed to extract rider data" }, { status: 500 });
+    try {
+      const extracted = await extractOpenRouter(pdfText);
+    } catch (error) {
+      console.error("[POST] Rider extraction failed:", error);
+      return NextResponse.json(
+        { error: error instanceof Error ? error.message : "Failed to extract rider data" },
+        { status: 500 },
+      );
     }
 
     const updateData: Record<string, unknown> = {};
@@ -1413,27 +1397,35 @@ export async function POST(request: NextRequest) {
 }
 
 export async function GET() {
+  if (!OPENROUTER_API_KEY) {
+    return NextResponse.json({
+      status: "disconnected",
+      message: "OPENROUTER_API_KEY not configured",
+    });
+  }
+
   try {
-    const response = await fetch(`${LM_STUDIO_URL}/models`, {
+    const response = await fetch("https://openrouter.ai/v1/models", {
       signal: AbortSignal.timeout(5000),
+      headers: {
+        "Authorization": `Bearer ${OPENROUTER_API_KEY}`,
+      },
     });
 
     if (!response.ok) {
-      return NextResponse.json({
-        status: "disconnected",
-        message: "LM Studio not running on port 1234",
-      });
+      throw new Error(`OpenRouter API error ${response.status}`);
     }
 
     const data = await response.json();
     return NextResponse.json({
       status: "connected",
-      models: Array.isArray(data.data) ? data.data.map((model: { id: string }) => model.id) : [],
+      provider: "openrouter",
+      model: OPENROUTER_MODEL,
     });
-  } catch {
+  } catch (error) {
     return NextResponse.json({
       status: "disconnected",
-      message: "LM Studio not accessible",
+      message: error instanceof Error ? error.message : "Failed to connect to OpenRouter",
     });
   }
 }

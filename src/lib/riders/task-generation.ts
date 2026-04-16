@@ -902,7 +902,7 @@ async function createTasksForEvent(
       .insert({
         title: draft.title,
         description,
-        status: draft.needs_refining ? 'needs_refining' : 'todo',
+        status: draft.needs_refining ? 'review' : 'todo',
         priority: draft.priority,
         assignee_id: assignment.assigneeId,
         event_id: event.id || null,
