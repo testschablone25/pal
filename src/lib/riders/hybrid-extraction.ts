@@ -6,9 +6,9 @@
 import * as pdfjsLib from 'pdfjs-dist/legacy/build/pdf.mjs';
 import { createCanvas } from 'canvas';
 
-// Configure pdfjs-dist for Node.js (disable worker)
+// Configure pdfjs-dist for Node.js
 if (typeof pdfjsLib.GlobalWorkerOptions !== 'undefined') {
-  (pdfjsLib.GlobalWorkerOptions as { workerSrc: string | null }).workerSrc = null;
+  pdfjsLib.GlobalWorkerOptions.workerSrc = '/dummy-worker.js';
 }
 
 // Types
@@ -74,6 +74,7 @@ async function extractTextFromPdf(buffer: Buffer): Promise<string> {
     data: typedArray,
     standardFontDataUrl: undefined,
     isEvalSupported: false,
+    disableFontFace: true,
   });
 
   const pdfDocument = await loadingTask.promise;
@@ -157,6 +158,7 @@ async function extractWithVision(
     const loadingTask = pdfjsLib.getDocument({ 
       data: typedArray,
       isEvalSupported: false,
+      disableFontFace: true,
     });
     const pdfDocument = await loadingTask.promise;
     const page = await pdfDocument.getPage(1);

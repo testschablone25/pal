@@ -5,10 +5,10 @@
 
 import * as pdfjsLib from 'pdfjs-dist/legacy/build/pdf.mjs';
 
-// Configure pdfjs-dist for Node.js (disable worker)
-// Set workerSrc to null to disable worker loading
+// Configure pdfjs-dist for Node.js
+// Set workerSrc to a dummy path (pdfjs-dist requires a string)
 if (typeof pdfjsLib.GlobalWorkerOptions !== 'undefined') {
-  (pdfjsLib.GlobalWorkerOptions as { workerSrc: string | null }).workerSrc = null;
+  pdfjsLib.GlobalWorkerOptions.workerSrc = '/dummy-worker.js';
 }
 
 export interface RenderedPage {
@@ -37,6 +37,7 @@ export async function renderPdfToImages(
       data: typedArray,
       standardFontDataUrl: undefined,
       isEvalSupported: false,
+      disableFontFace: true,
     });
 
     const pdfDocument = await loadingTask.promise;
