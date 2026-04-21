@@ -11,9 +11,6 @@ if (typeof pdfjsLib.GlobalWorkerOptions !== 'undefined') {
   pdfjsLib.GlobalWorkerOptions.workerSrc = false;
 }
 
-// Disable worker in document loading
-pdfjsLib.disableWorker = true;
-
 // Types
 export interface ExtractionResult {
   text: string;
@@ -76,8 +73,6 @@ async function extractTextFromPdf(buffer: Buffer): Promise<string> {
   const loadingTask = pdfjsLib.getDocument({
     data: typedArray,
     standardFontDataUrl: undefined,
-    disableWorker: true,
-    disableFontFace: false,
   });
 
   const pdfDocument = await loadingTask.promise;
@@ -157,11 +152,7 @@ async function extractWithVision(
   try {
     // Render first page to image
     const typedArray = new Uint8Array(buffer);
-    const loadingTask = pdfjsLib.getDocument({ 
-      data: typedArray,
-      disableWorker: true,
-      disableFontFace: false,
-    });
+    const loadingTask = pdfjsLib.getDocument({ data: typedArray });
     const pdfDocument = await loadingTask.promise;
     const page = await pdfDocument.getPage(1);
     const imageBase64 = await renderPageToImage(page, 2.0);

@@ -10,9 +10,6 @@ if (typeof pdfjsLib.GlobalWorkerOptions !== 'undefined') {
   pdfjsLib.GlobalWorkerOptions.workerSrc = false;
 }
 
-// Disable worker in document loading
-pdfjsLib.disableWorker = true;
-
 export interface RenderedPage {
   imageData: string; // Base64 encoded PNG
   pageNumber: number;
@@ -38,8 +35,6 @@ export async function renderPdfToImages(
     const loadingTask = pdfjsLib.getDocument({
       data: typedArray,
       standardFontDataUrl: undefined,
-      disableWorker: true,
-      disableFontFace: false,
     });
 
     const pdfDocument = await loadingTask.promise;
