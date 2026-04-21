@@ -9,12 +9,14 @@ import path from 'path';
 // Configure pdfjs-dist for Node.js with actual worker file
 if (typeof pdfjsLib.GlobalWorkerOptions !== 'undefined') {
   // Point to the actual worker file in node_modules
-  // Use a path that will work from the compiled output
+  // Convert to file:// URL for Windows compatibility
   const workerPath = path.join(
     process.cwd(),
     'node_modules/pdfjs-dist/legacy/build/pdf.worker.mjs'
   );
-  pdfjsLib.GlobalWorkerOptions.workerSrc = workerPath;
+  // Convert Windows path to file:// URL
+  const workerUrl = new URL(`file:///${workerPath.replace(/\\/g, '/')}`);
+  pdfjsLib.GlobalWorkerOptions.workerSrc = workerUrl.href;
 }
 
 export interface RenderedPage {
