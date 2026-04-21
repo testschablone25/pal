@@ -5,10 +5,16 @@
 
 import * as pdfjsLib from 'pdfjs-dist/legacy/build/pdf.mjs';
 import { createCanvas } from 'canvas';
+import path from 'path';
 
-// Configure pdfjs-dist for Node.js
+// Configure pdfjs-dist for Node.js with actual worker file
 if (typeof pdfjsLib.GlobalWorkerOptions !== 'undefined') {
-  pdfjsLib.GlobalWorkerOptions.workerSrc = '/dummy-worker.js';
+  // Point to the actual worker file in node_modules
+  const workerPath = path.join(
+    process.cwd(),
+    'node_modules/pdfjs-dist/legacy/build/pdf.worker.mjs'
+  );
+  pdfjsLib.GlobalWorkerOptions.workerSrc = workerPath;
 }
 
 // Types

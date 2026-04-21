@@ -4,11 +4,17 @@
  */
 
 import * as pdfjsLib from 'pdfjs-dist/legacy/build/pdf.mjs';
+import path from 'path';
 
-// Configure pdfjs-dist for Node.js
-// Set workerSrc to a dummy path (pdfjs-dist requires a string)
+// Configure pdfjs-dist for Node.js with actual worker file
 if (typeof pdfjsLib.GlobalWorkerOptions !== 'undefined') {
-  pdfjsLib.GlobalWorkerOptions.workerSrc = '/dummy-worker.js';
+  // Point to the actual worker file in node_modules
+  // Use a path that will work from the compiled output
+  const workerPath = path.join(
+    process.cwd(),
+    'node_modules/pdfjs-dist/legacy/build/pdf.worker.mjs'
+  );
+  pdfjsLib.GlobalWorkerOptions.workerSrc = workerPath;
 }
 
 export interface RenderedPage {
