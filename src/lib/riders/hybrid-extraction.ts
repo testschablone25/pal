@@ -8,7 +8,7 @@ import { createCanvas } from 'canvas';
 
 // Configure pdfjs-dist for Node.js (disable worker)
 if (typeof pdfjsLib.GlobalWorkerOptions !== 'undefined') {
-  pdfjsLib.GlobalWorkerOptions.workerSrc = false;
+  pdfjsLib.GlobalWorkerOptions.workerSrc = '';
 }
 
 // Types
@@ -134,6 +134,7 @@ async function renderPageToImage(
 
   await page.render({
     canvasContext: ctx as unknown as CanvasRenderingContext2D,
+    canvas: canvas as unknown as HTMLCanvasElement,
     viewport,
   }).promise;
 
@@ -200,12 +201,13 @@ Return JSON only. No markdown. No commentary.`
       pagesProcessed: 1,
     };
   } catch (error) {
-    console.error(`[Vision] Failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    console.error(`[Vision] Failed: ${errorMessage}`);
     return {
       text: '',
       quality: 'failed',
       method: 'vision',
-      warnings: [`Vision extraction failed: ${error.message}`],
+      warnings: [`Vision extraction failed: ${errorMessage}`],
       pagesProcessed: 0,
     };
   }

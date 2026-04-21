@@ -7,7 +7,7 @@ import * as pdfjsLib from 'pdfjs-dist/legacy/build/pdf.mjs';
 
 // Configure pdfjs-dist for Node.js (disable worker)
 if (typeof pdfjsLib.GlobalWorkerOptions !== 'undefined') {
-  pdfjsLib.GlobalWorkerOptions.workerSrc = false;
+  pdfjsLib.GlobalWorkerOptions.workerSrc = '';
 }
 
 export interface RenderedPage {
@@ -60,6 +60,7 @@ export async function renderPdfToImages(
       // Render page to canvas
       await page.render({
         canvasContext: ctx as unknown as CanvasRenderingContext2D,
+        canvas: canvas as unknown as HTMLCanvasElement,
         viewport,
       }).promise;
 
