@@ -8,7 +8,7 @@ import { createCanvas } from 'canvas';
 
 // Configure pdfjs-dist for Node.js (disable worker)
 if (typeof pdfjsLib.GlobalWorkerOptions !== 'undefined') {
-  pdfjsLib.GlobalWorkerOptions.workerSrc = '';
+  (pdfjsLib.GlobalWorkerOptions as { workerSrc: string | null }).workerSrc = null;
 }
 
 // Types
@@ -73,6 +73,7 @@ async function extractTextFromPdf(buffer: Buffer): Promise<string> {
   const loadingTask = pdfjsLib.getDocument({
     data: typedArray,
     standardFontDataUrl: undefined,
+    isEvalSupported: false,
   });
 
   const pdfDocument = await loadingTask.promise;
@@ -153,7 +154,10 @@ async function extractWithVision(
   try {
     // Render first page to image
     const typedArray = new Uint8Array(buffer);
-    const loadingTask = pdfjsLib.getDocument({ data: typedArray });
+    const loadingTask = pdfjsLib.getDocument({ 
+      data: typedArray,
+      isEvalSupported: false,
+    });
     const pdfDocument = await loadingTask.promise;
     const page = await pdfDocument.getPage(1);
     const imageBase64 = await renderPageToImage(page, 2.0);
