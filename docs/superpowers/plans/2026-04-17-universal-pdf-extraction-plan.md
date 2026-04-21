@@ -464,13 +464,13 @@ Add to `src/lib/riders/extraction-utils.ts`:
 
 ```typescript
 import PDFParser from "pdf2json";
-import { extractWithPdfJs } from "./pdfjs-extraction";
-import { extractWithPdfParse } from "./pdf-parse";
-import { extractWithTesseract } from "./tesseract";
 
 /**
  * Cascade PDF text extraction
  * Tries methods in sequence until quality threshold is met
+ *
+ * Note: All extraction functions (extractWithPdfJs, extractWithPdfParse,
+ * extractWithTesseract, extractWithPdf2Json) are defined in this same file
  */
 export async function extractPdfTextCascade(
   buffer: Buffer,
@@ -1141,9 +1141,7 @@ async function extractPdfText(buffer: Buffer): Promise<string> {
   return result.text;
 }
 
-export async function extractPdfTextWithFallback(
-  buffer: Buffer,
-): Promise<{
+export async function extractPdfTextWithFallback(buffer: Buffer): Promise<{
   text: string;
   quality: "high" | "medium" | "low" | "failed";
   methodsAttempted: string[];

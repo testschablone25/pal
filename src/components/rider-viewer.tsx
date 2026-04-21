@@ -162,6 +162,9 @@ interface UploadResult {
   warnings: string[];
   tasks_created?: number;
   task_events?: UploadTaskEventSummary[];
+  extractionMethod?: 'text' | 'vision';
+  textQuality?: 'high' | 'medium' | 'low' | 'failed';
+  textCharacters?: number;
 }
 
 export function RiderViewer({ 
@@ -253,6 +256,9 @@ export function RiderViewer({
           warnings: Array.isArray(data.warnings) ? data.warnings : [],
           tasks_created: typeof data.tasks_created === 'number' ? data.tasks_created : 0,
           task_events: Array.isArray(data.task_events) ? data.task_events : [],
+          extractionMethod: data.extractionMethod,
+          textQuality: data.textQuality,
+          textCharacters: data.textCharacters,
         };
         setUploadResult(result);
         setSelectedFile(null);
@@ -261,7 +267,12 @@ export function RiderViewer({
         setShowTaskSummary(true);
         setIsUploadOpen(false);
       } else {
-        setUploadResult({ success: false, warnings: [data.error || 'Upload failed'] });
+        setUploadResult({ 
+          success: false, 
+          warnings: [data.error || 'Upload failed'],
+          extractionMethod: data.extractionMethod,
+          textQuality: data.textQuality,
+        });
       }
     } catch {
       setUploadResult({ success: false, warnings: ['Upload failed'] });
@@ -414,6 +425,13 @@ export function RiderViewer({
                           <CheckCircle2 className="h-4 w-4" />
                           Rider extracted successfully!
                         </p>
+                        {uploadResult.extractionMethod && (
+                          <p className="text-zinc-300 text-xs mt-1">
+                            Method: <span className="text-violet-400">{uploadResult.extractionMethod === 'vision' ? 'Vision (image-based)' : 'Text (standard)'}</span>
+                            {uploadResult.textQuality && ` | Quality: ${uploadResult.textQuality}`}
+                            {uploadResult.textCharacters && ` | ${uploadResult.textCharacters} chars`}
+                          </p>
+                        )}
                         {typeof uploadResult.tasks_created === 'number' && (
                           <p className="text-green-300 text-sm mt-1">
                             Auto-generated tasks: {uploadResult.tasks_created}
@@ -437,7 +455,15 @@ export function RiderViewer({
                         )}
                       </div>
                     ) : (
-                      <p className="text-red-400">{uploadResult.warnings[0]}</p>
+                      <div>
+                        <p className="text-red-400">{uploadResult.warnings[0]}</p>
+                        {uploadResult.extractionMethod && (
+                          <p className="text-zinc-400 text-xs mt-1">
+                            Method: {uploadResult.extractionMethod}
+                            {uploadResult.textQuality && ` | Quality: ${uploadResult.textQuality}`}
+                          </p>
+                        )}
+                      </div>
                     )}
                   </div>
                 )}

@@ -4,6 +4,7 @@ import PDFParser from "pdf2json";
 
 import { generateRiderTasksForArtist } from "@/lib/riders/task-generation";
 import { supabaseConfig } from "@/lib/supabase/config";
+import { renderPdfToImages } from "@/lib/riders/pdf-to-image";
 
 const supabase = createClient(supabaseConfig.url, supabaseConfig.serviceKey);
 
@@ -1073,6 +1074,160 @@ async function extractPdfText(buffer: Buffer): Promise<string> {
   });
 }
 
+/**
+ * Assess text quality to determine if vision fallback is needed
+ */
+interface QualityMetrics {
+  characterCount: number;
+  controlCharRatio: number;
+  wordDensity: number;
+  quality: 'high' | 'medium' | 'low' | 'failed';
+}
+
+function assessTextQuality(text: string): QualityMetrics {
+  const controlChars = (text.match(/[\x00-\x1F\x7F]/g) || []).length;
+  const controlCharRatio = text.length > 0 ? controlChars / text.length : 1;
+  
+  // Count recognizable words (alphanumeric sequences > 2 chars)
+  const words = text.match(/[a-zA-Z0-9]{3,}/g) || [];
+  const wordDensity = text.length > 0 ? words.length / (text.length / 5) : 0;
+  
+  let quality: 'high' | 'medium' | 'low' | 'failed' = 'low';
+  
+  if (text.length < 50) {
+    quality = 'failed';
+  } else if (text.length < 150 || wordDensity < 0.2) {
+    quality = 'low';
+  } else if (text.length < 500) {
+    quality = 'medium';
+  } else {
+    quality = 'high';
+  }
+  
+  return {
+    characterCount: text.length,
+    controlCharRatio,
+    wordDensity,
+    quality,
+  };
+}
+
+/**
+ * Extract from PDF using vision model
+ */
+async function extractWithVision(
+  buffer: Buffer,
+  model: string
+): Promise<ExtractionResult | null> {
+  try {
+    // Render first page to image
+    const pages = await renderPdfToImages(buffer, { scale: 2.0, maxPages: 1 });
+    
+    if (pages.length === 0) {
+      console.error("[Vision] Could not render PDF to image");
+      return null;
+    }
+    
+    console.log(`[Vision] Rendering page 1 (${pages[0].width}x${pages[0].height})`);
+    
+    // Try vision model first
+    const response = await fetch(`${LM_STUDIO_URL}/chat/completions`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model,
+        messages: [
+          { role: 'system', content: EXTRACTION_PROMPT },
+          {
+            role: 'user',
+            content: [
+              { type: 'text', text: 'Extract rider data from this PDF image:' },
+              { type: 'image_url', image_url: { url: `data:image/png;base64,${pages[0].imageData}` } }
+            ]
+          }
+        ],
+        temperature: 0.1,
+        max_tokens: 3000,
+      }),
+      signal: AbortSignal.timeout(120000),
+    });
+    
+    if (!response.ok) {
+      console.error(`[Vision] HTTP ${response.status}`);
+      return null;
+    }
+    
+    const data = await response.json();
+    const content = data.choices?.[0]?.message?.content;
+    
+    if (!content) {
+      console.error("[Vision] No content in response");
+      return null;
+    }
+    
+    const parsed = extractJsonPayload(content);
+    if (!parsed) {
+      return null;
+    }
+    
+    return buildExtractionResult(parsed, '');
+  } catch (error) {
+    console.error("[Vision] Extraction failed:", error instanceof Error ? error.message : 'Unknown error');
+    return null;
+  }
+}
+
+/**
+ * Hybrid extraction: try text first, fallback to vision if needed
+ */
+async function extractRiderHybrid(
+  buffer: Buffer,
+  model: string
+): Promise<{
+  extractedData: ExtractionResult | null;
+  method: 'text' | 'vision';
+  quality: QualityMetrics;
+  warnings: string[];
+}> {
+  const warnings: string[] = [];
+  
+  // Step 1: Try text extraction
+  console.log("[Hybrid] Step 1: Trying text extraction...");
+  const pdfText = await extractPdfText(buffer);
+  const quality = assessTextQuality(pdfText);
+  
+  console.log(`[Hybrid] Text extraction: ${quality.quality} (${quality.characterCount} chars)`);
+  
+  // Step 2: Decide whether to use vision
+  const shouldUseVision =
+    quality.quality === 'failed' ||
+    quality.quality === 'low';
+  
+  if (!shouldUseVision) {
+    console.log("[Hybrid] Using text extraction (good quality)");
+    const extractedData = await extractWithLMStudio(pdfText);
+    return {
+      extractedData,
+      method: 'text',
+      quality,
+      warnings,
+    };
+  }
+  
+  // Step 3: Use vision model
+  console.log("[Hybrid] Text quality low, using vision model...");
+  warnings.push('Text extraction failed, using vision model');
+  
+  const extractedData = await extractWithVision(buffer, model);
+  
+  return {
+    extractedData,
+    method: 'vision',
+    quality,
+    warnings,
+  };
+}
+
 function extractJsonPayload(content: string): Record<string, unknown> | null {
   const cleaned = content.replace(/```json/gi, "").replace(/```/g, "").trim();
   const firstBrace = cleaned.indexOf("{");
@@ -1317,16 +1472,25 @@ export async function POST(request: NextRequest) {
     }
 
     const buffer = Buffer.from(await file.arrayBuffer());
-    const pdfText = await extractPdfText(buffer);
+    
+    // Use hybrid extraction: text first, vision fallback
+    const { extractedData, method, quality, warnings } = await extractRiderHybrid(
+      buffer,
+      DEFAULT_MODEL
+    );
 
-    if (pdfText.length < 50) {
-      return NextResponse.json({ error: "PDF text extraction failed" }, { status: 400 });
+    if (!extractedData) {
+      return NextResponse.json(
+        {
+          error: "Failed to extract rider data",
+          details: `Extraction method: ${method}, Quality: ${quality.quality}`,
+          warnings,
+        },
+        { status: 500 },
+      );
     }
 
-    const extracted = await extractWithLMStudio(pdfText);
-    if (!extracted) {
-      return NextResponse.json({ error: "Failed to extract rider data" }, { status: 500 });
-    }
+    const extracted = extractedData;
 
     const updateData: Record<string, unknown> = {};
     if (riderType === "tech" || riderType === "both") {
@@ -1400,11 +1564,14 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       success: true,
+      extractionMethod: method,
+      textQuality: quality.quality,
+      textCharacters: quality.characterCount,
       tech_rider: extracted.tech_rider,
       hospitality_rider: extracted.hospitality_rider,
       tasks_created: tasksCreated,
       task_events: taskEvents,
-      warnings: [...extractionWarnings, ...taskWarnings],
+      warnings: [...warnings, ...extractionWarnings, ...taskWarnings],
     });
   } catch (error) {
     console.error("Rider error:", error);
@@ -1426,9 +1593,22 @@ export async function GET() {
     }
 
     const data = await response.json();
+    const models = Array.isArray(data.data) ? data.data.map((model: { id: string }) => model.id) : [];
+    
+    // Check for vision models
+    const visionModels = models.filter((m: string) => 
+      m.toLowerCase().includes('llava') || 
+      m.toLowerCase().includes('cogvlm') ||
+      m.toLowerCase().includes('qwen-vl') ||
+      m.toLowerCase().includes('vision')
+    );
+    
     return NextResponse.json({
       status: "connected",
-      models: Array.isArray(data.data) ? data.data.map((model: { id: string }) => model.id) : [],
+      models,
+      visionModels,
+      hasVisionSupport: visionModels.length > 0,
+      defaultModel: DEFAULT_MODEL,
     });
   } catch {
     return NextResponse.json({
