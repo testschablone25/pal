@@ -9,7 +9,7 @@ import { renderPdfToImages } from "@/lib/riders/pdf-to-image";
 const supabase = createClient(supabaseConfig.url, supabaseConfig.serviceKey);
 
 const LM_STUDIO_URL = process.env.LM_STUDIO_URL || "http://127.0.0.1:1234/v1";
-const DEFAULT_MODEL = "qwen3.5-2b";
+const DEFAULT_MODEL = "google/gemma-4-e2b";
 
 const EXTRACTION_PROMPT = `Extract technical and hospitality rider data from the PDF text.
 
@@ -1120,15 +1120,21 @@ async function extractWithVision(
   model: string
 ): Promise<ExtractionResult | null> {
   try {
-    // Render first page to image
-    const pages = await renderPdfToImages(buffer, { scale: 2.0, maxPages: 1 });
+    // Render ALL pages to images
+    const pages = await renderPdfToImages(buffer, { scale: 2.0 });
     
     if (pages.length === 0) {
       console.error("[Vision] Could not render PDF to image");
       return null;
     }
     
-    console.log(`[Vision] Rendering page 1 (${pages[0].width}x${pages[0].height})`);
+    console.log(`[Vision] Rendering ${pages.length} page(s)`);
+    
+    // Send all page images to vision model
+    const imageMessages = pages.map((page) => ({
+      type: 'image_url' as const,
+      image_url: { url: `data:image/png;base64,${page.imageData}` },
+    }));
     
     // Try vision model first
     const response = await fetch(`${LM_STUDIO_URL}/chat/completions`, {
@@ -1141,15 +1147,15 @@ async function extractWithVision(
           {
             role: 'user',
             content: [
-              { type: 'text', text: 'Extract rider data from this PDF image:' },
-              { type: 'image_url', image_url: { url: `data:image/png;base64,${pages[0].imageData}` } }
+              { type: 'text', text: `Extract rider data from these ${pages.length} PDF page images:` },
+              ...imageMessages
             ]
           }
         ],
         temperature: 0.1,
-        max_tokens: 3000,
+        max_tokens: 4000,
       }),
-      signal: AbortSignal.timeout(120000),
+      signal: AbortSignal.timeout(180000),
     });
     
     if (!response.ok) {

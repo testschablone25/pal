@@ -6,7 +6,13 @@
 import * as pdfjsLib from 'pdfjs-dist/legacy/build/pdf.mjs';
 import { createCanvas } from 'canvas';
 
-// PDF.js will use its built-in worker in Node.js
+// Configure pdfjs-dist for Node.js (disable worker)
+if (typeof pdfjsLib.GlobalWorkerOptions !== 'undefined') {
+  pdfjsLib.GlobalWorkerOptions.workerSrc = false;
+}
+
+// Disable worker in document loading
+pdfjsLib.disableWorker = true;
 
 // Types
 export interface ExtractionResult {
@@ -70,6 +76,8 @@ async function extractTextFromPdf(buffer: Buffer): Promise<string> {
   const loadingTask = pdfjsLib.getDocument({
     data: typedArray,
     standardFontDataUrl: undefined,
+    disableWorker: true,
+    disableFontFace: false,
   });
 
   const pdfDocument = await loadingTask.promise;
@@ -149,7 +157,11 @@ async function extractWithVision(
   try {
     // Render first page to image
     const typedArray = new Uint8Array(buffer);
-    const loadingTask = pdfjsLib.getDocument({ data: typedArray });
+    const loadingTask = pdfjsLib.getDocument({ 
+      data: typedArray,
+      disableWorker: true,
+      disableFontFace: false,
+    });
     const pdfDocument = await loadingTask.promise;
     const page = await pdfDocument.getPage(1);
     const imageBase64 = await renderPageToImage(page, 2.0);
@@ -196,8 +208,8 @@ Return JSON only. No markdown. No commentary.`
       warnings: ['Extracted using vision model'],
       pagesProcessed: 1,
     };
-  } catch (error: any) {
-    console.error(`[Vision] Failed: ${error.message}`);
+  } catch (error) {
+    console.error(`[Vision] Failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
     return {
       text: '',
       quality: 'failed',

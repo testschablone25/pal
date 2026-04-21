@@ -4,9 +4,14 @@
  */
 
 import * as pdfjsLib from 'pdfjs-dist/legacy/build/pdf.mjs';
-import { createCanvas } from 'canvas';
 
-// PDF.js will use its built-in worker in Node.js
+// Configure pdfjs-dist for Node.js (disable worker)
+if (typeof pdfjsLib.GlobalWorkerOptions !== 'undefined') {
+  pdfjsLib.GlobalWorkerOptions.workerSrc = false;
+}
+
+// Disable worker in document loading
+pdfjsLib.disableWorker = true;
 
 export interface RenderedPage {
   imageData: string; // Base64 encoded PNG
@@ -33,6 +38,8 @@ export async function renderPdfToImages(
     const loadingTask = pdfjsLib.getDocument({
       data: typedArray,
       standardFontDataUrl: undefined,
+      disableWorker: true,
+      disableFontFace: false,
     });
 
     const pdfDocument = await loadingTask.promise;
@@ -77,9 +84,10 @@ export async function renderPdfToImages(
 
     console.log(`[PDF→Image] ✅ Rendered ${renderedPages.length} page(s)`);
     return renderedPages;
-  } catch (error: any) {
-    console.error('[PDF→Image] ❌ Rendering failed:', error.message);
-    throw new Error(`PDF rendering failed: ${error.message}`);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : 'Unknown error';
+    console.error('[PDF→Image] ❌ Rendering failed:', message);
+    throw new Error(`PDF rendering failed: ${message}`);
   }
 }
 
