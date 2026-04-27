@@ -305,14 +305,14 @@ export function TaskForm({ task, mode = 'create', onSubmit, onCancel }: TaskForm
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Assignee</FormLabel>
-                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <Select onValueChange={(val) => field.onChange(val === '_none' ? '' : val)} value={field.value || '_none'}>
                   <FormControl>
                     <SelectTrigger className="bg-zinc-950 border-zinc-800">
                       <SelectValue placeholder="Select assignee" />
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent className="bg-zinc-900 border-zinc-800">
-                    <SelectItem value="">Unassigned</SelectItem>
+                    <SelectItem value="_none">Unassigned</SelectItem>
                     {profiles.map((profile) => (
                       <SelectItem key={profile.id} value={profile.id}>
                         {profile.full_name || profile.email || 'Unknown'}
@@ -331,14 +331,14 @@ export function TaskForm({ task, mode = 'create', onSubmit, onCancel }: TaskForm
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Event</FormLabel>
-                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <Select onValueChange={(val) => field.onChange(val === '_none' ? '' : val)} value={field.value || '_none'}>
                   <FormControl>
                     <SelectTrigger className="bg-zinc-950 border-zinc-800">
                       <SelectValue placeholder="Select event" />
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent className="bg-zinc-900 border-zinc-800">
-                    <SelectItem value="">No event</SelectItem>
+                    <SelectItem value="_none">No event</SelectItem>
                     {events.map((event) => (
                       <SelectItem key={event.id} value={event.id}>
                         {event.name} ({new Date(event.date).toLocaleDateString()})
