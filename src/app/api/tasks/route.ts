@@ -70,7 +70,8 @@ export async function GET(request: NextRequest) {
       query = query.eq('needs_approval', true);
     }
     if (search) {
-      query = query.or(`title.ilike.%${search}%,description.ilike.%${search}%`);
+      const sanitized = search.replace(/%/g, '\\%');
+      query = query.or(`title.ilike.%${sanitized}%,description.ilike.%${sanitized}%`);
     }
     if (myCreated === 'true' && userId) {
       query = query.eq('created_by', userId);
@@ -175,21 +176,28 @@ export async function POST(request: NextRequest) {
     }
 
     if (item_ids && item_ids.length > 0 && taskData) {
-      await supabase.from('task_items').insert(
+      const { error: itemsError } = await supabase.from('task_items').insert(
         item_ids.map((item_id: string) => ({
           task_id: taskData.id,
           item_id,
         }))
       );
+      if (itemsError) {
+        console.error('Failed to link items:', itemsError);
+      }
     }
 
-    await supabase.from('task_history').insert({
+    const { error: historyError } = await supabase.from('task_history').insert({
       task_id: taskData.id,
       changed_by: created_by,
       from_status: null,
       to_status: taskData.status,
       change_type: 'created',
     });
+
+    if (historyError) {
+      console.error('Failed to log task history:', historyError);
+    }
 
     return NextResponse.json({ ...taskData, comment_count: 0, item_ids: item_ids || [] }, { status: 201 });
   } catch (error) {
