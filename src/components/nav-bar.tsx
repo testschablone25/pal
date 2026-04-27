@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, Calendar, Users, DoorOpen, ClipboardList, Music, Building } from "lucide-react";
+import { Home, Calendar, Users, DoorOpen, ClipboardList, Music, Building, Package, ArrowLeftRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const navItems = [
@@ -12,6 +12,8 @@ const navItems = [
   { href: "/door", label: "Tür", icon: DoorOpen },
   { href: "/staff", label: "Staff", icon: Users },
   { href: "/workflow", label: "Aufgaben", icon: ClipboardList },
+  { href: "/inventory", label: "Inventar", icon: Package },
+  { href: "/rentals", label: "Verleih", icon: ArrowLeftRight },
   { href: "/venues", label: "Venues", icon: Building },
 ];
 

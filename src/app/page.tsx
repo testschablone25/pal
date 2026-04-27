@@ -22,6 +22,7 @@ import {
   LayoutDashboard,
   CheckCircle2,
   Circle,
+  ArrowLeftRight,
 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -87,6 +88,10 @@ export default function DashboardPage() {
   const [events, setEvents] = useState<Event[]>([]);
   const [shifts, setShifts] = useState<Shift[]>([]);
   const [colleagues, setColleagues] = useState<Shift[]>([]);
+  const [blockedCount, setBlockedCount] = useState(0);
+  const [pendingApprovalCount, setPendingApprovalCount] = useState(0);
+  const [activeRentalsCount, setActiveRentalsCount] = useState(0);
+  const [dueThisWeek, setDueThisWeek] = useState(0);
 
   useEffect(() => {
     fetchDashboardData();
@@ -114,6 +119,10 @@ export default function DashboardPage() {
       setEvents(data.events || []);
       setShifts(data.shifts || []);
       setColleagues(data.colleagues || []);
+      setBlockedCount(data.blockedCount || 0);
+      setPendingApprovalCount(data.pendingApprovalCount || 0);
+      setActiveRentalsCount(data.activeRentalsCount || 0);
+      setDueThisWeek(data.dueThisWeek || 0);
     } catch (error) {
       console.error('Dashboard error:', error);
     } finally {
@@ -276,6 +285,75 @@ export default function DashboardPage() {
             </div>
           </CardContent>
         </Card>
+
+        {/* Stat Cards */}
+        <div className="grid gap-4 grid-cols-2 md:grid-cols-4">
+          <Link href="/workflow?blocked=true">
+            <Card className="bg-zinc-900 border-red-800/50 hover:border-red-700 transition-colors">
+              <CardContent className="p-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-red-400">Blockierte Aufgaben</p>
+                    <p className="text-2xl font-bold text-white mt-1">{blockedCount}</p>
+                  </div>
+                  <div className="p-2 bg-red-600/20">
+                    <ClipboardList className="h-5 w-5 text-red-400" />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </Link>
+
+          {(userRole === 'admin' || userRole === 'manager') && (
+            <Link href="/workflow?needs_approval=true">
+              <Card className="bg-zinc-900 border-amber-800/50 hover:border-amber-700 transition-colors">
+                <CardContent className="p-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm text-amber-400">Ausstehende Genehmigungen</p>
+                      <p className="text-2xl font-bold text-white mt-1">{pendingApprovalCount}</p>
+                    </div>
+                    <div className="p-2 bg-amber-600/20">
+                      <ClipboardList className="h-5 w-5 text-amber-400" />
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </Link>
+          )}
+
+          <Link href="/rentals">
+            <Card className="bg-zinc-900 border-blue-800/50 hover:border-blue-700 transition-colors">
+              <CardContent className="p-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-blue-400">Aktive Verleihe</p>
+                    <p className="text-2xl font-bold text-white mt-1">{activeRentalsCount}</p>
+                  </div>
+                  <div className="p-2 bg-blue-600/20">
+                    <ArrowLeftRight className="h-5 w-5 text-blue-400" />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </Link>
+
+          <Link href="/workflow">
+            <Card className="bg-zinc-900 border-cyan-800/50 hover:border-cyan-700 transition-colors">
+              <CardContent className="p-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-cyan-400">Fällig diese Woche</p>
+                    <p className="text-2xl font-bold text-white mt-1">{dueThisWeek}</p>
+                  </div>
+                  <div className="p-2 bg-cyan-600/20">
+                    <Clock className="h-5 w-5 text-cyan-400" />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </Link>
+        </div>
 
         {/* Main Grid */}
         <div className="grid gap-6 md:grid-cols-2">

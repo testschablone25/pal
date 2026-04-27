@@ -10,6 +10,8 @@ const PROTECTED_ROUTES = [
   '/workflow',
   '/guest-lists',
   '/venues',
+  '/inventory',
+  '/rentals',
 ];
 
 // Routes that are always accessible (public routes)

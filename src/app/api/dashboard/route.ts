@@ -88,6 +88,38 @@ export async function GET(request: Request) {
     }
   }
 
+  // Get blocked tasks count
+  const { count: blockedCount } = await supabase
+    .from('tasks')
+    .select('*', { count: 'exact', head: true })
+    .eq('blocked', true)
+    .eq('assignee_id', userId);
+
+  // Get pending approvals count
+  const { count: pendingApprovalCount } = await supabase
+    .from('tasks')
+    .select('*', { count: 'exact', head: true })
+    .eq('status', 'pending_approval');
+
+  // Get active rentals count
+  const { count: activeRentalsCount } = await supabase
+    .from('rentals')
+    .select('*', { count: 'exact', head: true })
+    .in('status', ['active', 'overdue']);
+
+  // Get tasks due this week
+  const today = new Date().toISOString().split('T')[0];
+  const weekEnd = new Date();
+  weekEnd.setDate(weekEnd.getDate() + 7);
+  const weekEndStr = weekEnd.toISOString().split('T')[0];
+
+  const { count: dueThisWeek } = await supabase
+    .from('tasks')
+    .select('*', { count: 'exact', head: true })
+    .gte('due_date', today)
+    .lte('due_date', weekEndStr)
+    .eq('assignee_id', userId);
+
   return NextResponse.json({
     profile,
     userRole: roleData?.role || null,
@@ -96,5 +128,9 @@ export async function GET(request: Request) {
     shifts,
     colleagues,
     events,
+    blockedCount: blockedCount || 0,
+    pendingApprovalCount: pendingApprovalCount || 0,
+    activeRentalsCount: activeRentalsCount || 0,
+    dueThisWeek: dueThisWeek || 0,
   });
 }
