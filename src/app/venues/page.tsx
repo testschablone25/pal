@@ -11,7 +11,6 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
   DialogDescription,
 } from '@/components/ui/dialog';
 import {
@@ -23,7 +22,6 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
 import { Plus, MapPin, Users, Building, Pencil, Trash2, Loader2 } from 'lucide-react';
 
@@ -362,14 +360,10 @@ export default function VenuesPage() {
         <p className="text-sm text-zinc-400">
           {venues.length} venues
         </p>
-        <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
-          <DialogTrigger asChild>
-            <Button className="bg-violet-600 hover:bg-violet-700">
-              <Plus className="h-4 w-4 mr-2" />
-              Add Venue
-            </Button>
-          </DialogTrigger>
-        </Dialog>
+        <Button className="bg-violet-600 hover:bg-violet-700" onClick={() => setShowCreateDialog(true)}>
+          <Plus className="h-4 w-4 mr-2" />
+          Add Venue
+        </Button>
       </div>
 
       {/* Venues Grid */}
