@@ -135,6 +135,13 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    if (!created_by) {
+      return NextResponse.json(
+        { error: 'You must be logged in to create a task' },
+        { status: 401 }
+      );
+    }
+
     const { data: taskData, error: taskError } = await supabase
       .from('tasks')
       .insert({

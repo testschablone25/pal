@@ -137,6 +137,7 @@ export function TaskForm({ task, mode = 'create', onSubmit, onCancel }: TaskForm
 
   useEffect(() => {
     fetchUser();
+    fetchUser();
     fetchProfiles();
     fetchEvents();
     fetchItems();

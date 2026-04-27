@@ -326,7 +326,8 @@ export default function WorkflowPage() {
       });
 
       if (!response.ok) {
-        throw new Error('Failed to create task');
+        const errData = await response.json().catch(() => ({}));
+        throw new Error(errData.error || 'Failed to create task');
       }
 
       const newTask = await response.json();
