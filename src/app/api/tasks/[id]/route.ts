@@ -7,6 +7,32 @@ import { supabaseConfig } from '@/lib/supabase/config';
 
 const supabase = createClient(supabaseConfig.url, supabaseConfig.serviceKey);
 
+const taskSelect = `
+  *,
+  assignee:assignee_id (
+    id,
+    full_name,
+    email,
+    avatar_url
+  ),
+  event:event_id (
+    id,
+    name,
+    date
+  ),
+  creator:created_by (
+    id,
+    full_name,
+    email,
+    avatar_url
+  ),
+  comments:task_comments(count),
+  task_items (
+    item_id,
+    items (*)
+  )
+`;
+
 // GET /api/tasks/[id] - Get single task
 export async function GET(
   request: NextRequest,
@@ -17,21 +43,7 @@ export async function GET(
 
     const { data, error } = await supabase
       .from('tasks')
-      .select(`
-        *,
-        assignee:assignee_id (
-          id,
-          full_name,
-          email,
-          avatar_url
-        ),
-        event:event_id (
-          id,
-          name,
-          date
-        ),
-        comments:task_comments(count)
-      `)
+      .select(taskSelect)
       .eq('id', id)
       .single();
 
@@ -51,7 +63,9 @@ export async function GET(
     return NextResponse.json({
       ...data,
       comment_count: data.comments?.[0]?.count || 0,
-      comments: undefined
+      comments: undefined,
+      items: data.task_items?.map((ti: { items: unknown }) => ti.items) || [],
+      task_items: undefined
     });
   } catch (error) {
     console.error('Error fetching task:', error);
@@ -77,35 +91,55 @@ export async function PUT(
       status,
       priority,
       assignee_id,
-      event_id
+      event_id,
+      due_date,
+      scheduled_date,
+      needs_approval,
+      blocked,
+      blocked_reason,
+      changed_by,
+      item_ids
     } = body;
+
+    // Fetch existing task for comparison
+    const { data: existing, error: fetchError } = await supabase
+      .from('tasks')
+      .select('*')
+      .eq('id', id)
+      .single();
+
+    if (fetchError) {
+      if (fetchError.code === 'PGRST116') {
+        return NextResponse.json(
+          { error: 'Task not found' },
+          { status: 404 }
+        );
+      }
+      return NextResponse.json(
+        { error: fetchError.message },
+        { status: 500 }
+      );
+    }
+
+    // Build update payload, only including provided fields
+    const updatePayload: Record<string, unknown> = {};
+    if (title !== undefined) updatePayload.title = title;
+    if (description !== undefined) updatePayload.description = description;
+    if (status !== undefined) updatePayload.status = status;
+    if (priority !== undefined) updatePayload.priority = priority;
+    if (assignee_id !== undefined) updatePayload.assignee_id = assignee_id;
+    if (event_id !== undefined) updatePayload.event_id = event_id;
+    if (due_date !== undefined) updatePayload.due_date = due_date;
+    if (scheduled_date !== undefined) updatePayload.scheduled_date = scheduled_date;
+    if (needs_approval !== undefined) updatePayload.needs_approval = needs_approval;
+    if (blocked !== undefined) updatePayload.blocked = blocked;
+    if (blocked_reason !== undefined) updatePayload.blocked_reason = blocked_reason;
 
     const { data, error } = await supabase
       .from('tasks')
-      .update({
-        title,
-        description,
-        status,
-        priority,
-        assignee_id,
-        event_id
-      })
+      .update(updatePayload)
       .eq('id', id)
-      .select(`
-        *,
-        assignee:assignee_id (
-          id,
-          full_name,
-          email,
-          avatar_url
-        ),
-        event:event_id (
-          id,
-          name,
-          date
-        ),
-        comments:task_comments(count)
-      `)
+      .select(taskSelect)
       .single();
 
     if (error) {
@@ -115,10 +149,71 @@ export async function PUT(
       );
     }
 
+    // Compare fields and log edit history
+    const changedFields: string[] = [];
+    const trackedFields: [string, keyof typeof existing, unknown][] = [
+      ['title', 'title', title],
+      ['description', 'description', description],
+      ['priority', 'priority', priority],
+      ['assignee_id', 'assignee_id', assignee_id],
+      ['event_id', 'event_id', event_id],
+      ['due_date', 'due_date', due_date],
+      ['scheduled_date', 'scheduled_date', scheduled_date],
+      ['needs_approval', 'needs_approval', needs_approval],
+    ];
+
+    for (const [label, field, newValue] of trackedFields) {
+      if (newValue !== undefined && String(existing[field]) !== String(newValue)) {
+        changedFields.push(label);
+      }
+    }
+
+    if (changedFields.length > 0 && changed_by) {
+      const { error: historyError } = await supabase.from('task_history').insert({
+        task_id: id,
+        changed_by,
+        from_status: existing.status,
+        to_status: status ?? existing.status,
+        change_type: 'edited',
+        reason: `Changed: ${changedFields.join(', ')}`,
+      });
+
+      if (historyError) {
+        console.error('Failed to log task history:', historyError);
+      }
+    }
+
+    // Handle item_ids: delete old links and insert new ones
+    if (item_ids !== undefined) {
+      const { error: deleteError } = await supabase
+        .from('task_items')
+        .delete()
+        .eq('task_id', id);
+
+      if (deleteError) {
+        console.error('Failed to delete old task items:', deleteError);
+      }
+
+      if (item_ids.length > 0) {
+        const { error: insertError } = await supabase.from('task_items').insert(
+          item_ids.map((item_id: string) => ({
+            task_id: id,
+            item_id,
+          }))
+        );
+
+        if (insertError) {
+          console.error('Failed to insert new task items:', insertError);
+        }
+      }
+    }
+
     return NextResponse.json({
       ...data,
       comment_count: data.comments?.[0]?.count || 0,
-      comments: undefined
+      comments: undefined,
+      items: data.task_items?.map((ti: { items: unknown }) => ti.items) || [],
+      task_items: undefined
     });
   } catch (error) {
     console.error('Error updating task:', error);
