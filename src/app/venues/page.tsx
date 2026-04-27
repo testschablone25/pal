@@ -12,8 +12,20 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
+  DialogDescription,
 } from '@/components/ui/dialog';
-import { Plus, MapPin, Users, Building } from 'lucide-react';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
+import { Plus, MapPin, Users, Building, Pencil, Trash2, Loader2 } from 'lucide-react';
 
 interface Venue {
   id: string;
@@ -23,13 +35,32 @@ interface Venue {
   created_at: string;
 }
 
+type VenueFormData = {
+  name: string;
+  address: string;
+  capacity: number;
+};
+
 export default function VenuesPage() {
   const [venues, setVenues] = useState<Venue[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  // Create dialog
   const [showCreateDialog, setShowCreateDialog] = useState(false);
   const [creating, setCreating] = useState(false);
-  const [newVenue, setNewVenue] = useState({
+
+  // Edit dialog
+  const [editingVenue, setEditingVenue] = useState<Venue | null>(null);
+  const [showEditDialog, setShowEditDialog] = useState(false);
+  const [saving, setSaving] = useState(false);
+
+  // Delete dialog
+  const [deletingVenue, setDeletingVenue] = useState<Venue | null>(null);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+
+  const [formData, setFormData] = useState<VenueFormData>({
     name: '',
     address: '',
     capacity: 0,
@@ -52,16 +83,20 @@ export default function VenuesPage() {
     }
   };
 
+  const resetForm = () => {
+    setFormData({ name: '', address: '', capacity: 0 });
+  };
+
   const handleCreateVenue = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newVenue.name || !newVenue.capacity) return;
+    if (!formData.name || !formData.capacity) return;
 
     setCreating(true);
     try {
       const response = await fetch('/api/venues', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(newVenue),
+        body: JSON.stringify(formData),
       });
 
       if (!response.ok) {
@@ -69,7 +104,7 @@ export default function VenuesPage() {
         throw new Error(data.error || 'Failed to create venue');
       }
 
-      setNewVenue({ name: '', address: '', capacity: 0 });
+      resetForm();
       setShowCreateDialog(false);
       fetchVenues();
     } catch (err) {
@@ -78,6 +113,137 @@ export default function VenuesPage() {
       setCreating(false);
     }
   };
+
+  const openEditDialog = (venue: Venue) => {
+    setEditingVenue(venue);
+    setFormData({
+      name: venue.name,
+      address: venue.address || '',
+      capacity: venue.capacity,
+    });
+    setShowEditDialog(true);
+  };
+
+  const handleEditVenue = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingVenue || !formData.name || !formData.capacity) return;
+
+    setSaving(true);
+    try {
+      const response = await fetch(`/api/venues/${editingVenue.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData),
+      });
+
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.error || 'Failed to update venue');
+      }
+
+      setShowEditDialog(false);
+      setEditingVenue(null);
+      resetForm();
+      fetchVenues();
+    } catch (err) {
+      console.error('Failed to update venue:', err);
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleDeleteVenue = async () => {
+    if (!deletingVenue) return;
+
+    setDeleting(true);
+    try {
+      const response = await fetch(`/api/venues/${deletingVenue.id}`, {
+        method: 'DELETE',
+      });
+
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.error || 'Failed to delete venue');
+      }
+
+      setShowDeleteDialog(false);
+      setDeletingVenue(null);
+      fetchVenues();
+    } catch (err) {
+      console.error('Failed to delete venue:', err);
+    } finally {
+      setDeleting(false);
+    }
+  };
+
+  const openDeleteDialog = (venue: Venue) => {
+    setDeletingVenue(venue);
+    setShowDeleteDialog(true);
+  };
+
+  const VenueForm = ({
+    onSubmit,
+    onCancel,
+    submitLabel,
+    submitting,
+  }: {
+    onSubmit: (e: React.FormEvent) => Promise<void>;
+    onCancel: () => void;
+    submitLabel: string;
+    submitting: boolean;
+  }) => (
+    <form onSubmit={onSubmit} className="space-y-4">
+      <div>
+        <label className="text-sm text-zinc-400 mb-1 block">Venue Name *</label>
+        <Input
+          value={formData.name}
+          onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+          placeholder="e.g., Club Neon"
+          className="bg-zinc-950 border-zinc-800"
+          required
+        />
+      </div>
+      <div>
+        <label className="text-sm text-zinc-400 mb-1 block">Address</label>
+        <Input
+          value={formData.address}
+          onChange={(e) => setFormData({ ...formData, address: e.target.value })}
+          placeholder="Street address"
+          className="bg-zinc-950 border-zinc-800"
+        />
+      </div>
+      <div>
+        <label className="text-sm text-zinc-400 mb-1 block">Capacity *</label>
+        <Input
+          type="number"
+          min={1}
+          value={formData.capacity || ''}
+          onChange={(e) => setFormData({ ...formData, capacity: parseInt(e.target.value) || 0 })}
+          placeholder="Max capacity"
+          className="bg-zinc-950 border-zinc-800"
+          required
+        />
+      </div>
+      <div className="flex gap-2 pt-4">
+        <Button
+          type="submit"
+          className="bg-violet-600 hover:bg-violet-700"
+          disabled={submitting}
+        >
+          {submitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+          {submitLabel}
+        </Button>
+        <Button
+          type="button"
+          variant="outline"
+          onClick={onCancel}
+          className="border-zinc-800"
+        >
+          Cancel
+        </Button>
+      </div>
+    </form>
+  );
 
   if (loading) {
     return (
@@ -134,59 +300,62 @@ export default function VenuesPage() {
         <DialogContent className="bg-zinc-900 border-zinc-800">
           <DialogHeader>
             <DialogTitle className="text-white">Add New Venue</DialogTitle>
+            <DialogDescription className="text-zinc-400">
+              Create a new venue location
+            </DialogDescription>
           </DialogHeader>
-          <form onSubmit={handleCreateVenue} className="space-y-4">
-            <div>
-              <label className="text-sm text-zinc-400 mb-1 block">Venue Name *</label>
-              <Input
-                value={newVenue.name}
-                onChange={(e) => setNewVenue({ ...newVenue, name: e.target.value })}
-                placeholder="e.g., Club Neon"
-                className="bg-zinc-950 border-zinc-800"
-                required
-              />
-            </div>
-            <div>
-              <label className="text-sm text-zinc-400 mb-1 block">Address</label>
-              <Input
-                value={newVenue.address}
-                onChange={(e) => setNewVenue({ ...newVenue, address: e.target.value })}
-                placeholder="Street address"
-                className="bg-zinc-950 border-zinc-800"
-              />
-            </div>
-            <div>
-              <label className="text-sm text-zinc-400 mb-1 block">Capacity *</label>
-              <Input
-                type="number"
-                min={1}
-                value={newVenue.capacity || ''}
-                onChange={(e) => setNewVenue({ ...newVenue, capacity: parseInt(e.target.value) || 0 })}
-                placeholder="Max capacity"
-                className="bg-zinc-950 border-zinc-800"
-                required
-              />
-            </div>
-            <div className="flex gap-2 pt-4">
-              <Button
-                type="submit"
-                className="bg-violet-600 hover:bg-violet-700"
-                disabled={creating}
-              >
-                {creating ? 'Creating...' : 'Create Venue'}
-              </Button>
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => setShowCreateDialog(false)}
-                className="border-zinc-800"
-              >
-                Cancel
-              </Button>
-            </div>
-          </form>
+          <VenueForm
+            onSubmit={handleCreateVenue}
+            onCancel={() => { resetForm(); setShowCreateDialog(false); }}
+            submitLabel="Create Venue"
+            submitting={creating}
+          />
         </DialogContent>
       </Dialog>
+
+      {/* Edit Dialog */}
+      <Dialog open={showEditDialog} onOpenChange={setShowEditDialog}>
+        <DialogContent className="bg-zinc-900 border-zinc-800">
+          <DialogHeader>
+            <DialogTitle className="text-white">Edit Venue</DialogTitle>
+            <DialogDescription className="text-zinc-400">
+              Update venue details
+            </DialogDescription>
+          </DialogHeader>
+          <VenueForm
+            onSubmit={handleEditVenue}
+            onCancel={() => { resetForm(); setShowEditDialog(false); setEditingVenue(null); }}
+            submitLabel="Save Changes"
+            submitting={saving}
+          />
+        </DialogContent>
+      </Dialog>
+
+      {/* Delete Confirmation */}
+      <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+        <AlertDialogContent className="bg-zinc-900 border-zinc-800">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="text-white">Delete Venue</AlertDialogTitle>
+            <AlertDialogDescription className="text-zinc-400">
+              Are you sure you want to delete <strong className="text-zinc-200">{deletingVenue?.name}</strong>?
+              This action cannot be undone. Events associated with this venue may be affected.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel className="border-zinc-800 bg-zinc-900 text-white hover:bg-zinc-800">
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDeleteVenue}
+              disabled={deleting}
+              className="bg-red-600 hover:bg-red-700 text-white"
+            >
+              {deleting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
       {/* Header Actions */}
       <div className="flex justify-between items-center mb-6">
@@ -226,7 +395,27 @@ export default function VenuesPage() {
             >
               <CardContent className="pt-6">
                 <div className="space-y-3">
-                  <h3 className="text-lg font-semibold text-white">{venue.name}</h3>
+                  <div className="flex items-start justify-between">
+                    <h3 className="text-lg font-semibold text-white">{venue.name}</h3>
+                    <div className="flex gap-1">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-8 w-8 text-zinc-400 hover:text-white hover:bg-zinc-800"
+                        onClick={() => openEditDialog(venue)}
+                      >
+                        <Pencil className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-8 w-8 text-zinc-400 hover:text-red-400 hover:bg-red-600/10"
+                        onClick={() => openDeleteDialog(venue)}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </div>
                   {venue.address && (
                     <div className="flex items-center text-sm text-zinc-400">
                       <MapPin className="h-4 w-4 mr-1" />
