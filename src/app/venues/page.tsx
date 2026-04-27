@@ -39,6 +39,79 @@ type VenueFormData = {
   capacity: number;
 };
 
+interface VenueFormProps {
+  formData: VenueFormData;
+  onFormChange: (data: VenueFormData) => void;
+  onSubmit: (e: React.FormEvent) => Promise<void>;
+  onCancel: () => void;
+  submitLabel: string;
+  submitting: boolean;
+}
+
+function VenueForm({
+  formData,
+  onFormChange,
+  onSubmit,
+  onCancel,
+  submitLabel,
+  submitting,
+}: VenueFormProps) {
+  return (
+    <form onSubmit={onSubmit} className="space-y-4">
+      <div>
+        <label className="text-sm text-zinc-400 mb-1 block">Venue Name *</label>
+        <Input
+          value={formData.name}
+          onChange={(e) => onFormChange({ ...formData, name: e.target.value })}
+          placeholder="e.g., Club Neon"
+          className="bg-zinc-950 border-zinc-800"
+          autoFocus
+          required
+        />
+      </div>
+      <div>
+        <label className="text-sm text-zinc-400 mb-1 block">Address</label>
+        <Input
+          value={formData.address}
+          onChange={(e) => onFormChange({ ...formData, address: e.target.value })}
+          placeholder="Street address"
+          className="bg-zinc-950 border-zinc-800"
+        />
+      </div>
+      <div>
+        <label className="text-sm text-zinc-400 mb-1 block">Capacity *</label>
+        <Input
+          type="number"
+          min={1}
+          value={formData.capacity || ''}
+          onChange={(e) => onFormChange({ ...formData, capacity: parseInt(e.target.value) || 0 })}
+          placeholder="Max capacity"
+          className="bg-zinc-950 border-zinc-800"
+          required
+        />
+      </div>
+      <div className="flex gap-2 pt-4">
+        <Button
+          type="submit"
+          className="bg-violet-600 hover:bg-violet-700"
+          disabled={submitting}
+        >
+          {submitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+          {submitLabel}
+        </Button>
+        <Button
+          type="button"
+          variant="outline"
+          onClick={onCancel}
+          className="border-zinc-800"
+        >
+          Cancel
+        </Button>
+      </div>
+    </form>
+  );
+}
+
 export default function VenuesPage() {
   const [venues, setVenues] = useState<Venue[]>([]);
   const [loading, setLoading] = useState(true);
@@ -179,70 +252,6 @@ export default function VenuesPage() {
     setShowDeleteDialog(true);
   };
 
-  const VenueForm = ({
-    onSubmit,
-    onCancel,
-    submitLabel,
-    submitting,
-  }: {
-    onSubmit: (e: React.FormEvent) => Promise<void>;
-    onCancel: () => void;
-    submitLabel: string;
-    submitting: boolean;
-  }) => (
-    <form onSubmit={onSubmit} className="space-y-4">
-      <div>
-        <label className="text-sm text-zinc-400 mb-1 block">Venue Name *</label>
-        <Input
-          value={formData.name}
-          onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-          placeholder="e.g., Club Neon"
-          className="bg-zinc-950 border-zinc-800"
-          required
-        />
-      </div>
-      <div>
-        <label className="text-sm text-zinc-400 mb-1 block">Address</label>
-        <Input
-          value={formData.address}
-          onChange={(e) => setFormData({ ...formData, address: e.target.value })}
-          placeholder="Street address"
-          className="bg-zinc-950 border-zinc-800"
-        />
-      </div>
-      <div>
-        <label className="text-sm text-zinc-400 mb-1 block">Capacity *</label>
-        <Input
-          type="number"
-          min={1}
-          value={formData.capacity || ''}
-          onChange={(e) => setFormData({ ...formData, capacity: parseInt(e.target.value) || 0 })}
-          placeholder="Max capacity"
-          className="bg-zinc-950 border-zinc-800"
-          required
-        />
-      </div>
-      <div className="flex gap-2 pt-4">
-        <Button
-          type="submit"
-          className="bg-violet-600 hover:bg-violet-700"
-          disabled={submitting}
-        >
-          {submitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-          {submitLabel}
-        </Button>
-        <Button
-          type="button"
-          variant="outline"
-          onClick={onCancel}
-          className="border-zinc-800"
-        >
-          Cancel
-        </Button>
-      </div>
-    </form>
-  );
-
   if (loading) {
     return (
       <div className="container mx-auto py-8 px-4">
@@ -303,6 +312,8 @@ export default function VenuesPage() {
             </DialogDescription>
           </DialogHeader>
           <VenueForm
+            formData={formData}
+            onFormChange={setFormData}
             onSubmit={handleCreateVenue}
             onCancel={() => { resetForm(); setShowCreateDialog(false); }}
             submitLabel="Create Venue"
@@ -321,6 +332,8 @@ export default function VenuesPage() {
             </DialogDescription>
           </DialogHeader>
           <VenueForm
+            formData={formData}
+            onFormChange={setFormData}
             onSubmit={handleEditVenue}
             onCancel={() => { resetForm(); setShowEditDialog(false); setEditingVenue(null); }}
             submitLabel="Save Changes"
