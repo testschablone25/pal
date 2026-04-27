@@ -12,7 +12,7 @@ export interface Task {
   id: string;
   title: string;
   description: string | null;
-  status: 'needs_refining' | 'todo' | 'in_progress' | 'review' | 'done' | 'cancelled';
+  status: 'todo' | 'in_progress' | 'pending_approval' | 'done' | 'cancelled';
   priority: 'low' | 'medium' | 'high' | 'urgent';
   assignee_id: string | null;
   event_id: string | null;
@@ -31,9 +31,11 @@ export interface Task {
   } | null;
   comment_count?: number;
   blocked: boolean;
+  blocked_reason: string | null;
   needs_approval: boolean;
   due_date: string | null;
   scheduled_date: string | null;
+  item_ids: string[];
 }
 
 interface TaskCardProps {

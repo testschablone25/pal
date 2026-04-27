@@ -35,7 +35,7 @@ interface Task {
   id: string;
   title: string;
   description: string | null;
-  status: 'needs_refining' | 'todo' | 'in_progress' | 'review' | 'done' | 'cancelled' | 'pending_approval';
+  status: 'todo' | 'in_progress' | 'pending_approval' | 'done' | 'cancelled';
   priority: 'low' | 'medium' | 'high' | 'urgent';
   assignee_id: string | null;
   event_id: string | null;
@@ -46,6 +46,7 @@ interface Task {
   needs_approval: boolean;
   due_date: string | null;
   scheduled_date: string | null;
+  item_ids: string[];
   assignee?: {
     id: string;
     full_name: string | null;
@@ -117,13 +118,11 @@ const priorityConfig = {
 };
 
 const statusConfig = {
-  needs_refining: { label: 'Needs Refining', className: 'bg-orange-600/20 text-orange-400 border-orange-600/50' },
   todo: { label: 'To Do', className: 'bg-zinc-600/20 text-zinc-400 border-zinc-600/50' },
   in_progress: { label: 'In Progress', className: 'bg-blue-600/20 text-blue-400 border-blue-600/50' },
-  review: { label: 'Review', className: 'bg-yellow-600/20 text-yellow-400 border-yellow-600/50' },
+  pending_approval: { label: 'Pending Approval', className: 'bg-amber-600/20 text-amber-400 border-amber-600/50' },
   done: { label: 'Done', className: 'bg-green-600/20 text-green-400 border-green-600/50' },
   cancelled: { label: 'Cancelled', className: 'bg-red-600/20 text-red-400 border-red-600/50' },
-  pending_approval: { label: 'Pending Approval', className: 'bg-yellow-600/20 text-yellow-400 border-yellow-600/50' },
 };
 
 function getInitials(name: string | null): string {
@@ -230,7 +229,7 @@ export function TaskDetailDialog({
   const handleUpdateTask = async (values: {
     title: string;
     description?: string;
-    status: 'needs_refining' | 'todo' | 'in_progress' | 'review' | 'done' | 'cancelled';
+    status: 'todo' | 'in_progress' | 'pending_approval' | 'done' | 'cancelled';
     priority: 'low' | 'medium' | 'high' | 'urgent';
     assignee_id?: string;
     event_id?: string;

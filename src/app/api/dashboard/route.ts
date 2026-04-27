@@ -47,7 +47,7 @@ export async function GET(request: Request) {
     .from('tasks')
     .select('*, events(name, date)')
     .eq('assignee_id', userId)
-    .in('status', ['todo', 'in_progress', 'review'])
+    .in('status', ['todo', 'in_progress', 'pending_approval'])
     .order('priority', { ascending: false });
 
   // Get shifts and colleagues if staff
