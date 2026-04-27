@@ -4,7 +4,8 @@ import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { Card, CardContent } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { User, MessageSquare } from 'lucide-react';
+import { User, MessageSquare, ShieldAlert } from 'lucide-react';
+import { format, isPast, isToday, parseISO } from 'date-fns';
 import { cn } from '@/lib/utils';
 
 export interface Task {
@@ -29,6 +30,10 @@ export interface Task {
     date: string;
   } | null;
   comment_count?: number;
+  blocked: boolean;
+  needs_approval: boolean;
+  due_date: string | null;
+  scheduled_date: string | null;
 }
 
 interface TaskCardProps {
@@ -82,13 +87,28 @@ export function TaskCard({ task, onClick }: TaskCardProps) {
 
   const priority = priorityConfig[task.priority];
 
+  const dueDate = task.due_date ? parseISO(task.due_date) : null;
+  const dueDateLabel = dueDate
+    ? isToday(dueDate)
+      ? 'Heute'
+      : format(dueDate, 'dd.MM.')
+    : null;
+  const dueDateClass = dueDate
+    ? isPast(dueDate) && !isToday(dueDate)
+      ? 'text-red-400 border-red-500/40'
+      : isToday(dueDate)
+        ? 'text-amber-400 border-amber-500/40'
+        : 'text-zinc-400 border-zinc-600'
+    : null;
+
   return (
     <Card
       ref={setNodeRef}
       style={style}
       className={cn(
         'bg-zinc-900 border-zinc-800 cursor-pointer hover:border-zinc-700 transition-colors rounded-none',
-        isDragging && 'opacity-50 shadow-lg shadow-violet-500/20'
+        isDragging && 'opacity-50 shadow-lg shadow-violet-500/20',
+        task.blocked && 'border-l-2 border-l-red-500'
       )}
       onClick={onClick}
       {...attributes}
@@ -102,7 +122,14 @@ export function TaskCard({ task, onClick }: TaskCardProps) {
               {task.title}
             </h4>
 
-            {/* Priority and Event */}
+            {/* Blocked indicator */}
+            {task.blocked && (
+              <div className="flex items-center gap-1 mb-1.5">
+                <span className="text-xs font-semibold text-red-400">⛔ Blockiert</span>
+              </div>
+            )}
+
+            {/* Priority, Event, and Badges */}
             <div className="flex items-center gap-2 mb-2">
               <div className="flex items-center gap-1.5 text-sm font-semibold text-white">
                 <div className={cn("h-2 w-2 rounded-full", priority.dotClass)} />
@@ -113,6 +140,19 @@ export function TaskCard({ task, onClick }: TaskCardProps) {
                   • {task.event.name}
                 </div>
               )}
+              <div className="flex items-center gap-1.5 ml-auto">
+                {task.needs_approval && (
+                  <div className="flex items-center gap-1 text-xs text-amber-400 border border-amber-500/40 px-1.5 py-0.5">
+                    <ShieldAlert className="h-3 w-3" />
+                    Approval
+                  </div>
+                )}
+                {dueDate && (
+                  <div className={cn("text-xs border px-1.5 py-0.5", dueDateClass)}>
+                    {dueDateLabel}
+                  </div>
+                )}
+              </div>
             </div>
 
             {/* Bottom Row: Assignee + Comment Count */}
