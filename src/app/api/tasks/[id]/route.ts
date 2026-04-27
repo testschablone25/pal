@@ -160,6 +160,8 @@ export async function PUT(
       ['due_date', 'due_date', due_date],
       ['scheduled_date', 'scheduled_date', scheduled_date],
       ['needs_approval', 'needs_approval', needs_approval],
+      ['blocked', 'blocked', blocked],
+      ['blocked_reason', 'blocked_reason', blocked_reason],
     ];
 
     for (const [label, field, newValue] of trackedFields) {
@@ -192,6 +194,7 @@ export async function PUT(
 
       if (deleteError) {
         console.error('Failed to delete old task items:', deleteError);
+        return NextResponse.json({ error: 'Failed to update task items' }, { status: 500 });
       }
 
       if (item_ids.length > 0) {
@@ -204,15 +207,25 @@ export async function PUT(
 
         if (insertError) {
           console.error('Failed to insert new task items:', insertError);
+          return NextResponse.json({ error: 'Failed to update task items' }, { status: 500 });
         }
       }
     }
 
+    // Re-fetch task with fresh items to ensure response has correct item data
+    const { data: freshData } = await supabase
+      .from('tasks')
+      .select(taskSelect)
+      .eq('id', id)
+      .single();
+
+    const responseData = freshData || data;
+
     return NextResponse.json({
-      ...data,
-      comment_count: data.comments?.[0]?.count || 0,
+      ...responseData,
+      comment_count: responseData.comments?.[0]?.count || 0,
       comments: undefined,
-      items: data.task_items?.map((ti: { items: unknown }) => ti.items) || [],
+      items: responseData.task_items?.map((ti: { items: unknown }) => ti.items) || [],
       task_items: undefined
     });
   } catch (error) {
