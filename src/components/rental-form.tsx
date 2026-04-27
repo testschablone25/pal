@@ -57,7 +57,7 @@ export function RentalForm({ onSubmit, onCancel }: RentalFormProps) {
   const [loadingItems, setLoadingItems] = useState(true);
 
   const form = useForm<RentalFormValues>({
-    resolver: zodResolver(rentalSchema),
+    resolver: zodResolver(rentalSchema) as any,
     defaultValues: {
       item_id: '',
       rented_to: '',

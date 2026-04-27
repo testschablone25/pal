@@ -83,7 +83,7 @@ export function InventoryForm({ item, mode = 'create', onSubmit, onCancel }: Inv
   const [error, setError] = useState<string | null>(null);
 
   const form = useForm<ItemFormValues>({
-    resolver: zodResolver(itemSchema),
+    resolver: zodResolver(itemSchema) as any,
     defaultValues: {
       name: item?.name || '',
       category: (item?.category as ItemFormValues['category']) || 'sound',

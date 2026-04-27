@@ -176,7 +176,7 @@ export function RiderViewer({
   const [isArchiveOpen, setIsArchiveOpen] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [deleting, setDeleting] = useState(false);
-  const [lmStudioStatus, setLmStudioStatus] = useState<'checking' | 'connected' | 'disconnected'>('checking');
+  const [openRouterStatus, setOpenRouterStatus] = useState<'checking' | 'connected' | 'disconnected'>('checking');
   const [uploadResult, setUploadResult] = useState<UploadResult | null>(null);
   const [showTaskSummary, setShowTaskSummary] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -361,7 +361,7 @@ export function RiderViewer({
                 <DialogTitle>Upload Rider PDF - {artistName}</DialogTitle>
               </DialogHeader>
               <div className="space-y-4">
-                {lmStudioStatus !== 'connected' && (
+                {openRouterStatus !== 'connected' && (
                   <div className="p-4 bg-yellow-950/50 border border-yellow-700 rounded-lg">
                     <p className="text-yellow-400 text-sm flex items-center gap-2">
                       <AlertTriangle className="h-4 w-4" />

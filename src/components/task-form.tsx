@@ -118,7 +118,7 @@ export function TaskForm({ task, mode = 'create', onSubmit, onCancel }: TaskForm
   const [itemsOpen, setItemsOpen] = useState(false);
 
   const form = useForm<TaskFormValues>({
-    resolver: zodResolver(taskSchema),
+    resolver: zodResolver(taskSchema) as any,
     defaultValues: {
       title: task?.title || '',
       description: task?.description || '',

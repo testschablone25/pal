@@ -1255,6 +1255,7 @@ async function extractOpenRouter(pdfText: string): Promise<ExtractionResult> {
 }
 
 function getWarnings(data: ExtractionResult): string[] {
+  const warnings: string[] = [];
   if (data.tech_rider.transport?.priority_boarding) {
     warnings.push("Priority boarding required");
   }
@@ -1302,8 +1303,9 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "PDF text extraction failed" }, { status: 400 });
     }
 
+    let extracted: ExtractionResult | null = null;
     try {
-      const extracted = await extractOpenRouter(pdfText);
+      extracted = await extractOpenRouter(pdfText);
     } catch (error) {
       console.error("[POST] Rider extraction failed:", error);
       return NextResponse.json(
