@@ -19,6 +19,9 @@ ALTER TABLE tasks ALTER COLUMN event_id DROP NOT NULL;
 
 UPDATE tasks SET status = 'pending_approval' WHERE status = 'review';
 
+-- Backfill created_by for existing tasks (use assignee_id as fallback)
+UPDATE tasks SET created_by = assignee_id WHERE created_by IS NULL AND assignee_id IS NOT NULL;
+
 -- ============================
 -- 2. Create task_history table
 -- ============================

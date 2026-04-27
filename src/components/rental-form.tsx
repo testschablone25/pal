@@ -57,6 +57,7 @@ export function RentalForm({ onSubmit, onCancel }: RentalFormProps) {
   const [loadingItems, setLoadingItems] = useState(true);
 
   const form = useForm<RentalFormValues>({
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     resolver: zodResolver(rentalSchema) as any,
     defaultValues: {
       item_id: '',

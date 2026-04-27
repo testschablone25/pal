@@ -18,6 +18,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { createClient } from '@/lib/supabase/browser';
 import { Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -67,13 +68,23 @@ export function CheckinCheckoutModal({
     setError(null);
 
     try {
+      const supabase = createClient();
+      const { data: { user } } = await supabase.auth.getUser();
+      const moved_by = user?.id;
+
+      if (!moved_by) {
+        setError('You must be logged in');
+        setLoading(false);
+        return;
+      }
+
       const response = await fetch(`/api/items/${itemId}/location-history`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           location: location.trim(),
           action,
-          moved_by: (await (await fetch('/api/auth/user')).json()).id || '00000000-0000-0000-0000-000000000000',
+          moved_by,
         }),
       });
 

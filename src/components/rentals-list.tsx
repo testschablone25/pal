@@ -117,7 +117,7 @@ export function RentalsList() {
 
       if (!response.ok) {
         const data = await response.json();
-        console.error('Failed to return rental:', data.error);
+        throw new Error(data.error || 'Failed to return rental');
       }
 
       fetchRentals();

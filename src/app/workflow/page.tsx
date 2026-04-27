@@ -190,13 +190,14 @@ export default function WorkflowPage() {
   }, [filteredTasks]);
 
   const visibleColumns = useMemo(() => {
+    const hasApprovalTasks = tasks.some((t) => t.needs_approval);
     return COLUMNS.filter((col) => {
       if (col.id === 'pending_approval') {
-        return tasksByStatus[col.status]?.some((t) => t.needs_approval) ?? false;
+        return hasApprovalTasks;
       }
       return true;
     });
-  }, [tasksByStatus]);
+  }, [tasks]);
 
   const handleDragStart = (event: DragStartEvent) => {
     const activeId = event.active.id as string;

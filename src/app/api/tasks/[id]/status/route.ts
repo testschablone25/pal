@@ -24,9 +24,17 @@ export async function PUT(
 
     const { data: oldTask } = await supabase
       .from('tasks')
-      .select('status')
+      .select('status, needs_approval')
       .eq('id', id)
       .single();
+
+    // Prevent bypassing approval: tasks needing approval can't be dragged directly to 'done' from 'in_progress'
+    if (oldTask && oldTask.needs_approval && oldTask.status === 'in_progress' && status === 'done') {
+      return NextResponse.json(
+        { error: 'This task needs approval. Move it to "Pending Approval" first.' },
+        { status: 400 }
+      );
+    }
 
     const { data, error } = await supabase
       .from('tasks')

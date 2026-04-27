@@ -83,6 +83,7 @@ export function InventoryForm({ item, mode = 'create', onSubmit, onCancel }: Inv
   const [error, setError] = useState<string | null>(null);
 
   const form = useForm<ItemFormValues>({
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     resolver: zodResolver(itemSchema) as any,
     defaultValues: {
       name: item?.name || '',
