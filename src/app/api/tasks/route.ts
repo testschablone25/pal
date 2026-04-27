@@ -39,9 +39,6 @@ export async function GET(request: NextRequest) {
           name,
           date
         ),
-        creator:created_by (
-          id, full_name, email, avatar_url
-        ),
         comments:task_comments(count)
       `, { count: 'exact' })
       .order('created_at', { ascending: false })
@@ -168,9 +165,6 @@ export async function POST(request: NextRequest) {
           id,
           name,
           date
-        ),
-        creator:created_by (
-          id, full_name, email, avatar_url
         )
       `)
       .single();

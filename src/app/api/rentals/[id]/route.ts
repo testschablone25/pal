@@ -15,8 +15,7 @@ export async function GET(
       .from('rentals')
       .select(`
         *,
-        items (*),
-        creator:created_by (id, full_name, email)
+        items (*)
       `)
       .eq('id', id)
       .single();

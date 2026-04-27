@@ -20,12 +20,6 @@ const taskSelect = `
     name,
     date
   ),
-  creator:created_by (
-    id,
-    full_name,
-    email,
-    avatar_url
-  ),
   comments:task_comments(count),
   task_items (
     item_id,

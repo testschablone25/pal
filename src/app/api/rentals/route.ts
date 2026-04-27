@@ -14,8 +14,7 @@ export async function GET(request: NextRequest) {
       .from('rentals')
       .select(`
         *,
-        items (*),
-        creator:created_by (id, full_name, email)
+        items (*)
       `)
       .order('created_at', { ascending: false });
 
