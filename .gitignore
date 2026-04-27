@@ -48,3 +48,4 @@ nul
 # Sisyphus
 .sisyphus/
 .vercel
+.worktrees
