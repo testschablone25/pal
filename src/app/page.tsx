@@ -11,6 +11,11 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { format, endOfWeek, isToday, parseISO } from 'date-fns';
 import { de } from 'date-fns/locale';
 import { cn } from '@/lib/utils';
+import { 
+  canAccessRoute, 
+  getRoleBadges,
+  type AppRole 
+} from '@/lib/permissions';
 import {
   User,
   Calendar,
@@ -22,6 +27,7 @@ import {
   LayoutDashboard,
   CheckCircle2,
   Circle,
+  Settings,
 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -29,10 +35,6 @@ interface UserProfile {
   id: string;
   email: string;
   full_name: string | null;
-}
-
-interface UserRole {
-  role: string;
 }
 
 interface Task {
@@ -81,7 +83,7 @@ export default function DashboardPage() {
 
   const [loading, setLoading] = useState(true);
   const [profile, setProfile] = useState<UserProfile | null>(null);
-  const [userRole, setUserRole] = useState<string | null>(null);
+  const [userRoles, setUserRoles] = useState<AppRole[]>([]);
   const [staffRecord, setStaffRecord] = useState<StaffRecord | null>(null);
   const [tasks, setTasks] = useState<Task[]>([]);
   const [events, setEvents] = useState<Event[]>([]);
@@ -108,7 +110,7 @@ export default function DashboardPage() {
       const data = await response.json();
       
       setProfile(data.profile || null);
-      setUserRole(data.userRole || null);
+      setUserRoles((data.userRoles || []) as AppRole[]);
       setStaffRecord(data.staffRecord || null);
       setTasks(data.tasks || []);
       setEvents(data.events || []);
@@ -152,21 +154,16 @@ export default function DashboardPage() {
     }
   };
 
-  const getRoleBadgeColor = (role: string) => {
-    switch (role) {
-      case 'admin': return 'bg-red-600';
-      case 'manager': return 'bg-green-600';
-      case 'promoter': return 'bg-blue-600';
-      case 'artist': return 'bg-pink-600';
-      case 'staff': return 'bg-blue-600';
-      default: return 'bg-zinc-600';
-    }
-  };
-
   const getInitials = (name: string | null | undefined) => {
     if (!name) return '?';
     return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
   };
+
+  // Get role badges sorted by rank
+  const roleBadges = getRoleBadges(userRoles);
+
+  // Check if user can access admin panel
+  const canAccessAdmin = canAccessRoute(userRoles, '/admin');
 
   // Group tasks by today vs this week vs other (including tasks without event dates)
   const todayTasks = tasks.filter(t => {
@@ -193,14 +190,14 @@ export default function DashboardPage() {
 
   // Get today's shifts
   const todayShifts = shifts.filter(s => {
-    if (!s.events?.date) return false;
-    return isToday(parseISO(s.events.date));
+    if (!(s as Shift).events?.date) return false;
+    return isToday(parseISO((s as Shift).events!.date));
   });
 
   // Get upcoming shifts (not today)
   const upcomingShifts = shifts.filter(s => {
-    if (!s.events?.date) return false;
-    return !isToday(parseISO(s.events.date));
+    if (!(s as Shift).events?.date) return false;
+    return !isToday(parseISO((s as Shift).events!.date));
   });
 
   if (loading) {
@@ -236,10 +233,20 @@ export default function DashboardPage() {
               </p>
             </div>
           </div>
-          <Button variant="outline" onClick={handleSignOut} className="border-zinc-800">
-            <LogOut className="h-4 w-4 mr-2" />
-            Abmelden
-          </Button>
+          <div className="flex items-center gap-2">
+            {canAccessAdmin && (
+              <Link href="/admin">
+                <Button variant="outline" className="border-zinc-800">
+                  <Settings className="h-4 w-4 mr-2" />
+                  Admin
+                </Button>
+              </Link>
+            )}
+            <Button variant="outline" onClick={handleSignOut} className="border-zinc-800">
+              <LogOut className="h-4 w-4 mr-2" />
+              Abmelden
+            </Button>
+          </div>
         </div>
 
         {/* User Info Card */}
@@ -256,15 +263,19 @@ export default function DashboardPage() {
                   {profile?.full_name || 'No Name Set'}
                 </h2>
                 <p className="text-zinc-400">{profile?.email}</p>
-                <div className="flex items-center gap-2 mt-2">
-                  {userRole && (
-                    <Badge className={getRoleBadgeColor(userRole)}>
-                      {userRole}
-                    </Badge>
+                <div className="flex items-center gap-2 mt-2 flex-wrap">
+                  {roleBadges.length > 0 ? (
+                    roleBadges.map(({ role, label, color }) => (
+                      <Badge key={role} className={color}>
+                        {label}
+                      </Badge>
+                    ))
+                  ) : (
+                    <Badge className="bg-zinc-600">Keine Rolle zugewiesen</Badge>
                   )}
                   {staffRecord && (
                     <Badge variant="outline" className="border-zinc-700">
-                      {staffRecord.role}
+                      Staff: {staffRecord.role}
                     </Badge>
                   )}
                 </div>
@@ -286,11 +297,13 @@ export default function DashboardPage() {
                 <ClipboardList className="h-5 w-5 text-violet-400" />
                 Meine Aufgaben
               </CardTitle>
-              <Link href="/workflow">
-                <Button variant="ghost" size="sm" className="text-zinc-400 hover:text-white">
-                  Alle ansehen <ChevronRight className="h-4 w-4 ml-1" />
-                </Button>
-              </Link>
+              {canAccessRoute(userRoles, '/workflow') && (
+                <Link href="/workflow">
+                  <Button variant="ghost" size="sm" className="text-zinc-400 hover:text-white">
+                    Alle ansehen <ChevronRight className="h-4 w-4 ml-1" />
+                  </Button>
+                </Link>
+              )}
             </CardHeader>
             <CardContent>
               {tasks.length === 0 ? (
@@ -392,11 +405,13 @@ export default function DashboardPage() {
                 <Calendar className="h-5 w-5 text-violet-400" />
                 Meine nächsten Partys
               </CardTitle>
-              <Link href="/events">
-                <Button variant="ghost" size="sm" className="text-zinc-400 hover:text-white">
-                  Kalender <ChevronRight className="h-4 w-4 ml-1" />
-                </Button>
-              </Link>
+              {canAccessRoute(userRoles, '/events') && (
+                <Link href="/events">
+                  <Button variant="ghost" size="sm" className="text-zinc-400 hover:text-white">
+                    Kalender <ChevronRight className="h-4 w-4 ml-1" />
+                  </Button>
+                </Link>
+              )}
             </CardHeader>
             <CardContent>
               {events.length === 0 ? (
@@ -458,11 +473,13 @@ export default function DashboardPage() {
                 <Clock className="h-5 w-5 text-violet-400" />
                 Mein Schichtplan
               </CardTitle>
-              <Link href="/staff/shifts">
-                <Button variant="ghost" size="sm" className="text-zinc-400 hover:text-white">
-                  Schichten <ChevronRight className="h-4 w-4 ml-1" />
-                </Button>
-              </Link>
+              {canAccessRoute(userRoles, '/staff') && (
+                <Link href="/staff/shifts">
+                  <Button variant="ghost" size="sm" className="text-zinc-400 hover:text-white">
+                    Schichten <ChevronRight className="h-4 w-4 ml-1" />
+                  </Button>
+                </Link>
+              )}
             </CardHeader>
             <CardContent>
               {!staffRecord ? (
@@ -592,49 +609,61 @@ export default function DashboardPage() {
           </Card>
         </div>
 
-        {/* Quick Links */}
+        {/* Quick Links - Role-aware */}
         <Card className="bg-zinc-900 border-zinc-800">
           <CardHeader>
             <CardTitle className="text-lg">Schnellzugriff</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3">
-              <Link href="/door">
-                <Button variant="outline" className="w-full border-zinc-800 justify-start">
-                  <Users className="h-4 w-4 mr-2" />
-                  Tür
-                </Button>
-              </Link>
-              <Link href="/events/new">
-                <Button variant="outline" className="w-full border-zinc-800 justify-start">
-                  <Calendar className="h-4 w-4 mr-2" />
-                  Neues Event
-                </Button>
-              </Link>
-              <Link href="/workflow">
-                <Button variant="outline" className="w-full border-zinc-800 justify-start">
-                  <ClipboardList className="h-4 w-4 mr-2" />
-                  Aufgaben
-                </Button>
-              </Link>
-              <Link href="/staff/availability">
-                <Button variant="outline" className="w-full border-zinc-800 justify-start">
-                  <Clock className="h-4 w-4 mr-2" />
-                  Verfügbarkeit
-                </Button>
-              </Link>
-              <Link href="/artists/new">
-                <Button variant="outline" className="w-full border-zinc-800 justify-start">
-                  <User className="h-4 w-4 mr-2" />
-                  Neuer Künstler
-                </Button>
-              </Link>
-              <Link href="/guest-lists">
-                <Button variant="outline" className="w-full border-zinc-800 justify-start">
-                  <Users className="h-4 w-4 mr-2" />
-                  Guest Lists
-                </Button>
-              </Link>
+              {canAccessRoute(userRoles, '/door') && (
+                <Link href="/door">
+                  <Button variant="outline" className="w-full border-zinc-800 justify-start">
+                    <Users className="h-4 w-4 mr-2" />
+                    Tür
+                  </Button>
+                </Link>
+              )}
+              {canAccessRoute(userRoles, '/events/new') && (
+                <Link href="/events/new">
+                  <Button variant="outline" className="w-full border-zinc-800 justify-start">
+                    <Calendar className="h-4 w-4 mr-2" />
+                    Neues Event
+                  </Button>
+                </Link>
+              )}
+              {canAccessRoute(userRoles, '/workflow') && (
+                <Link href="/workflow">
+                  <Button variant="outline" className="w-full border-zinc-800 justify-start">
+                    <ClipboardList className="h-4 w-4 mr-2" />
+                    Aufgaben
+                  </Button>
+                </Link>
+              )}
+              {canAccessRoute(userRoles, '/staff/availability') && (
+                <Link href="/staff/availability">
+                  <Button variant="outline" className="w-full border-zinc-800 justify-start">
+                    <Clock className="h-4 w-4 mr-2" />
+                    Verfügbarkeit
+                  </Button>
+                </Link>
+              )}
+              {canAccessRoute(userRoles, '/artists/new') && (
+                <Link href="/artists/new">
+                  <Button variant="outline" className="w-full border-zinc-800 justify-start">
+                    <User className="h-4 w-4 mr-2" />
+                    Neuer Künstler
+                  </Button>
+                </Link>
+              )}
+              {canAccessRoute(userRoles, '/guest-lists') && (
+                <Link href="/guest-lists">
+                  <Button variant="outline" className="w-full border-zinc-800 justify-start">
+                    <Users className="h-4 w-4 mr-2" />
+                    Guest Lists
+                  </Button>
+                </Link>
+              )}
             </div>
           </CardContent>
         </Card>

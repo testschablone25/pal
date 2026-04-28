@@ -1,11 +1,9 @@
 import { createClient } from '@supabase/supabase-js';
 import { NextResponse } from 'next/server';
-
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://cysoyvyjrhiukklxjqfe.supabase.co';
-const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN5c295dnlqcmhpdWtrbHhqcWZlIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3NDM4NjM5MCwiZXhwIjoyMDg5OTYyMzkwfQ.ysvNV81rBkFdYEonu9yj6T3R14kwyiqxuKqCMJKPksQ';
+import { supabaseConfig } from '@/lib/supabase/config';
 
 export async function GET(request: Request) {
-  const supabase = createClient(supabaseUrl, supabaseServiceKey, {
+  const supabase = createClient(supabaseConfig.url, supabaseConfig.serviceKey, {
     auth: { autoRefreshToken: false, persistSession: false }
   });
 
@@ -28,12 +26,14 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: 'User not found', tasks: [], shifts: [], colleagues: [], events: [] });
   }
 
-  // Get user role
+  // Get ALL user roles (multi-role support)
   const { data: roleData } = await supabase
     .from('user_roles')
     .select('role')
-    .eq('user_id', userId)
-    .single();
+    .eq('user_id', userId);
+
+  // Map to array of role strings
+  const userRoles = roleData?.map(r => r.role) || [];
 
   // Get staff record
   const { data: staffRecord } = await supabase
@@ -51,9 +51,9 @@ export async function GET(request: Request) {
     .order('priority', { ascending: false });
 
   // Get shifts and colleagues if staff
-  let shifts: any[] = [];
-  let colleagues: any[] = [];
-  let events: any[] = [];
+  let shifts: unknown[] = [];
+  let colleagues: unknown[] = [];
+  let events: unknown[] = [];
 
   if (staffRecord) {
     const { data: shiftsData } = await supabase
@@ -68,7 +68,7 @@ export async function GET(request: Request) {
     // Extract unique events
     const eventMap = new Map();
     for (const shift of shifts) {
-      const event = shift.events;
+      const event = (shift as Record<string, unknown>).events as Record<string, unknown> | undefined;
       if (event && !eventMap.has(event.id)) {
         eventMap.set(event.id, event);
       }
@@ -77,7 +77,7 @@ export async function GET(request: Request) {
 
     // Get colleagues
     if (shifts.length > 0) {
-      const eventIds = [...new Set(shifts.map(s => s.event_id))];
+      const eventIds = [...new Set(shifts.map(s => (s as Record<string, unknown>).event_id as string))];
       const { data: colleagueData } = await supabase
         .from('shifts')
         .select('*, events(name, date), staff(id, role, profiles(full_name, email))')
@@ -90,7 +90,7 @@ export async function GET(request: Request) {
 
   return NextResponse.json({
     profile,
-    userRole: roleData?.role || null,
+    userRoles, // Now returns array of roles instead of single userRole
     staffRecord,
     tasks: tasks || [],
     shifts,
