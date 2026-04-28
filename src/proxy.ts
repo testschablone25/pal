@@ -44,11 +44,6 @@ export async function proxy(request: NextRequest) {
     pathname === route || pathname.startsWith(`${route}/`)
   );
 
-  // Check if current path is public
-  const isPublicRoute = PUBLIC_ROUTES.some(route =>
-    pathname === route || pathname.startsWith(`${route}/`)
-  );
-
   // If accessing a protected route without a session, redirect to login
   if (isProtectedRoute && !session) {
     const redirectUrl = new URL('/login', request.url);
