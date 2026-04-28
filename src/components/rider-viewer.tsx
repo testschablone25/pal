@@ -176,26 +176,26 @@ export function RiderViewer({
   const [isArchiveOpen, setIsArchiveOpen] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [deleting, setDeleting] = useState(false);
-  const [lmStudioStatus, setLmStudioStatus] = useState<'checking' | 'connected' | 'disconnected'>('checking');
+  const [openRouterStatus, setOpenRouterStatus] = useState<'checking' | 'connected' | 'disconnected'>('checking');
   const [uploadResult, setUploadResult] = useState<UploadResult | null>(null);
   const [showTaskSummary, setShowTaskSummary] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [riderType, setRiderType] = useState<'tech' | 'hospitality' | 'both'>('both');
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
-  // Check LM Studio status on mount
+  // Check OpenRouter status on mount
   useEffect(() => {
-    checkLMStudioStatus();
+    checkOpenRouterStatus();
   }, []);
 
-  const checkLMStudioStatus = async () => {
-    setLmStudioStatus('checking');
+  const checkOpenRouterStatus = async () => {
+    setOpenRouterStatus('checking');
     try {
       const response = await fetch('/api/artists/extract-rider');
       const data = await response.json();
-      setLmStudioStatus(data.status === 'connected' ? 'connected' : 'disconnected');
+      setOpenRouterStatus(data.status === 'connected' ? 'connected' : 'disconnected');
     } catch {
-      setLmStudioStatus('disconnected');
+      setOpenRouterStatus('disconnected');
     }
   };
 
@@ -312,13 +312,13 @@ export function RiderViewer({
           Artist Riders
         </CardTitle>
         <div className="flex items-center gap-2">
-          {lmStudioStatus === 'connected' ? (
-            <Badge className="bg-green-600 text-xs">LM Studio</Badge>
+          {openRouterStatus === 'connected' ? (
+            <Badge className="bg-green-600 text-xs">OpenRouter</Badge>
           ) : (
-            <Button 
-              variant="outline" 
-              size="sm" 
-              onClick={checkLMStudioStatus}
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={checkOpenRouterStatus}
               className="border-zinc-700"
             >
               <RefreshCw className="h-3 w-3 mr-1" />
@@ -361,14 +361,14 @@ export function RiderViewer({
                 <DialogTitle>Upload Rider PDF - {artistName}</DialogTitle>
               </DialogHeader>
               <div className="space-y-4">
-                {lmStudioStatus !== 'connected' && (
+                {openRouterStatus !== 'connected' && (
                   <div className="p-4 bg-yellow-950/50 border border-yellow-700 rounded-lg">
                     <p className="text-yellow-400 text-sm flex items-center gap-2">
                       <AlertTriangle className="h-4 w-4" />
-                      LM Studio not connected. Upload still works with PDF fallback extraction.
+                      OpenRouter not connected. Upload works but extraction may be less accurate.
                     </p>
                     <p className="text-zinc-400 text-xs mt-2">
-                      Start LM Studio for improved extraction quality (recommended: qwen3.5-2b).
+                      Configure OpenRouter API key for improved extraction quality.
                     </p>
                   </div>
                 )}

@@ -19,6 +19,10 @@ export async function GET(request: NextRequest) {
     const offset = searchParams.get('offset') || '0';
     const myTasks = searchParams.get('my_tasks'); // Filter by current user
     const userId = searchParams.get('user_id'); // Current user ID
+    const blocked = searchParams.get('blocked');
+    const needsApproval = searchParams.get('needs_approval');
+    const search = searchParams.get('search');
+    const myCreated = searchParams.get('my_created');
 
     let query = supabase
       .from('tasks')
@@ -55,6 +59,19 @@ export async function GET(request: NextRequest) {
     }
     if (eventId) {
       query = query.eq('event_id', eventId);
+    }
+    if (blocked === 'true') {
+      query = query.eq('blocked', true);
+    }
+    if (needsApproval === 'true') {
+      query = query.eq('needs_approval', true);
+    }
+    if (search) {
+      const sanitized = search.replace(/%/g, '\\%');
+      query = query.or(`title.ilike.%${sanitized}%,description.ilike.%${sanitized}%`);
+    }
+    if (myCreated === 'true' && userId) {
+      query = query.eq('created_by', userId);
     }
 
     const { data, error, count } = await query;
@@ -99,7 +116,12 @@ export async function POST(request: NextRequest) {
       status,
       priority,
       assignee_id,
-      event_id
+      event_id,
+      due_date,
+      scheduled_date,
+      needs_approval,
+      created_by,
+      item_ids,
     } = body;
 
     // Validate required fields
@@ -110,7 +132,14 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const { data, error } = await supabase
+    if (!created_by) {
+      return NextResponse.json(
+        { error: 'You must be logged in to create a task' },
+        { status: 401 }
+      );
+    }
+
+    const { data: taskData, error: taskError } = await supabase
       .from('tasks')
       .insert({
         title,
@@ -118,7 +147,11 @@ export async function POST(request: NextRequest) {
         status: status || 'todo',
         priority: priority || 'medium',
         assignee_id,
-        event_id
+        event_id: event_id || null,
+        due_date: due_date || null,
+        scheduled_date: scheduled_date || null,
+        needs_approval: needs_approval || false,
+        created_by,
       })
       .select(`
         *,
@@ -136,14 +169,38 @@ export async function POST(request: NextRequest) {
       `)
       .single();
 
-    if (error) {
+    if (taskError) {
       return NextResponse.json(
-        { error: error.message },
+        { error: taskError.message },
         { status: 400 }
       );
     }
 
-    return NextResponse.json({ ...data, comment_count: 0 }, { status: 201 });
+    if (item_ids && item_ids.length > 0 && taskData) {
+      const { error: itemsError } = await supabase.from('task_items').insert(
+        item_ids.map((item_id: string) => ({
+          task_id: taskData.id,
+          item_id,
+        }))
+      );
+      if (itemsError) {
+        console.error('Failed to link items:', itemsError);
+      }
+    }
+
+    const { error: historyError } = await supabase.from('task_history').insert({
+      task_id: taskData.id,
+      changed_by: created_by,
+      from_status: null,
+      to_status: taskData.status,
+      change_type: 'created',
+    });
+
+    if (historyError) {
+      console.error('Failed to log task history:', historyError);
+    }
+
+    return NextResponse.json({ ...taskData, comment_count: 0, item_ids: item_ids || [] }, { status: 201 });
   } catch (error) {
     console.error('Error creating task:', error);
     return NextResponse.json(

@@ -1,7 +1,5 @@
 'use client';
 
-'use client';
-
 import { useState, useEffect, useMemo } from 'react';
 import { createClient } from '@/lib/supabase/browser';
 import {
@@ -53,11 +51,11 @@ interface Column {
 }
 
 const COLUMNS: Column[] = [
-  { id: 'needs_refining', title: 'Needs Refining', status: 'needs_refining', color: 'bg-orange-600' },
   { id: 'todo', title: 'To Do', status: 'todo', color: 'bg-zinc-600' },
   { id: 'in_progress', title: 'In Progress', status: 'in_progress', color: 'bg-blue-600' },
-  { id: 'review', title: 'Review', status: 'review', color: 'bg-yellow-600' },
+  { id: 'pending_approval', title: 'Pending Approval', status: 'pending_approval', color: 'bg-amber-600' },
   { id: 'done', title: 'Done', status: 'done', color: 'bg-green-600' },
+  { id: 'cancelled', title: 'Cancelled', status: 'cancelled', color: 'bg-red-600' },
 ];
 
 interface Event {
@@ -84,6 +82,8 @@ export default function WorkflowPage() {
   const [filterEvent, setFilterEvent] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [showMyTasksOnly, setShowMyTasksOnly] = useState(false);
+  const [filterBlocked, setFilterBlocked] = useState(false);
+  const [filterNeedsApproval, setFilterNeedsApproval] = useState(false);
   const [events, setEvents] = useState<Event[]>([]);
   const [profiles, setProfiles] = useState<Profile[]>([]);
 
@@ -160,6 +160,8 @@ export default function WorkflowPage() {
       if (filterPriority !== 'all' && task.priority !== filterPriority) return false;
       if (filterAssignee !== 'all' && task.assignee_id !== filterAssignee) return false;
       if (filterEvent !== 'all' && task.event_id !== filterEvent) return false;
+      if (filterBlocked && !task.blocked) return false;
+      if (filterNeedsApproval && !task.needs_approval) return false;
       if (searchQuery) {
         const query = searchQuery.toLowerCase();
         return (
@@ -169,15 +171,15 @@ export default function WorkflowPage() {
       }
       return true;
     });
-  }, [tasks, filterPriority, filterAssignee, filterEvent, searchQuery]);
+  }, [tasks, filterPriority, filterAssignee, filterEvent, searchQuery, filterBlocked, filterNeedsApproval]);
 
   const tasksByStatus = useMemo(() => {
     const grouped: Record<string, Task[]> = {
-      needs_refining: [],
       todo: [],
       in_progress: [],
-      review: [],
+      pending_approval: [],
       done: [],
+      cancelled: [],
     };
     filteredTasks.forEach((task) => {
       if (grouped[task.status]) {
@@ -186,6 +188,16 @@ export default function WorkflowPage() {
     });
     return grouped;
   }, [filteredTasks]);
+
+  const visibleColumns = useMemo(() => {
+    const hasApprovalTasks = tasks.some((t) => t.needs_approval);
+    return COLUMNS.filter((col) => {
+      if (col.id === 'pending_approval') {
+        return hasApprovalTasks;
+      }
+      return true;
+    });
+  }, [tasks]);
 
   const handleDragStart = (event: DragStartEvent) => {
     const activeId = event.active.id as string;
@@ -297,10 +309,14 @@ export default function WorkflowPage() {
   const handleCreateTask = async (values: {
     title: string;
     description?: string;
-    status: 'needs_refining' | 'todo' | 'in_progress' | 'review' | 'done' | 'cancelled';
+    status: 'todo' | 'in_progress' | 'pending_approval' | 'done' | 'cancelled';
     priority: 'low' | 'medium' | 'high' | 'urgent';
     assignee_id?: string;
     event_id?: string;
+    due_date?: string;
+    scheduled_date?: string;
+    needs_approval?: boolean;
+    item_ids?: string[];
   }) => {
     try {
       const response = await fetch('/api/tasks', {
@@ -310,7 +326,8 @@ export default function WorkflowPage() {
       });
 
       if (!response.ok) {
-        throw new Error('Failed to create task');
+        const errData = await response.json().catch(() => ({}));
+        throw new Error(errData.error || 'Failed to create task');
       }
 
       const newTask = await response.json();
@@ -327,6 +344,8 @@ export default function WorkflowPage() {
     setFilterAssignee('all');
     setFilterEvent('all');
     setSearchQuery('');
+    setFilterBlocked(false);
+    setFilterNeedsApproval(false);
   };
 
   const activeTask = tasks.find((t) => t.id === activeId);
@@ -356,7 +375,7 @@ export default function WorkflowPage() {
       {/* Filters */}
       <Card className="bg-zinc-900 border-zinc-800 mb-6">
         <CardContent className="pt-6">
-          <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             <div className="relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400" />
               <Input
@@ -402,31 +421,41 @@ export default function WorkflowPage() {
                     {event.name}
                   </SelectItem>
                 ))}
-                  </SelectContent>
-                </Select>
-                <Button
-                  variant={showMyTasksOnly ? "default" : "outline"}
-                  onClick={() => setShowMyTasksOnly(!showMyTasksOnly)}
-                  className={showMyTasksOnly ? "bg-violet-600 hover:bg-violet-700" : "border-zinc-800"}
-                >
-                  <Filter className="h-4 w-4 mr-2" />
-                  {showMyTasksOnly ? "My Tasks" : "All Tasks"}
-                </Button>
-                <Button
-                  variant="outline"
-                  onClick={() => {
-                    setFilterPriority("all");
-                    setFilterAssignee("all");
-                    setFilterEvent("all");
-                    setSearchQuery("");
-                    setShowMyTasksOnly(false);
-                  }}
-                  className="border-zinc-800"
-                >
-                  <Filter className="h-4 w-4 mr-2" />
-                  Clear
-                </Button>
-              </div>
+              </SelectContent>
+            </Select>
+            <Button
+              variant={showMyTasksOnly ? "default" : "outline"}
+              onClick={() => setShowMyTasksOnly(!showMyTasksOnly)}
+              className={showMyTasksOnly ? "bg-violet-600 hover:bg-violet-700" : "border-zinc-800"}
+            >
+              <Filter className="h-4 w-4 mr-2" />
+              {showMyTasksOnly ? "My Tasks" : "All Tasks"}
+            </Button>
+            <Button
+              variant={filterBlocked ? "default" : "outline"}
+              onClick={() => setFilterBlocked(!filterBlocked)}
+              className={filterBlocked ? "bg-red-600 hover:bg-red-700" : "border-zinc-800"}
+            >
+              <Filter className="h-4 w-4 mr-2" />
+              Blocked
+            </Button>
+            <Button
+              variant={filterNeedsApproval ? "default" : "outline"}
+              onClick={() => setFilterNeedsApproval(!filterNeedsApproval)}
+              className={filterNeedsApproval ? "bg-amber-600 hover:bg-amber-700" : "border-zinc-800"}
+            >
+              <Filter className="h-4 w-4 mr-2" />
+              Needs Approval
+            </Button>
+            <Button
+              variant="outline"
+              onClick={clearFilters}
+              className="border-zinc-800"
+            >
+              <Filter className="h-4 w-4 mr-2" />
+              Clear
+            </Button>
+          </div>
         </CardContent>
       </Card>
 
@@ -438,9 +467,16 @@ export default function WorkflowPage() {
         onDragOver={handleDragOver}
         onDragEnd={handleDragEnd}
       >
-        <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
-          {COLUMNS.map((column) => (
-            <div key={column.id} className="flex flex-col">
+        <div
+          className="grid grid-cols-1 gap-4"
+          style={{ gridTemplateColumns: `repeat(${visibleColumns.length}, minmax(0, 1fr))` }}
+        >
+          {visibleColumns.map((column) => {
+            const hasBlockedTasks = column.id === 'in_progress' &&
+              tasksByStatus[column.status]?.some((t) => t.blocked);
+
+            return (
+              <div key={column.id} className="flex flex-col">
               <div className="flex items-center gap-2 mb-4">
                 <div className={cn('w-3 h-3 rounded-full', column.color)} />
                 <h3 className="font-semibold text-white">{column.title}</h3>
@@ -458,7 +494,8 @@ export default function WorkflowPage() {
                   className={cn(
                     'flex-1 min-h-[200px] p-2 border-2 border-dashed transition-colors',
                     'bg-zinc-950/50 border-zinc-800',
-                    activeId && 'border-violet-600/50 bg-violet-950/20'
+                    activeId && 'border-violet-600/50 bg-violet-950/20',
+                    hasBlockedTasks && 'bg-red-950/20 border-red-800/50'
                   )}
                 >
                   {loading ? (
@@ -486,7 +523,8 @@ export default function WorkflowPage() {
                 </DroppableColumn>
               </SortableContext>
             </div>
-          ))}
+            );
+          })}
         </div>
 
         <DragOverlay>

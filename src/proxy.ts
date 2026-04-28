@@ -12,6 +12,16 @@ const PROTECTED_ROUTES = [
   '/guest-lists',
   '/venues',
   '/admin',
+  '/inventory',
+  '/rentals',
+];
+
+// Routes that are always accessible (public routes)
+const PUBLIC_ROUTES = [
+  '/',
+  '/login',
+  '/signup',
+  '/auth',
 ];
 
 export async function proxy(request: NextRequest) {
@@ -30,7 +40,12 @@ export async function proxy(request: NextRequest) {
   const { data: { session } } = await supabase.auth.getSession();
 
   // Check if current path is protected
-  const isProtectedRoute = PROTECTED_ROUTES.some(route => 
+  const isProtectedRoute = PROTECTED_ROUTES.some(route =>
+    pathname === route || pathname.startsWith(`${route}/`)
+  );
+
+  // Check if current path is public
+  const isPublicRoute = PUBLIC_ROUTES.some(route =>
     pathname === route || pathname.startsWith(`${route}/`)
   );
 

@@ -47,3 +47,6 @@ nul
 
 # Sisyphus
 .sisyphus/
+.vercel
+.worktrees
+.env.vercel
