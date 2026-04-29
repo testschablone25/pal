@@ -194,14 +194,14 @@ export function InventoryDetail({ itemId }: InventoryDetailProps) {
 						<div className="space-y-4">
 							<div>
 								<label className="text-sm text-zinc-500">Category</label>
-								<p className="text-white">
+								<div className="text-white">
 									<Badge
 										variant="outline"
 										className="border-zinc-700 text-zinc-300 mt-1"
 									>
 										{categoryLabels[item.category] || item.category}
 									</Badge>
-								</p>
+								</div>
 							</div>
 							<div>
 								<label className="text-sm text-zinc-500">Serial Number</label>
