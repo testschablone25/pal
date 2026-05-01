@@ -1,23 +1,27 @@
 // Shifts CRUD API - Single Shift
 // Phase 3 - Nightclub Booking System
 
-import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@supabase/supabase-js';
-import { supabaseConfig } from '@/lib/supabase/config';
+import { NextRequest, NextResponse } from "next/server";
+import { createClient } from "@supabase/supabase-js";
+import { supabaseConfig } from "@/lib/supabase/config";
+import { requireAuth } from "@/lib/api-auth";
 
 const supabase = createClient(supabaseConfig.url, supabaseConfig.serviceKey);
 
 // GET /api/shifts/[id] - Get single shift
 export async function GET(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+	request: NextRequest,
+	{ params }: { params: Promise<{ id: string }> },
 ) {
-  try {
-    const { id } = await params;
+	try {
+		const auth = await requireAuth(request, "SHIFTS_READ");
+		if (!auth.authorized) return auth.response;
 
-    const { data, error } = await supabase
-      .from('shifts')
-      .select(`
+		const { id } = await params;
+
+		const { data, error } = await supabase
+			.from("shifts")
+			.select(`
         *,
         staff:staff_id (
           id,
@@ -35,109 +39,100 @@ export async function GET(
           date
         )
       `)
-      .eq('id', id)
-      .single();
+			.eq("id", id)
+			.single();
 
-    if (error) {
-      if (error.code === 'PGRST116') {
-        return NextResponse.json(
-          { error: 'Shift not found' },
-          { status: 404 }
-        );
-      }
-      return NextResponse.json(
-        { error: error.message },
-        { status: 500 }
-      );
-    }
+		if (error) {
+			if (error.code === "PGRST116") {
+				return NextResponse.json({ error: "Shift not found" }, { status: 404 });
+			}
+			return NextResponse.json({ error: error.message }, { status: 500 });
+		}
 
-    return NextResponse.json(data);
-  } catch (error) {
-    console.error('Error fetching shift:', error);
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
-  }
+		return NextResponse.json(data);
+	} catch (error) {
+		console.error("Error fetching shift:", error);
+		return NextResponse.json(
+			{ error: "Internal server error" },
+			{ status: 500 },
+		);
+	}
 }
 
 // PUT /api/shifts/[id] - Update shift
 export async function PUT(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+	request: NextRequest,
+	{ params }: { params: Promise<{ id: string }> },
 ) {
-  try {
-    const { id } = await params;
-    const body = await request.json();
+	try {
+		const auth = await requireAuth(request, "SHIFTS_WRITE");
+		if (!auth.authorized) return auth.response;
 
-    const {
-      event_id,
-      staff_id,
-      role,
-      start_time,
-      end_time,
-      break_minutes,
-      status
-    } = body;
+		const { id } = await params;
+		const body = await request.json();
 
-    const { data, error } = await supabase
-      .from('shifts')
-      .update({
-        event_id,
-        staff_id,
-        role,
-        start_time,
-        end_time,
-        break_minutes,
-        status
-      })
-      .eq('id', id)
-      .select()
-      .single();
+		const {
+			event_id,
+			staff_id,
+			role,
+			start_time,
+			end_time,
+			break_minutes,
+			status,
+		} = body;
 
-    if (error) {
-      return NextResponse.json(
-        { error: error.message },
-        { status: 400 }
-      );
-    }
+		const { data, error } = await supabase
+			.from("shifts")
+			.update({
+				event_id,
+				staff_id,
+				role,
+				start_time,
+				end_time,
+				break_minutes,
+				status,
+			})
+			.eq("id", id)
+			.select()
+			.single();
 
-    return NextResponse.json(data);
-  } catch (error) {
-    console.error('Error updating shift:', error);
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
-  }
+		if (error) {
+			return NextResponse.json({ error: error.message }, { status: 400 });
+		}
+
+		return NextResponse.json(data);
+	} catch (error) {
+		console.error("Error updating shift:", error);
+		return NextResponse.json(
+			{ error: "Internal server error" },
+			{ status: 500 },
+		);
+	}
 }
 
 // DELETE /api/shifts/[id] - Delete shift
 export async function DELETE(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+	request: NextRequest,
+	{ params }: { params: Promise<{ id: string }> },
 ) {
-  try {
-    const { id } = await params;
+	try {
+		const auth = await requireAuth(request, "SHIFTS_WRITE");
+		if (!auth.authorized) return auth.response;
 
-    const { error } = await supabase
-      .from('shifts')
-      .delete()
-      .eq('id', id);
+		const { id } = await params;
 
-    if (error) {
-      return NextResponse.json(
-        { error: error.message },
-        { status: 400 }
-      );
-    }
+		const { error } = await supabase.from("shifts").delete().eq("id", id);
 
-    return NextResponse.json({ success: true });
-  } catch (error) {
-    console.error('Error deleting shift:', error);
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
-  }
+		if (error) {
+			return NextResponse.json({ error: error.message }, { status: 400 });
+		}
+
+		return NextResponse.json({ success: true });
+	} catch (error) {
+		console.error("Error deleting shift:", error);
+		return NextResponse.json(
+			{ error: "Internal server error" },
+			{ status: 500 },
+		);
+	}
 }

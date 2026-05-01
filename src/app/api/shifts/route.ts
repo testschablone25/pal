@@ -4,6 +4,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import { supabaseConfig } from "@/lib/supabase/config";
+import { requireAuth } from "@/lib/api-auth";
 
 const supabase = createClient(supabaseConfig.url, supabaseConfig.serviceKey);
 
@@ -11,6 +12,9 @@ const supabase = createClient(supabaseConfig.url, supabaseConfig.serviceKey);
 // GET /api/shifts?check_conflict=true&staff_id=X&event_id=Y&start_time=Z&end_time=W&exclude_shift_id=OPTIONAL - Check for overlapping shifts
 export async function GET(request: NextRequest) {
 	try {
+		const auth = await requireAuth(request, "SHIFTS_READ");
+		if (!auth.authorized) return auth.response;
+
 		const searchParams = request.nextUrl.searchParams;
 
 		// Conflict check mode
@@ -132,6 +136,9 @@ export async function GET(request: NextRequest) {
 // POST /api/shifts - Create a new shift
 export async function POST(request: NextRequest) {
 	try {
+		const auth = await requireAuth(request, "SHIFTS_WRITE");
+		if (!auth.authorized) return auth.response;
+
 		const body = await request.json();
 
 		const {

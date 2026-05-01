@@ -4,12 +4,16 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import { supabaseConfig } from "@/lib/supabase/config";
+import { requireAuth } from "@/lib/api-auth";
 
 const supabase = createClient(supabaseConfig.url, supabaseConfig.serviceKey);
 
 // GET /api/availability - List availability with optional filtering
 export async function GET(request: NextRequest) {
 	try {
+		const auth = await requireAuth(request, "AVAILABILITY_READ");
+		if (!auth.authorized) return auth.response;
+
 		const searchParams = request.nextUrl.searchParams;
 		const staffId = searchParams.get("staff_id");
 		const dateFrom = searchParams.get("date_from");
@@ -83,6 +87,9 @@ export async function GET(request: NextRequest) {
 // POST /api/availability - Create or update availability
 export async function POST(request: NextRequest) {
 	try {
+		const auth = await requireAuth(request, "AVAILABILITY_WRITE");
+		if (!auth.authorized) return auth.response;
+
 		const body = await request.json();
 
 		const { staff_id, date, available, reason, set_by } = body;

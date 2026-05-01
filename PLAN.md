@@ -123,13 +123,13 @@ We'll work incrementally through 5 major phases. Each phase builds on the previo
 
 ### Phase 4: Permission Enforcement in Staff Module
 
-- [ ] **Step 4.1** — Add helper function `getUserRoles(userId)` in `src/lib/permissions.ts` or new utility to fetch roles from Supabase (reusable pattern from admin/roles API)
-- [ ] **Step 4.2** — Add `hasPermission` checks to `GET /api/staff` (requires STAFF_READ)
-- [ ] **Step 4.3** — Add `hasPermission` checks to `POST /api/staff` (requires STAFF_WRITE)
-- [ ] **Step 4.4** — Add `hasPermission` checks to `PUT /api/staff/[id]` (requires STAFF_WRITE)
-- [ ] **Step 4.5** — Add `hasPermission` checks to `DELETE /api/staff/[id]` (requires STAFF_WRITE)
-- [ ] **Step 4.6** — Add `hasPermission` checks to shift API routes (SHIFTS_READ for GET, SHIFTS_WRITE for POST/PUT/DELETE)
-- [ ] **Step 4.7** — Add `hasPermission` checks to availability API routes (AVAILABILITY_READ for GET, AVAILABILITY_WRITE for POST/PUT/DELETE)
+- [x] **Step 4.1** — Add helper function `getUserRoles(userId)` in `src/lib/permissions.ts` plus `requireAuth()`/`authenticate()` helpers in `src/lib/api-auth.ts`
+- [x] **Step 4.2** — Add `hasPermission` checks to `GET /api/staff` (requires STAFF_READ)
+- [x] **Step 4.3** — Add `hasPermission` checks to `POST /api/staff` (requires STAFF_WRITE)
+- [x] **Step 4.4** — Add `hasPermission` checks to `PUT /api/staff/[id]` (requires STAFF_WRITE)
+- [x] **Step 4.5** — Add `hasPermission` checks to `DELETE /api/staff/[id]` (requires STAFF_WRITE)
+- [x] **Step 4.6** — Add `hasPermission` checks to shift API routes (SHIFTS_READ for GET, SHIFTS_WRITE for POST/PUT/DELETE, clock-in/clock-out, bulk)
+- [x] **Step 4.7** — Add `hasPermission` checks to availability API routes (AVAILABILITY_READ for GET, AVAILABILITY_WRITE for POST/PUT/DELETE)
 - [ ] **Step 4.8** — Gate UI actions in staff list page (only show Add/Edit/Delete buttons for users with STAFF_WRITE)
 - [ ] **Step 4.9** — Gate UI actions in shifts page (only show Add/Edit/Delete for users with SHIFTS_WRITE)
 - [ ] **Step 4.10** — Gate UI actions in availability page (staff can set own availability; managers can override anyone)

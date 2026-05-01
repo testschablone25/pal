@@ -1,6 +1,6 @@
 {
   "statistics": {
-    "detectionDate": "2026-04-30T21:26:17.538Z",
+    "detectionDate": "2026-05-01T22:57:51.644Z",
     "formats": {
       "typescript": {
         "sources": {
@@ -113,26 +113,26 @@
             "newClones": 0
           },
           "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/app/api/shifts/[id]/clock-out/route.ts": {
-            "lines": 43,
-            "tokens": 391,
+            "lines": 47,
+            "tokens": 440,
             "sources": 1,
-            "clones": 2,
-            "duplicatedLines": 26,
-            "duplicatedTokens": 272,
-            "percentage": 60.47,
-            "percentageTokens": 69.57,
+            "clones": 5,
+            "duplicatedLines": 55,
+            "duplicatedTokens": 600,
+            "percentage": 117.02,
+            "percentageTokens": 136.36,
             "newDuplicatedLines": 0,
             "newClones": 0
           },
           "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/app/api/shifts/[id]/clock-in/route.ts": {
-            "lines": 43,
-            "tokens": 391,
+            "lines": 47,
+            "tokens": 440,
             "sources": 1,
             "clones": 2,
-            "duplicatedLines": 26,
-            "duplicatedTokens": 272,
-            "percentage": 60.47,
-            "percentageTokens": 69.57,
+            "duplicatedLines": 29,
+            "duplicatedTokens": 308,
+            "percentage": 61.7,
+            "percentageTokens": 70,
             "newDuplicatedLines": 0,
             "newClones": 0
           },
@@ -212,11 +212,11 @@
             "lines": 116,
             "tokens": 1057,
             "sources": 1,
-            "clones": 10,
-            "duplicatedLines": 95,
-            "duplicatedTokens": 918,
-            "percentage": 81.9,
-            "percentageTokens": 86.85,
+            "clones": 11,
+            "duplicatedLines": 103,
+            "duplicatedTokens": 1013,
+            "percentage": 88.79,
+            "percentageTokens": 95.84,
             "newDuplicatedLines": 0,
             "newClones": 0
           },
@@ -233,20 +233,20 @@
             "newClones": 0
           },
           "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/app/api/staff/[id]/route.ts": {
-            "lines": 110,
-            "tokens": 890,
+            "lines": 120,
+            "tokens": 1011,
             "sources": 1,
-            "clones": 3,
-            "duplicatedLines": 27,
-            "duplicatedTokens": 280,
-            "percentage": 24.55,
-            "percentageTokens": 31.46,
+            "clones": 6,
+            "duplicatedLines": 63,
+            "duplicatedTokens": 593,
+            "percentage": 52.5,
+            "percentageTokens": 58.65,
             "newDuplicatedLines": 0,
             "newClones": 0
           },
           "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/app/api/shifts/bulk/route.ts": {
-            "lines": 94,
-            "tokens": 814,
+            "lines": 98,
+            "tokens": 863,
             "sources": 1,
             "clones": 0,
             "duplicatedLines": 0,
@@ -257,14 +257,14 @@
             "newClones": 0
           },
           "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/app/api/shifts/[id]/route.ts": {
-            "lines": 142,
-            "tokens": 932,
+            "lines": 137,
+            "tokens": 1035,
             "sources": 1,
-            "clones": 12,
-            "duplicatedLines": 155,
-            "duplicatedTokens": 1196,
-            "percentage": 109.15,
-            "percentageTokens": 128.33,
+            "clones": 5,
+            "duplicatedLines": 46,
+            "duplicatedTokens": 485,
+            "percentage": 33.58,
+            "percentageTokens": 46.86,
             "newDuplicatedLines": 0,
             "newClones": 0
           },
@@ -272,11 +272,11 @@
             "lines": 123,
             "tokens": 1020,
             "sources": 1,
-            "clones": 4,
-            "duplicatedLines": 51,
-            "duplicatedTokens": 450,
-            "percentage": 41.46,
-            "percentageTokens": 44.12,
+            "clones": 7,
+            "duplicatedLines": 88,
+            "duplicatedTokens": 743,
+            "percentage": 71.54,
+            "percentageTokens": 72.84,
             "newDuplicatedLines": 0,
             "newClones": 0
           },
@@ -284,11 +284,11 @@
             "lines": 166,
             "tokens": 1215,
             "sources": 1,
-            "clones": 3,
-            "duplicatedLines": 37,
-            "duplicatedTokens": 299,
-            "percentage": 22.29,
-            "percentageTokens": 24.61,
+            "clones": 4,
+            "duplicatedLines": 54,
+            "duplicatedTokens": 400,
+            "percentage": 32.53,
+            "percentageTokens": 32.92,
             "newDuplicatedLines": 0,
             "newClones": 0
           },
@@ -341,14 +341,14 @@
             "newClones": 0
           },
           "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/app/api/availability/[id]/route.ts": {
-            "lines": 78,
-            "tokens": 610,
+            "lines": 73,
+            "tokens": 681,
             "sources": 1,
-            "clones": 2,
-            "duplicatedLines": 27,
-            "duplicatedTokens": 204,
-            "percentage": 34.62,
-            "percentageTokens": 33.44,
+            "clones": 4,
+            "duplicatedLines": 40,
+            "duplicatedTokens": 397,
+            "percentage": 54.79,
+            "percentageTokens": 58.3,
             "newDuplicatedLines": 0,
             "newClones": 0
           },
@@ -425,26 +425,26 @@
             "newClones": 0
           },
           "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/app/api/staff/route.ts": {
-            "lines": 110,
-            "tokens": 900,
+            "lines": 117,
+            "tokens": 985,
             "sources": 1,
             "clones": 1,
             "duplicatedLines": 11,
             "duplicatedTokens": 100,
-            "percentage": 10,
-            "percentageTokens": 11.11,
+            "percentage": 9.4,
+            "percentageTokens": 10.15,
             "newDuplicatedLines": 0,
             "newClones": 0
           },
           "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/app/api/shifts/route.ts": {
-            "lines": 205,
-            "tokens": 1559,
+            "lines": 212,
+            "tokens": 1644,
             "sources": 1,
             "clones": 1,
             "duplicatedLines": 11,
             "duplicatedTokens": 100,
-            "percentage": 5.37,
-            "percentageTokens": 6.41,
+            "percentage": 5.19,
+            "percentageTokens": 6.08,
             "newDuplicatedLines": 0,
             "newClones": 0
           },
@@ -545,14 +545,14 @@
             "newClones": 0
           },
           "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/app/api/availability/route.ts": {
-            "lines": 142,
-            "tokens": 1094,
+            "lines": 149,
+            "tokens": 1179,
             "sources": 1,
             "clones": 1,
             "duplicatedLines": 11,
             "duplicatedTokens": 100,
-            "percentage": 7.75,
-            "percentageTokens": 9.14,
+            "percentage": 7.38,
+            "percentageTokens": 8.48,
             "newDuplicatedLines": 0,
             "newClones": 0
           },
@@ -652,9 +652,9 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/lib/permissions.ts": {
-            "lines": 468,
-            "tokens": 3188,
+          "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/lib/itinerary.ts": {
+            "lines": 222,
+            "tokens": 2007,
             "sources": 1,
             "clones": 0,
             "duplicatedLines": 0,
@@ -664,9 +664,9 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/lib/itinerary.ts": {
-            "lines": 222,
-            "tokens": 2007,
+          "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/lib/api-auth.ts": {
+            "lines": 146,
+            "tokens": 975,
             "sources": 1,
             "clones": 0,
             "duplicatedLines": 0,
@@ -906,14 +906,14 @@
           }
         },
         "total": {
-          "lines": 8945,
-          "tokens": 77208,
+          "lines": 8656,
+          "tokens": 75692,
           "sources": 75,
-          "clones": 57,
-          "duplicatedLines": 671,
-          "duplicatedTokens": 6365,
-          "percentage": 7.5,
-          "percentageTokens": 8.24,
+          "clones": 60,
+          "duplicatedLines": 688,
+          "duplicatedTokens": 6689,
+          "percentage": 7.95,
+          "percentageTokens": 8.84,
           "newDuplicatedLines": 0,
           "newClones": 0
         }
@@ -1900,14 +1900,14 @@
       }
     },
     "total": {
-      "lines": 21581,
-      "tokens": 176898,
+      "lines": 21292,
+      "tokens": 175382,
       "sources": 154,
-      "clones": 102,
-      "duplicatedLines": 1360,
-      "duplicatedTokens": 11196,
-      "percentage": 6.3,
-      "percentageTokens": 6.33,
+      "clones": 105,
+      "duplicatedLines": 1377,
+      "duplicatedTokens": 11520,
+      "percentage": 6.47,
+      "percentageTokens": 6.57,
       "newDuplicatedLines": 0,
       "newClones": 0
     }
@@ -2203,37 +2203,37 @@
     },
     {
       "format": "typescript",
-      "lines": 12,
-      "fragment": "export async function POST(\n\trequest: NextRequest,\n\t{ params }: { params: Promise<{ id: string }> },\n) {\n\ttry {\n\t\tconst { id } = await params;\n\t\tconst now = new Date().toISOString();\n\n\t\tconst { data, error } = await supabase\n\t\t\t.from(\"shifts\")\n\t\t\t.update({\n\t\t\t\tstatus: \"confirmed\"",
+      "lines": 15,
+      "fragment": "export async function POST(\n\trequest: NextRequest,\n\t{ params }: { params: Promise<{ id: string }> },\n) {\n\ttry {\n\t\tconst auth = await requireAuth(request, \"SHIFTS_WRITE\");\n\t\tif (!auth.authorized) return auth.response;\n\n\t\tconst { id } = await params;\n\t\tconst now = new Date().toISOString();\n\n\t\tconst { data, error } = await supabase\n\t\t\t.from(\"shifts\")\n\t\t\t.update({\n\t\t\t\tstatus: \"confirmed\"",
       "tokens": 0,
       "firstFile": {
         "name": "src/app/api/shifts/[id]/clock-in/route.ts",
-        "start": 11,
-        "end": 22,
+        "start": 12,
+        "end": 26,
         "startLoc": {
-          "line": 11,
+          "line": 12,
           "column": 1,
-          "position": 70
+          "position": 83
         },
         "endLoc": {
-          "line": 22,
+          "line": 26,
           "column": 12,
-          "position": 193
+          "position": 242
         }
       },
       "secondFile": {
         "name": "src/app/api/shifts/[id]/clock-out/route.ts",
-        "start": 11,
-        "end": 22,
+        "start": 12,
+        "end": 26,
         "startLoc": {
-          "line": 11,
+          "line": 12,
           "column": 1,
-          "position": 70
+          "position": 83
         },
         "endLoc": {
-          "line": 22,
+          "line": 26,
           "column": 12,
-          "position": 193
+          "position": 242
         }
       }
     },
@@ -2244,32 +2244,32 @@
       "tokens": 0,
       "firstFile": {
         "name": "src/app/api/shifts/[id]/clock-in/route.ts",
-        "start": 23,
-        "end": 38,
+        "start": 27,
+        "end": 42,
         "startLoc": {
-          "line": 23,
+          "line": 27,
           "column": 14,
-          "position": 198
+          "position": 247
         },
         "endLoc": {
-          "line": 38,
+          "line": 42,
           "column": 21,
-          "position": 347
+          "position": 396
         }
       },
       "secondFile": {
         "name": "src/app/api/shifts/[id]/clock-out/route.ts",
-        "start": 23,
-        "end": 38,
+        "start": 27,
+        "end": 42,
         "startLoc": {
-          "line": 23,
+          "line": 27,
           "column": 15,
-          "position": 198
+          "position": 247
         },
         "endLoc": {
-          "line": 38,
+          "line": 42,
           "column": 22,
-          "position": 347
+          "position": 396
         }
       }
     },
@@ -2563,58 +2563,22 @@
     },
     {
       "format": "typescript",
-      "lines": 9,
-      "fragment": "export async function PUT(\n\trequest: NextRequest,\n\t{ params }: { params: Promise<{ id: string }> },\n) {\n\ttry {\n\t\tconst { id } = await params;\n\t\tconst body = await request.json();\n\n\t\tconst { profile_id",
-      "tokens": 0,
-      "firstFile": {
-        "name": "src/app/api/staff/[id]/route.ts",
-        "start": 53,
-        "end": 61,
-        "startLoc": {
-          "line": 53,
-          "column": 1,
-          "position": 361
-        },
-        "endLoc": {
-          "line": 61,
-          "column": 11,
-          "position": 452
-        }
-      },
-      "secondFile": {
-        "name": "src/app/api/venues/[id]/route.ts",
-        "start": 52,
-        "end": 60,
-        "startLoc": {
-          "line": 52,
-          "column": 1,
-          "position": 442
-        },
-        "endLoc": {
-          "line": 60,
-          "column": 5,
-          "position": 533
-        }
-      }
-    },
-    {
-      "format": "typescript",
       "lines": 12,
       "fragment": ")\n\t\t\t.eq(\"id\", id)\n\t\t\t.select()\n\t\t\t.single();\n\n\t\tif (error) {\n\t\t\treturn NextResponse.json({ error: error.message }, { status: 400 });\n\t\t}\n\n\t\treturn NextResponse.json(data);\n\t} catch (error) {\n\t\tconsole.error(\"Error updating staff member:\"",
       "tokens": 0,
       "firstFile": {
         "name": "src/app/api/staff/[id]/route.ts",
-        "start": 70,
-        "end": 81,
+        "start": 77,
+        "end": 88,
         "startLoc": {
-          "line": 70,
+          "line": 77,
           "column": 2,
-          "position": 520
+          "position": 605
         },
         "endLoc": {
-          "line": 81,
+          "line": 88,
           "column": 31,
-          "position": 616
+          "position": 701
         }
       },
       "secondFile": {
@@ -2635,22 +2599,58 @@
     },
     {
       "format": "typescript",
+      "lines": 11,
+      "fragment": "(\n\trequest: NextRequest,\n\t{ params }: { params: Promise<{ id: string }> },\n) {\n\ttry {\n\t\tconst auth = await requireAuth(request, \"STAFF_WRITE\");\n\t\tif (!auth.authorized) return auth.response;\n\n\t\tconst { id } = await params;\n\n\t\tconst {",
+      "tokens": 0,
+      "firstFile": {
+        "name": "src/app/api/staff/[id]/route.ts",
+        "start": 97,
+        "end": 107,
+        "startLoc": {
+          "line": 97,
+          "column": 7,
+          "position": 757
+        },
+        "endLoc": {
+          "line": 107,
+          "column": 2,
+          "position": 859
+        }
+      },
+      "secondFile": {
+        "name": "src/app/api/staff/[id]/route.ts",
+        "start": 57,
+        "end": 66,
+        "startLoc": {
+          "line": 57,
+          "column": 4,
+          "position": 417
+        },
+        "endLoc": {
+          "line": 66,
+          "column": 5,
+          "position": 518
+        }
+      }
+    },
+    {
+      "format": "typescript",
       "lines": 9,
       "fragment": ").delete().eq(\"id\", id);\n\n\t\tif (error) {\n\t\t\treturn NextResponse.json({ error: error.message }, { status: 400 });\n\t\t}\n\n\t\treturn NextResponse.json({ success: true });\n\t} catch (error) {\n\t\tconsole.error(\"Error deleting staff member:\"",
       "tokens": 0,
       "firstFile": {
         "name": "src/app/api/staff/[id]/route.ts",
-        "start": 97,
-        "end": 105,
+        "start": 107,
+        "end": 115,
         "startLoc": {
-          "line": 97,
+          "line": 107,
           "column": 8,
-          "position": 753
+          "position": 874
         },
         "endLoc": {
-          "line": 105,
+          "line": 115,
           "column": 31,
-          "position": 846
+          "position": 967
         }
       },
       "secondFile": {
@@ -2671,32 +2671,104 @@
     },
     {
       "format": "typescript",
-      "lines": 14,
-      "fragment": ", id)\n      .select()\n      .single();\n\n    if (error) {\n      return NextResponse.json(\n        { error: error.message },\n        { status: 400 }\n      );\n    }\n\n    return NextResponse.json(data);\n  } catch (error) {\n    console.error('Error updating shift:'",
+      "lines": 8,
+      "fragment": ")\n\t\t\t.single();\n\n\t\tif (error) {\n\t\t\tif (error.code === \"PGRST116\") {\n\t\t\t\treturn NextResponse.json({ error: \"Shift not found\" }, { status: 404 });\n\t\t\t}\n\t\t\treturn NextResponse.json({ error: error.message }, { status: 500",
       "tokens": 0,
       "firstFile": {
         "name": "src/app/api/shifts/[id]/route.ts",
-        "start": 94,
-        "end": 107,
+        "start": 42,
+        "end": 49,
         "startLoc": {
-          "line": 94,
-          "column": 5,
-          "position": 556
+          "line": 42,
+          "column": 3,
+          "position": 229
         },
         "endLoc": {
-          "line": 107,
-          "column": 24,
-          "position": 650
+          "line": 49,
+          "column": 4,
+          "position": 318
         }
       },
       "secondFile": {
-        "name": "src/app/api/venues/[id]/route.ts",
-        "start": 77,
+        "name": "src/app/api/shifts/[id]/clock-out/route.ts",
+        "start": 30,
+        "end": 37,
+        "startLoc": {
+          "line": 30,
+          "column": 2,
+          "position": 270
+        },
+        "endLoc": {
+          "line": 37,
+          "column": 4,
+          "position": 359
+        }
+      }
+    },
+    {
+      "format": "typescript",
+      "lines": 10,
+      "fragment": "(\n\trequest: NextRequest,\n\t{ params }: { params: Promise<{ id: string }> },\n) {\n\ttry {\n\t\tconst auth = await requireAuth(request, \"SHIFTS_WRITE\");\n\t\tif (!auth.authorized) return auth.response;\n\n\t\tconst { id } = await params;\n\t\tconst body",
+      "tokens": 0,
+      "firstFile": {
+        "name": "src/app/api/shifts/[id]/route.ts",
+        "start": 63,
+        "end": 72,
+        "startLoc": {
+          "line": 63,
+          "column": 4,
+          "position": 411
+        },
+        "endLoc": {
+          "line": 72,
+          "column": 5,
+          "position": 512
+        }
+      },
+      "secondFile": {
+        "name": "src/app/api/shifts/[id]/clock-out/route.ts",
+        "start": 12,
+        "end": 21,
+        "startLoc": {
+          "line": 12,
+          "column": 5,
+          "position": 90
+        },
+        "endLoc": {
+          "line": 21,
+          "column": 4,
+          "position": 191
+        }
+      }
+    },
+    {
+      "format": "typescript",
+      "lines": 13,
+      "fragment": ",\n\t\t\t})\n\t\t\t.eq(\"id\", id)\n\t\t\t.select()\n\t\t\t.single();\n\n\t\tif (error) {\n\t\t\treturn NextResponse.json({ error: error.message }, { status: 400 });\n\t\t}\n\n\t\treturn NextResponse.json(data);\n\t} catch (error) {\n\t\tconsole.error(\"Error updating shift:\"",
+      "tokens": 0,
+      "firstFile": {
+        "name": "src/app/api/shifts/[id]/route.ts",
+        "start": 93,
+        "end": 105,
+        "startLoc": {
+          "line": 93,
+          "column": 7,
+          "position": 625
+        },
+        "endLoc": {
+          "line": 105,
+          "column": 24,
+          "position": 725
+        }
+      },
+      "secondFile": {
+        "name": "src/app/api/staff/[id]/route.ts",
+        "start": 76,
         "end": 87,
         "startLoc": {
-          "line": 77,
-          "column": 5,
-          "position": 694
+          "line": 76,
+          "column": 9,
+          "position": 601
         },
         "endLoc": {
           "line": 87,
@@ -2707,22 +2779,58 @@
     },
     {
       "format": "typescript",
-      "lines": 12,
-      "fragment": ", id);\n\n    if (error) {\n      return NextResponse.json(\n        { error: error.message },\n        { status: 400 }\n      );\n    }\n\n    return NextResponse.json({ success: true });\n  } catch (error) {\n    console.error('Error deleting shift:'",
+      "lines": 11,
+      "fragment": "(\n\trequest: NextRequest,\n\t{ params }: { params: Promise<{ id: string }> },\n) {\n\ttry {\n\t\tconst auth = await requireAuth(request, \"SHIFTS_WRITE\");\n\t\tif (!auth.authorized) return auth.response;\n\n\t\tconst { id } = await params;\n\n\t\tconst {",
       "tokens": 0,
       "firstFile": {
         "name": "src/app/api/shifts/[id]/route.ts",
-        "start": 126,
-        "end": 137,
+        "start": 114,
+        "end": 124,
         "startLoc": {
-          "line": 126,
-          "column": 5,
-          "position": 800
+          "line": 114,
+          "column": 7,
+          "position": 781
         },
         "endLoc": {
-          "line": 137,
+          "line": 124,
+          "column": 2,
+          "position": 883
+        }
+      },
+      "secondFile": {
+        "name": "src/app/api/shifts/[id]/clock-out/route.ts",
+        "start": 12,
+        "end": 21,
+        "startLoc": {
+          "line": 12,
+          "column": 5,
+          "position": 90
+        },
+        "endLoc": {
+          "line": 21,
+          "column": 4,
+          "position": 191
+        }
+      }
+    },
+    {
+      "format": "typescript",
+      "lines": 9,
+      "fragment": ").delete().eq(\"id\", id);\n\n\t\tif (error) {\n\t\t\treturn NextResponse.json({ error: error.message }, { status: 400 });\n\t\t}\n\n\t\treturn NextResponse.json({ success: true });\n\t} catch (error) {\n\t\tconsole.error(\"Error deleting shift:\"",
+      "tokens": 0,
+      "firstFile": {
+        "name": "src/app/api/shifts/[id]/route.ts",
+        "start": 124,
+        "end": 132,
+        "startLoc": {
+          "line": 124,
+          "column": 9,
+          "position": 898
+        },
+        "endLoc": {
+          "line": 132,
           "column": 24,
-          "position": 889
+          "position": 991
         }
       },
       "secondFile": {
@@ -2731,8 +2839,8 @@
         "end": 79,
         "startLoc": {
           "line": 103,
-          "column": 5,
-          "position": 929
+          "column": 9,
+          "position": 920
         },
         "endLoc": {
           "line": 79,
@@ -2815,17 +2923,17 @@
     },
     {
       "format": "typescript",
-      "lines": 14,
-      "fragment": ")\n      .delete()\n      .eq('id', id);\n\n    if (error) {\n      return NextResponse.json(\n        { error: error.message },\n        { status: 400 }\n      );\n    }\n\n    return NextResponse.json({ success: true });\n  } catch (error) {\n    console.error('Error deleting rental:'",
+      "lines": 12,
+      "fragment": ", id);\n\n    if (error) {\n      return NextResponse.json(\n        { error: error.message },\n        { status: 400 }\n      );\n    }\n\n    return NextResponse.json({ success: true });\n  } catch (error) {\n    console.error('Error deleting rental:'",
       "tokens": 0,
       "firstFile": {
         "name": "src/app/api/rentals/[id]/route.ts",
-        "start": 105,
+        "start": 107,
         "end": 118,
         "startLoc": {
-          "line": 105,
-          "column": 10,
-          "position": 875
+          "line": 107,
+          "column": 5,
+          "position": 888
         },
         "endLoc": {
           "line": 118,
@@ -2834,13 +2942,13 @@
         }
       },
       "secondFile": {
-        "name": "src/app/api/shifts/[id]/route.ts",
-        "start": 124,
+        "name": "src/app/api/venues/[id]/route.ts",
+        "start": 103,
         "end": 79,
         "startLoc": {
-          "line": 124,
-          "column": 9,
-          "position": 787
+          "line": 103,
+          "column": 5,
+          "position": 929
         },
         "endLoc": {
           "line": 79,
@@ -2851,53 +2959,17 @@
     },
     {
       "format": "typescript",
-      "lines": 11,
-      "fragment": "export async function PUT(\n  request: NextRequest,\n  { params }: { params: Promise<{ id: string }> }\n) {\n  try {\n    const { id } = await params;\n    const body = await request.json();\n\n    const {\n      event_id,\n      artist_id",
+      "lines": 14,
+      "fragment": ", id)\n      .select()\n      .single();\n\n    if (error) {\n      return NextResponse.json(\n        { error: error.message },\n        { status: 400 }\n      );\n    }\n\n    return NextResponse.json(data);\n  } catch (error) {\n    console.error('Error updating performance:'",
       "tokens": 0,
       "firstFile": {
         "name": "src/app/api/performances/[id]/route.ts",
-        "start": 57,
-        "end": 67,
-        "startLoc": {
-          "line": 57,
-          "column": 1,
-          "position": 363
-        },
-        "endLoc": {
-          "line": 67,
-          "column": 10,
-          "position": 458
-        }
-      },
-      "secondFile": {
-        "name": "src/app/api/shifts/[id]/route.ts",
-        "start": 65,
-        "end": 75,
-        "startLoc": {
-          "line": 65,
-          "column": 1,
-          "position": 363
-        },
-        "endLoc": {
-          "line": 75,
-          "column": 9,
-          "position": 458
-        }
-      }
-    },
-    {
-      "format": "typescript",
-      "lines": 15,
-      "fragment": "})\n      .eq('id', id)\n      .select()\n      .single();\n\n    if (error) {\n      return NextResponse.json(\n        { error: error.message },\n        { status: 400 }\n      );\n    }\n\n    return NextResponse.json(data);\n  } catch (error) {\n    console.error('Error updating performance:'",
-      "tokens": 0,
-      "firstFile": {
-        "name": "src/app/api/performances/[id]/route.ts",
-        "start": 117,
+        "start": 118,
         "end": 131,
         "startLoc": {
-          "line": 117,
-          "column": 7,
-          "position": 831
+          "line": 118,
+          "column": 5,
+          "position": 839
         },
         "endLoc": {
           "line": 131,
@@ -2906,13 +2978,13 @@
         }
       },
       "secondFile": {
-        "name": "src/app/api/shifts/[id]/route.ts",
-        "start": 93,
+        "name": "src/app/api/venues/[id]/route.ts",
+        "start": 77,
         "end": 87,
         "startLoc": {
-          "line": 93,
-          "column": 7,
-          "position": 548
+          "line": 77,
+          "column": 5,
+          "position": 694
         },
         "endLoc": {
           "line": 87,
@@ -2942,13 +3014,13 @@
         }
       },
       "secondFile": {
-        "name": "src/app/api/shifts/[id]/route.ts",
-        "start": 124,
+        "name": "src/app/api/rentals/[id]/route.ts",
+        "start": 105,
         "end": 79,
         "startLoc": {
-          "line": 124,
-          "column": 9,
-          "position": 787
+          "line": 105,
+          "column": 10,
+          "position": 875
         },
         "endLoc": {
           "line": 79,
@@ -3086,13 +3158,13 @@
         }
       },
       "secondFile": {
-        "name": "src/app/api/shifts/[id]/route.ts",
-        "start": 93,
+        "name": "src/app/api/performances/[id]/route.ts",
+        "start": 117,
         "end": 87,
         "startLoc": {
-          "line": 93,
+          "line": 117,
           "column": 7,
-          "position": 548
+          "position": 831
         },
         "endLoc": {
           "line": 87,
@@ -3122,13 +3194,13 @@
         }
       },
       "secondFile": {
-        "name": "src/app/api/shifts/[id]/route.ts",
-        "start": 124,
+        "name": "src/app/api/rentals/[id]/route.ts",
+        "start": 105,
         "end": 79,
         "startLoc": {
-          "line": 124,
-          "column": 9,
-          "position": 787
+          "line": 105,
+          "column": 10,
+          "position": 875
         },
         "endLoc": {
           "line": 79,
@@ -3139,32 +3211,32 @@
     },
     {
       "format": "typescript",
-      "lines": 15,
-      "fragment": "})\n      .eq('id', id)\n      .select()\n      .single();\n\n    if (error) {\n      return NextResponse.json(\n        { error: error.message },\n        { status: 400 }\n      );\n    }\n\n    return NextResponse.json(data);\n  } catch (error) {\n    console.error('Error updating availability:'",
+      "lines": 13,
+      "fragment": ",\n\t\t\t})\n\t\t\t.eq(\"id\", id)\n\t\t\t.select()\n\t\t\t.single();\n\n\t\tif (error) {\n\t\t\treturn NextResponse.json({ error: error.message }, { status: 400 });\n\t\t}\n\n\t\treturn NextResponse.json(data);\n\t} catch (error) {\n\t\tconsole.error(\"Error updating availability:\"",
       "tokens": 0,
       "firstFile": {
         "name": "src/app/api/availability/[id]/route.ts",
         "start": 29,
-        "end": 43,
+        "end": 41,
         "startLoc": {
           "line": 29,
           "column": 7,
-          "position": 226
+          "position": 271
         },
         "endLoc": {
-          "line": 43,
+          "line": 41,
           "column": 31,
-          "position": 328
+          "position": 371
         }
       },
       "secondFile": {
-        "name": "src/app/api/shifts/[id]/route.ts",
-        "start": 93,
+        "name": "src/app/api/staff/[id]/route.ts",
+        "start": 76,
         "end": 87,
         "startLoc": {
-          "line": 93,
-          "column": 7,
-          "position": 548
+          "line": 76,
+          "column": 9,
+          "position": 601
         },
         "endLoc": {
           "line": 87,
@@ -3175,32 +3247,68 @@
     },
     {
       "format": "typescript",
-      "lines": 14,
-      "fragment": ")\n      .delete()\n      .eq('id', id);\n\n    if (error) {\n      return NextResponse.json(\n        { error: error.message },\n        { status: 400 }\n      );\n    }\n\n    return NextResponse.json({ success: true });\n  } catch (error) {\n    console.error('Error deleting availability:'",
+      "lines": 11,
+      "fragment": "(\n\trequest: NextRequest,\n\t{ params }: { params: Promise<{ id: string }> },\n) {\n\ttry {\n\t\tconst auth = await requireAuth(request, \"AVAILABILITY_WRITE\");\n\t\tif (!auth.authorized) return auth.response;\n\n\t\tconst { id } = await params;\n\n\t\tconst {",
+      "tokens": 0,
+      "firstFile": {
+        "name": "src/app/api/availability/[id]/route.ts",
+        "start": 50,
+        "end": 60,
+        "startLoc": {
+          "line": 50,
+          "column": 7,
+          "position": 427
+        },
+        "endLoc": {
+          "line": 60,
+          "column": 2,
+          "position": 529
+        }
+      },
+      "secondFile": {
+        "name": "src/app/api/availability/[id]/route.ts",
+        "start": 12,
+        "end": 21,
+        "startLoc": {
+          "line": 12,
+          "column": 4,
+          "position": 90
+        },
+        "endLoc": {
+          "line": 21,
+          "column": 5,
+          "position": 191
+        }
+      }
+    },
+    {
+      "format": "typescript",
+      "lines": 9,
+      "fragment": ").delete().eq(\"id\", id);\n\n\t\tif (error) {\n\t\t\treturn NextResponse.json({ error: error.message }, { status: 400 });\n\t\t}\n\n\t\treturn NextResponse.json({ success: true });\n\t} catch (error) {\n\t\tconsole.error(\"Error deleting availability:\"",
       "tokens": 0,
       "firstFile": {
         "name": "src/app/api/availability/[id]/route.ts",
         "start": 60,
-        "end": 73,
+        "end": 68,
         "startLoc": {
           "line": 60,
           "column": 15,
-          "position": 465
+          "position": 544
         },
         "endLoc": {
-          "line": 73,
+          "line": 68,
           "column": 31,
-          "position": 567
+          "position": 637
         }
       },
       "secondFile": {
-        "name": "src/app/api/shifts/[id]/route.ts",
-        "start": 124,
+        "name": "src/app/api/venues/[id]/route.ts",
+        "start": 103,
         "end": 79,
         "startLoc": {
-          "line": 124,
+          "line": 103,
           "column": 9,
-          "position": 787
+          "position": 920
         },
         "endLoc": {
           "line": 79,
@@ -3266,13 +3374,13 @@
         }
       },
       "secondFile": {
-        "name": "src/app/api/shifts/[id]/route.ts",
-        "start": 93,
+        "name": "src/app/api/performances/[id]/route.ts",
+        "start": 117,
         "end": 87,
         "startLoc": {
-          "line": 93,
+          "line": 117,
           "column": 7,
-          "position": 548
+          "position": 831
         },
         "endLoc": {
           "line": 87,
@@ -3302,13 +3410,13 @@
         }
       },
       "secondFile": {
-        "name": "src/app/api/shifts/[id]/route.ts",
-        "start": 124,
+        "name": "src/app/api/rentals/[id]/route.ts",
+        "start": 105,
         "end": 79,
         "startLoc": {
-          "line": 124,
-          "column": 9,
-          "position": 787
+          "line": 105,
+          "column": 10,
+          "position": 875
         },
         "endLoc": {
           "line": 79,
@@ -3648,17 +3756,17 @@
       "tokens": 0,
       "firstFile": {
         "name": "src/app/api/staff/route.ts",
-        "start": 94,
-        "end": 105,
+        "start": 101,
+        "end": 112,
         "startLoc": {
-          "line": 94,
+          "line": 101,
           "column": 6,
-          "position": 756
+          "position": 841
         },
         "endLoc": {
-          "line": 105,
+          "line": 112,
           "column": 24,
-          "position": 856
+          "position": 941
         }
       },
       "secondFile": {
@@ -3684,17 +3792,17 @@
       "tokens": 0,
       "firstFile": {
         "name": "src/app/api/shifts/route.ts",
-        "start": 189,
-        "end": 200,
+        "start": 196,
+        "end": 207,
         "startLoc": {
-          "line": 189,
+          "line": 196,
           "column": 12,
-          "position": 1415
+          "position": 1500
         },
         "endLoc": {
-          "line": 200,
+          "line": 207,
           "column": 24,
-          "position": 1515
+          "position": 1600
         }
       },
       "secondFile": {
@@ -3972,17 +4080,17 @@
       "tokens": 0,
       "firstFile": {
         "name": "src/app/api/availability/route.ts",
-        "start": 126,
-        "end": 137,
+        "start": 133,
+        "end": 144,
         "startLoc": {
-          "line": 126,
+          "line": 133,
           "column": 16,
-          "position": 950
+          "position": 1035
         },
         "endLoc": {
-          "line": 137,
+          "line": 144,
           "column": 40,
-          "position": 1050
+          "position": 1135
         }
       },
       "secondFile": {

@@ -4,6 +4,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import { supabaseConfig } from "@/lib/supabase/config";
+import { requireAuth } from "@/lib/api-auth";
 
 const supabase = createClient(supabaseConfig.url, supabaseConfig.serviceKey);
 
@@ -19,6 +20,9 @@ interface BulkShiftInput {
 // POST /api/shifts/bulk - Create multiple shifts in a single request
 export async function POST(request: NextRequest) {
 	try {
+		const auth = await requireAuth(request, "SHIFTS_WRITE");
+		if (!auth.authorized) return auth.response;
+
 		const body = await request.json();
 
 		const { event_id, shifts } = body as {
