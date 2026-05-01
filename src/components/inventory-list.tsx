@@ -15,8 +15,9 @@ import {
 	TableHeader,
 	TableRow,
 } from "@/components/ui/table";
-import { Search, Plus, Package } from "lucide-react";
+import { Search, Plus, Package, QrCode } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { ItemQRDialog } from "@/components/item-qr-dialog";
 import {
 	InventoryForm,
 	type ItemFormValues,
@@ -89,6 +90,10 @@ export function InventoryList() {
 	const [category, setCategory] = useState("");
 	const [total, setTotal] = useState(0);
 	const [showCreateDialog, setShowCreateDialog] = useState(false);
+	const [qrDialogItem, setQrDialogItem] = useState<{
+		id: string;
+		name: string;
+	} | null>(null);
 
 	useEffect(() => {
 		const timer = setTimeout(() => {
@@ -219,6 +224,7 @@ export function InventoryList() {
 									<TableHead className="text-zinc-400">
 										Current Location
 									</TableHead>
+									<TableHead className="text-zinc-400 w-[60px]">QR</TableHead>
 								</TableRow>
 							</TableHeader>
 							<TableBody>
@@ -261,6 +267,20 @@ export function InventoryList() {
 										<TableCell className="text-zinc-400">
 											{item.current_location || "-"}
 										</TableCell>
+										<TableCell>
+											<Button
+												variant="ghost"
+												size="icon"
+												className="h-8 w-8"
+												onClick={(e) => {
+													e.stopPropagation();
+													setQrDialogItem({ id: item.id, name: item.name });
+												}}
+												title="View QR Code"
+											>
+												<QrCode className="h-4 w-4 text-violet-400 hover:text-violet-300" />
+											</Button>
+										</TableCell>
 									</TableRow>
 								))}
 							</TableBody>
@@ -282,6 +302,18 @@ export function InventoryList() {
 					/>
 				</DialogContent>
 			</Dialog>
+
+			{/* Item QR Code Dialog */}
+			{qrDialogItem && (
+				<ItemQRDialog
+					itemId={qrDialogItem.id}
+					itemName={qrDialogItem.name}
+					open={!!qrDialogItem}
+					onOpenChange={(open) => {
+						if (!open) setQrDialogItem(null);
+					}}
+				/>
+			)}
 		</div>
 	);
 }

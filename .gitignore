@@ -50,3 +50,9 @@ nul
 .vercel
 .worktrees
 .env.vercel
+
+# Project config
+.pi-lens/
+
+# Build artifacts
+tsconfig.tsbuildinfo

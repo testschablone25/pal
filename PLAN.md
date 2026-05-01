@@ -1,194 +1,156 @@
-# Plan: Align Roles, Venues & Inventory with PAL-TOOL.xlsx
+# Staff Module Enhancement Plan
 
 ## Context
 
-The PAL backoffice provided a spreadsheet (`PAL-TOOL.xlsx`) documenting their current operational data for roles, locations (venues), and inventory. The existing PAL Nightclub Booking System already covers many of these areas but has gaps:
+The `/staff` module is a core part of the PAL nightclub booking system. It currently has basic CRUD for staff members, a shift scheduling page, and an availability calendar. The goal is to significantly improve all three areas: staff management, shift scheduling, and availability, while integrating the already-existing role-based permission system into the staff module.
 
-1. **Venues** lack sub-location/area support — PAL locations like "PAL Club GmbH & Co. KG" have multiple floors/areas ("KERN, ORB, ORBIT") where inventory items can be placed.
-2. **Inventory categories** differ between PAL's real-world categories and the current system's categories.
-3. **Roles** are well-aligned (already multi-role, same roles), but some mapping/validation is needed.
-4. **`items.current_location`** is plain text — should reference venue sub-locations for structured tracking.
+## Current State
+
+- **Staff CRUD**: `src/app/staff/page.tsx` (list with filters), `src/app/staff/new/page.tsx`, `src/app/staff/[id]/edit/page.tsx`, `src/components/staff-form.tsx`, API at `src/app/api/staff/`
+- **Shift Scheduling**: `src/app/staff/shifts/page.tsx` (event selector, timeline view, shift list), API at `src/app/api/shifts/`, DB table `shifts`
+- **Availability**: `src/app/staff/availability/page.tsx` + `src/components/availability-calendar.tsx` (per-staff calendar), API at `src/app/api/availability/`, DB table `availability`
+- **Permissions**: Fully defined in `src/lib/permissions.ts` (13 roles, feature-based perms, route access rules). Middleware in `src/proxy.ts` enforces route access. API routes currently use service key (bypass RLS) and only the admin/roles API checks permissions.
+- **DB Schema**: Staff, shifts, availability tables in initial migration. Staff has `profile_id` FK to profiles.
 
 ## Approach
 
-We'll add a **venue sub-locations** system (floors/areas/zones) so each venue can have named sub-locations, and inventory items can be placed at a specific sub-location via a foreign key. We'll also align inventory categories with PAL's categories and ensure the role system matches.
+We'll work incrementally through 5 major phases. Each phase builds on the previous one.
 
-## PAL-TOOL.xlsx Summary (Reference)
+---
 
-### Role Assignment
+## Files to Modify (Full List)
 
-| Head-Rolle         | Roles from PAL sheet (multi-role capable)           |
-| ------------------ | --------------------------------------------------- |
-| Manager            | Andre, David, Mary — "Alles" permission             |
-| ADMIN              | Alexander — "Alles" permission                      |
-| Azubi              | Johann, Anton — Booking, Staff, Social Media        |
-| Manager+Tech+Label | Oliver — Tech, Staff, Social Media, Label, Booking  |
-| Staff              | Gordon, Marvin, Mahoni, Tillmann — various          |
-| Tech               | Jeldrik — Tech, Staff, Social Media, Label, Booking |
-| Night-Management   | Lea Marie, Linus — Staff, HR                        |
-| Gastro             | Max, Lu, Roses — Gastro, Staff, HR                  |
-| HR & Finances      | Nathalie — HR                                       |
-| Awareness          | (unnamed) — Awareness                               |
+### Staff CRUD
 
-### Location
+- `src/app/staff/page.tsx` — Remove hourly rate column
+- `src/components/staff-form.tsx` — Remove hourly rate field; add profile/user creation flow
+- `src/app/api/staff/route.ts` — Remove hourly_rate from POST; add permission checks; add user creation
+- `src/app/api/staff/[id]/route.ts` — Remove hourly_rate from PUT; add permission checks
 
-| Location               | Address            | Type                 | Floors/Sub-locations |
-| ---------------------- | ------------------ | -------------------- | -------------------- |
-| PHOXXI Green Area      | Deichtorstr. 1     | Venue                | Openair              |
-| Deichtor-Hallen        | Deichtorstr. 1     | Lager                | —                    |
-| Berliner Bahnhof       | Deichtorstr. 1     | Venue                | —                    |
-| PAL Club GmbH & Co. KG | Hammerbrookstr. 43 | Venue                | **KERN, ORB, ORBIT** |
-| Fruchthof              | —                  | Venue, Office, Lager | Openair              |
-| PAL Office             | Grindelhof 35a     | Office               | —                    |
-| Orbit Cafe             | Hammerbrookstr. 43 | Venue                | —                    |
+### Shift Scheduling (Phase 2)
 
-### Inventory Categories (PAL)
+- `src/app/staff/shifts/page.tsx` — Major overhaul: edit dialog, drag-drop timeline, filtering, conflict warnings
+- `src/app/api/shifts/route.ts` — Add permission checks; add conflict detection endpoint logic; bulk operations
+- `src/app/api/shifts/[id]/route.ts` — Add permission checks; add clock-in/clock-out endpoints
 
-- **DJ & Audio Equipment** (CDJ 3000, XONE 96, Technics SL 1210, Scarlett 4i4)
-- **Lighting Equipment** (APELABS, Moving Head, Strobe, Fog machines, Lasers)
-- **PA & SOUND** (PAL HORN, KLING FREITAG, VOID VENU 6, SSNAKE, SONOS)
-- **Infrastructure & Signal** (Splitter, Adapter, XLR, PowerCON, Speakon)
-- **Venue & Misc** (Sofa, Ventilator, Sitzkübel)
+### Shift Templates
 
-## Current System State
+- `src/app/api/shifts/templates/route.ts` — New: CRUD for shift templates
+- `src/components/shift-template-form.tsx` — New: shift template form
 
-### Roles (`multi_role_system.sql` + `permissions.ts`)
+### Shift Clock-In/Out
 
-- Multi-role via `user_roles` table (user_id, role) with UNIQUE constraint
-- 13 roles: admin, manager, booking, social-media, night-management, label, staff, tech, tech-lead, gastro, backoffice, awareness, azubi
-- Permission system with `FEATURE_PERMISSIONS`, `ROLE_ROUTE_ACCESS`, `ROLE_CONFIG`
-- Admin page for role management at `/admin`
-- **✅ Already well-aligned with PAL's role assignment**
+- `src/app/api/shifts/[id]/clock-in/route.ts` — New: clock-in endpoint
+- `src/app/api/shifts/[id]/clock-out/route.ts` — New: clock-out endpoint
 
-### Venues (`venues` table)
+### Shift Swaps
 
-```sql
-CREATE TABLE venues (
-  id UUID PRIMARY KEY,
-  name TEXT NOT NULL,
-  address TEXT,
-  capacity INT NOT NULL,
-  created_at TIMESTAMPTZ, updated_at TIMESTAMPTZ
-);
-```
+- `src/app/api/shifts/[id]/swap/route.ts` — New: request/approve shift swap
+- `src/components/shift-swap-request.tsx` — New: swap request UI
 
-- **❌ No sub-locations/floors/areas**
-- **❌ No venue type** (Venue, Lager, Office)
-- API: `/api/venues`, `/api/venues/[id]`
-- Page: `/venues` (CRUD with name, address, capacity)
+### Availability (Phase 3)
 
-### Inventory (`items` table)
+- `src/components/availability-calendar.tsx` — Major overhaul: self-service mode, colleague visibility
+- `src/app/staff/availability/page.tsx` — Add staff-only view (own availability)
+- `src/app/api/availability/route.ts` — Add permission checks; filter by user identity
 
-```sql
-CREATE TABLE items (
-  id UUID PRIMARY KEY,
-  name TEXT NOT NULL,
-  category TEXT CHECK (category IN ('sound', 'lighting', 'dj', 'furniture', 'bar', 'misc')),
-  serial_number TEXT UNIQUE,
-  brand TEXT, model TEXT,
-  condition_enum TEXT CHECK (...),
-  condition_notes TEXT,
-  current_location TEXT,    -- ❌ Free text, not linked to venue sub-locations
-  notes TEXT, photo_url TEXT,
-  ...
-);
-```
+### Permissions Integration (Phase 4)
 
-- **❌ Categories don't match PAL**: PAL uses `DJ & Audio Equipment`, `Lighting Equipment`, `PA & SOUND`, `Infrastructure & Signal`, `Venue & Misc` — current uses `sound, lighting, dj, furniture, bar, misc`
-- **❌ `current_location` is free text** — should optionally reference a venue sub-location
-- Related tables: `item_location_history`, `rentals`, `task_items`
+- `src/app/api/staff/route.ts` — Add `hasPermission` checks
+- `src/app/api/staff/[id]/route.ts` — Add `hasPermission` checks
+- `src/app/api/shifts/route.ts` — Add `hasPermission` checks
+- `src/app/api/shifts/[id]/route.ts` — Add `hasPermission` checks
+- `src/app/api/availability/route.ts` — Add `hasPermission` checks
+- `src/app/api/availability/[id]/route.ts` — Add `hasPermission` checks
+- All UI components — Gate actions (add/edit/delete) behind permission checks
 
-## Files to Modify
+### User Invite Flow (Phase 5)
 
-### New Migration
+- `src/app/api/invite/route.ts` — New: invite staff (create user + profile + staff record)
+- `src/components/staff-form.tsx` — Add email/password fields for new user creation
+- `src/app/staff/new/page.tsx` — Update to support invite flow
 
-- `supabase/migrations/20260429000000_venue_sublocations_and_inventory_align.sql`
+### Database
 
-### Modified API routes
+- `supabase/migrations/YYYYMMDD000000_staff_enhancement.sql` — New migration for shift templates table, shift swap requests table, staff clock-in/out tracking
 
-- `src/app/api/venues/route.ts` — add venue_type support
-- `src/app/api/venues/[id]/route.ts` — include sub-locations in response
-- `src/app/api/venues/[id]/sublocations/route.ts` (new) — CRUD for sub-locations
-- `src/app/api/items/route.ts` — update categories, add sub_location_id
-- `src/app/api/items/[id]/route.ts` — same
-- `src/app/api/items/[id]/location-history/route.ts` — accept sub_location_id
-
-### Modified Pages / Components
-
-- `src/app/venues/page.tsx` — add venue type, sub-location management UI per venue card
-- `src/components/inventory-form.tsx` — PAL categories, venue+sub-location cascade select
-- `src/components/inventory-list.tsx` — display sub-location path
-- `src/components/inventory-detail.tsx` — show sub-location detail + venue context
-- `src/components/checkin-checkout-modal.tsx` — replace free-text with venue+sub-location select
-
-### Configuration
-
-- `src/lib/permissions.ts` — optionally add inventory write, sub-location management permissions
+---
 
 ## Reuse
 
-- **`permissions.ts`**: Role config/consts — extend FEATURE_PERMISSIONS for new features
-- **Existing Supabase client pattern**: All API routes use `createClient(supabaseConfig.url, supabaseConfig.serviceKey)` — follow same pattern
-- **Dialog/Form patterns**: Use same Dialog, Select, Form components from `@/components/ui/`
-- **PAL roles mapping**: Already in `permissions.ts` as `ALL_ROLES` / `ROLE_CONFIG`
+| Existing Function/File  | Path                                       | What to Reuse                                                                                             |
+| ----------------------- | ------------------------------------------ | --------------------------------------------------------------------------------------------------------- |
+| `canAccessRoute`        | `src/lib/permissions.ts`                   | Route-level access checks in middleware                                                                   |
+| `hasPermission`         | `src/lib/permissions.ts`                   | Feature-level permission checks in API routes (same pattern as admin/roles API)                           |
+| `FEATURE_PERMISSIONS`   | `src/lib/permissions.ts`                   | Already defines STAFF_READ, STAFF_WRITE, SHIFTS_READ, SHIFTS_WRITE, AVAILABILITY_READ, AVAILABILITY_WRITE |
+| `ROLE_ROUTE_ACCESS`     | `src/lib/permissions.ts`                   | Already defines /staff route access                                                                       |
+| Admin Roles API pattern | `src/app/api/admin/roles/route.ts`         | Reference for how to check permissions in API routes (fetch user_roles via user_id from session)          |
+| Shifts Timeline View    | `src/app/staff/shifts/page.tsx`            | Existing timeline rendering logic to extend                                                               |
+| Availability Calendar   | `src/components/availability-calendar.tsx` | Existing calendar UI to extend for self-service                                                           |
+| Staff Form              | `src/components/staff-form.tsx`            | Existing form to modify                                                                                   |
+| UI Components           | `src/components/ui/*`                      | Use existing shadcn/ui components (Dialog, Form, Select, etc.)                                            |
+
+---
 
 ## Steps
 
-- [x] **Step 1: Create migration**
-  - ✅ Created `venue_sub_locations` table
-  - ✅ Added `venue_type` column to `venues`
-  - ✅ Added `sub_location_id FK` on `items`
-  - ✅ Updated `items.category` CHECK constraint to PAL categories
-  - ✅ RLS policies for new table
-  - ✅ Seeded all PAL venues (7) with sub-locations and all ~50 inventory items
+### Phase 1: Remove Hourly Rate from UI & Add Staff-User Linking [DONE]
 
-- [x] **Step 2: Update Venue API**
-  - ✅ `GET /api/venues` now includes sub-locations per venue
-  - ✅ `POST /api/venues` accepts `venue_type`
-  - ✅ `PUT /api/venues/[id]` accepts `venue_type`
-  - ✅ New `GET/POST /api/venues/[id]/sublocations` route
-  - ✅ New `PUT/DELETE /api/venues/[id]/sublocations/[subId]` route
+- [x] **Step 1.1** — Remove `hourly_rate` field from `src/components/staff-form.tsx` (form field and schema)
+- [x] **Step 1.2** — Remove "Hourly Rate" column from `src/app/staff/page.tsx` table
+- [x] **Step 1.3** — Remove `hourly_rate` from `src/app/api/staff/route.ts` POST handler
+- [x] **Step 1.4** — Remove `hourly_rate` from `src/app/api/staff/[id]/route.ts` PUT handler
 
-- [x] **Step 3: Update Items API**
-  - ✅ `POST /api/items` accepts `sub_location_id`
-  - ✅ `PUT /api/items/[id]` accepts `sub_location_id`
-  - ✅ GET returns `sub_location` with venue info
-  - ✅ Location-history route computes display string from sub-location
+### Phase 2: Shift Scheduling Overhaul
 
-- [x] **Step 4: Update Venues Page**
-  - ✅ Venue type select in create/edit form (Venue, Lager, Office, Mixed)
-  - ✅ Sub-location list per venue card
-  - ✅ Add sub-location dialog (name + description)
-  - ✅ Delete sub-location button per item
+- [ ] **Step 2.1** — Add Edit Shift dialog (open from existing timeline/bar or list; prepopulate form; PUT to `/api/shifts/[id]`)
+- [ ] **Step 2.2** — Add Role-based filter to timeline view (dropdown to filter visible shifts by role)
+- [ ] **Step 2.3** — Add Drag & Drop timeline scheduling (use `@dnd-kit` — already in dependencies — to drag shift bars to adjust start/end times)
+- [ ] **Step 2.4** — Add Shift Conflict Detection (when saving a shift, check if staff already has overlapping shift in same event; show warning)
+- [ ] **Step 2.5** — Add Bulk Shift Assignment (select multiple staff + role + time range + event; create shifts for all in one go)
+- [ ] **Step 2.6** — Create Shift Templates system (new DB table `shift_templates`: name, event_type, role, start_time_offset, end_time_offset, break_minutes; CRUD UI; apply template to event to auto-generate shifts)
+- [ ] **Step 2.7** — Add Staff Clock-In / Clock-Out tracking (new columns in shifts: `clocked_in_at`, `clocked_out_at`, `actual_break_minutes`; clock-in button on shifts page for staff; clock-out button; managers can view/edit)
+- [ ] **Step 2.8** — Add Shift Swap Request System (new DB table `shift_swap_requests`: id, requested_by (staff_id), target_staff_id, shift_id, status (pending/accepted/declined), reason; staff can request swap with colleague who sees the same role/event; manager approval required; request flow UI)
+- [ ] **Step 2.9** — Add Shift Scheduling Export (generate PDF/CSV of shifts per event using jspdf — already in dependencies)
 
-- [x] **Step 5: Update Inventory Form**
-  - ✅ Categories changed to PAL: DJ & Audio, Lighting, PA & Sound, Infrastructure, Venue & Misc
-  - ✅ Venue → Sub-location cascade select added
-  - ✅ Free-text location kept as fallback
+### Phase 3: Availability Self-Service Overhaul
 
-- [x] **Step 6: Update Inventory List & Detail**
-  - ✅ Category filter tabs updated to PAL categories
-  - ✅ Detail shows sub-location path (Venue > Area)
-  - ✅ venue_id filter support in API
+- [ ] **Step 3.1** — Add "My Availability" view for staff (at `/staff/availability?view=me` or via tab) — loads only the logged-in staff member's calendar
+- [ ] **Step 3.2** — Staff can click dates to set themselves as available/unavailable with a reason (self-service flip)
+- [ ] **Step 3.3** — Manager/Admin/Backoffice view (current view) remains, with ability to override any staff member's availability
+- [ ] **Step 3.4** — Staff can see colleagues' availability (for swap requests) — show simple indicators in shift scheduling view without revealing reasons
+- [ ] **Step 3.5** — Link Availability Calendar to Shifts page (highlight staff with conflicts based on availability data when scheduling)
 
-- [x] **Step 7: Update Checkin/Checkout Modal**
-  - ✅ Removed hardcoded LOCATION_PRESETS
-  - ✅ Added Venue → Sub-location cascade select
-  - ✅ Kept manual location input as fallback
-  - ✅ Sends `sub_location_id` to API when selected
+### Phase 4: Permission Enforcement in Staff Module
 
-- [x] **Step 8: Update Permissions**
-  - ✅ Added INVENTORY_READ / INVENTORY_WRITE / INVENTORY_CHECKIN feature permissions
-  - ✅ Added VENUE_SUBLOCATIONS_READ / VENUE_SUBLOCATIONS_WRITE feature permissions
-  - ✅ Added INVENTORY and RENTALS route groups and role access
+- [ ] **Step 4.1** — Add helper function `getUserRoles(userId)` in `src/lib/permissions.ts` or new utility to fetch roles from Supabase (reusable pattern from admin/roles API)
+- [ ] **Step 4.2** — Add `hasPermission` checks to `GET /api/staff` (requires STAFF_READ)
+- [ ] **Step 4.3** — Add `hasPermission` checks to `POST /api/staff` (requires STAFF_WRITE)
+- [ ] **Step 4.4** — Add `hasPermission` checks to `PUT /api/staff/[id]` (requires STAFF_WRITE)
+- [ ] **Step 4.5** — Add `hasPermission` checks to `DELETE /api/staff/[id]` (requires STAFF_WRITE)
+- [ ] **Step 4.6** — Add `hasPermission` checks to shift API routes (SHIFTS_READ for GET, SHIFTS_WRITE for POST/PUT/DELETE)
+- [ ] **Step 4.7** — Add `hasPermission` checks to availability API routes (AVAILABILITY_READ for GET, AVAILABILITY_WRITE for POST/PUT/DELETE)
+- [ ] **Step 4.8** — Gate UI actions in staff list page (only show Add/Edit/Delete buttons for users with STAFF_WRITE)
+- [ ] **Step 4.9** — Gate UI actions in shifts page (only show Add/Edit/Delete for users with SHIFTS_WRITE)
+- [ ] **Step 4.10** — Gate UI actions in availability page (staff can set own availability; managers can override anyone)
+
+### Phase 5: User Invite Flow for Staff Creation
+
+- [ ] **Step 5.1** — Update `src/components/staff-form.tsx` to include email + temporary password fields for creating a new user account
+- [ ] **Step 5.2** — Update `POST /api/staff` to: (a) create user via `supabase.auth.admin.createUser()`, (b) create profile entry, (c) create staff record linked to profile, (d) assign default staff role
+- [ ] **Step 5.3** — Add optional role assignment during staff creation (defaults to `staff` role, admin/manager can assign additional roles)
+- [ ] **Step 5.4** — Handle edit mode (staff without profile_id should be able to link to an existing profile or create one)
+
+---
 
 ## Verification
 
-1. Run migration: `npx supabase migration up`
-2. Navigate to `/venues` — verify venue type + sub-location CRUD works
-3. Create sub-locations for PAL Club: "KERN", "ORB", "ORBIT"
-4. Go to `/inventory` → Add Item — verify categories are PAL's, location shows "Select Venue → Select Sub-location"
-5. Edit item — verify sub-location persists
-6. Check-in/out modal — verify venue+sub-location cascade select
-7. `/admin` role management — verify still works (not affected)
-8. Run tests: `npx vitest run`
+1. **Unit tests**: Run `npm run test:unit` — permissions tests should still pass; any new utilities need tests
+2. **Build check**: `npm run build` — should compile without errors
+3. **Manual checks**:
+   - Create a staff member → confirm user account is created and staff record links to profile
+   - Staff list → hourly rate column is gone
+   - Shift scheduling → can create/edit/delete shifts; conflicts are detected; drag-drop works; bulk assign works; templates work; clock-in/out works; swap requests work; export works
+   - Availability → staff can set own availability; managers can override; colleagues' availability shown in shift view
+   - Permission gating → staff user cannot add/edit/delete staff members; manager can
+   - Admin page → roles are manageable
