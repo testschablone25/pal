@@ -467,3 +467,49 @@ export function getAssignableRoles(userRoles: AppRole[]): AppRole[] {
 
 	return ALL_ROLES.filter((role) => ROLE_CONFIG[role].rank < maxRank);
 }
+
+// ============================================
+// SUPABASE HELPER — Fetch roles from DB
+// ============================================
+
+/**
+ * Fetch a user's roles from Supabase.
+ * Returns an empty array if the user is not found or has no roles.
+ *
+ * Usage in API routes:
+ *   import { createClient } from "@supabase/supabase-js";
+ *   import { supabaseConfig } from "@/lib/supabase/config";
+ *   const supabase = createClient(supabaseConfig.url, supabaseConfig.serviceKey);
+ *   const userRoles = await getUserRoles(supabase, userId);
+ *
+ * @param supabase - A Supabase client (service role key recommended for admin ops)
+ * @param userId - The UUID of the user whose roles to fetch
+ * @returns Array of AppRole
+ */
+export async function getUserRoles(
+	supabase: {
+		from: (table: string) => {
+			select: (columns: string) => {
+				eq: (
+					column: string,
+					value: string,
+				) => Promise<{ data: { role: string }[] | null }>;
+			};
+		};
+	},
+	userId: string,
+): Promise<AppRole[]> {
+	try {
+		const { data } = await supabase
+			.from("user_roles")
+			.select("role")
+			.eq("user_id", userId);
+
+		if (!data) return [];
+		return data
+			.map((r: { role: string }) => r.role as AppRole)
+			.filter(isValidRole);
+	} catch {
+		return [];
+	}
+}

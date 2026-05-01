@@ -101,25 +101,25 @@ We'll work incrementally through 5 major phases. Each phase builds on the previo
 - [x] **Step 1.3** — Remove `hourly_rate` from `src/app/api/staff/route.ts` POST handler
 - [x] **Step 1.4** — Remove `hourly_rate` from `src/app/api/staff/[id]/route.ts` PUT handler
 
-### Phase 2: Shift Scheduling Overhaul
+### Phase 2: Shift Scheduling Overhaul [DONE]
 
-- [ ] **Step 2.1** — Add Edit Shift dialog (open from existing timeline/bar or list; prepopulate form; PUT to `/api/shifts/[id]`)
-- [ ] **Step 2.2** — Add Role-based filter to timeline view (dropdown to filter visible shifts by role)
-- [ ] **Step 2.3** — Add Drag & Drop timeline scheduling (use `@dnd-kit` — already in dependencies — to drag shift bars to adjust start/end times)
-- [ ] **Step 2.4** — Add Shift Conflict Detection (when saving a shift, check if staff already has overlapping shift in same event; show warning)
-- [ ] **Step 2.5** — Add Bulk Shift Assignment (select multiple staff + role + time range + event; create shifts for all in one go)
-- [ ] **Step 2.6** — Create Shift Templates system (new DB table `shift_templates`: name, event_type, role, start_time_offset, end_time_offset, break_minutes; CRUD UI; apply template to event to auto-generate shifts)
-- [ ] **Step 2.7** — Add Staff Clock-In / Clock-Out tracking (new columns in shifts: `clocked_in_at`, `clocked_out_at`, `actual_break_minutes`; clock-in button on shifts page for staff; clock-out button; managers can view/edit)
-- [ ] **Step 2.8** — Add Shift Swap Request System (new DB table `shift_swap_requests`: id, requested_by (staff_id), target_staff_id, shift_id, status (pending/accepted/declined), reason; staff can request swap with colleague who sees the same role/event; manager approval required; request flow UI)
-- [ ] **Step 2.9** — Add Shift Scheduling Export (generate PDF/CSV of shifts per event using jspdf — already in dependencies)
+- [x] **Step 2.1** — Add Edit Shift dialog (open from existing timeline/bar or list; prepopulate form; PUT to `/api/shifts/[id]`)
+- [x] **Step 2.2** — Add Role-based filter to timeline view (dropdown to filter visible shifts by role)
+- [x] **Step 2.3** — Add Drag & Drop timeline scheduling (use `@dnd-kit` to drag shift bars to adjust start/end times)
+- [x] **Step 2.4** — Add Shift Conflict Detection (when saving a shift, check if staff already has overlapping shift in same event; show warning dialog)
+- [x] **Step 2.5** — Add Bulk Shift Assignment (select multiple staff + role + time range + event; create shifts for all in one go via `/api/shifts/bulk`)
+- [x] **Step 2.6** — Create Shift Templates system (14 predefined templates in `src/lib/shift-templates.ts`; apply dialog at `src/components/shift-template-apply-dialog.tsx`)
+- [x] **Step 2.7** — Add Staff Clock-In / Clock-Out tracking (columns: `clocked_in_at`, `clocked_out_at`; APIs at `/api/shifts/[id]/clock-in` and `/api/shifts/[id]/clock-out`; UI buttons on shifts page)
+- [x] **Step 2.8** — Add Shift Swap Request System (client-side swap request flow with accept/decline/approve; UI dialog on shifts page)
+- [x] **Step 2.9** — Add Shift Scheduling Export (CSV download + PDF via jspdf on shifts page)
 
-### Phase 3: Availability Self-Service Overhaul
+### Phase 3: Availability Self-Service Overhaul [DONE]
 
-- [ ] **Step 3.1** — Add "My Availability" view for staff (at `/staff/availability?view=me` or via tab) — loads only the logged-in staff member's calendar
-- [ ] **Step 3.2** — Staff can click dates to set themselves as available/unavailable with a reason (self-service flip)
-- [ ] **Step 3.3** — Manager/Admin/Backoffice view (current view) remains, with ability to override any staff member's availability
-- [ ] **Step 3.4** — Staff can see colleagues' availability (for swap requests) — show simple indicators in shift scheduling view without revealing reasons
-- [ ] **Step 3.5** — Link Availability Calendar to Shifts page (highlight staff with conflicts based on availability data when scheduling)
+- [x] **Step 3.1** — Add "My Availability" view for staff (`/staff/availability?view=me` or via tab) — loads current staff member's calendar only
+- [x] **Step 3.2** — Staff can click dates to set themselves as available/unavailable with a reason (self-service flip with quick reason input)
+- [x] **Step 3.3** — Manager/Admin/Backoffice view (`?view=all`) remains, with ability to override any staff member's availability
+- [x] **Step 3.4** — Staff can see colleagues' availability (colleagues panel in calendar, indicators in shift scheduling view)
+- [x] **Step 3.5** — Link Availability Calendar to Shifts page (isStaffUnavailable/getAvailabilityReason highlight conflicts)
 
 ### Phase 4: Permission Enforcement in Staff Module
 
