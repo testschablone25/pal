@@ -281,7 +281,9 @@ function getTimePosition(dateTime: string) {
 function getTimeWidth(startTime: string, endTime: string) {
 	const start = new Date(startTime);
 	const end = new Date(endTime);
-	const diffMs = end.getTime() - start.getTime();
+	let diffMs = end.getTime() - start.getTime();
+	// Handle cross-midnight shifts (end time is before start time)
+	if (diffMs < 0) diffMs += 24 * 60 * 60 * 1000;
 	const diffMinutes = diffMs / (1000 * 60);
 	return (diffMinutes / (12 * 60)) * 100;
 }
@@ -490,7 +492,13 @@ export default function ShiftsPage() {
 		if (!selectedEvent) return;
 
 		const startDateTime = `${selectedEvent.date}T${values.start_time}:00`;
-		const endDateTime = `${selectedEvent.date}T${values.end_time}:00`;
+		let endDateTime = `${selectedEvent.date}T${values.end_time}:00`;
+		// Handle cross-midnight shifts: if end is before start, end is next day
+		if (values.end_time <= values.start_time) {
+			const nextDay = new Date(selectedEvent.date);
+			nextDay.setDate(nextDay.getDate() + 1);
+			endDateTime = `${nextDay.toISOString().split("T")[0]}T${values.end_time}:00`;
+		}
 
 		// Check for conflicts before submitting
 		const conflictResult = await checkForConflicts(
@@ -769,7 +777,13 @@ export default function ShiftsPage() {
 		setBulkSubmitting(true);
 		try {
 			const startDateTime = `${selectedEvent.date}T${bulkStartTime}:00`;
-			const endDateTime = `${selectedEvent.date}T${bulkEndTime}:00`;
+			let endDateTime = `${selectedEvent.date}T${bulkEndTime}:00`;
+			// Handle cross-midnight shifts
+			if (bulkEndTime <= bulkStartTime) {
+				const nextDay = new Date(selectedEvent.date);
+				nextDay.setDate(nextDay.getDate() + 1);
+				endDateTime = `${nextDay.toISOString().split("T")[0]}T${bulkEndTime}:00`;
+			}
 
 			const shiftsToCreate: BulkShiftInput[] = selectedBulkStaff.map(
 				(staffId) => ({
