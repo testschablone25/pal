@@ -371,7 +371,7 @@ export default function ShiftsPage() {
 
 	const fetchEvents = async () => {
 		try {
-			const response = await fetch("/api/events?status=published");
+			const response = await fetch("/api/events");
 			const data = await response.json();
 			setEvents(data.events || []);
 			if (data.events?.length > 0 && !selectedEventId) {
