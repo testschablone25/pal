@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
 	Table,
@@ -12,13 +11,6 @@ import {
 	TableHeader,
 	TableRow,
 } from "@/components/ui/table";
-import {
-	Select,
-	SelectContent,
-	SelectItem,
-	SelectTrigger,
-	SelectValue,
-} from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
@@ -38,6 +30,15 @@ import {
 	Clock,
 	Calendar,
 } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import {
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from "@/components/ui/select";
+import { SearchFilterBar } from "@/components/search-filter-bar";
 import Link from "next/link";
 import { useToast } from "@/hooks/use-toast";
 import { EmptyState } from "@/components/empty-state";
@@ -221,7 +222,7 @@ export default function StaffPage() {
 	};
 
 	return (
-		<div className="container mx-auto py-8 px-4">
+		<div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8">
 			<div className="mb-8">
 				<h1 className="text-3xl font-bold text-white">Staff Management</h1>
 				<p className="text-zinc-400 mt-2">
@@ -287,62 +288,33 @@ export default function StaffPage() {
 			{/* Search and Filters */}
 			<Card className="bg-zinc-900 border-zinc-800 mb-6">
 				<CardContent className="pt-6">
-					<form onSubmit={handleSearch} className="space-y-4">
-						<div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-							<div className="relative">
-								<Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400" />
-								<Input
-									placeholder="Search by name..."
-									value={searchName}
-									onChange={(e) => setSearchName(e.target.value)}
-									className="pl-10 bg-zinc-950 border-zinc-800"
-								/>
-							</div>
-							<Select value={filterRole} onValueChange={setFilterRole}>
-								<SelectTrigger className="bg-zinc-950 border-zinc-800">
-									<SelectValue placeholder="Filter by role" />
-								</SelectTrigger>
-								<SelectContent className="bg-zinc-900 border-zinc-800">
-									{STAFF_ROLES.map((role) => (
-										<SelectItem key={role} value={role}>
-											{role}
-										</SelectItem>
-									))}
-								</SelectContent>
-							</Select>
-							<Select
-								value={filterContractType}
-								onValueChange={setFilterContractType}
-							>
-								<SelectTrigger className="bg-zinc-950 border-zinc-800">
-									<SelectValue placeholder="Contract type" />
-								</SelectTrigger>
-								<SelectContent className="bg-zinc-900 border-zinc-800">
-									{CONTRACT_TYPES.map((type) => (
-										<SelectItem key={type.value} value={type.value}>
-											{type.label}
-										</SelectItem>
-									))}
-								</SelectContent>
-							</Select>
-							<div className="flex gap-2">
-								<Button
-									type="submit"
-									className="flex-1 bg-violet-600 hover:bg-violet-700"
-								>
-									Search
-								</Button>
-								<Button
-									type="button"
-									variant="outline"
-									onClick={clearFilters}
-									className="border-zinc-800"
-								>
-									Clear
-								</Button>
-							</div>
-						</div>
-					</form>
+					<SearchFilterBar
+						placeholder="Search by name..."
+						searchValue={searchName}
+						onSearchChange={setSearchName}
+						filters={[
+							{
+								key: "role",
+								label: "Filter by role",
+								options: STAFF_ROLES.map((role) => ({
+									value: role,
+									label: role,
+								})),
+								value: filterRole,
+								onChange: setFilterRole,
+							},
+							{
+								key: "contract_type",
+								label: "Contract type",
+								options: CONTRACT_TYPES.map((t) => ({
+									value: t.value,
+									label: t.label,
+								})),
+								value: filterContractType,
+								onChange: setFilterContractType,
+							},
+						]}
+					/>
 				</CardContent>
 			</Card>
 

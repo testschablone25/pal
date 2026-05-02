@@ -11,6 +11,16 @@ import {
 	DialogHeader,
 	DialogTitle,
 } from "@/components/ui/dialog";
+import {
+	AlertDialog,
+	AlertDialogContent,
+	AlertDialogHeader,
+	AlertDialogFooter,
+	AlertDialogTitle,
+	AlertDialogDescription,
+	AlertDialogCancel,
+	AlertDialogAction,
+} from "@/components/ui/alert-dialog";
 import { RunningOrder } from "@/components/running-order";
 import { PerformanceForm } from "@/components/performance-form";
 import { format } from "date-fns";
@@ -52,6 +62,7 @@ export default function EventDetailPage() {
 	const [loading, setLoading] = useState(true);
 	const [addPerformanceOpen, setAddPerformanceOpen] = useState(false);
 	const [refreshKey, setRefreshKey] = useState(0);
+	const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 	const { toast } = useToast();
 
 	useEffect(() => {
@@ -88,8 +99,6 @@ export default function EventDetailPage() {
 	};
 
 	const handleDeleteEvent = async () => {
-		if (!confirm("Are you sure you want to delete this event?")) return;
-
 		try {
 			await fetch(`/api/events/${eventId}`, { method: "DELETE" });
 			router.push("/events");
@@ -136,7 +145,7 @@ export default function EventDetailPage() {
 
 	if (loading) {
 		return (
-			<div className="container mx-auto py-8 px-4">
+			<div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8">
 				<PageSkeleton rows={3} />
 			</div>
 		);
@@ -144,7 +153,7 @@ export default function EventDetailPage() {
 
 	if (!event) {
 		return (
-			<div className="container mx-auto py-8 px-4">
+			<div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8">
 				<Card className="bg-zinc-900 border-zinc-800">
 					<CardContent className="py-12 text-center">
 						<p className="text-zinc-400">Event not found</p>
@@ -160,7 +169,7 @@ export default function EventDetailPage() {
 	}
 
 	return (
-		<div className="container mx-auto py-8 px-4">
+		<div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8">
 			{/* Header */}
 			<div className="flex justify-between items-start mb-8">
 				<div>
@@ -217,11 +226,37 @@ export default function EventDetailPage() {
 							Edit
 						</Button>
 					</Link>
-					<Button variant="destructive" onClick={handleDeleteEvent}>
+					<Button
+						variant="destructive"
+						onClick={() => setShowDeleteDialog(true)}
+					>
 						<Trash2 className="h-4 w-4" />
 					</Button>
 				</div>
 			</div>
+
+			<AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+				<AlertDialogContent className="bg-zinc-900 border-zinc-800">
+					<AlertDialogHeader>
+						<AlertDialogTitle>Löschen bestätigen</AlertDialogTitle>
+						<AlertDialogDescription>
+							Sind Sie sicher? Diese Aktion kann nicht rückgängig gemacht
+							werden.
+						</AlertDialogDescription>
+					</AlertDialogHeader>
+					<AlertDialogFooter>
+						<AlertDialogCancel className="border-zinc-800">
+							Abbrechen
+						</AlertDialogCancel>
+						<AlertDialogAction
+							onClick={handleDeleteEvent}
+							className="bg-red-600 hover:bg-red-700"
+						>
+							Löschen
+						</AlertDialogAction>
+					</AlertDialogFooter>
+				</AlertDialogContent>
+			</AlertDialog>
 
 			{/* Venue info */}
 			{event.venues && (

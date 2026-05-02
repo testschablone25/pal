@@ -65,6 +65,7 @@ import {
 	X,
 	Send,
 } from "lucide-react";
+import { SearchFilterBar } from "@/components/search-filter-bar";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import {
 	DropdownMenu,
@@ -310,6 +311,7 @@ export default function ShiftsPage() {
 	const [deleting, setDeleting] = useState(false);
 	const [editingShift, setEditingShift] = useState<Shift | null>(null);
 	const [roleFilter, setRoleFilter] = useState<string>("all");
+	const [shiftSearch, setShiftSearch] = useState<string>("");
 	const [activeDragShift, setActiveDragShift] = useState<Shift | null>(null);
 	const [savingIndicator, setSavingIndicator] = useState<string | null>(null);
 	const [conflictDialogOpen, setConflictDialogOpen] = useState(false);
@@ -644,8 +646,15 @@ export default function ShiftsPage() {
 	};
 
 	// Filter shifts by selected role
-	const filteredShifts =
-		roleFilter === "all" ? shifts : shifts.filter((s) => s.role === roleFilter);
+	const filteredShifts = shifts.filter((s) => {
+		const matchesRole = roleFilter === "all" || s.role === roleFilter;
+		const matchesSearch =
+			!shiftSearch ||
+			(s.staff?.profiles?.full_name || "")
+				.toLowerCase()
+				.includes(shiftSearch.toLowerCase());
+		return matchesRole && matchesSearch;
+	});
 
 	const selectedEvent = events.find((e) => e.id === selectedEventId);
 
@@ -1048,7 +1057,7 @@ export default function ShiftsPage() {
 	};
 
 	return (
-		<div className="container mx-auto py-8 px-4">
+		<div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8">
 			<div className="mb-8">
 				<h1 className="text-3xl font-bold text-white">Shift Scheduling</h1>
 				<p className="text-zinc-400 mt-2">
@@ -1218,20 +1227,27 @@ export default function ShiftsPage() {
 						<CardContent>
 							{/* Role Filter + Timeline Header */}
 							<div className="flex items-center gap-4 mb-4">
-								<div className="w-48 flex-shrink-0">
-									<Select value={roleFilter} onValueChange={setRoleFilter}>
-										<SelectTrigger className="bg-zinc-950 border-zinc-800">
-											<SelectValue placeholder="All Roles" />
-										</SelectTrigger>
-										<SelectContent className="bg-zinc-900 border-zinc-800">
-											<SelectItem value="all">All Roles</SelectItem>
-											{STAFF_ROLES.map((role) => (
-												<SelectItem key={role} value={role}>
-													{role}
-												</SelectItem>
-											))}
-										</SelectContent>
-									</Select>
+								<div className="flex-1 max-w-sm">
+									<SearchFilterBar
+										placeholder="Search staff..."
+										searchValue={shiftSearch}
+										onSearchChange={setShiftSearch}
+										filters={[
+											{
+												key: "role",
+												label: "All Roles",
+												options: [
+													{ value: "all", label: "All Roles" },
+													...STAFF_ROLES.map((role) => ({
+														value: role,
+														label: role,
+													})),
+												],
+												value: roleFilter,
+												onChange: setRoleFilter,
+											},
+										]}
+									/>
 								</div>
 								<div className="flex-1 relative h-8">
 									{timelineHours.map((hour, i) => (

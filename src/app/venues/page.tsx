@@ -480,7 +480,7 @@ export default function VenuesPage() {
 
 	if (loading) {
 		return (
-			<div className="container mx-auto py-8 px-4">
+			<div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8">
 				<PageSkeleton rows={6} />
 			</div>
 		);
@@ -488,7 +488,7 @@ export default function VenuesPage() {
 
 	if (error) {
 		return (
-			<div className="container mx-auto py-8 px-4">
+			<div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8">
 				<Card className="bg-zinc-900 border-zinc-800">
 					<CardContent className="py-12 text-center">
 						<p className="text-red-400">{error}</p>
@@ -506,7 +506,7 @@ export default function VenuesPage() {
 	}
 
 	return (
-		<div className="container mx-auto py-8 px-4">
+		<div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8">
 			<div className="mb-8">
 				<h1 className="text-3xl font-bold text-white">Venues</h1>
 				<p className="text-zinc-400 mt-2">

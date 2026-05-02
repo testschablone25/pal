@@ -2,18 +2,11 @@
 
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
-import {
-	Select,
-	SelectContent,
-	SelectItem,
-	SelectTrigger,
-	SelectValue,
-} from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { PageSkeleton } from "@/components/page-skeleton";
-import { Search, Plus, MapPin, Music } from "lucide-react";
+import { Plus, MapPin, Music } from "lucide-react";
+import { SearchFilterBar } from "@/components/search-filter-bar";
 import Link from "next/link";
 import { EmptyState } from "@/components/empty-state";
 
@@ -77,12 +70,7 @@ export function ArtistList() {
 
 	useEffect(() => {
 		fetchArtists();
-	}, []);
-
-	const handleSearch = (e: React.FormEvent) => {
-		e.preventDefault();
-		fetchArtists();
-	};
+	}, [searchName, filterGenre, filterCity]);
 
 	const clearFilters = () => {
 		setSearchName("");
@@ -97,53 +85,43 @@ export function ArtistList() {
 			{/* Search and Filters */}
 			<Card className="bg-zinc-900 border-zinc-800">
 				<CardContent className="pt-6">
-					<form onSubmit={handleSearch} className="space-y-4">
-						<div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-							<div className="relative">
-								<Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400" />
-								<Input
-									placeholder="Search artists..."
-									value={searchName}
-									onChange={(e) => setSearchName(e.target.value)}
-									className="pl-10 bg-zinc-950 border-zinc-800"
+					<div className="space-y-4">
+						<SearchFilterBar
+							placeholder="Search artists..."
+							searchValue={searchName}
+							onSearchChange={setSearchName}
+							filters={[
+								{
+									key: "genre",
+									label: "Genre",
+									options: GENRES.map((genre) => ({
+										value: genre.toLowerCase(),
+										label: genre,
+									})),
+									value: filterGenre,
+									onChange: setFilterGenre,
+								},
+							]}
+						/>
+						<div className="flex gap-3">
+							<div className="flex-1 md:max-w-[200px]">
+								<input
+									placeholder="City"
+									value={filterCity}
+									onChange={(e) => setFilterCity(e.target.value)}
+									className="w-full h-10 px-3 py-2 text-sm bg-zinc-900 border border-zinc-800 rounded-md placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-violet-600/50"
 								/>
 							</div>
-							<Select value={filterGenre} onValueChange={setFilterGenre}>
-								<SelectTrigger className="bg-zinc-950 border-zinc-800">
-									<SelectValue placeholder="Genre" />
-								</SelectTrigger>
-								<SelectContent className="bg-zinc-900 border-zinc-800">
-									{GENRES.map((genre) => (
-										<SelectItem key={genre} value={genre.toLowerCase()}>
-											{genre}
-										</SelectItem>
-									))}
-								</SelectContent>
-							</Select>
-							<Input
-								placeholder="City"
-								value={filterCity}
-								onChange={(e) => setFilterCity(e.target.value)}
-								className="bg-zinc-950 border-zinc-800"
-							/>
-							<div className="flex gap-2">
-								<Button
-									type="submit"
-									className="flex-1 bg-violet-600 hover:bg-violet-700"
-								>
-									Search
-								</Button>
-								<Button
-									type="button"
-									variant="outline"
-									onClick={clearFilters}
-									className="border-zinc-800"
-								>
-									Clear
-								</Button>
-							</div>
+							<Button
+								type="button"
+								variant="outline"
+								onClick={clearFilters}
+								className="border-zinc-800"
+							>
+								Clear
+							</Button>
 						</div>
-					</form>
+					</div>
 				</CardContent>
 			</Card>
 

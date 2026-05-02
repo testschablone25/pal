@@ -3,7 +3,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { Card, CardContent } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { PageSkeleton } from "@/components/page-skeleton";
@@ -15,7 +14,8 @@ import {
 	TableHeader,
 	TableRow,
 } from "@/components/ui/table";
-import { Search, Plus, Package, QrCode } from "lucide-react";
+import { Plus, Package, QrCode } from "lucide-react";
+import { SearchFilterBar } from "@/components/search-filter-bar";
 import { EmptyState } from "@/components/empty-state";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
@@ -153,13 +153,23 @@ export function InventoryList() {
 			<Card className="bg-zinc-900 border-zinc-800">
 				<CardContent className="pt-6">
 					<div className="flex flex-col md:flex-row gap-4">
-						<div className="relative flex-1">
-							<Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400" />
-							<Input
+						<div className="flex-1">
+							<SearchFilterBar
 								placeholder="Search items by name, serial number, or brand..."
-								value={search}
-								onChange={(e) => setSearch(e.target.value)}
-								className="pl-10 bg-zinc-950 border-zinc-800"
+								searchValue={search}
+								onSearchChange={setSearch}
+								filters={[
+									{
+										key: "category",
+										label: "Category",
+										options: CATEGORIES.map((cat) => ({
+											value: cat.value,
+											label: cat.label,
+										})),
+										value: category,
+										onChange: setCategory,
+									},
+								]}
 							/>
 						</div>
 						<Button
@@ -169,24 +179,6 @@ export function InventoryList() {
 							<Plus className="h-4 w-4 mr-2" />
 							Add Item
 						</Button>
-					</div>
-
-					{/* Category filter tabs */}
-					<div className="flex flex-wrap gap-2 mt-4">
-						{CATEGORIES.map((cat) => (
-							<button
-								key={cat.value}
-								onClick={() => setCategory(cat.value)}
-								className={cn(
-									"px-3 py-1.5 text-sm rounded-full border transition-colors",
-									category === cat.value
-										? "bg-violet-600/20 text-violet-400 border-violet-600/50"
-										: "bg-zinc-800 text-zinc-400 border-zinc-700 hover:border-zinc-600",
-								)}
-							>
-								{cat.label}
-							</button>
-						))}
 					</div>
 				</CardContent>
 			</Card>
