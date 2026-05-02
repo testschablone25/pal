@@ -17,7 +17,6 @@ import {
 import {
 	Form,
 	FormControl,
-	FormDescription,
 	FormField,
 	FormItem,
 	FormLabel,
@@ -57,9 +56,15 @@ interface EventFormProps {
 		max_capacity: number | null;
 	};
 	mode?: "create" | "edit";
+	/** Called after successful save. If not provided, navigates to /events. */
+	onSuccess?: () => void;
 }
 
-export function EventForm({ event, mode = "create" }: EventFormProps) {
+export function EventForm({
+	event,
+	mode = "create",
+	onSuccess,
+}: EventFormProps) {
 	const router = useRouter();
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState<string | null>(null);
@@ -116,8 +121,12 @@ export function EventForm({ event, mode = "create" }: EventFormProps) {
 				throw new Error(data.error || "Failed to save event");
 			}
 
-			router.push("/events");
-			router.refresh();
+			if (onSuccess) {
+				onSuccess();
+			} else {
+				router.push("/events");
+				router.refresh();
+			}
 		} catch (err) {
 			setError(err instanceof Error ? err.message : "An error occurred");
 		} finally {

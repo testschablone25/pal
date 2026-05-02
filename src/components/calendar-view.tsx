@@ -4,17 +4,13 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import {
-	Calendar as CalendarComponent,
-	CalendarProps,
-} from "@/components/ui/calendar";
-import { ChevronLeft, ChevronRight, Calendar, List, Plus } from "lucide-react";
+
+import { ChevronLeft, ChevronRight, Plus } from "lucide-react";
 import {
 	format,
 	startOfMonth,
 	endOfMonth,
 	eachDayOfInterval,
-	isSameDay,
 	isToday,
 	addMonths,
 	subMonths,
@@ -25,6 +21,13 @@ import {
 } from "date-fns";
 import Link from "next/link";
 import { PageSkeleton } from "@/components/page-skeleton";
+import {
+	Dialog,
+	DialogContent,
+	DialogHeader,
+	DialogTitle,
+} from "@/components/ui/dialog";
+import { EventForm } from "@/components/event-form";
 
 interface Event {
 	id: string;
@@ -49,6 +52,7 @@ export function CalendarView({ onSelectEvent, venueId }: CalendarViewProps) {
 	const [viewMode, setViewMode] = useState<ViewMode>("month");
 	const [events, setEvents] = useState<Event[]>([]);
 	const [loading, setLoading] = useState(true);
+	const [showCreateDialog, setShowCreateDialog] = useState(false);
 
 	useEffect(() => {
 		fetchEvents();
@@ -255,93 +259,113 @@ export function CalendarView({ onSelectEvent, venueId }: CalendarViewProps) {
 	};
 
 	return (
-		<Card className="bg-zinc-900 border-zinc-800">
-			<CardContent className="pt-6">
-				{/* Header */}
-				<div className="flex justify-between items-center mb-6">
-					<div className="flex items-center gap-4">
-						<h2 className="text-xl font-semibold">
-							{format(
-								currentDate,
-								viewMode === "month" ? "MMMM yyyy" : "MMM dd, yyyy",
-							)}
-						</h2>
-						<div className="flex gap-1">
-							<Button
-								variant="outline"
-								size="icon"
-								onClick={navigatePrev}
-								className="border-zinc-800"
-							>
-								<ChevronLeft className="h-4 w-4" />
-							</Button>
-							<Button
-								variant="outline"
-								size="sm"
-								onClick={goToToday}
-								className="border-zinc-800"
-							>
-								Today
-							</Button>
-							<Button
-								variant="outline"
-								size="icon"
-								onClick={navigateNext}
-								className="border-zinc-800"
-							>
-								<ChevronRight className="h-4 w-4" />
-							</Button>
+		<>
+			<Card className="bg-zinc-900 border-zinc-800">
+				<CardContent className="pt-6">
+					{/* Header */}
+					<div className="flex justify-between items-center mb-6">
+						<div className="flex items-center gap-4">
+							<h2 className="text-xl font-semibold">
+								{format(
+									currentDate,
+									viewMode === "month" ? "MMMM yyyy" : "MMM dd, yyyy",
+								)}
+							</h2>
+							<div className="flex gap-1">
+								<Button
+									variant="outline"
+									size="icon"
+									onClick={navigatePrev}
+									className="border-zinc-800"
+								>
+									<ChevronLeft className="h-4 w-4" />
+								</Button>
+								<Button
+									variant="outline"
+									size="sm"
+									onClick={goToToday}
+									className="border-zinc-800"
+								>
+									Today
+								</Button>
+								<Button
+									variant="outline"
+									size="icon"
+									onClick={navigateNext}
+									className="border-zinc-800"
+								>
+									<ChevronRight className="h-4 w-4" />
+								</Button>
+							</div>
+						</div>
+
+						<div className="flex items-center gap-4">
+							{/* View mode toggle */}
+							<div className="flex gap-1 bg-zinc-950 rounded-lg p-1">
+								<Button
+									variant={viewMode === "month" ? "default" : "ghost"}
+									size="sm"
+									onClick={() => setViewMode("month")}
+									className={viewMode === "month" ? "bg-violet-600" : ""}
+								>
+									Month
+								</Button>
+								<Button
+									variant={viewMode === "week" ? "default" : "ghost"}
+									size="sm"
+									onClick={() => setViewMode("week")}
+									className={viewMode === "week" ? "bg-violet-600" : ""}
+								>
+									Week
+								</Button>
+							</div>
+
+							<Link href="/events/new">
+								<Button className="bg-violet-600 hover:bg-violet-700">
+									<Plus className="h-4 w-4 mr-2" />
+									New Event
+								</Button>
+							</Link>
 						</div>
 					</div>
 
-					<div className="flex items-center gap-4">
-						{/* View mode toggle */}
-						<div className="flex gap-1 bg-zinc-950 rounded-lg p-1">
-							<Button
-								variant={viewMode === "month" ? "default" : "ghost"}
-								size="sm"
-								onClick={() => setViewMode("month")}
-								className={viewMode === "month" ? "bg-violet-600" : ""}
-							>
-								Month
-							</Button>
-							<Button
-								variant={viewMode === "week" ? "default" : "ghost"}
-								size="sm"
-								onClick={() => setViewMode("week")}
-								className={viewMode === "week" ? "bg-violet-600" : ""}
-							>
-								Week
-							</Button>
-						</div>
-
-						<Link href="/events/new">
-							<Button className="bg-violet-600 hover:bg-violet-700">
-								<Plus className="h-4 w-4 mr-2" />
-								New Event
-							</Button>
-						</Link>
+					{/* Status legend */}
+					<div className="flex gap-4 mb-4">
+						<Badge className="bg-green-600">Published</Badge>
+						<Badge className="bg-yellow-600">Draft</Badge>
+						<Badge className="bg-red-600">Cancelled</Badge>
+						<Badge className="bg-zinc-600">Completed</Badge>
 					</div>
-				</div>
 
-				{/* Status legend */}
-				<div className="flex gap-4 mb-4">
-					<Badge className="bg-green-600">Published</Badge>
-					<Badge className="bg-yellow-600">Draft</Badge>
-					<Badge className="bg-red-600">Cancelled</Badge>
-					<Badge className="bg-zinc-600">Completed</Badge>
-				</div>
+					{/* Calendar */}
+					{loading ? (
+						<PageSkeleton rows={3} card={false} title={false} />
+					) : (
+						<>
+							{viewMode === "month" && renderMonthView()}
+							{viewMode === "week" && renderWeekView()}
+						</>
+					)}
+				</CardContent>
+			</Card>
 
-				{/* Calendar */}
-				{loading ? (
-					<PageSkeleton rows={3} card={false} title={false} />
-				) : (
-					<>
-						{viewMode === "month" && renderMonthView()}
-						{viewMode === "week" && renderWeekView()}
-					</>
-				)}
-			</CardContent>
-		</Card>
+			{/* Create Event Dialog */}
+			<Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
+				<DialogContent className="bg-zinc-900 border-zinc-800 max-w-2xl max-h-[90vh] overflow-y-auto">
+					<DialogHeader>
+						<DialogTitle className="text-white text-xl">
+							Create New Event
+						</DialogTitle>
+					</DialogHeader>
+					<EventForm
+						mode="create"
+						onSuccess={() => {
+							setShowCreateDialog(false);
+							fetchEvents();
+						}}
+					/>
+				</DialogContent>
+			</Dialog>
+		</>
 	);
 }
