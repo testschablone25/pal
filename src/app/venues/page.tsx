@@ -43,6 +43,7 @@ import {
 	Layers,
 } from "lucide-react";
 import { EmptyState } from "@/components/empty-state";
+import { statusBadgeClass } from "@/lib/utils";
 
 interface SubLocation {
 	id: string;
@@ -76,13 +77,6 @@ const VENUE_TYPES = [
 	{ value: "office", label: "Office" },
 	{ value: "mixed", label: "Mixed" },
 ];
-
-const venueTypeBadge: Record<string, string> = {
-	venue: "bg-blue-600/20 text-blue-400 border-blue-600/50",
-	storage: "bg-amber-600/20 text-amber-400 border-amber-600/50",
-	office: "bg-emerald-600/20 text-emerald-400 border-emerald-600/50",
-	mixed: "bg-purple-600/20 text-purple-400 border-purple-600/50",
-};
 
 const venueTypeLabel: Record<string, string> = {
 	venue: "Venue",
@@ -686,7 +680,7 @@ export default function VenuesPage() {
 											{venue.venue_type && (
 												<Badge
 													variant="outline"
-													className={venueTypeBadge[venue.venue_type] || ""}
+													className={statusBadgeClass(venue.venue_type || "")}
 												>
 													{venueTypeLabel[venue.venue_type] || venue.venue_type}
 												</Badge>

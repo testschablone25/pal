@@ -10,7 +10,8 @@ import {
 	ShieldAlert,
 	CornerDownRight,
 } from "lucide-react";
-import { format, isPast, isToday, parseISO } from "date-fns";
+import { isPast, isToday, parseISO } from "date-fns";
+import { formatDateShort } from "@/lib/dates";
 import { cn } from "@/lib/utils";
 
 export interface Task {
@@ -121,7 +122,7 @@ export function TaskCard({ task, onClick }: TaskCardProps) {
 	const dueDateLabel = dueDate
 		? isToday(dueDate)
 			? "Heute"
-			: format(dueDate, "dd.MM.")
+			: formatDateShort(dueDate)
 		: null;
 	const dueDateClass = dueDate
 		? isPast(dueDate) && !isToday(dueDate)

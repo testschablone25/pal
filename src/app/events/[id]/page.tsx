@@ -23,7 +23,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { RunningOrder } from "@/components/running-order";
 import { PerformanceForm } from "@/components/performance-form";
-import { format } from "date-fns";
+import { formatDateFull } from "@/lib/dates";
 import {
 	CalendarDays,
 	Clock,
@@ -38,6 +38,7 @@ import {
 import Link from "next/link";
 import { useToast } from "@/hooks/use-toast";
 import { PageSkeleton } from "@/components/page-skeleton";
+import { statusBadgeClass } from "@/lib/utils";
 
 interface Event {
 	id: string;
@@ -107,21 +108,6 @@ export default function EventDetailPage() {
 		}
 	};
 
-	const getStatusColor = (status: string) => {
-		switch (status) {
-			case "published":
-				return "bg-green-600";
-			case "draft":
-				return "bg-yellow-600";
-			case "cancelled":
-				return "bg-red-600";
-			case "completed":
-				return "bg-zinc-600";
-			default:
-				return "bg-violet-600";
-		}
-	};
-
 	const handleAddPerformance = () => {
 		setAddPerformanceOpen(true);
 	};
@@ -175,14 +161,14 @@ export default function EventDetailPage() {
 				<div>
 					<div className="flex items-center gap-3 mb-2">
 						<h1 className="text-3xl font-bold text-white">{event.name}</h1>
-						<Badge className={getStatusColor(event.status)}>
+						<Badge className={statusBadgeClass(event.status)}>
 							{event.status}
 						</Badge>
 					</div>
 					<div className="flex flex-wrap items-center gap-4 text-zinc-400">
 						<div className="flex items-center gap-1">
 							<CalendarDays className="h-4 w-4" />
-							<span>{format(new Date(event.date), "EEEE, MMMM d, yyyy")}</span>
+							<span>{formatDateFull(event.date)}</span>
 						</div>
 						{event.venues && (
 							<div className="flex items-center gap-1">

@@ -149,10 +149,10 @@ We'll work incrementally through 5 major phases. Each phase builds on the previo
 - [x] **Step 6.2** — Create `PageSkeleton` component, add loading skeletons to all pages
 - [x] **Step 6.3** — Mobile-friendly nav with hamburger menu on small screens
 - [x] **Step 6.4** — Create `EmptyState` component for empty list pages
-- [ ] **Step 6.5** — Standardize page shell (consistent padding/max-width across all pages)
-- [ ] **Step 6.6** — Submit button loading states on all forms
-- [ ] **Step 6.7** — Standardized search/filter bar component
-- [ ] **Step 6.8** — Replace `confirm()` with shadcn AlertDialog
+- [x] **Step 6.5** — Standardize page shell (consistent padding/max-width across all pages)
+- [x] **Step 6.6** — Submit button loading states on all forms
+- [x] **Step 6.7** — Standardized search/filter bar component
+- [x] **Step 6.8** — Replace `confirm()` with shadcn AlertDialog
 - [ ] **Step 6.9** — Page transition animations (fade-in)
 - [ ] **Step 6.10** — Badge color consistency utility
 - [ ] **Step 6.11** — Date/time format utility (centralize date-fns patterns)

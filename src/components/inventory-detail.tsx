@@ -19,7 +19,7 @@ import {
 	ListTodo,
 } from "lucide-react";
 import { PageSkeleton } from "@/components/page-skeleton";
-import { cn } from "@/lib/utils";
+import { cn, statusBadgeClass } from "@/lib/utils";
 
 interface SubLocation {
 	id: string;
@@ -105,14 +105,6 @@ interface LinkedTaskEntry {
 interface InventoryDetailProps {
 	itemId: string;
 }
-
-const conditionConfig: Record<string, string> = {
-	new: "bg-green-600/20 text-green-400 border-green-600/50",
-	good: "bg-blue-600/20 text-blue-400 border-blue-600/50",
-	fair: "bg-yellow-600/20 text-yellow-400 border-yellow-600/50",
-	poor: "bg-orange-600/20 text-orange-400 border-orange-600/50",
-	broken: "bg-red-600/20 text-red-400 border-red-600/50",
-};
 
 const categoryLabels: Record<string, string> = {
 	dj_audio: "DJ & Audio",
@@ -309,8 +301,7 @@ export function InventoryDetail({ itemId }: InventoryDetailProps) {
 											variant="outline"
 											className={cn(
 												"capitalize",
-												conditionConfig[item.condition_enum] ||
-													"bg-zinc-600/20 text-zinc-400 border-zinc-600/50",
+												statusBadgeClass(item.condition_enum || ""),
 											)}
 										>
 											{item.condition_enum}
@@ -436,16 +427,7 @@ export function InventoryDetail({ itemId }: InventoryDetailProps) {
 													variant="outline"
 													className={cn(
 														"text-[10px] capitalize",
-														task.status === "done" &&
-															"bg-green-600/20 text-green-400 border-green-600/50",
-														task.status === "in_progress" &&
-															"bg-blue-600/20 text-blue-400 border-blue-600/50",
-														task.status === "todo" &&
-															"bg-zinc-600/20 text-zinc-400 border-zinc-600/50",
-														task.status === "pending_approval" &&
-															"bg-amber-600/20 text-amber-400 border-amber-600/50",
-														task.status === "cancelled" &&
-															"bg-red-600/20 text-red-400 border-red-600/50",
+														statusBadgeClass(task.status),
 													)}
 												>
 													{task.status.replace("_", " ")}

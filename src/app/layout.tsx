@@ -20,7 +20,7 @@ export default function RootLayout({
 			<body className="font-[family-name:var(--font-montserrat)] antialiased bg-zinc-950 text-white min-h-screen">
 				<I18nProvider>
 					<NavBar />
-					<main>{children}</main>
+					<main className="animate-in fade-in duration-200">{children}</main>
 					<Toaster />
 				</I18nProvider>
 			</body>

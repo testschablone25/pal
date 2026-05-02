@@ -50,8 +50,8 @@ import {
 	CornerDownRight,
 	Check,
 } from "lucide-react";
-import { cn } from "@/lib/utils";
-import { format, parseISO } from "date-fns";
+import { cn, statusBadgeClass } from "@/lib/utils";
+import { formatDateShort } from "@/lib/dates";
 
 // ===== Types =====
 
@@ -399,7 +399,7 @@ function SubtaskTreeItem({
 				{/* Due date badge (urgent) */}
 				{sub.due_date && (
 					<span className="text-[10px] text-zinc-500 border border-zinc-700 px-1 py-0.5 shrink-0">
-						{format(parseISO(sub.due_date), "dd.MM.")}
+						{formatDateShort(sub.due_date)}
 					</span>
 				)}
 
@@ -916,21 +916,6 @@ export function TaskDetailDialog({
 
 	if (!task) return null;
 
-	const priorityBadge = {
-		low: "bg-zinc-600/20 text-zinc-400 border-zinc-600/50",
-		medium: "bg-blue-600/20 text-blue-400 border-blue-600/50",
-		high: "bg-orange-600/20 text-orange-400 border-orange-600/50",
-		urgent: "bg-red-600/20 text-red-400 border-red-600/50",
-	};
-
-	const statusBadge = {
-		todo: "bg-zinc-600/20 text-zinc-400 border-zinc-600/50",
-		in_progress: "bg-blue-600/20 text-blue-400 border-blue-600/50",
-		pending_approval: "bg-amber-600/20 text-amber-400 border-amber-600/50",
-		done: "bg-green-600/20 text-green-400 border-green-600/50",
-		cancelled: "bg-red-600/20 text-red-400 border-red-600/50",
-	};
-
 	const displaySubtasks = fullTask?.subtasks || task.subtasks || [];
 	const subtasksDone = displaySubtasks.filter(
 		(s) => s.status === "done",
@@ -1019,7 +1004,7 @@ export function TaskDetailDialog({
 									>
 										<Badge
 											variant="outline"
-											className={statusBadge[task.status]}
+											className={statusBadgeClass(task.status)}
 										>
 											{STATUSES.find((s) => s.value === task.status)?.labelEn}
 										</Badge>
@@ -1038,7 +1023,7 @@ export function TaskDetailDialog({
 									>
 										<Badge
 											variant="outline"
-											className={priorityBadge[task.priority]}
+											className={statusBadgeClass(task.priority)}
 										>
 											{
 												PRIORITIES.find((p) => p.value === task.priority)
@@ -1058,7 +1043,7 @@ export function TaskDetailDialog({
 									{task.blocked && (
 										<Badge
 											variant="outline"
-											className="bg-red-600/20 text-red-400 border-red-600/50"
+											className={statusBadgeClass("blocked")}
 										>
 											<AlertTriangle className="h-3 w-3 mr-1" />
 											{t("action.blocked")}
@@ -1068,7 +1053,7 @@ export function TaskDetailDialog({
 										task.status !== "pending_approval" && (
 											<Badge
 												variant="outline"
-												className="bg-yellow-600/20 text-yellow-400 border-yellow-600/50"
+												className={statusBadgeClass("pending_approval")}
 											>
 												{t("action.needs_approval")}
 											</Badge>
@@ -1219,7 +1204,10 @@ export function TaskDetailDialog({
 															{delivered && (
 																<Badge
 																	variant="outline"
-																	className="bg-emerald-600/20 text-emerald-400 border-emerald-600/50 text-[10px]"
+																	className={cn(
+																		statusBadgeClass("done"),
+																		"text-[10px]",
+																	)}
 																>
 																	<Check className="h-3 w-3 mr-0.5" />
 																	{t("item.status_delivered")}

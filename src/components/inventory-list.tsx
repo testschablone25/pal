@@ -18,7 +18,7 @@ import { Plus, Package, QrCode } from "lucide-react";
 import { SearchFilterBar } from "@/components/search-filter-bar";
 import { EmptyState } from "@/components/empty-state";
 import { useToast } from "@/hooks/use-toast";
-import { cn } from "@/lib/utils";
+import { cn, statusBadgeClass } from "@/lib/utils";
 import { ItemQRDialog } from "@/components/item-qr-dialog";
 import {
 	InventoryForm,
@@ -66,14 +66,6 @@ const CATEGORIES = [
 	{ value: "infrastructure", label: "Infrastructure" },
 	{ value: "venue_misc", label: "Venue & Misc" },
 ];
-
-const conditionConfig: Record<string, string> = {
-	new: "bg-green-600/20 text-green-400 border-green-600/50",
-	good: "bg-blue-600/20 text-blue-400 border-blue-600/50",
-	fair: "bg-yellow-600/20 text-yellow-400 border-yellow-600/50",
-	poor: "bg-orange-600/20 text-orange-400 border-orange-600/50",
-	broken: "bg-red-600/20 text-red-400 border-red-600/50",
-};
 
 const categoryLabels: Record<string, string> = {
 	dj_audio: "DJ & Audio",
@@ -244,8 +236,7 @@ export function InventoryList() {
 													variant="outline"
 													className={cn(
 														"capitalize",
-														conditionConfig[item.condition_enum] ||
-															"bg-zinc-600/20 text-zinc-400 border-zinc-600/50",
+														statusBadgeClass(item.condition_enum || ""),
 													)}
 												>
 													{item.condition_enum}

@@ -1,6 +1,6 @@
 {
   "statistics": {
-    "detectionDate": "2026-05-01T22:57:51.644Z",
+    "detectionDate": "2026-05-02T02:28:53.038Z",
     "formats": {
       "typescript": {
         "sources": {
@@ -569,8 +569,8 @@
             "newClones": 0
           },
           "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/lib/utils/index.ts": {
-            "lines": 5,
-            "tokens": 61,
+            "lines": 76,
+            "tokens": 429,
             "sources": 1,
             "clones": 0,
             "duplicatedLines": 0,
@@ -655,6 +655,18 @@
           "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/lib/itinerary.ts": {
             "lines": 222,
             "tokens": 2007,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/lib/dates.ts": {
+            "lines": 90,
+            "tokens": 819,
             "sources": 1,
             "clones": 0,
             "duplicatedLines": 0,
@@ -906,14 +918,14 @@
           }
         },
         "total": {
-          "lines": 8656,
-          "tokens": 75692,
-          "sources": 75,
+          "lines": 8817,
+          "tokens": 76879,
+          "sources": 76,
           "clones": 60,
           "duplicatedLines": 688,
           "duplicatedTokens": 6689,
-          "percentage": 7.95,
-          "percentageTokens": 8.84,
+          "percentage": 7.8,
+          "percentageTokens": 8.7,
           "newDuplicatedLines": 0,
           "newClones": 0
         }
@@ -968,21 +980,9 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/app/guest-lists/[id]/page.tsx": {
-            "lines": 214,
-            "tokens": 1967,
-            "sources": 1,
-            "clones": 0,
-            "duplicatedLines": 0,
-            "duplicatedTokens": 0,
-            "percentage": 0,
-            "percentageTokens": 0,
-            "newDuplicatedLines": 0,
-            "newClones": 0
-          },
           "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/app/events/[id]/page.tsx": {
-            "lines": 95,
-            "tokens": 732,
+            "lines": 146,
+            "tokens": 1107,
             "sources": 1,
             "clones": 0,
             "duplicatedLines": 0,
@@ -993,8 +993,8 @@
             "newClones": 0
           },
           "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/app/artists/[id]/page.tsx": {
-            "lines": 123,
-            "tokens": 913,
+            "lines": 128,
+            "tokens": 918,
             "sources": 1,
             "clones": 0,
             "duplicatedLines": 0,
@@ -1005,8 +1005,8 @@
             "newClones": 0
           },
           "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/app/staff/page.tsx": {
-            "lines": 263,
-            "tokens": 2089,
+            "lines": 232,
+            "tokens": 1798,
             "sources": 1,
             "clones": 0,
             "duplicatedLines": 0,
@@ -1041,8 +1041,8 @@
             "newClones": 0
           },
           "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/app/guest-lists/page.tsx": {
-            "lines": 107,
-            "tokens": 884,
+            "lines": 106,
+            "tokens": 821,
             "sources": 1,
             "clones": 0,
             "duplicatedLines": 0,
@@ -1124,9 +1124,21 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
+          "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/components/search-filter-bar.tsx": {
+            "lines": 31,
+            "tokens": 272,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
           "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/components/running-order.tsx": {
-            "lines": 224,
-            "tokens": 1793,
+            "lines": 260,
+            "tokens": 2016,
             "sources": 1,
             "clones": 0,
             "duplicatedLines": 0,
@@ -1137,8 +1149,8 @@
             "newClones": 0
           },
           "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/components/rentals-list.tsx": {
-            "lines": 161,
-            "tokens": 1300,
+            "lines": 165,
+            "tokens": 1164,
             "sources": 1,
             "clones": 0,
             "duplicatedLines": 0,
@@ -1184,9 +1196,21 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
+          "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/components/page-skeleton.tsx": {
+            "lines": 35,
+            "tokens": 325,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
           "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/components/nav-bar.tsx": {
-            "lines": 57,
-            "tokens": 416,
+            "lines": 140,
+            "tokens": 942,
             "sources": 1,
             "clones": 0,
             "duplicatedLines": 0,
@@ -1209,8 +1233,8 @@
             "newClones": 0
           },
           "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/components/inventory-list.tsx": {
-            "lines": 161,
-            "tokens": 1198,
+            "lines": 127,
+            "tokens": 951,
             "sources": 1,
             "clones": 0,
             "duplicatedLines": 0,
@@ -1268,6 +1292,18 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
+          "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/components/empty-state.tsx": {
+            "lines": 18,
+            "tokens": 149,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
           "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/components/checkin-checkout-modal.tsx": {
             "lines": 92,
             "tokens": 792,
@@ -1293,8 +1329,8 @@
             "newClones": 0
           },
           "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/components/calendar-view.tsx": {
-            "lines": 161,
-            "tokens": 1317,
+            "lines": 193,
+            "tokens": 1518,
             "sources": 1,
             "clones": 0,
             "duplicatedLines": 0,
@@ -1305,8 +1341,8 @@
             "newClones": 0
           },
           "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/components/artist-list.tsx": {
-            "lines": 124,
-            "tokens": 1047,
+            "lines": 84,
+            "tokens": 617,
             "sources": 1,
             "clones": 0,
             "duplicatedLines": 0,
@@ -1354,14 +1390,14 @@
           }
         },
         "total": {
-          "lines": 3948,
-          "tokens": 29497,
-          "sources": 36,
+          "lines": 3923,
+          "tokens": 28439,
+          "sources": 38,
           "clones": 14,
           "duplicatedLines": 242,
           "duplicatedTokens": 1302,
-          "percentage": 6.13,
-          "percentageTokens": 4.41,
+          "percentage": 6.17,
+          "percentageTokens": 4.58,
           "newDuplicatedLines": 0,
           "newClones": 0
         }
@@ -1370,13 +1406,13 @@
         "sources": {
           "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/app/staff/[id]/edit/page.tsx": {
             "lines": 84,
-            "tokens": 758,
+            "tokens": 759,
             "sources": 1,
-            "clones": 2,
-            "duplicatedLines": 31,
-            "duplicatedTokens": 245,
-            "percentage": 36.9,
-            "percentageTokens": 32.32,
+            "clones": 1,
+            "duplicatedLines": 22,
+            "duplicatedTokens": 175,
+            "percentage": 26.19,
+            "percentageTokens": 23.06,
             "newDuplicatedLines": 0,
             "newClones": 0
           },
@@ -1428,21 +1464,9 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/app/guest-lists/[id]/page.tsx": {
-            "lines": 441,
-            "tokens": 3947,
-            "sources": 1,
-            "clones": 2,
-            "duplicatedLines": 30,
-            "duplicatedTokens": 212,
-            "percentage": 6.8,
-            "percentageTokens": 5.37,
-            "newDuplicatedLines": 0,
-            "newClones": 0
-          },
           "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/app/events/new/page.tsx": {
-            "lines": 16,
-            "tokens": 133,
+            "lines": 14,
+            "tokens": 129,
             "sources": 1,
             "clones": 0,
             "duplicatedLines": 0,
@@ -1453,14 +1477,14 @@
             "newClones": 0
           },
           "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/app/events/[id]/page.tsx": {
-            "lines": 266,
-            "tokens": 2164,
+            "lines": 300,
+            "tokens": 2350,
             "sources": 1,
-            "clones": 1,
-            "duplicatedLines": 17,
-            "duplicatedTokens": 100,
-            "percentage": 6.39,
-            "percentageTokens": 4.62,
+            "clones": 2,
+            "duplicatedLines": 41,
+            "duplicatedTokens": 254,
+            "percentage": 13.67,
+            "percentageTokens": 10.81,
             "newDuplicatedLines": 0,
             "newClones": 0
           },
@@ -1477,26 +1501,26 @@
             "newClones": 0
           },
           "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/app/artists/[id]/page.tsx": {
-            "lines": 288,
-            "tokens": 2288,
+            "lines": 301,
+            "tokens": 2301,
             "sources": 1,
-            "clones": 5,
-            "duplicatedLines": 80,
-            "duplicatedTokens": 692,
-            "percentage": 27.78,
-            "percentageTokens": 30.24,
+            "clones": 3,
+            "duplicatedLines": 50,
+            "duplicatedTokens": 480,
+            "percentage": 16.61,
+            "percentageTokens": 20.86,
             "newDuplicatedLines": 0,
             "newClones": 0
           },
           "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/app/staff/page.tsx": {
-            "lines": 471,
-            "tokens": 3655,
+            "lines": 456,
+            "tokens": 3491,
             "sources": 1,
-            "clones": 1,
-            "duplicatedLines": 7,
-            "duplicatedTokens": 68,
-            "percentage": 1.49,
-            "percentageTokens": 1.86,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
             "newDuplicatedLines": 0,
             "newClones": 0
           },
@@ -1549,14 +1573,14 @@
             "newClones": 0
           },
           "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/app/guest-lists/page.tsx": {
-            "lines": 253,
-            "tokens": 2307,
+            "lines": 270,
+            "tokens": 2279,
             "sources": 1,
-            "clones": 2,
-            "duplicatedLines": 20,
-            "duplicatedTokens": 188,
-            "percentage": 7.91,
-            "percentageTokens": 8.15,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
             "newDuplicatedLines": 0,
             "newClones": 0
           },
@@ -1633,8 +1657,8 @@
             "newClones": 0
           },
           "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/components/task-card.tsx": {
-            "lines": 241,
-            "tokens": 1810,
+            "lines": 242,
+            "tokens": 1817,
             "sources": 1,
             "clones": 0,
             "duplicatedLines": 0,
@@ -1668,9 +1692,9 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/components/running-order.tsx": {
-            "lines": 312,
-            "tokens": 2420,
+          "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/components/search-filter-bar.tsx": {
+            "lines": 80,
+            "tokens": 579,
             "sources": 1,
             "clones": 0,
             "duplicatedLines": 0,
@@ -1680,15 +1704,27 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/components/rentals-list.tsx": {
-            "lines": 316,
-            "tokens": 2722,
+          "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/components/running-order.tsx": {
+            "lines": 357,
+            "tokens": 2674,
             "sources": 1,
-            "clones": 2,
-            "duplicatedLines": 20,
-            "duplicatedTokens": 176,
-            "percentage": 6.33,
-            "percentageTokens": 6.47,
+            "clones": 1,
+            "duplicatedLines": 24,
+            "duplicatedTokens": 154,
+            "percentage": 6.72,
+            "percentageTokens": 5.76,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/components/rentals-list.tsx": {
+            "lines": 339,
+            "tokens": 2746,
+            "sources": 1,
+            "clones": 1,
+            "duplicatedLines": 8,
+            "duplicatedTokens": 84,
+            "percentage": 2.36,
+            "percentageTokens": 3.06,
             "newDuplicatedLines": 0,
             "newClones": 0
           },
@@ -1728,9 +1764,21 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
+          "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/components/page-skeleton.tsx": {
+            "lines": 68,
+            "tokens": 521,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
           "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/components/nav-bar.tsx": {
-            "lines": 108,
-            "tokens": 878,
+            "lines": 199,
+            "tokens": 1448,
             "sources": 1,
             "clones": 0,
             "duplicatedLines": 0,
@@ -1753,14 +1801,14 @@
             "newClones": 0
           },
           "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/components/inventory-list.tsx": {
-            "lines": 318,
-            "tokens": 2599,
+            "lines": 299,
+            "tokens": 2465,
             "sources": 1,
-            "clones": 1,
-            "duplicatedLines": 10,
-            "duplicatedTokens": 94,
-            "percentage": 3.14,
-            "percentageTokens": 3.62,
+            "clones": 2,
+            "duplicatedLines": 18,
+            "duplicatedTokens": 178,
+            "percentage": 6.02,
+            "percentageTokens": 7.22,
             "newDuplicatedLines": 0,
             "newClones": 0
           },
@@ -1812,15 +1860,27 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
+          "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/components/empty-state.tsx": {
+            "lines": 48,
+            "tokens": 352,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
           "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/components/checkin-checkout-modal.tsx": {
-            "lines": 260,
-            "tokens": 2173,
+            "lines": 276,
+            "tokens": 2313,
             "sources": 1,
             "clones": 2,
             "duplicatedLines": 22,
             "duplicatedTokens": 203,
-            "percentage": 8.46,
-            "percentageTokens": 9.34,
+            "percentage": 7.97,
+            "percentageTokens": 8.78,
             "newDuplicatedLines": 0,
             "newClones": 0
           },
@@ -1837,26 +1897,26 @@
             "newClones": 0
           },
           "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/components/calendar-view.tsx": {
-            "lines": 325,
-            "tokens": 2893,
+            "lines": 346,
+            "tokens": 2920,
             "sources": 1,
             "clones": 1,
             "duplicatedLines": 17,
             "duplicatedTokens": 100,
-            "percentage": 5.23,
-            "percentageTokens": 3.46,
+            "percentage": 4.91,
+            "percentageTokens": 3.42,
             "newDuplicatedLines": 0,
             "newClones": 0
           },
           "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/components/artist-list.tsx": {
-            "lines": 235,
-            "tokens": 1950,
+            "lines": 206,
+            "tokens": 1619,
             "sources": 1,
-            "clones": 2,
-            "duplicatedLines": 18,
-            "duplicatedTokens": 186,
-            "percentage": 7.66,
-            "percentageTokens": 9.54,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
             "newDuplicatedLines": 0,
             "newClones": 0
           },
@@ -1873,8 +1933,8 @@
             "newClones": 0
           },
           "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/app/layout.tsx": {
-            "lines": 26,
-            "tokens": 187,
+            "lines": 28,
+            "tokens": 212,
             "sources": 1,
             "clones": 0,
             "duplicatedLines": 0,
@@ -1886,28 +1946,28 @@
           }
         },
         "total": {
-          "lines": 8688,
-          "tokens": 70193,
-          "sources": 43,
-          "clones": 31,
-          "duplicatedLines": 447,
-          "duplicatedTokens": 3529,
-          "percentage": 5.15,
-          "percentageTokens": 5.03,
+          "lines": 8641,
+          "tokens": 68284,
+          "sources": 45,
+          "clones": 27,
+          "duplicatedLines": 412,
+          "duplicatedTokens": 3211,
+          "percentage": 4.77,
+          "percentageTokens": 4.7,
           "newDuplicatedLines": 0,
           "newClones": 0
         }
       }
     },
     "total": {
-      "lines": 21292,
-      "tokens": 175382,
-      "sources": 154,
-      "clones": 105,
-      "duplicatedLines": 1377,
-      "duplicatedTokens": 11520,
-      "percentage": 6.47,
-      "percentageTokens": 6.57,
+      "lines": 21381,
+      "tokens": 173602,
+      "sources": 159,
+      "clones": 101,
+      "duplicatedLines": 1342,
+      "duplicatedTokens": 11202,
+      "percentage": 6.28,
+      "percentageTokens": 6.45,
       "newDuplicatedLines": 0,
       "newClones": 0
     }
@@ -2420,7 +2480,7 @@
     {
       "format": "tsx",
       "lines": 23,
-      "fragment": "();\n    }\n  }, [params.id]);\n\n  if (loading) {\n    return (\n      <div className=\"container mx-auto py-8 px-4\">\n        <div className=\"mb-8\">\n          <Skeleton className=\"h-10 w-64 bg-zinc-800\" />\n          <Skeleton className=\"h-5 w-96 mt-2 bg-zinc-800\" />\n        </div>\n        <Card className=\"bg-zinc-900 border-zinc-800\">\n          <CardContent className=\"pt-6 space-y-6\">\n            <Skeleton className=\"h-10 w-full bg-zinc-800\" />\n            <Skeleton className=\"h-10 w-full bg-zinc-800\" />\n            <Skeleton className=\"h-10 w-full bg-zinc-800\" />\n          </CardContent>\n        </Card>\n      </div>\n    );\n  }\n\n  if (error || !artist",
+      "fragment": "();\n\t\t}\n\t}, [params.id]);\n\n\tif (loading) {\n\t\treturn (\n\t\t\t<div className=\"max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8\">\n\t\t\t\t<div className=\"mb-8\">\n\t\t\t\t\t<Skeleton className=\"h-10 w-64 bg-zinc-800\" />\n\t\t\t\t\t<Skeleton className=\"h-5 w-96 mt-2 bg-zinc-800\" />\n\t\t\t\t</div>\n\t\t\t\t<Card className=\"bg-zinc-900 border-zinc-800\">\n\t\t\t\t\t<CardContent className=\"pt-6 space-y-6\">\n\t\t\t\t\t\t<Skeleton className=\"h-10 w-full bg-zinc-800\" />\n\t\t\t\t\t\t<Skeleton className=\"h-10 w-full bg-zinc-800\" />\n\t\t\t\t\t\t<Skeleton className=\"h-10 w-full bg-zinc-800\" />\n\t\t\t\t\t</CardContent>\n\t\t\t\t</Card>\n\t\t\t</div>\n\t\t);\n\t}\n\n\tif (error || !artist",
       "tokens": 0,
       "firstFile": {
         "name": "src/app/artists/[id]/edit/page.tsx",
@@ -2439,17 +2499,17 @@
       },
       "secondFile": {
         "name": "src/app/staff/[id]/edit/page.tsx",
-        "start": 40,
-        "end": 62,
+        "start": 42,
+        "end": 64,
         "startLoc": {
-          "line": 40,
+          "line": 42,
           "column": 11,
-          "position": 393
+          "position": 398
         },
         "endLoc": {
-          "line": 62,
+          "line": 64,
           "column": 6,
-          "position": 568
+          "position": 573
         }
       }
     },
@@ -3500,21 +3560,21 @@
     {
       "format": "tsx",
       "lines": 11,
-      "fragment": "interface Artist {\n  id: string;\n  name: string;\n  city: string | null;\n  fee: number | null;\n  genre: string | null;\n  bio: string | null;\n  contact_email: string | null;\n  contact_phone: string | null;\n  promo_pack_url: string | null;\n  tech_rider",
+      "fragment": "interface Artist {\n\tid: string;\n\tname: string;\n\tcity: string | null;\n\tfee: number | null;\n\tgenre: string | null;\n\tbio: string | null;\n\tcontact_email: string | null;\n\tcontact_phone: string | null;\n\tpromo_pack_url: string | null;\n\ttech_rider",
       "tokens": 0,
       "firstFile": {
         "name": "src/app/artists/[id]/page.tsx",
-        "start": 66,
-        "end": 76,
+        "start": 74,
+        "end": 84,
         "startLoc": {
-          "line": 66,
+          "line": 74,
           "column": 1,
-          "position": 492
+          "position": 500
         },
         "endLoc": {
-          "line": 76,
+          "line": 84,
           "column": 11,
-          "position": 590
+          "position": 598
         }
       },
       "secondFile": {
@@ -3536,21 +3596,21 @@
     {
       "format": "tsx",
       "lines": 30,
-      "fragment": "();\n  const [artist, setArtist] = useState<Artist | null>(null);\n  const [loading, setLoading] = useState(true);\n  const [error, setError] = useState<string | null>(null);\n\n  useEffect(() => {\n    const fetchArtist = async () => {\n      try {\n        const response = await fetch(`/api/artists/${params.id}`);\n        if (!response.ok) {\n          throw new Error('Artist not found');\n        }\n        const data = await response.json();\n        setArtist(data);\n      } catch (err) {\n        setError(err instanceof Error ? err.message : 'Failed to load artist');\n      } finally {\n        setLoading(false);\n      }\n    };\n\n    if (params.id) {\n      fetchArtist();\n    }\n  }, [params.id]);\n\n  if (loading) {\n    return (\n      <div className=\"container mx-auto py-8 px-4\">\n        <div className=\"flex items-center gap-4 mb-8",
+      "fragment": "();\n\tconst [artist, setArtist] = useState<Artist | null>(null);\n\tconst [loading, setLoading] = useState(true);\n\tconst [error, setError] = useState<string | null>(null);\n\n\tuseEffect(() => {\n\t\tconst fetchArtist = async () => {\n\t\t\ttry {\n\t\t\t\tconst response = await fetch(`/api/artists/${params.id}`);\n\t\t\t\tif (!response.ok) {\n\t\t\t\t\tthrow new Error(\"Artist not found\");\n\t\t\t\t}\n\t\t\t\tconst data = await response.json();\n\t\t\t\tsetArtist(data);\n\t\t\t} catch (err) {\n\t\t\t\tsetError(err instanceof Error ? err.message : \"Failed to load artist\");\n\t\t\t} finally {\n\t\t\t\tsetLoading(false);\n\t\t\t}\n\t\t};\n\n\t\tif (params.id) {\n\t\t\tfetchArtist();\n\t\t}\n\t}, [params.id]);\n\n\tif (loading) {\n\t\treturn (\n\t\t\t<div className=\"max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8\">\n\t\t\t\t<div className=\"flex items-center gap-4 mb-8",
       "tokens": 0,
       "firstFile": {
         "name": "src/app/artists/[id]/page.tsx",
-        "start": 84,
-        "end": 113,
+        "start": 92,
+        "end": 121,
         "startLoc": {
-          "line": 84,
+          "line": 92,
           "column": 10,
-          "position": 660
+          "position": 668
         },
         "endLoc": {
-          "line": 113,
+          "line": 121,
           "column": 29,
-          "position": 953
+          "position": 961
         }
       },
       "secondFile": {
@@ -3571,58 +3631,22 @@
     },
     {
       "format": "tsx",
-      "lines": 10,
-      "fragment": ";\n\n  if (loading) {\n    return (\n      <div className=\"container mx-auto py-8 px-4\">\n        <div className=\"flex items-center gap-4 mb-8\">\n          <Skeleton className=\"h-10 w-10 bg-zinc-800\" />\n          <Skeleton className=\"h-10 w-64 bg-zinc-800\" />\n        </div>\n        <div",
-      "tokens": 0,
-      "firstFile": {
-        "name": "src/app/artists/[id]/page.tsx",
-        "start": 108,
-        "end": 117,
-        "startLoc": {
-          "line": 108,
-          "column": 2,
-          "position": 918
-        },
-        "endLoc": {
-          "line": 117,
-          "column": 4,
-          "position": 988
-        }
-      },
-      "secondFile": {
-        "name": "src/app/guest-lists/[id]/page.tsx",
-        "start": 186,
-        "end": 195,
-        "startLoc": {
-          "line": 186,
-          "column": 2,
-          "position": 1692
-        },
-        "endLoc": {
-          "line": 195,
-          "column": 5,
-          "position": 1762
-        }
-      }
-    },
-    {
-      "format": "tsx",
       "lines": 12,
-      "fragment": ">\n      </div>\n    );\n  }\n\n  if (error || !artist) {\n    return (\n      <div className=\"container mx-auto py-8 px-4\">\n        <Card className=\"bg-zinc-900 border-zinc-800\">\n          <CardContent className=\"py-12 text-center\">\n            <p className=\"text-red-400\">{error || 'Artist not found'}</p>\n            <",
+      "fragment": ">\n\t\t\t</div>\n\t\t);\n\t}\n\n\tif (error || !artist) {\n\t\treturn (\n\t\t\t<div className=\"max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8\">\n\t\t\t\t<Card className=\"bg-zinc-900 border-zinc-800\">\n\t\t\t\t\t<CardContent className=\"py-12 text-center\">\n\t\t\t\t\t\t<p className=\"text-red-400\">{error || \"Artist not found\"}</p>\n\t\t\t\t\t\t<",
       "tokens": 0,
       "firstFile": {
         "name": "src/app/artists/[id]/page.tsx",
-        "start": 136,
-        "end": 147,
+        "start": 144,
+        "end": 155,
         "startLoc": {
-          "line": 136,
+          "line": 144,
           "column": 4,
-          "position": 1162
+          "position": 1170
         },
         "endLoc": {
-          "line": 147,
+          "line": 155,
           "column": 2,
-          "position": 1251
+          "position": 1259
         }
       },
       "secondFile": {
@@ -3638,42 +3662,6 @@
           "line": 72,
           "column": 3,
           "position": 677
-        }
-      }
-    },
-    {
-      "format": "tsx",
-      "lines": 22,
-      "fragment": "</Button>\n          </CardContent>\n        </Card>\n      </div>\n    );\n  }\n\n  return (\n    <div className=\"container mx-auto py-8 px-4\">\n      {/* Header */}\n      <div className=\"flex items-center justify-between mb-8\">\n        <div className=\"flex items-center gap-4\">\n          <Button\n            variant=\"outline\"\n            size=\"icon\"\n            className=\"border-zinc-800\"\n            onClick={() => router.push('/artists')}\n          >\n            <ArrowLeft className=\"h-4 w-4\" />\n          </Button>\n          <div>\n            <h1 className=\"text-3xl font-bold text-white\">{artist",
-      "tokens": 0,
-      "firstFile": {
-        "name": "src/app/artists/[id]/page.tsx",
-        "start": 153,
-        "end": 174,
-        "startLoc": {
-          "line": 153,
-          "column": 13,
-          "position": 1291
-        },
-        "endLoc": {
-          "line": 174,
-          "column": 7,
-          "position": 1433
-        }
-      },
-      "secondFile": {
-        "name": "src/app/guest-lists/[id]/page.tsx",
-        "start": 216,
-        "end": 237,
-        "startLoc": {
-          "line": 216,
-          "column": 13,
-          "position": 1933
-        },
-        "endLoc": {
-          "line": 237,
-          "column": 10,
-          "position": 2075
         }
       }
     },
@@ -4327,73 +4315,37 @@
     },
     {
       "format": "tsx",
-      "lines": 10,
-      "fragment": ";\n\n  if (loading) {\n    return (\n      <div className=\"container mx-auto py-8 px-4\">\n        <div className=\"mb-8\">\n          <Skeleton className=\"h-10 w-64 bg-zinc-800\" />\n          <Skeleton className=\"h-5 w-96 mt-2 bg-zinc-800\" />\n        </div>\n        <div",
+      "lines": 25,
+      "fragment": ">\n\n\t\t\t<AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>\n\t\t\t\t<AlertDialogContent className=\"bg-zinc-900 border-zinc-800\">\n\t\t\t\t\t<AlertDialogHeader>\n\t\t\t\t\t\t<AlertDialogTitle>Löschen bestätigen</AlertDialogTitle>\n\t\t\t\t\t\t<AlertDialogDescription>\n\t\t\t\t\t\t\tSind Sie sicher? Diese Aktion kann nicht rückgängig gemacht\n\t\t\t\t\t\t\twerden.\n\t\t\t\t\t\t</AlertDialogDescription>\n\t\t\t\t\t</AlertDialogHeader>\n\t\t\t\t\t<AlertDialogFooter>\n\t\t\t\t\t\t<AlertDialogCancel className=\"border-zinc-800\">\n\t\t\t\t\t\t\tAbbrechen\n\t\t\t\t\t\t</AlertDialogCancel>\n\t\t\t\t\t\t<AlertDialogAction\n\t\t\t\t\t\t\tonClick={handleDelete}\n\t\t\t\t\t\t\tclassName=\"bg-red-600 hover:bg-red-700\"\n\t\t\t\t\t\t>\n\t\t\t\t\t\t\tLöschen\n\t\t\t\t\t\t</AlertDialogAction>\n\t\t\t\t\t</AlertDialogFooter>\n\t\t\t\t</AlertDialogContent>\n\t\t\t</AlertDialog>\n\t\t<",
       "tokens": 0,
       "firstFile": {
-        "name": "src/app/guest-lists/page.tsx",
-        "start": 101,
-        "end": 110,
+        "name": "src/components/running-order.tsx",
+        "start": 332,
+        "end": 356,
         "startLoc": {
-          "line": 101,
-          "column": 2,
-          "position": 1023
-        },
-        "endLoc": {
-          "line": 110,
-          "column": 4,
-          "position": 1093
-        }
-      },
-      "secondFile": {
-        "name": "src/app/staff/[id]/edit/page.tsx",
-        "start": 42,
-        "end": 51,
-        "startLoc": {
-          "line": 42,
-          "column": 2,
-          "position": 410
-        },
-        "endLoc": {
-          "line": 51,
+          "line": 332,
           "column": 5,
-          "position": 480
-        }
-      }
-    },
-    {
-      "format": "tsx",
-      "lines": 11,
-      "fragment": "}\n                </p>\n              </div>\n\n              {loading ? (\n                <div className=\"space-y-3\">\n                  {[...Array(3)].map((_, i) => (\n                    <Skeleton key={i} className=\"h-16 w-full bg-zinc-800\" />\n                  ))}\n                </div>\n              ) : pastRentals",
-      "tokens": 0,
-      "firstFile": {
-        "name": "src/components/rentals-list.tsx",
-        "start": 276,
-        "end": 286,
-        "startLoc": {
-          "line": 276,
-          "column": 15,
-          "position": 2401
+          "position": 2512
         },
         "endLoc": {
-          "line": 286,
-          "column": 12,
-          "position": 2489
+          "line": 356,
+          "column": 2,
+          "position": 2666
         }
       },
       "secondFile": {
-        "name": "src/components/rentals-list.tsx",
-        "start": 243,
-        "end": 253,
+        "name": "src/app/events/[id]/page.tsx",
+        "start": 236,
+        "end": 261,
         "startLoc": {
-          "line": 243,
-          "column": 17,
-          "position": 2098
+          "line": 236,
+          "column": 4,
+          "position": 1918
         },
         "endLoc": {
-          "line": 253,
-          "column": 14,
-          "position": 2186
+          "line": 261,
+          "column": 2,
+          "position": 2073
         }
       }
     },
@@ -4614,6 +4566,42 @@
       }
     },
     {
+      "format": "tsx",
+      "lines": 9,
+      "fragment": ", {\n\t\t\tmethod: \"POST\",\n\t\t\theaders: { \"Content-Type\": \"application/json\" },\n\t\t\tbody: JSON.stringify(values),\n\t\t});\n\n\t\tif (!response.ok) {\n\t\t\tconst data = await response.json();\n\t\t\tthrow new Error(data.error || \"Failed to create item\"",
+      "tokens": 0,
+      "firstFile": {
+        "name": "src/components/inventory-list.tsx",
+        "start": 123,
+        "end": 131,
+        "startLoc": {
+          "line": 123,
+          "column": 13,
+          "position": 1169
+        },
+        "endLoc": {
+          "line": 131,
+          "column": 24,
+          "position": 1253
+        }
+      },
+      "secondFile": {
+        "name": "src/components/rentals-list.tsx",
+        "start": 91,
+        "end": 99,
+        "startLoc": {
+          "line": 91,
+          "column": 15,
+          "position": 864
+        },
+        "endLoc": {
+          "line": 99,
+          "column": 26,
+          "position": 948
+        }
+      }
+    },
+    {
       "format": "javascript",
       "lines": 15,
       "fragment": "\"\n\t\t\t\t\t\t\t\t\t\t\t\tclassName=\"bg-zinc-950 border-zinc-800\"\n\t\t\t\t\t\t\t\t\t\t\t/>\n\t\t\t\t\t\t\t\t\t\t</FormControl>\n\t\t\t\t\t\t\t\t\t\t<FormMessage />\n\t\t\t\t\t\t\t\t\t</FormItem>\n\t\t\t\t\t\t\t\t)}\n\t\t\t\t\t\t\t/>\n\n\t\t\t\t\t\t\t<FormField\n\t\t\t\t\t\t\t\tcontrol={form.control}\n\t\t\t\t\t\t\t\tname=\"model\"\n\t\t\t\t\t\t\t\trender={({ field }) => (\n\t\t\t\t\t\t\t\t\t<FormItem>\n\t\t\t\t\t\t\t\t\t\t<FormLabel>Model",
@@ -4671,17 +4659,17 @@
       },
       "secondFile": {
         "name": "src/components/inventory-list.tsx",
-        "start": 38,
-        "end": 48,
+        "start": 40,
+        "end": 50,
         "startLoc": {
-          "line": 38,
+          "line": 40,
           "column": 1,
-          "position": 277
+          "position": 300
         },
         "endLoc": {
-          "line": 48,
+          "line": 50,
           "column": 13,
-          "position": 371
+          "position": 394
         }
       }
     },
@@ -4980,17 +4968,17 @@
       "tokens": 0,
       "firstFile": {
         "name": "src/components/checkin-checkout-modal.tsx",
-        "start": 67,
-        "end": 79,
+        "start": 69,
+        "end": 81,
         "startLoc": {
-          "line": 67,
+          "line": 69,
           "column": 2,
-          "position": 542
+          "position": 571
         },
         "endLoc": {
-          "line": 79,
+          "line": 81,
           "column": 15,
-          "position": 648
+          "position": 677
         }
       },
       "secondFile": {
@@ -5016,17 +5004,17 @@
       "tokens": 0,
       "firstFile": {
         "name": "src/components/checkin-checkout-modal.tsx",
-        "start": 212,
-        "end": 222,
+        "start": 228,
+        "end": 238,
         "startLoc": {
-          "line": 212,
+          "line": 228,
           "column": 14,
-          "position": 1834
+          "position": 1974
         },
         "endLoc": {
-          "line": 222,
+          "line": 238,
           "column": 3,
-          "position": 1931
+          "position": 2071
         }
       },
       "secondFile": {
@@ -5048,108 +5036,36 @@
     {
       "format": "tsx",
       "lines": 18,
-      "fragment": "};\n\n  const getStatusColor = (status: string) => {\n    switch (status) {\n      case 'published':\n        return 'bg-green-600';\n      case 'draft':\n        return 'bg-yellow-600';\n      case 'cancelled':\n        return 'bg-red-600';\n      case 'completed':\n        return 'bg-zinc-600';\n      default:\n        return 'bg-violet-600';\n    }\n  };\n\n  const renderMonthView",
+      "fragment": "};\n\n\tconst getStatusColor = (status: string) => {\n\t\tswitch (status) {\n\t\t\tcase \"published\":\n\t\t\t\treturn \"bg-green-600\";\n\t\t\tcase \"draft\":\n\t\t\t\treturn \"bg-yellow-600\";\n\t\t\tcase \"cancelled\":\n\t\t\t\treturn \"bg-red-600\";\n\t\t\tcase \"completed\":\n\t\t\t\treturn \"bg-zinc-600\";\n\t\t\tdefault:\n\t\t\t\treturn \"bg-violet-600\";\n\t\t}\n\t};\n\n\tconst renderMonthView",
       "tokens": 0,
       "firstFile": {
         "name": "src/components/calendar-view.tsx",
-        "start": 97,
-        "end": 114,
+        "start": 113,
+        "end": 130,
         "startLoc": {
-          "line": 97,
-          "column": 3,
-          "position": 1015
+          "line": 113,
+          "column": 2,
+          "position": 1042
         },
         "endLoc": {
-          "line": 114,
+          "line": 130,
           "column": 16,
-          "position": 1115
+          "position": 1142
         }
       },
       "secondFile": {
         "name": "src/app/events/[id]/page.tsx",
-        "start": 93,
-        "end": 110,
+        "start": 108,
+        "end": 125,
         "startLoc": {
-          "line": 93,
-          "column": 3,
-          "position": 882
-        },
-        "endLoc": {
-          "line": 110,
-          "column": 21,
-          "position": 982
-        }
-      }
-    },
-    {
-      "format": "tsx",
-      "lines": 8,
-      "fragment": "\">\n        <CardContent className=\"pt-6\">\n          <form onSubmit={handleSearch} className=\"space-y-4\">\n            <div className=\"grid grid-cols-1 md:grid-cols-4 gap-4\">\n              <div className=\"relative\">\n                <Search className=\"absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400\" />\n                <Input\n                  ",
-      "tokens": 0,
-      "firstFile": {
-        "name": "src/components/artist-list.tsx",
-        "start": 97,
-        "end": 104,
-        "startLoc": {
-          "line": 97,
-          "column": 28,
-          "position": 813
-        },
-        "endLoc": {
-          "line": 104,
-          "column": 19,
-          "position": 881
-        }
-      },
-      "secondFile": {
-        "name": "src/app/staff/page.tsx",
-        "start": 273,
-        "end": 280,
-        "startLoc": {
-          "line": 273,
-          "column": 33,
-          "position": 2094
-        },
-        "endLoc": {
-          "line": 280,
-          "column": 10,
-          "position": 2162
-        }
-      }
-    },
-    {
-      "format": "tsx",
-      "lines": 12,
-      "fragment": "<div className=\"grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4\">\n          {[...Array(6)].map((_, i) => (\n            <Card key={i} className=\"bg-zinc-900 border-zinc-800\">\n              <CardContent className=\"pt-6 space-y-3\">\n                <Skeleton className=\"h-6 w-3/4 bg-zinc-800\" />\n                <Skeleton className=\"h-4 w-1/2 bg-zinc-800\" />\n                <Skeleton className=\"h-4 w-1/3 bg-zinc-800\" />\n              </CardContent>\n            </Card>\n          ))}\n        </div>\n      )",
-      "tokens": 0,
-      "firstFile": {
-        "name": "src/components/artist-list.tsx",
-        "start": 160,
-        "end": 171,
-        "startLoc": {
-          "line": 160,
-          "column": 9,
-          "position": 1298
-        },
-        "endLoc": {
-          "line": 171,
+          "line": 108,
           "column": 2,
-          "position": 1416
-        }
-      },
-      "secondFile": {
-        "name": "src/app/guest-lists/page.tsx",
-        "start": 110,
-        "end": 121,
-        "startLoc": {
-          "line": 110,
-          "column": 9,
-          "position": 1092
+          "position": 942
         },
         "endLoc": {
-          "line": 121,
-          "column": 3,
-          "position": 1210
+          "line": 125,
+          "column": 21,
+          "position": 1042
         }
       }
     },

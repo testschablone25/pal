@@ -74,6 +74,7 @@ import {
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { ShiftTemplateApplyDialog } from "@/components/shift-template-apply-dialog";
+import { statusBadgeClass } from "@/lib/utils";
 import { jsPDF } from "jspdf";
 import { EmptyState } from "@/components/empty-state";
 import { useToast } from "@/hooks/use-toast";
@@ -1389,7 +1390,9 @@ export default function ShiftsPage() {
 																	"Unknown Staff"}
 															</p>
 															{isUnavailable && (
-																<Badge className="bg-amber-600/20 text-amber-400 border-amber-600/50">
+																<Badge
+																	className={statusBadgeClass("unavailable")}
+																>
 																	<AlertTriangle className="h-3 w-3 mr-1" />
 																	Unavailable
 																</Badge>
@@ -1420,17 +1423,7 @@ export default function ShiftsPage() {
 													</div>
 												</div>
 												<div className="flex items-center gap-2">
-													<Badge
-														className={
-															shift.status === "confirmed"
-																? "bg-emerald-600/20 text-emerald-400 border-emerald-600/50"
-																: shift.status === "completed"
-																	? "bg-blue-600/20 text-blue-400 border-blue-600/50"
-																	: shift.status === "cancelled"
-																		? "bg-red-600/20 text-red-400 border-red-600/50"
-																		: "bg-zinc-600/20 text-zinc-400 border-zinc-600/50"
-														}
-													>
+													<Badge className={statusBadgeClass(shift.status)}>
 														{shift.status}
 													</Badge>
 													{/* Clock-In Button */}
@@ -1554,17 +1547,7 @@ export default function ShiftsPage() {
 													</p>
 												</div>
 												<div className="flex items-center gap-2">
-													<Badge
-														className={
-															sr.status === "pending"
-																? "bg-amber-600/20 text-amber-400 border-amber-600/50"
-																: sr.status === "accepted"
-																	? "bg-blue-600/20 text-blue-400 border-blue-600/50"
-																	: sr.status === "approved"
-																		? "bg-emerald-600/20 text-emerald-400 border-emerald-600/50"
-																		: "bg-red-600/20 text-red-400 border-red-600/50"
-														}
-													>
+													<Badge className={statusBadgeClass(sr.status)}>
 														{sr.status}
 													</Badge>
 													{sr.status === "pending" && (
