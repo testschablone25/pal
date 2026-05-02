@@ -259,18 +259,20 @@ function DroppableTimelineRow({
 }
 
 function formatTime(dateTime: string) {
-	const date = new Date(dateTime);
-	return date.toLocaleTimeString("en-US", {
-		hour: "2-digit",
-		minute: "2-digit",
-		hour12: false,
-	});
+	const { hours, minutes } = parseTimeParts(dateTime);
+	return `${hours.toString().padStart(2, "0")}:${minutes.toString().padStart(2, "0")}`;
+}
+
+function parseTimeParts(isoString: string): { hours: number; minutes: number } {
+	// Parse directly from ISO string to avoid timezone conversion
+	// Handles formats like "2026-05-02T22:00:00", "2026-05-02T22:00:00Z", "2026-05-02T22:00:00+02:00"
+	const match = isoString.match(/T(\d{2}):(\d{2})/);
+	if (!match) return { hours: 0, minutes: 0 };
+	return { hours: parseInt(match[1], 10), minutes: parseInt(match[2], 10) };
 }
 
 function getTimePosition(dateTime: string) {
-	const date = new Date(dateTime);
-	const hours = date.getHours();
-	const minutes = date.getMinutes();
+	const { hours, minutes } = parseTimeParts(dateTime);
 	// Timeline spans 18:00 to 06:00 (12 hours)
 	let hourOffset = hours - 18;
 	if (hourOffset < 0) hourOffset += 24;
@@ -453,10 +455,8 @@ export default function ShiftsPage() {
 	};
 
 	const getTimeInputValue = (dateTime: string) => {
-		const date = new Date(dateTime);
-		const hours = date.getHours().toString().padStart(2, "0");
-		const minutes = date.getMinutes().toString().padStart(2, "0");
-		return `${hours}:${minutes}`;
+		const { hours, minutes } = parseTimeParts(dateTime);
+		return `${hours.toString().padStart(2, "0")}:${minutes.toString().padStart(2, "0")}`;
 	};
 
 	const openCreateDialog = () => {
