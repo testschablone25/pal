@@ -174,6 +174,12 @@ export function AvailabilityCalendar({
 	const [quickReason, setQuickReason] = useState("");
 	const [showQuickReason, setShowQuickReason] = useState(false);
 
+	// Multi-select mode (self mode)
+	const [multiSelectMode, setMultiSelectMode] = useState(false);
+	const [selectedDates, setSelectedDates] = useState<Set<string>>(new Set());
+	const [bulkReason, setBulkReason] = useState("");
+	const [showBulkReason, setShowBulkReason] = useState(false);
+
 	// Colleagues panel (self mode)
 	const [colleaguesAvailability, setColleaguesAvailability] = useState<
 		AvailabilityEntry[]
@@ -330,6 +336,20 @@ export function AvailabilityCalendar({
 	/* ── event handlers ── */
 
 	const handleDateClick = (date: string) => {
+		// Multi-select mode: toggle selection, don't open popover
+		if (multiSelectMode && viewMode === "self") {
+			setSelectedDates((prev) => {
+				const next = new Set(prev);
+				if (next.has(date)) {
+					next.delete(date);
+				} else {
+					next.add(date);
+				}
+				return next;
+			});
+			return;
+		}
+
 		setSelectedDate(date);
 		const existing = availability.find(
 			(a) => a.staff_id === targetStaffId && a.date === date,
@@ -413,6 +433,62 @@ export function AvailabilityCalendar({
 			}
 		} catch (error) {
 			console.error("Error clearing availability:", error);
+		} finally {
+			setSaving(false);
+		}
+	};
+
+	const handleBulkAvailability = async (available: boolean) => {
+		if (!targetStaffId || selectedDates.size === 0) return;
+
+		setSaving(true);
+		try {
+			await Promise.all(
+				Array.from(selectedDates).map((date) =>
+					fetch("/api/availability", {
+						method: "POST",
+						headers: { "Content-Type": "application/json" },
+						body: JSON.stringify({
+							staff_id: targetStaffId,
+							date,
+							available,
+							reason: available ? null : bulkReason,
+						}),
+					}),
+				),
+			);
+			setSelectedDates(new Set());
+			setBulkReason("");
+			setShowBulkReason(false);
+			fetchAvailability();
+		} catch (error) {
+			console.error("Error saving bulk availability:", error);
+		} finally {
+			setSaving(false);
+		}
+	};
+
+	const handleBulkClear = async () => {
+		if (!targetStaffId || selectedDates.size === 0) return;
+
+		setSaving(true);
+		try {
+			const entriesToDelete = availability.filter(
+				(a) => a.staff_id === targetStaffId && selectedDates.has(a.date),
+			);
+			await Promise.all(
+				entriesToDelete.map((entry) =>
+					fetch(`/api/availability/${entry.id}`, {
+						method: "DELETE",
+					}),
+				),
+			);
+			setSelectedDates(new Set());
+			setBulkReason("");
+			setShowBulkReason(false);
+			fetchAvailability();
+		} catch (error) {
+			console.error("Error clearing bulk availability:", error);
 		} finally {
 			setSaving(false);
 		}
@@ -578,19 +654,26 @@ export function AvailabilityCalendar({
 		const isToday = new Date().toISOString().split("T")[0] === dateStr;
 		const dateConflicts = getConflictsForDate(dateStr);
 		const hasConflict = avail?.available === false && dateConflicts.length > 0;
+		const isSelected = selectedDates.has(dateStr);
 
 		return (
 			<button
 				key={day}
 				onClick={() => handleDateClick(dateStr)}
 				className={`h-20 p-2 rounded-lg border transition-all text-left hover:border-violet-600/50 relative ${
-					isToday ? "border-violet-600" : "border-zinc-800"
+					isSelected
+						? "border-violet-500 ring-2 ring-violet-500/50 bg-violet-600/15"
+						: isToday
+							? "border-violet-600"
+							: "border-zinc-800"
 				} ${
-					avail?.available === true
-						? "bg-emerald-600/20 border-emerald-600/50"
-						: avail?.available === false
-							? "bg-red-600/20 border-red-600/50"
-							: "bg-zinc-950 hover:bg-zinc-800"
+					isSelected
+						? ""
+						: avail?.available === true
+							? "bg-emerald-600/20 border-emerald-600/50"
+							: avail?.available === false
+								? "bg-red-600/20 border-red-600/50"
+								: "bg-zinc-950 hover:bg-zinc-800"
 				}`}
 			>
 				<div className="flex justify-between items-start">
@@ -647,7 +730,9 @@ export function AvailabilityCalendar({
 	/* ================================================================ */
 
 	return (
-		<div className="space-y-6">
+		<div
+			className={`space-y-6 ${multiSelectMode && selectedDates.size > 0 ? "pb-24" : ""}`}
+		>
 			{/* ── Tab Bar ── */}
 			<Card className="bg-zinc-900 border-zinc-800">
 				<CardContent className="pt-6">
@@ -710,6 +795,24 @@ export function AvailabilityCalendar({
 							>
 								<Trash2 className="h-4 w-4 mr-1" />
 								Clear this month
+							</Button>
+							<div className="w-px h-6 bg-zinc-700 mx-1" />
+							<Button
+								variant={multiSelectMode ? "default" : "outline"}
+								size="sm"
+								onClick={() => {
+									setMultiSelectMode(!multiSelectMode);
+									if (multiSelectMode) setSelectedDates(new Set());
+								}}
+								disabled={saving}
+								className={
+									multiSelectMode
+										? "bg-violet-600 hover:bg-violet-700 text-white"
+										: "border-violet-700 text-violet-400 hover:bg-violet-950/50"
+								}
+							>
+								<Calendar className="h-4 w-4 mr-1" />
+								{multiSelectMode ? "Exit Multi-Select" : "Multi-Select"}
 							</Button>
 						</div>
 					</CardContent>
@@ -934,6 +1037,80 @@ export function AvailabilityCalendar({
 						</p>
 					</CardContent>
 				</Card>
+			)}
+
+			{/* ── Bulk Selection Action Bar (self mode, multi-select) ── */}
+			{viewMode === "self" && multiSelectMode && selectedDates.size > 0 && (
+				<div className="fixed bottom-0 left-0 right-0 z-50 bg-zinc-900/95 backdrop-blur border-t border-zinc-700 shadow-2xl">
+					<div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
+						<div className="flex flex-col sm:flex-row gap-3 items-start sm:items-center">
+							<div className="flex items-center gap-3 flex-1 min-w-0">
+								<Badge className="bg-violet-600/20 text-violet-400 border-violet-600/50 shrink-0">
+									{selectedDates.size} day{selectedDates.size !== 1 ? "s" : ""}{" "}
+									selected
+								</Badge>
+								<Button
+									variant="ghost"
+									size="sm"
+									onClick={() => setSelectedDates(new Set())}
+									className="text-zinc-400 hover:text-zinc-200 shrink-0"
+								>
+									Clear selection
+								</Button>
+							</div>
+							<div className="flex flex-wrap gap-2 items-center">
+								{showBulkReason && (
+									<div className="flex gap-2 items-center">
+										<Textarea
+											value={bulkReason}
+											onChange={(e) => setBulkReason(e.target.value)}
+											placeholder="Reason for unavailability..."
+											className="bg-zinc-950 border-zinc-800 text-xs h-9 w-48"
+										/>
+									</div>
+								)}
+								<Button
+									size="sm"
+									onClick={() => handleBulkAvailability(true)}
+									disabled={saving}
+									className="bg-emerald-600 hover:bg-emerald-700 text-xs"
+								>
+									{saving ? (
+										<Loader2 className="h-3.5 w-3.5 mr-1 animate-spin" />
+									) : (
+										<Check className="h-3.5 w-3.5 mr-1" />
+									)}
+									Available
+								</Button>
+								<Button
+									size="sm"
+									onClick={() => {
+										if (showBulkReason) {
+											handleBulkAvailability(false);
+										} else {
+											setShowBulkReason(true);
+										}
+									}}
+									disabled={saving}
+									className="bg-red-600 hover:bg-red-700 text-xs"
+								>
+									<X className="h-3.5 w-3.5 mr-1" />
+									{showBulkReason ? "Confirm Unavailable" : "Unavailable"}
+								</Button>
+								<Button
+									size="sm"
+									variant="outline"
+									onClick={handleBulkClear}
+									disabled={saving}
+									className="border-zinc-700 text-zinc-400 text-xs"
+								>
+									<Trash2 className="h-3.5 w-3.5 mr-1" />
+									Clear
+								</Button>
+							</div>
+						</div>
+					</div>
+				</div>
 			)}
 
 			{/* ── Quick Popover (self mode) ── */}
