@@ -314,6 +314,7 @@ export default function ShiftsPage() {
 	const [roleFilter, setRoleFilter] = useState<string>("all");
 	const [shiftSearch, setShiftSearch] = useState<string>("");
 	const [activeDragShift, setActiveDragShift] = useState<Shift | null>(null);
+	const [dragDelta, setDragDelta] = useState<number>(0);
 	const [savingIndicator, setSavingIndicator] = useState<string | null>(null);
 	const [conflictDialogOpen, setConflictDialogOpen] = useState(false);
 	const [conflictData, setConflictData] = useState<{
@@ -673,6 +674,7 @@ export default function ShiftsPage() {
 		async (event: DragEndEvent) => {
 			const { active, delta } = event;
 			setActiveDragShift(null);
+			setDragDelta(0);
 
 			const shiftId = active.data.current?.shiftId as string;
 			const originalStartTime = active.data.current?.startTime as string;
@@ -742,12 +744,17 @@ export default function ShiftsPage() {
 		[fetchShifts],
 	);
 
+	const handleDragMove = useCallback((event: { delta: { x: number } }) => {
+		setDragDelta(event.delta.x);
+	}, []);
+
 	const handleDragStart = useCallback(
 		(event: DragStartEvent) => {
 			const shiftId = event.active.data.current?.shiftId as string;
 			const shift = shifts.find((s) => s.id === shiftId);
 			if (shift) {
 				setActiveDragShift(shift);
+				setDragDelta(0);
 			}
 		},
 		[shifts],
@@ -1267,6 +1274,7 @@ export default function ShiftsPage() {
 							<DndContext
 								onDragEnd={handleDragEnd}
 								onDragStart={handleDragStart}
+								onDragMove={handleDragMove}
 							>
 								{filteredShifts.length === 0 ? (
 									<EmptyState
@@ -1318,20 +1326,72 @@ export default function ShiftsPage() {
 
 								{/* Drag Overlay */}
 								<DragOverlay>
-									{activeDragShift ? (
-										<div
-											className={`h-12 ${ROLE_COLORS[activeDragShift.role] || "bg-zinc-600"} rounded opacity-90 flex items-center px-2`}
-											style={{
-												width: `${getTimeWidth(activeDragShift.start_time, activeDragShift.end_time)}%`,
-												minWidth: "60px",
-											}}
-										>
-											<span className="text-xs text-white truncate">
-												{formatTime(activeDragShift.start_time)} -{" "}
-												{formatTime(activeDragShift.end_time)}
-											</span>
-										</div>
-									) : null}
+									{activeDragShift
+										? (() => {
+												const containerEl = document.querySelector(
+													"[data-timeline-container]",
+												);
+												const containerWidth = containerEl?.clientWidth || 1;
+												const deltaMinutes =
+													(dragDelta / containerWidth) * (12 * 60);
+												const snappedDelta = Math.round(deltaMinutes / 15) * 15;
+
+												const newStart = snapTo15Minutes(
+													activeDragShift.start_time,
+													snappedDelta,
+												);
+												const newEnd = snapTo15Minutes(
+													activeDragShift.end_time,
+													snappedDelta,
+												);
+												const hasMoved = Math.abs(snappedDelta) >= 15;
+
+												return (
+													<div
+														className={`h-12 ${ROLE_COLORS[activeDragShift.role] || "bg-zinc-600"} rounded opacity-90 flex items-center px-2 shadow-lg border border-white/10`}
+														style={{
+															width: `${getTimeWidth(activeDragShift.start_time, activeDragShift.end_time)}%`,
+															minWidth: "60px",
+														}}
+													>
+														<div className="flex flex-col leading-tight">
+															<span className="text-xs text-white font-medium">
+																{hasMoved ? (
+																	<>
+																		<span className="line-through opacity-50 mr-1">
+																			{formatTime(activeDragShift.start_time)}
+																		</span>
+																		<span className="text-violet-300">
+																			{formatTime(newStart)}
+																		</span>
+																	</>
+																) : (
+																	formatTime(activeDragShift.start_time)
+																)}
+																{" - "}
+																{hasMoved ? (
+																	<>
+																		<span className="line-through opacity-50 mr-1">
+																			{formatTime(activeDragShift.end_time)}
+																		</span>
+																		<span className="text-violet-300">
+																			{formatTime(newEnd)}
+																		</span>
+																	</>
+																) : (
+																	formatTime(activeDragShift.end_time)
+																)}
+															</span>
+															{hasMoved && (
+																<span className="text-[10px] text-violet-300/70 mt-0.5">
+																	↕ {Math.round(snappedDelta)} Min.
+																</span>
+															)}
+														</div>
+													</div>
+												);
+											})()
+										: null}
 								</DragOverlay>
 							</DndContext>
 
