@@ -74,6 +74,8 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { ShiftTemplateApplyDialog } from "@/components/shift-template-apply-dialog";
 import { jsPDF } from "jspdf";
+import { EmptyState } from "@/components/empty-state";
+import { useToast } from "@/hooks/use-toast";
 
 interface Event {
 	id: string;
@@ -294,6 +296,7 @@ function snapTo15Minutes(dateStr: string, deltaMinutes: number): string {
 }
 
 export default function ShiftsPage() {
+	const { toast } = useToast();
 	const [events, setEvents] = useState<Event[]>([]);
 	const [staff, setStaff] = useState<StaffMember[]>([]);
 	const [shifts, setShifts] = useState<Shift[]>([]);
@@ -568,8 +571,22 @@ export default function ShiftsPage() {
 			setEditingShift(null);
 			form.reset();
 			fetchShifts();
+			toast({
+				title: editingShift ? "Schicht aktualisiert" : "Schicht erstellt",
+				description: editingShift
+					? "Die Schicht wurde erfolgreich aktualisiert."
+					: "Die Schicht wurde erfolgreich erstellt.",
+			});
 		} catch (error) {
 			console.error("Error saving shift:", error);
+			toast({
+				variant: "destructive",
+				title: "Fehler",
+				description:
+					error instanceof Error
+						? error.message
+						: "Fehler beim Speichern der Schicht.",
+			});
 		} finally {
 			setSaving(false);
 		}
@@ -596,8 +613,20 @@ export default function ShiftsPage() {
 			setDeleteDialogOpen(false);
 			setShiftToDelete(null);
 			fetchShifts();
+			toast({
+				title: "Schicht gelöscht",
+				description: "Die Schicht wurde erfolgreich gelöscht.",
+			});
 		} catch (error) {
 			console.error("Error deleting shift:", error);
+			toast({
+				variant: "destructive",
+				title: "Fehler",
+				description:
+					error instanceof Error
+						? error.message
+						: "Fehler beim Löschen der Schicht.",
+			});
 		} finally {
 			setDeleting(false);
 		}
@@ -682,8 +711,20 @@ export default function ShiftsPage() {
 				}
 
 				fetchShifts();
+				toast({
+					title: "Schicht verschoben",
+					description: "Die Schicht wurde erfolgreich verschoben.",
+				});
 			} catch (error) {
 				console.error("Error updating shift time:", error);
+				toast({
+					variant: "destructive",
+					title: "Fehler",
+					description:
+						error instanceof Error
+							? error.message
+							: "Fehler beim Verschieben der Schicht.",
+				});
 			} finally {
 				setSavingIndicator(null);
 			}
@@ -744,8 +785,20 @@ export default function ShiftsPage() {
 			setBulkEndTime("");
 			setBulkBreakMinutes(0);
 			fetchShifts();
+			toast({
+				title: "Massenschichten erstellt",
+				description: `${selectedBulkStaff.length} Schichten wurden erfolgreich erstellt.`,
+			});
 		} catch (error) {
 			console.error("Error creating bulk shifts:", error);
+			toast({
+				variant: "destructive",
+				title: "Fehler",
+				description:
+					error instanceof Error
+						? error.message
+						: "Fehler beim Erstellen der Massenschichten.",
+			});
 		} finally {
 			setBulkSubmitting(false);
 		}
@@ -774,8 +827,18 @@ export default function ShiftsPage() {
 				throw new Error("Failed to clock in");
 			}
 			await fetchShifts();
+			toast({
+				title: "Eingestempelt",
+				description: "Der Mitarbeiter wurde erfolgreich eingestempelt.",
+			});
 		} catch (error) {
 			console.error("Error clocking in:", error);
+			toast({
+				variant: "destructive",
+				title: "Fehler",
+				description:
+					error instanceof Error ? error.message : "Fehler beim Einstempeln.",
+			});
 		} finally {
 			setClockingIn(null);
 		}
@@ -792,8 +855,18 @@ export default function ShiftsPage() {
 				throw new Error("Failed to clock out");
 			}
 			await fetchShifts();
+			toast({
+				title: "Ausgestempelt",
+				description: "Der Mitarbeiter wurde erfolgreich ausgestempelt.",
+			});
 		} catch (error) {
 			console.error("Error clocking out:", error);
+			toast({
+				variant: "destructive",
+				title: "Fehler",
+				description:
+					error instanceof Error ? error.message : "Fehler beim Ausstempeln.",
+			});
 		} finally {
 			setClockingOut(null);
 		}
@@ -1179,11 +1252,16 @@ export default function ShiftsPage() {
 								onDragStart={handleDragStart}
 							>
 								{filteredShifts.length === 0 ? (
-									<div className="text-center py-8 text-zinc-400">
-										{roleFilter !== "all"
-											? `No shifts with role "${roleFilter}" for this event`
-											: "No shifts scheduled for this event"}
-									</div>
+									<EmptyState
+										icon={Clock}
+										title={
+											roleFilter !== "all"
+												? `Keine Schichten mit Rolle "${roleFilter}"`
+												: "Keine Schichten geplant"
+										}
+										description="Füge eine Schicht für dieses Event hinzu"
+										className="py-8"
+									/>
 								) : (
 									<div className="space-y-2">
 										{filteredShifts.map((shift) => (
@@ -1262,11 +1340,16 @@ export default function ShiftsPage() {
 						</CardHeader>
 						<CardContent>
 							{filteredShifts.length === 0 ? (
-								<div className="text-center py-8 text-zinc-400">
-									{roleFilter !== "all"
-										? `No shifts with role "${roleFilter}"`
-										: 'No shifts scheduled. Click "Add Shift" to create one.'}
-								</div>
+								<EmptyState
+									icon={Clock}
+									title={
+										roleFilter !== "all"
+											? `Keine Schichten mit Rolle "${roleFilter}"`
+											: "Keine Schichten geplant"
+									}
+									description="Füge eine Schicht hinzu"
+									className="py-8"
+								/>
 							) : (
 								<div className="space-y-3">
 									{filteredShifts.map((shift) => {

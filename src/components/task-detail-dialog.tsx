@@ -25,6 +25,7 @@ import { TaskHistoryTimeline } from "./task-history-timeline";
 import { ItemQRDialog } from "./item-qr-dialog";
 import { createClient } from "@/lib/supabase/browser";
 import { useI18n } from "@/lib/i18n";
+import { useToast } from "@/hooks/use-toast";
 import {
 	Edit,
 	Trash2,
@@ -440,6 +441,7 @@ export function TaskDetailDialog({
 	onTaskDeleted,
 }: TaskDetailDialogProps) {
 	const { t, locale } = useI18n();
+	const { toast } = useToast();
 
 	// Mode
 	const [isEditing, setIsEditing] = useState(false);
@@ -589,8 +591,20 @@ export function TaskDetailDialog({
 			if (!response.ok) throw new Error("Failed to update");
 			const updated = await response.json();
 			onTaskUpdated(updated);
+			toast({
+				title: "Aufgabe aktualisiert",
+				description: `Feld „${field}" wurde aktualisiert.`,
+			});
 		} catch (error) {
 			console.error("Inline save failed:", error);
+			toast({
+				variant: "destructive",
+				title: "Fehler",
+				description:
+					error instanceof Error
+						? error.message
+						: "Fehler beim Aktualisieren des Felds.",
+			});
 		} finally {
 			setSavingField(null);
 		}
@@ -611,8 +625,20 @@ export function TaskDetailDialog({
 			const comment = await response.json();
 			setComments([...comments, comment]);
 			setNewComment("");
+			toast({
+				title: "Kommentar hinzugefügt",
+				description: "Der Kommentar wurde erfolgreich hinzugefügt.",
+			});
 		} catch (error) {
 			console.error("Error adding comment:", error);
+			toast({
+				variant: "destructive",
+				title: "Fehler",
+				description:
+					error instanceof Error
+						? error.message
+						: "Fehler beim Hinzufügen des Kommentars.",
+			});
 		} finally {
 			setSubmittingComment(false);
 		}
@@ -632,8 +658,18 @@ export function TaskDetailDialog({
 			if (!response.ok) throw new Error("Failed to approve");
 			const updatedTask = await response.json();
 			onTaskUpdated({ ...updatedTask, task_items: task.task_items });
+			toast({
+				title: "Aufgabe freigegeben",
+				description: "Die Aufgabe wurde erfolgreich freigegeben.",
+			});
 		} catch (error) {
 			console.error("Error approving task:", error);
+			toast({
+				variant: "destructive",
+				title: "Fehler",
+				description:
+					error instanceof Error ? error.message : "Fehler bei der Freigabe.",
+			});
 		} finally {
 			setApproving(false);
 		}
@@ -656,8 +692,18 @@ export function TaskDetailDialog({
 			onTaskUpdated({ ...updatedTask, task_items: task.task_items });
 			setShowRejectInput(false);
 			setRejectReason("");
+			toast({
+				title: "Aufgabe abgelehnt",
+				description: "Die Aufgabe wurde abgelehnt.",
+			});
 		} catch (error) {
 			console.error("Error rejecting task:", error);
+			toast({
+				variant: "destructive",
+				title: "Fehler",
+				description:
+					error instanceof Error ? error.message : "Fehler bei der Ablehnung.",
+			});
 		} finally {
 			setRejecting(false);
 		}
@@ -685,8 +731,22 @@ export function TaskDetailDialog({
 			onTaskUpdated({ ...updatedTask, task_items: task.task_items });
 			setShowBlockInput(false);
 			setBlockReason("");
+			toast({
+				title: shouldBlock ? "Aufgabe blockiert" : "Blockierung aufgehoben",
+				description: shouldBlock
+					? "Die Aufgabe wurde blockiert."
+					: "Die Blockierung wurde aufgehoben.",
+			});
 		} catch (error) {
 			console.error("Error toggling block:", error);
+			toast({
+				variant: "destructive",
+				title: "Fehler",
+				description:
+					error instanceof Error
+						? error.message
+						: "Fehler beim Aktualisieren des Blockstatus.",
+			});
 		} finally {
 			setBlocking(false);
 		}
@@ -719,8 +779,20 @@ export function TaskDetailDialog({
 			});
 			setSubtaskTitle("");
 			setShowSubtaskForm(false);
+			toast({
+				title: "Unteraufgabe erstellt",
+				description: `${subtaskTitle.trim()} wurde erfolgreich erstellt.`,
+			});
 		} catch (error) {
 			console.error("Error creating sub-task:", error);
+			toast({
+				variant: "destructive",
+				title: "Fehler",
+				description:
+					error instanceof Error
+						? error.message
+						: "Fehler beim Erstellen der Unteraufgabe.",
+			});
 		} finally {
 			setCreatingSubtask(false);
 		}
@@ -762,8 +834,20 @@ export function TaskDetailDialog({
 			const updatedTask = await response.json();
 			onTaskUpdated(updatedTask);
 			setIsEditing(false);
+			toast({
+				title: "Aufgabe aktualisiert",
+				description: "Die Aufgabe wurde erfolgreich aktualisiert.",
+			});
 		} catch (error) {
 			console.error("Error updating task:", error);
+			toast({
+				variant: "destructive",
+				title: "Fehler",
+				description:
+					error instanceof Error
+						? error.message
+						: "Fehler beim Aktualisieren der Aufgabe.",
+			});
 			throw error;
 		}
 	};
@@ -778,8 +862,20 @@ export function TaskDetailDialog({
 			if (!response.ok) throw new Error("Failed to delete task");
 			onTaskDeleted(task.id);
 			onOpenChange(false);
+			toast({
+				title: "Aufgabe gelöscht",
+				description: "Die Aufgabe wurde erfolgreich gelöscht.",
+			});
 		} catch (error) {
 			console.error("Error deleting task:", error);
+			toast({
+				variant: "destructive",
+				title: "Fehler",
+				description:
+					error instanceof Error
+						? error.message
+						: "Fehler beim Löschen der Aufgabe.",
+			});
 		} finally {
 			setDeleting(false);
 		}

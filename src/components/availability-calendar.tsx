@@ -44,6 +44,8 @@ import {
 	Users,
 } from "lucide-react";
 
+import { EmptyState } from "@/components/empty-state";
+
 /* ───────────────────────────────────────────
    Types
    ─────────────────────────────────────────── */
@@ -908,9 +910,11 @@ export function AvailabilityCalendar({
 											})}
 										{colleaguesStaff.filter((s) => s.id !== staffMemberId)
 											.length === 0 && (
-											<p className="text-sm text-zinc-500">
-												No colleagues found
-											</p>
+											<EmptyState
+												icon={Users}
+												title="Keine Kollegen gefunden"
+												className="py-8"
+											/>
 										)}
 									</div>
 								)}

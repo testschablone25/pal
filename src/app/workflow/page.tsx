@@ -41,6 +41,7 @@ import { TaskCard, Task } from "@/components/task-card";
 import { TaskForm } from "@/components/task-form";
 import { TaskDetailDialog } from "@/components/task-detail-dialog";
 import { useI18n } from "@/lib/i18n";
+import { useToast } from "@/hooks/use-toast";
 import {
 	Plus,
 	Search,
@@ -85,6 +86,7 @@ type SortField = "priority" | "due_date" | "venue" | null;
 
 export default function WorkflowPage() {
 	const { t } = useI18n();
+	const { toast } = useToast();
 
 	// Core state
 	const [tasks, setTasks] = useState<Task[]>([]);
@@ -406,8 +408,20 @@ export default function WorkflowPage() {
 					t.id === activeId ? { ...t, status: newStatus as Task["status"] } : t,
 				),
 			);
+			toast({
+				title: "Aufgabe verschoben",
+				description: `Status geändert zu ${newStatus?.replace("_", " ")}.`,
+			});
 		} catch (error) {
 			console.error("Failed to update task status:", error);
+			toast({
+				variant: "destructive",
+				title: "Fehler",
+				description:
+					error instanceof Error
+						? error.message
+						: "Fehler beim Verschieben der Aufgabe.",
+			});
 			fetchTasks();
 		}
 	};
@@ -447,8 +461,20 @@ export default function WorkflowPage() {
 			const newTask = await response.json();
 			setTasks((tasks) => [newTask, ...tasks]);
 			setIsCreateOpen(false);
+			toast({
+				title: "Aufgabe erstellt",
+				description: `${values.title || "Aufgabe"} wurde erfolgreich erstellt.`,
+			});
 		} catch (error) {
 			console.error("Error creating task:", error);
+			toast({
+				variant: "destructive",
+				title: "Fehler",
+				description:
+					error instanceof Error
+						? error.message
+						: "Fehler beim Erstellen der Aufgabe.",
+			});
 			throw error;
 		}
 	};

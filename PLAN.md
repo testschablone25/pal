@@ -143,6 +143,23 @@ We'll work incrementally through 5 major phases. Each phase builds on the previo
 
 ---
 
+### Phase 6: General UI Polish
+
+- [ ] **Step 6.1** — Mount Toaster in root layout, add toast feedback after every CRUD operation
+- [ ] **Step 6.2** — Create `PageSkeleton` component, add loading skeletons to all pages
+- [ ] **Step 6.3** — Mobile-friendly nav with hamburger menu on small screens
+- [ ] **Step 6.4** — Create `EmptyState` component for empty list pages
+- [ ] **Step 6.5** — Standardize page shell (consistent padding/max-width across all pages)
+- [ ] **Step 6.6** — Submit button loading states on all forms
+- [ ] **Step 6.7** — Standardized search/filter bar component
+- [ ] **Step 6.8** — Replace `confirm()` with shadcn AlertDialog
+- [ ] **Step 6.9** — Page transition animations (fade-in)
+- [ ] **Step 6.10** — Badge color consistency utility
+- [ ] **Step 6.11** — Date/time format utility (centralize date-fns patterns)
+- [ ] **Step 6.12** — Dialog auto-close on successful create/edit
+
+---
+
 ## Verification
 
 1. **Unit tests**: Run `npm run test:unit` — permissions tests should still pass; any new utilities need tests

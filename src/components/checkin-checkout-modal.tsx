@@ -19,6 +19,7 @@ import {
 	SelectValue,
 } from "@/components/ui/select";
 import { createClient } from "@/lib/supabase/browser";
+import { useToast } from "@/hooks/use-toast";
 import { Loader2 } from "lucide-react";
 
 interface SubLocation {
@@ -61,6 +62,7 @@ export function CheckinCheckoutModal({
 	const [subLocations, setSubLocations] = useState<SubLocation[]>([]);
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState<string | null>(null);
+	const { toast } = useToast();
 
 	// Fetch venues with sub-locations when dialog opens
 	useEffect(() => {
@@ -148,8 +150,22 @@ export function CheckinCheckoutModal({
 
 			onOpenChange(false);
 			onSuccess();
+			const actionLabel =
+				ACTIONS.find((a) => a.value === action)?.label || action;
+			toast({
+				title: "Standortänderung protokolliert",
+				description: `${actionLabel} erfolgreich durchgeführt.`,
+			});
 		} catch (err) {
 			setError(err instanceof Error ? err.message : "An error occurred");
+			toast({
+				variant: "destructive",
+				title: "Fehler",
+				description:
+					err instanceof Error
+						? err.message
+						: "Fehler bei der Standortänderung.",
+			});
 		} finally {
 			setLoading(false);
 		}

@@ -3,6 +3,7 @@ import "@fontsource-variable/montserrat";
 import "./globals.css";
 import { NavBar } from "@/components/nav-bar";
 import { I18nProvider } from "@/lib/i18n";
+import { Toaster } from "@/components/ui/toaster";
 
 export const metadata: Metadata = {
 	title: "PAL - Nightclub Booking System",
@@ -20,6 +21,7 @@ export default function RootLayout({
 				<I18nProvider>
 					<NavBar />
 					<main>{children}</main>
+					<Toaster />
 				</I18nProvider>
 			</body>
 		</html>

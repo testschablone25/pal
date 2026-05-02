@@ -39,6 +39,8 @@ import {
 	Calendar,
 } from "lucide-react";
 import Link from "next/link";
+import { useToast } from "@/hooks/use-toast";
+import { EmptyState } from "@/components/empty-state";
 
 interface StaffMember {
 	id: string;
@@ -82,6 +84,7 @@ const CONTRACT_TYPES = [
 ];
 
 export default function StaffPage() {
+	const { toast } = useToast();
 	const [staff, setStaff] = useState<StaffMember[]>([]);
 	const [loading, setLoading] = useState(true);
 	const [searchName, setSearchName] = useState("");
@@ -149,8 +152,20 @@ export default function StaffPage() {
 			setDeleteDialogOpen(false);
 			setStaffToDelete(null);
 			fetchStaff();
+			toast({
+				title: "Mitarbeiter gelöscht",
+				description: "Der Mitarbeiter wurde erfolgreich gelöscht.",
+			});
 		} catch (error) {
 			console.error("Error deleting staff:", error);
+			toast({
+				variant: "destructive",
+				title: "Fehler",
+				description:
+					error instanceof Error
+						? error.message
+						: "Fehler beim Löschen des Mitarbeiters.",
+			});
 		} finally {
 			setDeleting(false);
 		}
@@ -356,15 +371,13 @@ export default function StaffPage() {
 							))}
 						</div>
 					) : staff.length === 0 ? (
-						<div className="text-center py-12">
-							<Users className="h-12 w-12 mx-auto text-zinc-600 mb-4" />
-							<p className="text-zinc-400 mb-4">No staff members found</p>
-							<Link href="/staff/new">
-								<Button className="bg-violet-600 hover:bg-violet-700">
-									Add your first staff member
-								</Button>
-							</Link>
-						</div>
+						<EmptyState
+							icon={Users}
+							title="Keine Mitarbeiter gefunden"
+							description="Füge dein erstes Teammitglied hinzu"
+							actionLabel="Mitarbeiter hinzufügen"
+							actionHref="/staff/new"
+						/>
 					) : (
 						<Table>
 							<TableHeader>

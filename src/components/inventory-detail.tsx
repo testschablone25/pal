@@ -4,7 +4,6 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { CheckinCheckoutModal } from "@/components/checkin-checkout-modal";
 import { ItemQRDialog } from "@/components/item-qr-dialog";
@@ -19,6 +18,7 @@ import {
 	QrCode,
 	ListTodo,
 } from "lucide-react";
+import { PageSkeleton } from "@/components/page-skeleton";
 import { cn } from "@/lib/utils";
 
 interface SubLocation {
@@ -189,9 +189,7 @@ export function InventoryDetail({ itemId }: InventoryDetailProps) {
 	if (loading) {
 		return (
 			<div className="space-y-6">
-				<Skeleton className="h-8 w-32 bg-zinc-800" />
-				<Skeleton className="h-64 w-full bg-zinc-800" />
-				<Skeleton className="h-48 w-full bg-zinc-800" />
+				<PageSkeleton rows={3} />
 			</div>
 		);
 	}

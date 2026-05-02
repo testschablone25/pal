@@ -6,7 +6,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Skeleton } from "@/components/ui/skeleton";
+import { PageSkeleton } from "@/components/page-skeleton";
 import {
 	Table,
 	TableBody,
@@ -16,6 +16,8 @@ import {
 	TableRow,
 } from "@/components/ui/table";
 import { Search, Plus, Package, QrCode } from "lucide-react";
+import { EmptyState } from "@/components/empty-state";
+import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import { ItemQRDialog } from "@/components/item-qr-dialog";
 import {
@@ -83,6 +85,7 @@ const categoryLabels: Record<string, string> = {
 
 export function InventoryList() {
 	const router = useRouter();
+	const { toast } = useToast();
 	const [items, setItems] = useState<Item[]>([]);
 	const [loading, setLoading] = useState(true);
 	const [search, setSearch] = useState("");
@@ -138,6 +141,10 @@ export function InventoryList() {
 
 		setShowCreateDialog(false);
 		fetchItems();
+		toast({
+			title: "Inventargegenstand erstellt",
+			description: `${values.name} wurde erfolgreich erstellt.`,
+		});
 	};
 
 	return (
@@ -193,24 +200,15 @@ export function InventoryList() {
 
 			{/* Items table */}
 			{loading ? (
-				<div className="space-y-3">
-					{[...Array(5)].map((_, i) => (
-						<Skeleton key={i} className="h-16 w-full bg-zinc-800" />
-					))}
-				</div>
+				<PageSkeleton rows={5} card={false} title={false} />
 			) : items.length === 0 ? (
-				<Card className="bg-zinc-900 border-zinc-800">
-					<CardContent className="py-12 text-center">
-						<Package className="h-12 w-12 mx-auto text-zinc-600 mb-4" />
-						<p className="text-zinc-400">No items found</p>
-						<Button
-							onClick={() => setShowCreateDialog(true)}
-							className="mt-4 bg-violet-600 hover:bg-violet-700"
-						>
-							Add your first item
-						</Button>
-					</CardContent>
-				</Card>
+				<EmptyState
+					icon={Package}
+					title="Keine Artikel gefunden"
+					description="Erstelle deinen ersten Inventarartikel"
+					actionLabel="Artikel hinzufügen"
+					onClick={() => setShowCreateDialog(true)}
+				/>
 			) : (
 				<Card className="bg-zinc-900 border-zinc-800">
 					<CardContent className="p-0">

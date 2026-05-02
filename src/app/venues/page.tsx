@@ -5,7 +5,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Skeleton } from "@/components/ui/skeleton";
+import { PageSkeleton } from "@/components/page-skeleton";
+import { useToast } from "@/hooks/use-toast";
 import {
 	Dialog,
 	DialogContent,
@@ -35,12 +36,13 @@ import {
 	Plus,
 	MapPin,
 	Users,
-	Building,
+	Building2,
 	Pencil,
 	Trash2,
 	Loader2,
 	Layers,
 } from "lucide-react";
+import { EmptyState } from "@/components/empty-state";
 
 interface SubLocation {
 	id: string;
@@ -188,6 +190,7 @@ function VenueForm({
 }
 
 export default function VenuesPage() {
+	const { toast } = useToast();
 	const [venues, setVenues] = useState<Venue[]>([]);
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);
@@ -270,8 +273,20 @@ export default function VenuesPage() {
 			resetForm();
 			setShowCreateDialog(false);
 			fetchVenues();
+			toast({
+				title: "Veranstaltungsort erstellt",
+				description: `${formData.name} wurde erfolgreich erstellt.`,
+			});
 		} catch (err) {
 			console.error("Failed to create venue:", err);
+			toast({
+				variant: "destructive",
+				title: "Fehler",
+				description:
+					err instanceof Error
+						? err.message
+						: "Fehler beim Erstellen des Veranstaltungsorts.",
+			});
 		} finally {
 			setCreating(false);
 		}
@@ -318,8 +333,20 @@ export default function VenuesPage() {
 			setEditingVenue(null);
 			resetForm();
 			fetchVenues();
+			toast({
+				title: "Veranstaltungsort aktualisiert",
+				description: `${formData.name} wurde erfolgreich aktualisiert.`,
+			});
 		} catch (err) {
 			console.error("Failed to update venue:", err);
+			toast({
+				variant: "destructive",
+				title: "Fehler",
+				description:
+					err instanceof Error
+						? err.message
+						: "Fehler beim Aktualisieren des Veranstaltungsorts.",
+			});
 		} finally {
 			setSaving(false);
 		}
@@ -342,8 +369,20 @@ export default function VenuesPage() {
 			setShowDeleteDialog(false);
 			setDeletingVenue(null);
 			fetchVenues();
+			toast({
+				title: "Veranstaltungsort gelöscht",
+				description: `${deletingVenue.name} wurde erfolgreich gelöscht.`,
+			});
 		} catch (err) {
 			console.error("Failed to delete venue:", err);
+			toast({
+				variant: "destructive",
+				title: "Fehler",
+				description:
+					err instanceof Error
+						? err.message
+						: "Fehler beim Löschen des Veranstaltungsorts.",
+			});
 		} finally {
 			setDeleting(false);
 		}
@@ -385,8 +424,20 @@ export default function VenuesPage() {
 
 			setShowSubLocationDialog(false);
 			fetchVenues();
+			toast({
+				title: "Unterbereich erstellt",
+				description: `${newSubLocationName.trim()} wurde erfolgreich erstellt.`,
+			});
 		} catch (err) {
 			console.error("Failed to add sub-location:", err);
+			toast({
+				variant: "destructive",
+				title: "Fehler",
+				description:
+					err instanceof Error
+						? err.message
+						: "Fehler beim Erstellen des Unterbereichs.",
+			});
 		} finally {
 			setCreatingSubLocation(false);
 		}
@@ -410,29 +461,27 @@ export default function VenuesPage() {
 			}
 
 			fetchVenues();
+			toast({
+				title: "Unterbereich gelöscht",
+				description: "Der Unterbereich wurde erfolgreich gelöscht.",
+			});
 		} catch (err) {
 			console.error("Failed to delete sub-location:", err);
+			toast({
+				variant: "destructive",
+				title: "Fehler",
+				description:
+					err instanceof Error
+						? err.message
+						: "Fehler beim Löschen des Unterbereichs.",
+			});
 		}
 	};
 
 	if (loading) {
 		return (
 			<div className="container mx-auto py-8 px-4">
-				<div className="mb-8">
-					<Skeleton className="h-10 w-64 bg-zinc-800" />
-					<Skeleton className="h-5 w-96 mt-2 bg-zinc-800" />
-				</div>
-				<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-					{[...Array(6)].map((_, i) => (
-						<Card key={i} className="bg-zinc-900 border-zinc-800">
-							<CardContent className="pt-6 space-y-3">
-								<Skeleton className="h-6 w-3/4 bg-zinc-800" />
-								<Skeleton className="h-4 w-1/2 bg-zinc-800" />
-								<Skeleton className="h-4 w-1/3 bg-zinc-800" />
-							</CardContent>
-						</Card>
-					))}
-				</div>
+				<PageSkeleton rows={6} />
 			</div>
 		);
 	}
@@ -613,18 +662,13 @@ export default function VenuesPage() {
 
 			{/* Venues Grid */}
 			{venues.length === 0 ? (
-				<Card className="bg-zinc-900 border-zinc-800">
-					<CardContent className="py-12 text-center">
-						<Building className="h-12 w-12 mx-auto text-zinc-600 mb-4" />
-						<p className="text-zinc-400">No venues yet</p>
-						<Button
-							className="mt-4 bg-violet-600 hover:bg-violet-700"
-							onClick={() => setShowCreateDialog(true)}
-						>
-							Add your first venue
-						</Button>
-					</CardContent>
-				</Card>
+				<EmptyState
+					icon={Building2}
+					title="Keine Veranstaltungsorte"
+					description="Erstelle deinen ersten Veranstaltungsort"
+					actionLabel="Veranstaltungsort hinzufügen"
+					onClick={() => setShowCreateDialog(true)}
+				/>
 			) : (
 				<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
 					{venues.map((venue) => (
