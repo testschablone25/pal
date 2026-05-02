@@ -66,11 +66,13 @@ export function SearchFilterBar({
 						<SelectValue placeholder={filter.label} />
 					</SelectTrigger>
 					<SelectContent>
-						{filter.options.map((option) => (
-							<SelectItem key={option.value} value={option.value}>
-								{option.label}
-							</SelectItem>
-						))}
+						{filter.options
+							.filter((o) => o.value !== "")
+							.map((option) => (
+								<SelectItem key={option.value} value={option.value}>
+									{option.label}
+								</SelectItem>
+							))}
 					</SelectContent>
 				</Select>
 			))}
