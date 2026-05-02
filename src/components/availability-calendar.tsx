@@ -559,9 +559,13 @@ export function AvailabilityCalendar({
 	/** Quick-action: set all weekdays in current week as available/unavailable */
 	const handleQuickActionWeek = async (available: boolean) => {
 		if (!targetStaffId) return;
+		// Use the last clicked date's week, falling back to currentDate
+		const referenceDate = quickDate
+			? new Date(quickDate + "T12:00:00")
+			: currentDate;
 		setSaving(true);
 		try {
-			const weekDates = getWeekDates(currentDate);
+			const weekDates = getWeekDates(referenceDate);
 			await Promise.all(
 				weekDates.map((date) =>
 					fetch("/api/availability", {
@@ -775,6 +779,11 @@ export function AvailabilityCalendar({
 							>
 								<Check className="h-4 w-4 mr-1" />
 								Available this week
+								{quickDate && (
+									<span className="ml-1 text-emerald-600">
+										({new Date(quickDate + 'T12:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric' })})
+									</span>
+								)}
 							</Button>
 							<Button
 								variant="outline"
@@ -785,6 +794,11 @@ export function AvailabilityCalendar({
 							>
 								<Ban className="h-4 w-4 mr-1" />
 								Unavailable this week
+								{quickDate && (
+									<span className="ml-1 text-red-600">
+										({new Date(quickDate + 'T12:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric' })})
+									</span>
+								)}
 							</Button>
 							<Button
 								variant="outline"
