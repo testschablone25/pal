@@ -659,7 +659,7 @@ export default function DashboardPage() {
 							</CardTitle>
 							<div className="flex items-center gap-2">
 								{staffRecord && canAccessRoute(userRoles, "/staff/availability") && (
-									<Link href="/staff/availability">
+									<Link href="/staff/availability?view=me">
 										<Button
 											variant="outline"
 											size="sm"
