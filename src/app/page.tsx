@@ -657,17 +657,31 @@ export default function DashboardPage() {
 								<Clock className="h-5 w-5 text-violet-400" />
 								Mein Schichtplan
 							</CardTitle>
-							{canAccessRoute(userRoles, "/staff") && (
-								<Link href="/staff/shifts">
-									<Button
-										variant="ghost"
-										size="sm"
-										className="text-zinc-400 hover:text-white"
-									>
-										Schichten <ChevronRight className="h-4 w-4 ml-1" />
-									</Button>
-								</Link>
-							)}
+							<div className="flex items-center gap-2">
+								{staffRecord && canAccessRoute(userRoles, "/staff/availability") && (
+									<Link href="/staff/availability">
+										<Button
+											variant="outline"
+											size="sm"
+											className="border-emerald-600/50 text-emerald-400 hover:text-emerald-300 hover:bg-emerald-600/10"
+										>
+											<Calendar className="h-4 w-4 mr-1.5" />
+											Verfügbarkeit
+										</Button>
+									</Link>
+								)}
+								{canAccessRoute(userRoles, "/staff/shifts") && (
+									<Link href="/staff/shifts">
+										<Button
+											variant="ghost"
+											size="sm"
+											className="text-zinc-400 hover:text-white"
+										>
+											Schichten <ChevronRight className="h-4 w-4 ml-1" />
+										</Button>
+									</Link>
+								)}
+							</div>
 						</CardHeader>
 						<CardContent>
 							{!staffRecord ? (
