@@ -15,6 +15,9 @@
 - [2026-05-03] Shift timeline timezone fix: Supabase TIMESTAMPTZ returns UTC timestamps (may lack timezone suffix). All time-parsing functions must use `ensureUtc()` + `new Date()` to convert to local time. Sending timestamps to Supabase requires explicit timezone offset (e.g. `+02:00`) so PostgreSQL stores the correct UTC instant
 - [2026-05-03] Dashboard: added 'Verfügbarkeit' quick-access button in shift plan card header, links to `/staff/availability?view=me`
 - [2026-06-02] Venue Hub: venues page now shows expandable cards with tabbed detail (Overview, Tasks, Staff, Events, Inventory, Settings). Each venue card shows aggregated stats (open/urgent tasks, upcoming events, staff count, inventory count). Inline capacity editing on cards. Tasks can be linked directly to venue (venue_id) without requiring an event_id.
+- [2026-06-03] Task PUT API: fields `assignee_id`, `event_id`, `due_date`, `scheduled_date`, `parent_task_id` normalized via `|| null` to prevent empty-string UUID/date constraint violations from the form (which sends `""` for "Unassigned" / "No event" select choices).
+- [2026-06-03] Dashboard quick actions: replaced navbar-mirroring shortcuts with role-specific `QuickAction` entries using `hasRole()` from `@/lib/permissions`. Each role group gets 2–3 contextual shortcuts (e.g., tech sees Equipment/Rider, gastro sees Bar-Bestand, awareness sees Einlass/Gästelisten). Multi-role users see union of all their role shortcuts. Accent color per role group via `ACCENT_COLORS` map (emerald=staff, orange=gastro, indigo=awareness/night-mgmt, violet=booking, pink=social-media, teal=backoffice, red=admin).
+- [2026-06-03] Task edit form: uses `(fullTask || task).task_items` instead of `task.task_items` because the list API (GET /api/tasks) doesn't include `task_items`. Using the list-API task would silently clear all linked items on save.
 
 ## Known Issues
 
@@ -24,6 +27,7 @@
 - Dashboard API fetches use user_id query param to work around RLS issues
 - `date-fns` locale is `de` (German) throughout the dashboard
 - Shift timestamps stored without timezone context: old shifts created before 2026-05-03 were sent as naive timestamps. Supabase TIMESTAMPTZ interpreted them as UTC (or server timezone), causing display offset. New shifts include explicit timezone offset, but old data may still display incorrectly until re-saved
+- Task form sends empty strings `""` for UUID/date selects set to "Unassigned" / "No event" — API PUT handler now normalizes these to `null` via `|| null`, but the root cause (form sending `""` instead of `null`) remains in the form layer
 
 ## Implementation Status
 
@@ -48,3 +52,25 @@
 - Task types rendered as inline toggle pills (rounded-full, toggleable) instead of selects for many-option fields
 - Priority selects show color-coded dots (red=urgent, orange=high, blue=medium, grey=low) in trigger and dropdown
 - Form buttons in sticky footer with border-t separator; error messages inline left, actions right
+
+### Dashboard Glassmorphism
+
+- Cards: `bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/60` (primary), `/60` (secondary), `/50` (tertiary)
+- Corner radius: `rounded-xl` (hero only), `rounded-lg` (cards), `rounded-md` (internal elements, icon pills, task rows)
+- No gradients on stat cards — use solid backgrounds with colored left-border accent (`border-l-2 border-l-{color}-600/50`)
+- No motion flourishes (`hover:-translate-y`, `hover:scale-*`) — keep transitions to color/border only
+- Avatar: solid accent color (no gradient), subtle ring (`ring-1 ring-violet-900/40`), no glow shadows
+
+### Role-Specific Quick Actions
+
+- Dashboard footer quick bar uses `hasRole(userRoles, "role")` for conditional rendering
+- Each entry: `<QuickAction href="..." icon={Icon} label="..." accent="color" />`
+- Accent colors per role group: emerald (staff), orange (gastro), indigo (awareness/night-mgmt), violet (booking), pink (social-media), teal (backoffice), red (admin)
+- `ACCENT_COLORS` map defined in-page: `"bg-{color}-600/15 text-{color}-400 group-hover:bg-{color}-600/20"`
+- Links point to deep/filtered views, not top-level pages (e.g. `/workflow?needs_approval=true`, `/staff/availability?view=me`)
+
+### API Error Handling
+
+- Client fetch calls: read `response.json()` on non-OK responses to extract `errBody.error` for the toast message
+- NEVER throw generic `"Failed to update task"` — always include the status code and API error field
+- Pattern: `const errBody = await response.json().catch(() => ({})); throw new Error(errBody.error || \`Failed (${response.status})\`);`

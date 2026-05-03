@@ -9,13 +9,39 @@
 - Error: `text-red-400`, `bg-red-950/50`
 - Success: `text-green-400`, `bg-green-600`
 
+## Dashboard Glassmorphism (2026-06-03)
+
+For management-software feel: subtle transparency with backdrop blur, restrained corners, no flashy gradients.
+
+- **Cards:** `bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/60` (primary tier), `/60` (secondary), `/50` (tertiary)
+- **Corner radius:** `rounded-xl` (hero greeting only), `rounded-lg` (all cards, stat strips, panels), `rounded-md` (task rows, icon pills, badges, internal elements)
+- **Stat cards (KPIs):** solid background with colored left-border accent instead of gradient tint: `border-l-2 border-l-{color}-600/50` + `hover:border-l-{color}-500/60`
+- **No motion flourishes:** avoid `hover:-translate-y-0.5`, `hover:scale-[1.01]` — keep transitions to color/border only
+- **No colored blur decorations** (`absolute blur-xl rounded-full`) on stat cards
+- **Avatar:** solid accent (e.g. `bg-violet-700`), subtle ring (`ring-1 ring-violet-900/40`), no gradient fallback, no glow shadows
+- **Name in greeting:** solid `text-violet-400` (no gradient text)
+
+## Role-Specific Quick Actions (Dashboard Footer)
+
+- Use `hasRole(userRoles, "role")` from `@/lib/permissions` for conditional rendering
+- Each entry: `<QuickAction href="..." icon={Icon} label="..." accent="color" />`
+- Accent colors per role group via `ACCENT_COLORS` map: `"bg-{color}-600/15 text-{color}-400 group-hover:bg-{color}-600/20"`
+- Color assignments: emerald (staff/gastro), orange (gastro), indigo (awareness/night-mgmt), violet (booking/label), pink (social-media), teal (backoffice), red (admin)
+- Links point to deep/filtered views, not top-level navbar pages
+
 ## Components
 
 - Use shadcn/ui primitives from `@/components/ui/`
 - Use `cn()` from `@/lib/utils` for conditional class merging
 - Use Lucide icons imported individually
 - Loading states: `Skeleton` component or `Loader2` with `animate-spin`
-- Cards: `bg-zinc-900 border-zinc-800` always
+- Cards: `bg-zinc-900 border-zinc-800` always (except dashboard where glassmorphism variants apply)
+
+## API Error Handling
+
+- Client fetch calls: read `response.json()` on non-OK responses to extract `errBody.error` for the toast message
+- NEVER throw generic strings like `"Failed to update task"` — include the status code and API error field
+- Pattern: `const errBody = await response.json().catch(() => ({})); throw new Error(errBody.error || \`Failed (${response.status})\`);`
 
 ## Language
 
