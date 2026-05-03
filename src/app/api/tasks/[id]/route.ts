@@ -185,17 +185,19 @@ export async function PUT(
 			return NextResponse.json({ error: fetchError.message }, { status: 500 });
 		}
 
-		// Build update payload, only including provided fields
+		// Build update payload, only including provided fields.
+		// Normalize empty strings to null for UUID / date columns.
 		const updatePayload: Record<string, unknown> = {};
 		if (title !== undefined) updatePayload.title = title;
 		if (description !== undefined) updatePayload.description = description;
 		if (status !== undefined) updatePayload.status = status;
 		if (priority !== undefined) updatePayload.priority = priority;
-		if (assignee_id !== undefined) updatePayload.assignee_id = assignee_id;
-		if (event_id !== undefined) updatePayload.event_id = event_id;
-		if (due_date !== undefined) updatePayload.due_date = due_date;
+		if (assignee_id !== undefined)
+			updatePayload.assignee_id = assignee_id || null;
+		if (event_id !== undefined) updatePayload.event_id = event_id || null;
+		if (due_date !== undefined) updatePayload.due_date = due_date || null;
 		if (scheduled_date !== undefined)
-			updatePayload.scheduled_date = scheduled_date;
+			updatePayload.scheduled_date = scheduled_date || null;
 		if (needs_approval !== undefined)
 			updatePayload.needs_approval = needs_approval;
 		if (task_type !== undefined) updatePayload.task_type = task_type;
@@ -203,7 +205,7 @@ export async function PUT(
 		if (blocked_reason !== undefined)
 			updatePayload.blocked_reason = blocked_reason;
 		if (parent_task_id !== undefined)
-			updatePayload.parent_task_id = parent_task_id;
+			updatePayload.parent_task_id = parent_task_id || null;
 
 		const { data, error } = await supabase
 			.from("tasks")

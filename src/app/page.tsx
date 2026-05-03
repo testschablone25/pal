@@ -3,20 +3,19 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/browser";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Skeleton } from "@/components/ui/skeleton";
 import { TaskDetailDialog } from "@/components/task-detail-dialog";
+import { formatDateFull, formatDateShort, formatTime } from "@/lib/dates";
+import { cn } from "@/lib/utils";
 import {
-	formatDateFull,
-	formatDateShort,
-	formatTime,
-	isDateToday,
-} from "@/lib/dates";
-import { cn, statusBadgeClass } from "@/lib/utils";
-import { canAccessRoute, getRoleBadges, type AppRole } from "@/lib/permissions";
+	canAccessRoute,
+	getRoleBadges,
+	hasRole,
+	type AppRole,
+} from "@/lib/permissions";
 import {
 	User,
 	Calendar,
@@ -25,12 +24,10 @@ import {
 	Clock,
 	ChevronRight,
 	LogOut,
-	LayoutDashboard,
 	CheckCircle2,
 	Settings,
 	ArrowLeftRight,
 	AlertTriangle,
-	Sparkles,
 	PartyPopper,
 	TrendingUp,
 	Zap,
@@ -104,20 +101,6 @@ const PRIORITY_DOT: Record<string, string> = {
 	high: "bg-orange-500",
 	medium: "bg-blue-500",
 	low: "bg-zinc-500",
-};
-
-const PRIORITY_LABEL: Record<string, string> = {
-	urgent: "Dringend",
-	high: "Hoch",
-	medium: "Mittel",
-	low: "Niedrig",
-};
-
-const PRIORITY_BG: Record<string, string> = {
-	urgent: "bg-red-600",
-	high: "bg-orange-600",
-	medium: "bg-blue-600",
-	low: "bg-zinc-600",
 };
 
 // ===== Dashboard Page =====
@@ -253,15 +236,7 @@ export default function DashboardPage() {
 			t.event.date <= weekEndStr &&
 			!overdueTaskIds.has(t.id),
 	);
-	const laterTasks = tasks.filter(
-		(t) =>
-			!t.event?.date ||
-			(t.event.date > weekEndStr && !overdueTaskIds.has(t.id)),
-	);
 	const unassignedTasks = tasks.filter((t) => !t.event?.date && !t.due_date);
-	const withEventTasks = tasks.filter(
-		(t) => t.event?.date && !overdueTaskIds.has(t.id),
-	);
 
 	const todayShifts = shifts.filter((s) => s.event?.date === today);
 	const upcomingShifts = shifts.filter(
@@ -295,26 +270,18 @@ export default function DashboardPage() {
 		<div className="min-h-screen bg-zinc-950">
 			{/* Gradient ambient background */}
 			<div className="fixed inset-0 pointer-events-none overflow-hidden">
-				<div className="absolute -top-40 -right-40 w-96 h-96 bg-violet-600/10 rounded-full blur-3xl" />
-				<div className="absolute top-1/3 -left-20 w-72 h-72 bg-blue-600/5 rounded-full blur-3xl" />
+				<div className="absolute -top-40 -right-40 w-96 h-96 bg-violet-600/5 rounded-full blur-3xl" />
+				<div className="absolute top-1/3 -left-20 w-72 h-72 bg-blue-600/[0.03] rounded-full blur-3xl" />
 			</div>
 
 			<div className="relative max-w-7xl mx-auto p-6 space-y-6">
 				{/* ===== HERO GREETING ===== */}
-				<div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-zinc-900 via-zinc-900 to-zinc-900 border border-zinc-800/80 shadow-2xl shadow-black/40">
-					{/* Ambient glow for today's event */}
-					{todaysEvent && (
-						<div className="absolute inset-0 bg-gradient-to-r from-violet-600/10 via-transparent to-transparent" />
-					)}
-
+				<div className="relative overflow-hidden rounded-xl bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/70 shadow-sm">
 					<div className="relative p-8">
 						<div className="flex flex-col sm:flex-row sm:items-start justify-between gap-6">
 							{/* Left: Greeting */}
 							<div className="flex-1">
 								<div className="flex items-center gap-3 mb-2">
-									<div className="p-2 bg-violet-600/20 rounded-lg">
-										<Sparkles className="h-5 w-5 text-violet-400" />
-									</div>
 									<p className="text-sm text-zinc-500 font-medium tracking-wide uppercase">
 										{formatDateFull(new Date().toISOString())}
 									</p>
@@ -322,7 +289,7 @@ export default function DashboardPage() {
 
 								<h1 className="text-4xl sm:text-5xl font-bold text-white mb-1">
 									Moin,{" "}
-									<span className="text-transparent bg-clip-text bg-gradient-to-r from-violet-400 to-blue-400">
+									<span className="text-violet-400">
 										{profile?.full_name?.split(" ")[0] ||
 											profile?.email?.split("@")[0]}
 									</span>
@@ -331,8 +298,8 @@ export default function DashboardPage() {
 
 								{/* Today's event preview */}
 								{todaysEvent ? (
-									<div className="flex items-center gap-3 mt-4 p-3 bg-violet-600/10 border border-violet-600/20 rounded-xl">
-										<div className="p-2 bg-violet-600/30 rounded-lg">
+									<div className="flex items-center gap-3 mt-4 p-3 bg-violet-600/10 border border-violet-600/20 rounded-md">
+										<div className="p-2 bg-violet-600/20 rounded-md">
 											<PartyPopper className="h-5 w-5 text-violet-400" />
 										</div>
 										<div>
@@ -344,13 +311,12 @@ export default function DashboardPage() {
 											</p>
 											<p className="text-xs text-zinc-400">
 												{todaysEvent.door_time} —{" "}
-												{todaysEvent.venue_name || "Venue"}{" "}
-												{todaysEvent.venue_name ? "" : ""}
+												{todaysEvent.venue_name || "Venue"}
 											</p>
 										</div>
 									</div>
 								) : (
-									<p className="text-zinc-400 mt-3 text-sm">
+									<p className="text-zinc-500 mt-3 text-sm">
 										Kein Event heute — genieße den freien Abend.
 									</p>
 								)}
@@ -367,8 +333,8 @@ export default function DashboardPage() {
 									))}
 								</div>
 
-								<Avatar className="h-14 w-14 border-2 border-violet-600 ring-2 ring-violet-600/30 shadow-lg shadow-violet-600/20">
-									<AvatarFallback className="bg-gradient-to-br from-violet-600 to-blue-600 text-white text-xl font-bold">
+								<Avatar className="h-14 w-14 border-2 border-violet-800/60 ring-1 ring-violet-900/40">
+									<AvatarFallback className="bg-violet-700 text-white text-xl font-bold">
 										{getInitials(profile?.full_name)}
 									</AvatarFallback>
 								</Avatar>
@@ -404,17 +370,16 @@ export default function DashboardPage() {
 				<div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
 					{blockedCount > 0 && (
 						<Link href="/workflow?blocked=true">
-							<div className="group relative overflow-hidden rounded-xl bg-gradient-to-br from-red-900/40 to-zinc-900 border border-red-800/40 p-4 hover:border-red-700/60 transition-all hover:-translate-y-0.5 cursor-pointer shadow-lg shadow-red-900/10">
-								<div className="absolute top-0 right-0 w-16 h-16 bg-red-500/10 rounded-full blur-xl" />
-								<div className="relative flex items-center gap-3">
-									<div className="p-2.5 bg-red-600/20 rounded-lg shrink-0">
+							<div className="group rounded-lg bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/60 border-l-2 border-l-red-600/50 p-4 hover:border-l-red-500/60 transition-colors cursor-pointer">
+								<div className="flex items-center gap-3">
+									<div className="p-2.5 bg-red-600/15 rounded-md shrink-0">
 										<AlertTriangle className="h-5 w-5 text-red-400" />
 									</div>
 									<div>
 										<p className="text-2xl font-bold text-white">
 											{blockedCount}
 										</p>
-										<p className="text-xs text-red-400/80 font-medium">
+										<p className="text-xs text-red-400/70 font-medium">
 											Blockiert
 										</p>
 									</div>
@@ -425,17 +390,16 @@ export default function DashboardPage() {
 
 					{canApproveTasks && pendingApprovalCount > 0 && (
 						<Link href="/workflow?needs_approval=true">
-							<div className="group relative overflow-hidden rounded-xl bg-gradient-to-br from-amber-900/40 to-zinc-900 border border-amber-800/40 p-4 hover:border-amber-700/60 transition-all hover:-translate-y-0.5 cursor-pointer shadow-lg shadow-amber-900/10">
-								<div className="absolute top-0 right-0 w-16 h-16 bg-amber-500/10 rounded-full blur-xl" />
-								<div className="relative flex items-center gap-3">
-									<div className="p-2.5 bg-amber-600/20 rounded-lg shrink-0">
+							<div className="group rounded-lg bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/60 border-l-2 border-l-amber-600/50 p-4 hover:border-l-amber-500/60 transition-colors cursor-pointer">
+								<div className="flex items-center gap-3">
+									<div className="p-2.5 bg-amber-600/15 rounded-md shrink-0">
 										<Clock className="h-5 w-5 text-amber-400" />
 									</div>
 									<div>
 										<p className="text-2xl font-bold text-white">
 											{pendingApprovalCount}
 										</p>
-										<p className="text-xs text-amber-400/80 font-medium">
+										<p className="text-xs text-amber-400/70 font-medium">
 											Offene Genehmigungen
 										</p>
 									</div>
@@ -446,17 +410,16 @@ export default function DashboardPage() {
 
 					{dueThisWeek > 0 && (
 						<Link href="/workflow">
-							<div className="group relative overflow-hidden rounded-xl bg-gradient-to-br from-cyan-900/40 to-zinc-900 border border-cyan-800/40 p-4 hover:border-cyan-700/60 transition-all hover:-translate-y-0.5 cursor-pointer shadow-lg shadow-cyan-900/10">
-								<div className="absolute top-0 right-0 w-16 h-16 bg-cyan-500/10 rounded-full blur-xl" />
-								<div className="relative flex items-center gap-3">
-									<div className="p-2.5 bg-cyan-600/20 rounded-lg shrink-0">
-										<TrendingUp className="h-5 w-5 text-cyan-400" />
+							<div className="group rounded-lg bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/60 border-l-2 border-l-teal-600/50 p-4 hover:border-l-teal-500/60 transition-colors cursor-pointer">
+								<div className="flex items-center gap-3">
+									<div className="p-2.5 bg-teal-600/15 rounded-md shrink-0">
+										<TrendingUp className="h-5 w-5 text-teal-400" />
 									</div>
 									<div>
 										<p className="text-2xl font-bold text-white">
 											{dueThisWeek}
 										</p>
-										<p className="text-xs text-cyan-400/80 font-medium">
+										<p className="text-xs text-teal-400/70 font-medium">
 											Fällig diese Woche
 										</p>
 									</div>
@@ -467,17 +430,16 @@ export default function DashboardPage() {
 
 					{activeRentalsCount > 0 && (
 						<Link href="/rentals">
-							<div className="group relative overflow-hidden rounded-xl bg-gradient-to-br from-blue-900/40 to-zinc-900 border border-blue-800/40 p-4 hover:border-blue-700/60 transition-all hover:-translate-y-0.5 cursor-pointer shadow-lg shadow-blue-900/10">
-								<div className="absolute top-0 right-0 w-16 h-16 bg-blue-500/10 rounded-full blur-xl" />
-								<div className="relative flex items-center gap-3">
-									<div className="p-2.5 bg-blue-600/20 rounded-lg shrink-0">
-										<ArrowLeftRight className="h-5 w-5 text-blue-400" />
+							<div className="group rounded-lg bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/60 border-l-2 border-l-indigo-600/50 p-4 hover:border-l-indigo-500/60 transition-colors cursor-pointer">
+								<div className="flex items-center gap-3">
+									<div className="p-2.5 bg-indigo-600/15 rounded-md shrink-0">
+										<ArrowLeftRight className="h-5 w-5 text-indigo-400" />
 									</div>
 									<div>
 										<p className="text-2xl font-bold text-white">
 											{activeRentalsCount}
 										</p>
-										<p className="text-xs text-blue-400/80 font-medium">
+										<p className="text-xs text-indigo-400/70 font-medium">
 											Aktive Verleihe
 										</p>
 									</div>
@@ -494,7 +456,7 @@ export default function DashboardPage() {
 						{/* Tasks header */}
 						<div className="flex items-center justify-between">
 							<div className="flex items-center gap-2">
-								<div className="p-1.5 bg-violet-600/20 rounded-lg">
+								<div className="p-1.5 bg-violet-600/20 rounded-md">
 									<ClipboardList className="h-4 w-4 text-violet-400" />
 								</div>
 								<h2 className="text-base font-semibold text-white tracking-wide">
@@ -521,7 +483,7 @@ export default function DashboardPage() {
 
 						{/* Overdue section */}
 						{overdueTasks.length > 0 && (
-							<div className="rounded-xl border border-red-800/40 bg-red-950/20 p-4">
+							<div className="rounded-lg bg-red-950/20 backdrop-blur-sm border border-red-800/30 p-4">
 								<div className="flex items-center gap-2 mb-3">
 									<AlertTriangle className="h-4 w-4 text-red-400" />
 									<h3 className="text-sm font-semibold text-red-400">
@@ -542,7 +504,7 @@ export default function DashboardPage() {
 
 						{/* Today section */}
 						{todayTasks.length > 0 && (
-							<div className="rounded-xl border border-violet-800/30 bg-zinc-900/80 p-4">
+							<div className="rounded-lg bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/60 p-4">
 								<div className="flex items-center gap-2 mb-3">
 									<div className="h-2 w-2 rounded-full bg-violet-500 animate-pulse" />
 									<h3 className="text-sm font-semibold text-violet-400">
@@ -563,7 +525,7 @@ export default function DashboardPage() {
 
 						{/* Week section */}
 						{weekTasks.length > 0 && (
-							<div className="rounded-xl border border-zinc-800/60 bg-zinc-900/50 p-4">
+							<div className="rounded-lg bg-zinc-900/60 backdrop-blur-sm border border-zinc-800/60 p-4">
 								<h3 className="text-sm font-medium text-zinc-400 mb-3">
 									Diese Woche ({weekTasks.length})
 								</h3>
@@ -587,7 +549,7 @@ export default function DashboardPage() {
 
 						{/* Later / unassigned */}
 						{unassignedTasks.length > 0 && (
-							<div className="rounded-xl border border-zinc-800/40 bg-zinc-900/30 p-4">
+							<div className="rounded-lg bg-zinc-900/50 backdrop-blur-sm border border-zinc-800/50 p-4">
 								<h3 className="text-sm font-medium text-zinc-500 mb-3">
 									Ohne Datum ({unassignedTasks.length})
 								</h3>
@@ -606,7 +568,7 @@ export default function DashboardPage() {
 
 						{/* Empty state */}
 						{tasks.length === 0 && (
-							<div className="rounded-xl border border-zinc-800/60 bg-zinc-900/50 p-8 text-center">
+							<div className="rounded-lg bg-zinc-900/60 backdrop-blur-sm border border-zinc-800/60 p-8 text-center">
 								<div className="w-12 h-12 bg-green-600/20 rounded-full flex items-center justify-center mx-auto mb-3">
 									<CheckCircle2 className="h-6 w-6 text-green-400" />
 								</div>
@@ -621,10 +583,10 @@ export default function DashboardPage() {
 					{/* ===== RIGHT: (2/5) ===== */}
 					<div className="lg:col-span-2 space-y-4">
 						{/* Today's Shift */}
-						<div className="rounded-xl border border-zinc-800/60 bg-zinc-900/80 overflow-hidden">
+						<div className="rounded-lg bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/60 overflow-hidden">
 							<div className="px-4 pt-4 pb-3 flex items-center justify-between">
 								<div className="flex items-center gap-2">
-									<div className="p-1.5 bg-emerald-600/20 rounded-lg">
+									<div className="p-1.5 bg-emerald-600/20 rounded-md">
 										<Clock className="h-4 w-4 text-emerald-400" />
 									</div>
 									<h2 className="text-sm font-semibold text-white">
@@ -660,7 +622,7 @@ export default function DashboardPage() {
 										{todayShifts.map((shift) => (
 											<div
 												key={shift.id}
-												className="p-3 bg-gradient-to-r from-emerald-600/10 to-transparent border border-emerald-700/20 rounded-lg"
+												className="p-3 bg-emerald-600/10 border border-emerald-700/20 rounded-md"
 											>
 												<div className="flex items-center justify-between mb-1">
 													<span className="text-sm font-semibold text-white">
@@ -709,10 +671,10 @@ export default function DashboardPage() {
 						</div>
 
 						{/* Events Calendar Strip */}
-						<div className="rounded-xl border border-zinc-800/60 bg-zinc-900/80 overflow-hidden">
+						<div className="rounded-lg bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/60 overflow-hidden">
 							<div className="px-4 pt-4 pb-3 flex items-center justify-between">
 								<div className="flex items-center gap-2">
-									<div className="p-1.5 bg-violet-600/20 rounded-lg">
+									<div className="p-1.5 bg-violet-600/20 rounded-md">
 										<Calendar className="h-4 w-4 text-violet-400" />
 									</div>
 									<h2 className="text-sm font-semibold text-white">Events</h2>
@@ -744,7 +706,7 @@ export default function DashboardPage() {
 												<Link key={event.id} href={`/events/${event.id}`}>
 													<div
 														className={cn(
-															"flex items-center gap-3 p-2.5 rounded-lg transition-all hover:scale-[1.01] cursor-pointer",
+															"flex items-center gap-3 p-2.5 rounded-lg transition-all hover:bg-zinc-800/60 cursor-pointer",
 															isToday
 																? "bg-violet-600/15 border border-violet-600/25"
 																: "hover:bg-zinc-800/50",
@@ -794,9 +756,9 @@ export default function DashboardPage() {
 						</div>
 
 						{/* Colleagues */}
-						<div className="rounded-xl border border-zinc-800/60 bg-zinc-900/80 overflow-hidden">
+						<div className="rounded-lg bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/60 overflow-hidden">
 							<div className="px-4 pt-4 pb-3 flex items-center gap-2">
-								<div className="p-1.5 bg-zinc-700/50 rounded-lg">
+								<div className="p-1.5 bg-zinc-700/50 rounded-md">
 									<Users className="h-4 w-4 text-zinc-400" />
 								</div>
 								<h2 className="text-sm font-semibold text-white">Team</h2>
@@ -861,45 +823,142 @@ export default function DashboardPage() {
 					</div>
 				</div>
 
-				{/* ===== QUICK ACTIONS ===== */}
-				<div className="grid grid-cols-4 sm:grid-cols-6 lg:grid-cols-8 gap-2">
-					{canAccessRoute(userRoles, "/door") && (
-						<QuickAction href="/door" icon={Users} label="Tür" />
-					)}
-					{canAccessRoute(userRoles, "/events/new") && (
-						<QuickAction
-							href="/events/new"
-							icon={Calendar}
-							label="Event"
-							accent="violet"
-						/>
-					)}
-					{canAccessRoute(userRoles, "/workflow") && (
-						<QuickAction
-							href="/workflow"
-							icon={ClipboardList}
-							label="Aufgaben"
-						/>
-					)}
-					{canAccessRoute(userRoles, "/inventory") && (
-						<QuickAction href="/inventory" icon={Zap} label="Inventar" />
-					)}
-					{canAccessRoute(userRoles, "/venues") && (
-						<QuickAction href="/venues" icon={LayoutDashboard} label="Venues" />
-					)}
-					{canAccessRoute(userRoles, "/rentals") && (
-						<QuickAction
-							href="/rentals"
-							icon={ArrowLeftRight}
-							label="Verleih"
-						/>
-					)}
-					{canAccessRoute(userRoles, "/artists/new") && (
-						<QuickAction href="/artists/new" icon={User} label="Künstler" />
-					)}
-					{canAccessRoute(userRoles, "/staff") && (
-						<QuickAction href="/staff" icon={Users} label="Staff" />
-					)}
+				{/* ===== QUICK ACTIONS — role-specific ===== */}
+				<div className="space-y-2">
+					<div className="flex items-center gap-2 text-xs text-zinc-500 font-medium uppercase tracking-wider px-1">
+						<span>Schnellzugriff</span>
+						<div className="h-px flex-1 bg-zinc-800" />
+					</div>
+					<div className="grid grid-cols-3 sm:grid-cols-5 lg:grid-cols-6 gap-2">
+						{/* Staff — shifts & tasks */}
+						{(hasRole(userRoles, "staff") || hasRole(userRoles, "gastro")) && (
+							<QuickAction
+								href="/staff/availability?view=me"
+								icon={Clock}
+								label="Meine Schichten"
+								accent="emerald"
+							/>
+						)}
+						{hasRole(userRoles, "staff") && (
+							<QuickAction
+								href="/workflow?my_tasks=true"
+								icon={CheckCircle2}
+								label="Meine Tasks"
+								accent="emerald"
+							/>
+						)}
+
+						{/* Tech / Tech-Lead — equipment */}
+						{(hasRole(userRoles, "tech") ||
+							hasRole(userRoles, "tech-lead")) && (
+							<QuickAction href="/inventory" icon={Zap} label="Equipment" />
+						)}
+						{(hasRole(userRoles, "tech") ||
+							hasRole(userRoles, "tech-lead")) && (
+							<QuickAction href="/artists" icon={User} label="Rider" />
+						)}
+						{hasRole(userRoles, "tech-lead") && (
+							<QuickAction
+								href="/rentals"
+								icon={ArrowLeftRight}
+								label="Verleih"
+							/>
+						)}
+
+						{/* Gastro — bar & event */}
+						{hasRole(userRoles, "gastro") && (
+							<QuickAction
+								href="/inventory?category=bar"
+								icon={Zap}
+								label="Bar-Bestand"
+								accent="orange"
+							/>
+						)}
+
+						{/* Awareness / Night-Mgmt / Door — guest management */}
+						{(hasRole(userRoles, "awareness") ||
+							hasRole(userRoles, "night-management")) && (
+							<QuickAction
+								href="/door"
+								icon={Users}
+								label="Einlass"
+								accent="indigo"
+							/>
+						)}
+						{(hasRole(userRoles, "awareness") ||
+							hasRole(userRoles, "night-management")) && (
+							<QuickAction
+								href="/guest-lists"
+								icon={ClipboardList}
+								label="Gästelisten"
+								accent="indigo"
+							/>
+						)}
+
+						{/* Booking / Label — artists & guests */}
+						{(hasRole(userRoles, "booking") || hasRole(userRoles, "label")) && (
+							<QuickAction
+								href="/artists/new"
+								icon={User}
+								label="Neuer Künstler"
+								accent="violet"
+							/>
+						)}
+						{(hasRole(userRoles, "booking") || hasRole(userRoles, "label")) && (
+							<QuickAction
+								href="/guest-lists"
+								icon={ClipboardList}
+								label="Gästelisten"
+								accent="violet"
+							/>
+						)}
+
+						{/* Social Media — events & guests */}
+						{hasRole(userRoles, "social-media") && (
+							<QuickAction
+								href="/events"
+								icon={Calendar}
+								label="Events"
+								accent="pink"
+							/>
+						)}
+						{hasRole(userRoles, "social-media") && (
+							<QuickAction
+								href="/guest-lists"
+								icon={ClipboardList}
+								label="Gästelisten"
+								accent="pink"
+							/>
+						)}
+
+						{/* Backoffice / Admin — management */}
+						{(hasRole(userRoles, "backoffice") ||
+							hasRole(userRoles, "admin")) && (
+							<QuickAction
+								href="/workflow?needs_approval=true"
+								icon={CheckCircle2}
+								label="Genehmigungen"
+								accent="teal"
+							/>
+						)}
+						{(hasRole(userRoles, "backoffice") ||
+							hasRole(userRoles, "admin")) && (
+							<QuickAction
+								href="/staff"
+								icon={Users}
+								label="Schichtplan"
+								accent="teal"
+							/>
+						)}
+						{hasRole(userRoles, "admin") && (
+							<QuickAction
+								href="/admin"
+								icon={Settings}
+								label="Admin"
+								accent="red"
+							/>
+						)}
+					</div>
 				</div>
 			</div>
 
@@ -928,7 +987,7 @@ function TaskRow({ task, onClick, muted }: TaskRowProps) {
 		<button
 			onClick={onClick}
 			className={cn(
-				"w-full flex items-center gap-2.5 p-2 rounded-lg text-left transition-all",
+				"w-full flex items-center gap-2.5 p-2 rounded-md text-left transition-all",
 				"hover:bg-zinc-800/60 group",
 				muted ? "opacity-80" : "",
 			)}
@@ -1002,6 +1061,16 @@ function TaskRow({ task, onClick, muted }: TaskRowProps) {
 
 // ===== Quick Action Card =====
 
+const ACCENT_COLORS: Record<string, string> = {
+	violet: "bg-violet-600/15 text-violet-400 group-hover:bg-violet-600/20",
+	emerald: "bg-emerald-600/15 text-emerald-400 group-hover:bg-emerald-600/20",
+	orange: "bg-orange-600/15 text-orange-400 group-hover:bg-orange-600/20",
+	indigo: "bg-indigo-600/15 text-indigo-400 group-hover:bg-indigo-600/20",
+	pink: "bg-pink-600/15 text-pink-400 group-hover:bg-pink-600/20",
+	teal: "bg-teal-600/15 text-teal-400 group-hover:bg-teal-600/20",
+	red: "bg-red-600/15 text-red-400 group-hover:bg-red-600/20",
+};
+
 function QuickAction({
 	href,
 	icon: Icon,
@@ -1011,24 +1080,24 @@ function QuickAction({
 	href: string;
 	icon: React.ComponentType<{ className?: string }>;
 	label: string;
-	accent?: "violet";
+	accent?: keyof typeof ACCENT_COLORS;
 }) {
 	return (
 		<Link href={href}>
 			<div
 				className={cn(
-					"flex flex-col items-center justify-center gap-1.5 p-3 rounded-xl",
-					"bg-zinc-900/60 border border-zinc-800/60",
-					"hover:bg-zinc-800 hover:border-zinc-700/80",
-					"transition-all hover:-translate-y-0.5 cursor-pointer",
+					"flex flex-col items-center justify-center gap-1.5 p-3 rounded-lg",
+					"bg-zinc-900/60 backdrop-blur-sm border border-zinc-800/60",
+					"hover:bg-zinc-800/70 hover:border-zinc-700/60",
+					"transition-all cursor-pointer",
 					"group",
 				)}
 			>
 				<div
 					className={cn(
-						"p-2 rounded-lg transition-colors",
-						accent === "violet"
-							? "bg-violet-600/20 text-violet-400 group-hover:bg-violet-600/30"
+						"p-2 rounded-md transition-colors",
+						accent && ACCENT_COLORS[accent]
+							? ACCENT_COLORS[accent]
 							: "bg-zinc-800 text-zinc-400 group-hover:text-zinc-300 group-hover:bg-zinc-700",
 					)}
 				>

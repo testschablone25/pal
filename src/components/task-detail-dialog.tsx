@@ -834,7 +834,12 @@ export function TaskDetailDialog({
 				headers: { "Content-Type": "application/json" },
 				body: JSON.stringify(values),
 			});
-			if (!response.ok) throw new Error("Failed to update task");
+			if (!response.ok) {
+				const errBody = await response.json().catch(() => ({}));
+				throw new Error(
+					errBody.error || `Failed to update task (${response.status})`,
+				);
+			}
 			const updatedTask = await response.json();
 			onTaskUpdated(updatedTask);
 			setIsEditing(false);
@@ -970,12 +975,13 @@ export function TaskDetailDialog({
 					{isEditing ? (
 						<TaskForm
 							task={{
-								...task,
-								items: task.task_items?.map((ti) => ({
+								...(fullTask || task),
+								items: (fullTask || task).task_items?.map((ti) => ({
 									item_id: ti.item_id,
 									goal_sub_location_id: ti.goal_sub_location_id,
 								})),
-								item_ids: task.task_items?.map((ti) => ti.item_id) || [],
+								item_ids:
+									(fullTask || task).task_items?.map((ti) => ti.item_id) || [],
 							}}
 							mode="edit"
 							onSubmit={handleUpdateTask}
@@ -1279,7 +1285,9 @@ export function TaskDetailDialog({
 									<InlineEditField
 										label="assignee_id"
 										value={task.assignee_id || "__none__"}
-										onSave={(v) => inlineSave("assignee_id", v === "__none__" ? "" : v)}
+										onSave={(v) =>
+											inlineSave("assignee_id", v === "__none__" ? "" : v)
+										}
 										type="select"
 										options={[
 											{ value: "__none__", label: t("detail.no_assignee") },

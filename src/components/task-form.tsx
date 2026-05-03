@@ -870,17 +870,19 @@ export function TaskForm({
 																className="bg-zinc-800 text-zinc-300 border-zinc-700 gap-1"
 															>
 																{item.name}
-																<button
-																	type="button"
+																<span
+																	role="button"
+																	tabIndex={0}
 																	onClick={(e) => {
 																		e.preventDefault();
 																		e.stopPropagation();
 																		handleToggleItem(item.id);
 																	}}
-																	className="hover:text-white transition-colors"
+																	onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") handleToggleItem(item.id); }}
+																	className="hover:text-white transition-colors cursor-pointer"
 																>
 																	<X className="h-3 w-3" />
-																</button>
+																</span>
 															</Badge>
 														))
 													: "Select items..."}
