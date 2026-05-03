@@ -1274,11 +1274,11 @@ export function TaskDetailDialog({
 									</span>
 									<InlineEditField
 										label="assignee_id"
-										value={task.assignee_id || ""}
-										onSave={(v) => inlineSave("assignee_id", v)}
+										value={task.assignee_id || "__none__"}
+										onSave={(v) => inlineSave("assignee_id", v === "__none__" ? "" : v)}
 										type="select"
 										options={[
-											{ value: "", label: t("detail.no_assignee") },
+											{ value: "__none__", label: t("detail.no_assignee") },
 											...profiles.map((p) => ({
 												value: p.id,
 												label: p.full_name || p.email || t("app.unknown"),
