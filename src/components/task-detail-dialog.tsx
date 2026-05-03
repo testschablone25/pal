@@ -222,21 +222,25 @@ function InlineEditField({
 	const [editValue, setEditValue] = useState(value);
 	const [saving, setSaving] = useState(false);
 
-	const handleSave = useCallback(async () => {
-		if (editValue === value) {
-			setEditing(false);
-			return;
-		}
-		setSaving(true);
-		try {
-			await onSave(editValue);
-			setEditing(false);
-		} catch {
-			setEditValue(value);
-		} finally {
-			setSaving(false);
-		}
-	}, [editValue, value, onSave]);
+	const handleSave = useCallback(
+		async (valToSave?: string) => {
+			const resolved = valToSave ?? editValue;
+			if (resolved === value) {
+				setEditing(false);
+				return;
+			}
+			setSaving(true);
+			try {
+				await onSave(resolved);
+				setEditing(false);
+			} catch {
+				setEditValue(value);
+			} finally {
+				setSaving(false);
+			}
+		},
+		[editValue, value, onSave],
+	);
 
 	if (editing) {
 		return (
@@ -246,7 +250,7 @@ function InlineEditField({
 						value={editValue}
 						onValueChange={(v) => {
 							setEditValue(v);
-							setTimeout(() => handleSave(), 0);
+							setTimeout(() => handleSave(v), 0);
 						}}
 					>
 						<SelectTrigger className="h-7 text-xs bg-zinc-950 border-zinc-800 w-auto min-w-[120px]">
@@ -269,7 +273,7 @@ function InlineEditField({
 						type="date"
 						value={editValue}
 						onChange={(e) => setEditValue(e.target.value)}
-						onBlur={handleSave}
+						onBlur={() => handleSave()}
 						className="h-7 text-xs bg-zinc-950 border-zinc-800 w-auto"
 						autoFocus
 					/>
@@ -277,7 +281,7 @@ function InlineEditField({
 					<Input
 						value={editValue}
 						onChange={(e) => setEditValue(e.target.value)}
-						onBlur={handleSave}
+						onBlur={() => handleSave()}
 						onKeyDown={(e) => e.key === "Enter" && handleSave()}
 						className="h-7 text-xs bg-zinc-950 border-zinc-800 w-auto min-w-[120px]"
 						autoFocus
