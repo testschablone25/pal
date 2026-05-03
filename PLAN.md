@@ -146,33 +146,33 @@ Expanded view with **6 tabs**:
 
 ### Database
 
-- [ ] **Step 1** — Create migration: `venue_id` on tasks, `capacity` on sub*locations, `notes`/`contact*\*` on venues
+- [x] **Step 1** — Create migration: `venue_id` on tasks, `capacity` on sub*locations, `notes`/`contact*\*` on venues
 
 ### Backend API
 
-- [ ] **Step 2** — Enhance `GET /api/venues` to return aggregated stats per venue
-- [ ] **Step 3** — Enhance `GET /api/venues/[id]` to return full detail (events, tasks, shifts, inventory, notes, contacts)
-- [ ] **Step 4** — Update `PUT /api/venues/[id]` to accept new fields
-- [ ] **Step 5** — Add `PUT /api/venues/[id]/sublocations/[subId]` for sub-location capacity update
-- [ ] **Step 6** — Update `POST /api/tasks` to accept `venue_id`; improve `GET /api/tasks` venue_id filter
+- [x] **Step 2** — Enhance `GET /api/venues` to return aggregated stats per venue
+- [x] **Step 3** — Enhance `GET /api/venues/[id]` to return full detail (events, tasks, shifts, inventory, notes, contacts)
+- [x] **Step 4** — Update `PUT /api/venues/[id]` to accept new fields
+- [x] **Step 5** — Add `PUT /api/venues/[id]/sublocations/[subId]` for sub-location capacity update
+- [x] **Step 6** — Update `POST /api/tasks` to accept `venue_id`; improve `GET /api/tasks` venue_id filter
 
 ### Frontend
 
-- [ ] **Step 7** — Refactor venue cards: warning indicators (red border + icon), task count badges, staff/inventory counts
-- [ ] **Step 8** — Add inline capacity editing on cards
-- [ ] **Step 9** — Implement accordion expansion (click card → expand below with tabs)
-- [ ] **Step 10** — Create `VenueExpandedView` component with 6 tabs: Overview, Tasks, Staff, Events, Inventory, Settings
-- [ ] **Step 11** — Implement Overview tab: notes, contacts, sub-locations with capacities
-- [ ] **Step 12** — Implement Tasks tab: fetch venue tasks, group by status, highlight urgent
-- [ ] **Step 13** — Implement Staff tab: fetch shifts for venue events, show staff details
-- [ ] **Step 14** — Implement Events tab: fetch upcoming + past events at venue
-- [ ] **Step 15** — Implement Inventory tab: fetch items by venue, group by sub-location
-- [ ] **Step 16** — Implement Settings tab: edit form with name, address, type, capacity, notes, contacts
+- [x] **Step 7** — Refactor venue cards: warning indicators (red border + icon), task count badges, staff/inventory counts
+- [x] **Step 8** — Add inline capacity editing on cards
+- [x] **Step 9** — Implement accordion expansion (click card → expand below with tabs)
+- [x] **Step 10** — Create `VenueExpandedView` component with 6 tabs: Overview, Tasks, Staff, Events, Inventory, Settings
+- [x] **Step 11** — Implement Overview tab: notes, contacts, sub-locations with capacities
+- [x] **Step 12** — Implement Tasks tab: fetch venue tasks, group by status, highlight urgent
+- [x] **Step 13** — Implement Staff tab: fetch shifts for venue events, show staff details
+- [x] **Step 14** — Implement Events tab: fetch upcoming + past events at venue
+- [x] **Step 15** — Implement Inventory tab: fetch items by venue, group by sub-location
+- [x] **Step 16** — Implement Settings tab: edit form with name, address, type, capacity, notes, contacts
 
 ### Quality
 
-- [ ] **Step 17** — Update workflow page to support direct venue_id task filtering
-- [ ] **Step 18** — Run `npm run lint`, `npm run knip`, `npm run jscpd`, `npm run test:unit`, `npm run build`
+- [x] **Step 17** — Update workflow page to support direct venue_id task filtering
+- [x] **Step 18** — Run `npm run lint`, `npm run knip`, `npm run jscpd`, `npm run test:unit`, `npm run build`
 
 ---
 

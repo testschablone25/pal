@@ -14,6 +14,7 @@
 - [2026-04-30] Form redesign: sectioned layout with collapsible advanced fields, inline toggle pills for task types, color-coded priority indicators, auto-focus on primary field
 - [2026-05-03] Shift timeline timezone fix: Supabase TIMESTAMPTZ returns UTC timestamps (may lack timezone suffix). All time-parsing functions must use `ensureUtc()` + `new Date()` to convert to local time. Sending timestamps to Supabase requires explicit timezone offset (e.g. `+02:00`) so PostgreSQL stores the correct UTC instant
 - [2026-05-03] Dashboard: added 'Verfügbarkeit' quick-access button in shift plan card header, links to `/staff/availability?view=me`
+- [2026-06-02] Venue Hub: venues page now shows expandable cards with tabbed detail (Overview, Tasks, Staff, Events, Inventory, Settings). Each venue card shows aggregated stats (open/urgent tasks, upcoming events, staff count, inventory count). Inline capacity editing on cards. Tasks can be linked directly to venue (venue_id) without requiring an event_id.
 
 ## Known Issues
 
