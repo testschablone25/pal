@@ -263,9 +263,23 @@ function formatTime(dateTime: string) {
 	return `${hours.toString().padStart(2, "0")}:${minutes.toString().padStart(2, "0")}`;
 }
 
+function ensureUtc(isoString: string): string {
+	// Supabase TIMESTAMPTZ columns may return values with (+00:00, Z)
+	// or without a timezone suffix. In both cases the value is UTC.
+	// Append Z so new Date() always treats it as UTC and converts
+	// to the browser's local timezone correctly.
+	if (/[Zz]|[+-]\d{2}:?\d{2}$/.test(isoString)) return isoString;
+	return isoString + "Z";
+}
+
 function parseTimeParts(isoString: string): { hours: number; minutes: number } {
-	// Parse directly from ISO string to avoid timezone conversion
-	// Handles formats like "2026-05-02T22:00:00", "2026-05-02T22:00:00Z", "2026-05-02T22:00:00+02:00"
+	// Supabase TIMESTAMPTZ values are always UTC.
+	// ensureUtc() appends Z if missing so new Date() converts to local time.
+	const d = new Date(ensureUtc(isoString));
+	if (!isNaN(d.getTime())) {
+		return { hours: d.getHours(), minutes: d.getMinutes() };
+	}
+	// Fallback: extract directly from string
 	const match = isoString.match(/T(\d{2}):(\d{2})/);
 	if (!match) return { hours: 0, minutes: 0 };
 	return { hours: parseInt(match[1], 10), minutes: parseInt(match[2], 10) };
@@ -281,24 +295,42 @@ function getTimePosition(dateTime: string) {
 }
 
 function getTimeWidth(startTime: string, endTime: string) {
-	const start = new Date(startTime);
-	const end = new Date(endTime);
-	let diffMs = end.getTime() - start.getTime();
-	// Handle cross-midnight shifts (end time is before start time)
-	if (diffMs < 0) diffMs += 24 * 60 * 60 * 1000;
-	const diffMinutes = diffMs / (1000 * 60);
+	// Both use parseTimeParts which converts timezone-aware timestamps to local time
+	const startParts = parseTimeParts(startTime);
+	const endParts = parseTimeParts(endTime);
+	const startTotalMinutes = startParts.hours * 60 + startParts.minutes;
+	let endTotalMinutes = endParts.hours * 60 + endParts.minutes;
+	// Handle cross-midnight shifts
+	if (endTotalMinutes <= startTotalMinutes) endTotalMinutes += 24 * 60;
+	const diffMinutes = endTotalMinutes - startTotalMinutes;
 	return (diffMinutes / (12 * 60)) * 100;
 }
 
 function snapTo15Minutes(dateStr: string, deltaMinutes: number): string {
-	const date = new Date(dateStr);
+	// ensureUtc() appends Z if missing so new Date() treats it as UTC.
+	const date = new Date(ensureUtc(dateStr));
 	date.setTime(date.getTime() + deltaMinutes * 60 * 1000);
 	const minutes = date.getMinutes();
 	const snappedMinutes = Math.round(minutes / 15) * 15;
 	date.setMinutes(snappedMinutes);
 	date.setSeconds(0);
 	date.setMilliseconds(0);
+	// toISOString() always returns UTC with Z — parseTimeParts / ensureUtc
+	// will correctly convert it back to local time for display.
 	return date.toISOString();
+}
+
+/**
+ * Return the browser's local timezone offset as an ISO-8601 suffix (e.g. "+02:00").
+ * Sent with shift timestamps so Supabase TIMESTAMPTZ stores the correct UTC instant.
+ */
+function getLocalTimezoneOffset(): string {
+	const offset = -new Date().getTimezoneOffset(); // minutes east of UTC
+	const sign = offset >= 0 ? "+" : "-";
+	const abs = Math.abs(offset);
+	const h = String(Math.floor(abs / 60)).padStart(2, "0");
+	const m = String(abs % 60).padStart(2, "0");
+	return `${sign}${h}:${m}`;
 }
 
 export default function ShiftsPage() {
@@ -491,13 +523,14 @@ export default function ShiftsPage() {
 		const selectedEvent = events.find((e) => e.id === selectedEventId);
 		if (!selectedEvent) return;
 
-		const startDateTime = `${selectedEvent.date}T${values.start_time}:00`;
-		let endDateTime = `${selectedEvent.date}T${values.end_time}:00`;
+		const tz = getLocalTimezoneOffset();
+		const startDateTime = `${selectedEvent.date}T${values.start_time}:00${tz}`;
+		let endDateTime = `${selectedEvent.date}T${values.end_time}:00${tz}`;
 		// Handle cross-midnight shifts: if end is before start, end is next day
 		if (values.end_time <= values.start_time) {
 			const nextDay = new Date(selectedEvent.date);
 			nextDay.setDate(nextDay.getDate() + 1);
-			endDateTime = `${nextDay.toISOString().split("T")[0]}T${values.end_time}:00`;
+			endDateTime = `${nextDay.toISOString().split("T")[0]}T${values.end_time}:00${tz}`;
 		}
 
 		// Check for conflicts before submitting
@@ -776,13 +809,14 @@ export default function ShiftsPage() {
 
 		setBulkSubmitting(true);
 		try {
-			const startDateTime = `${selectedEvent.date}T${bulkStartTime}:00`;
-			let endDateTime = `${selectedEvent.date}T${bulkEndTime}:00`;
+			const tz = getLocalTimezoneOffset();
+			const startDateTime = `${selectedEvent.date}T${bulkStartTime}:00${tz}`;
+			let endDateTime = `${selectedEvent.date}T${bulkEndTime}:00${tz}`;
 			// Handle cross-midnight shifts
 			if (bulkEndTime <= bulkStartTime) {
 				const nextDay = new Date(selectedEvent.date);
 				nextDay.setDate(nextDay.getDate() + 1);
-				endDateTime = `${nextDay.toISOString().split("T")[0]}T${bulkEndTime}:00`;
+				endDateTime = `${nextDay.toISOString().split("T")[0]}T${bulkEndTime}:00${tz}`;
 			}
 
 			const shiftsToCreate: BulkShiftInput[] = selectedBulkStaff.map(
@@ -1114,7 +1148,7 @@ export default function ShiftsPage() {
 						<div className="flex gap-2">
 							<Button
 								onClick={() => setBulkDialogOpen(true)}
-								disabled={!selectedEventId}
+								disabled={selectedEventId === ""}
 								variant="outline"
 								className="border-zinc-800"
 							>
@@ -1123,7 +1157,7 @@ export default function ShiftsPage() {
 							</Button>
 							<Button
 								onClick={() => setTemplateDialogOpen(true)}
-								disabled={!selectedEventId}
+								disabled={selectedEventId === ""}
 								variant="outline"
 								className="border-zinc-800"
 							>
@@ -1132,7 +1166,7 @@ export default function ShiftsPage() {
 							</Button>
 							<Button
 								onClick={openCreateDialog}
-								disabled={!selectedEventId}
+								disabled={selectedEventId === ""}
 								className="bg-violet-600 hover:bg-violet-700"
 							>
 								<Plus className="h-4 w-4 mr-2" />
@@ -1141,7 +1175,7 @@ export default function ShiftsPage() {
 							<DropdownMenu>
 								<DropdownMenuTrigger asChild>
 									<Button
-										disabled={!selectedEventId}
+										disabled={selectedEventId === ""}
 										variant="outline"
 										className="border-zinc-800"
 									>
@@ -1247,30 +1281,33 @@ export default function ShiftsPage() {
 							</CardTitle>
 						</CardHeader>
 						<CardContent>
-							{/* Role Filter + Timeline Header */}
-							<div className="flex items-center gap-4 mb-4">
-								<div className="flex-1 max-w-sm">
-									<SearchFilterBar
-										placeholder="Search staff..."
-										searchValue={shiftSearch}
-										onSearchChange={setShiftSearch}
-										filters={[
-											{
-												key: "role",
-												label: "All Roles",
-												options: [
-													{ value: "all", label: "All Roles" },
-													...STAFF_ROLES.map((role) => ({
-														value: role,
-														label: role,
-													})),
-												],
-												value: roleFilter,
-												onChange: setRoleFilter,
-											},
-										]}
-									/>
-								</div>
+							{/* Search / Filter */}
+							<div className="max-w-sm mb-4">
+								<SearchFilterBar
+									placeholder="Search staff..."
+									searchValue={shiftSearch}
+									onSearchChange={setShiftSearch}
+									filters={[
+										{
+											key: "role",
+											label: "All Roles",
+											options: [
+												{ value: "all", label: "All Roles" },
+												...STAFF_ROLES.map((role) => ({
+													value: role,
+													label: role,
+												})),
+											],
+											value: roleFilter,
+											onChange: setRoleFilter,
+										},
+									]}
+								/>
+							</div>
+
+							{/* Timeline Header — matches shift row layout (w-48 spacer + hours) */}
+							<div className="flex items-center mb-4">
+								<div className="w-48 flex-shrink-0 pr-4"></div>
 								<div className="flex-1 relative h-8">
 									{timelineHours.map((hour, i) => (
 										<div
