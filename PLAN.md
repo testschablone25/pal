@@ -1,173 +1,197 @@
-# Staff Module Enhancement Plan
+# Venues Module Enhancement Plan
 
 ## Context
 
-The `/staff` module is a core part of the PAL nightclub booking system. It currently has basic CRUD for staff members, a shift scheduling page, and an availability calendar. The goal is to significantly improve all three areas: staff management, shift scheduling, and availability, while integrating the already-existing role-based permission system into the staff module.
+The `/venues` page currently shows a basic card grid with venue name, address, capacity, venue type, and sub-locations. CRUD works via dialogs. We're transforming this into a **Venue Hub** — a central place to see everything at each venue: tasks, staff, events, inventory, and warnings.
 
-## Current State
+**Data relationships already in DB:**
 
-- **Staff CRUD**: `src/app/staff/page.tsx` (list with filters), `src/app/staff/new/page.tsx`, `src/app/staff/[id]/edit/page.tsx`, `src/components/staff-form.tsx`, API at `src/app/api/staff/`
-- **Shift Scheduling**: `src/app/staff/shifts/page.tsx` (event selector, timeline view, shift list), API at `src/app/api/shifts/`, DB table `shifts`
-- **Availability**: `src/app/staff/availability/page.tsx` + `src/components/availability-calendar.tsx` (per-staff calendar), API at `src/app/api/availability/`, DB table `availability`
-- **Permissions**: Fully defined in `src/lib/permissions.ts` (13 roles, feature-based perms, route access rules). Middleware in `src/proxy.ts` enforces route access. API routes currently use service key (bypass RLS) and only the admin/roles API checks permissions.
-- **DB Schema**: Staff, shifts, availability tables in initial migration. Staff has `profile_id` FK to profiles.
-
-## Approach
-
-We'll work incrementally through 5 major phases. Each phase builds on the previous one.
+- `events.venue_id` → `venues.id`
+- `tasks.event_id` → `events.venue_id` → `venues.id`
+- `shifts.event_id` → `events.venue_id` → `venues.id`
+- `items.sub_location_id` → `venue_sub_locations.venue_id` → `venues.id`
 
 ---
 
-## Files to Modify (Full List)
+## Features (Confirmed)
 
-### Staff CRUD
+1. **Clickable/Expandable cards** — Accordion inline expansion with tabbed detail view
+2. **Tasks at venue** — Via events AND direct venue_id link
+3. **Staff at venue** — Shifts with staff details
+4. **Urgent task warnings** — Red border + warning icon on card; dedicated section in expanded view
+5. **Inline capacity editing** — Click capacity number to edit on card
+6. **Events overview** — Upcoming/past events in expanded view
+7. **Inventory summary** — Items at venue grouped by sub-location
+8. **Venue contacts/notes** — Contact fields + notes on venue
+9. **Direct task-to-venue linking** — `venue_id` on tasks table
+10. **Sub-location capacity** — Per-area capacity breakdown
 
-- `src/app/staff/page.tsx` — Remove hourly rate column
-- `src/components/staff-form.tsx` — Remove hourly rate field; add profile/user creation flow
-- `src/app/api/staff/route.ts` — Remove hourly_rate from POST; add permission checks; add user creation
-- `src/app/api/staff/[id]/route.ts` — Remove hourly_rate from PUT; add permission checks
+---
 
-### Shift Scheduling (Phase 2)
+## Approach
 
-- `src/app/staff/shifts/page.tsx` — Major overhaul: edit dialog, drag-drop timeline, filtering, conflict warnings
-- `src/app/api/shifts/route.ts` — Add permission checks; add conflict detection endpoint logic; bulk operations
-- `src/app/api/shifts/[id]/route.ts` — Add permission checks; add clock-in/clock-out endpoints
+### 1. Database Migration
 
-### Shift Templates
+```sql
+-- a) Add venue_id to tasks (for tasks not tied to an event)
+ALTER TABLE tasks ADD COLUMN IF NOT EXISTS venue_id UUID REFERENCES venues(id) ON DELETE SET NULL;
+CREATE INDEX IF NOT EXISTS idx_tasks_venue_id ON tasks(venue_id);
 
-- `src/app/api/shifts/templates/route.ts` — New: CRUD for shift templates
-- `src/components/shift-template-form.tsx` — New: shift template form
+-- b) Add capacity to sub-locations
+ALTER TABLE venue_sub_locations ADD COLUMN IF NOT EXISTS capacity INT;
 
-### Shift Clock-In/Out
+-- c) Add notes and contact fields to venues
+ALTER TABLE venues ADD COLUMN IF NOT EXISTS notes TEXT;
+ALTER TABLE venues ADD COLUMN IF NOT EXISTS contact_name TEXT;
+ALTER TABLE venues ADD COLUMN IF NOT EXISTS contact_phone TEXT;
+ALTER TABLE venues ADD COLUMN IF NOT EXISTS contact_email TEXT;
+```
 
-- `src/app/api/shifts/[id]/clock-in/route.ts` — New: clock-in endpoint
-- `src/app/api/shifts/[id]/clock-out/route.ts` — New: clock-out endpoint
+### 2. Backend: Enhanced Venues API
 
-### Shift Swaps
+**`GET /api/venues`** — Return each venue with aggregated stats:
 
-- `src/app/api/shifts/[id]/swap/route.ts` — New: request/approve shift swap
-- `src/components/shift-swap-request.tsx` — New: swap request UI
+```json
+{
+  "venues": [{
+    "id", "name", "address", "capacity", "venue_type",
+    "notes", "contact_name", "contact_phone", "contact_email",
+    "sub_locations": [...],
+    "open_task_count": 3,
+    "urgent_task_count": 1,
+    "upcoming_events_count": 2,
+    "staff_count": 5,
+    "inventory_count": 12
+  }]
+}
+```
 
-### Availability (Phase 3)
+**`GET /api/venues/[id]`** — Full detail view data:
 
-- `src/components/availability-calendar.tsx` — Major overhaul: self-service mode, colleague visibility
-- `src/app/staff/availability/page.tsx` — Add staff-only view (own availability)
-- `src/app/api/availability/route.ts` — Add permission checks; filter by user identity
+```json
+{
+  "id", "name", "address", "capacity", "venue_type", "notes", "contact_*",
+  "sub_locations": [{ ..., "capacity": 200 }],
+  "events": [{ "id", "name", "date", "status", "door_time", "end_time" }],
+  "tasks": [{ "id", "title", "status", "priority", "assignee": {...}, "due_date" }],
+  "staff_shifts": [{ "id", "staff": {...}, "role", "start_time", "end_time", "event": {...} }],
+  "inventory": [{ "id", "name", "category", "sub_location": {...}, "condition_enum" }],
+  "stats": { "open_tasks", "urgent_tasks", "total_inventory", "total_staff" }
+}
+```
 
-### Permissions Integration (Phase 4)
+**`PUT /api/venues/[id]`** — Accept new fields (notes, contacts)
 
-- `src/app/api/staff/route.ts` — Add `hasPermission` checks
-- `src/app/api/staff/[id]/route.ts` — Add `hasPermission` checks
-- `src/app/api/shifts/route.ts` — Add `hasPermission` checks
-- `src/app/api/shifts/[id]/route.ts` — Add `hasPermission` checks
-- `src/app/api/availability/route.ts` — Add `hasPermission` checks
-- `src/app/api/availability/[id]/route.ts` — Add `hasPermission` checks
-- All UI components — Gate actions (add/edit/delete) behind permission checks
+**New: `PUT /api/venues/[id]/sublocations/[subId]`** — Update sub-location capacity
 
-### User Invite Flow (Phase 5)
+**`POST /api/tasks`** — Accept optional `venue_id` field for direct venue linking
 
-- `src/app/api/invite/route.ts` — New: invite staff (create user + profile + staff record)
-- `src/components/staff-form.tsx` — Add email/password fields for new user creation
-- `src/app/staff/new/page.tsx` — Update to support invite flow
+**`GET /api/tasks`** — Support filtering by `venue_id` directly (not just via events)
 
-### Database
+### 3. Frontend: Refactored Venues Page
 
-- `supabase/migrations/YYYYMMDD000000_staff_enhancement.sql` — New migration for shift templates table, shift swap requests table, staff clock-in/out tracking
+Card grid with:
+
+- **Red left border + ⚠️ icon** on cards with urgent tasks
+- **Open task count badge** on each card
+- **Staff count + inventory count** shown as secondary stats
+- **Inline capacity editing** — click the capacity number → input appears
+- Click to expand (accordion inline below the card)
+
+Expanded view with **6 tabs**:
+| Tab | Content |
+|-----|---------|
+| **Overview** | Venue notes, contacts, sub-location list with capacities |
+| **Tasks** | Open tasks grouped by status (todo, in_progress), urgent tasks highlighted at top |
+| **Staff** | Upcoming shifts with staff name, role, times, event |
+| **Events** | Upcoming events (list) + recent events |
+| **Inventory** | Items grouped by sub-location with counts + condition badges |
+| **Settings** | Edit form: name, address, type, capacity, notes, contacts |
+
+---
+
+## Files to Modify
+
+| #   | File                                                    | Change                                                                                  |
+| --- | ------------------------------------------------------- | --------------------------------------------------------------------------------------- |
+| 1   | `supabase/migrations/YYYYMMDD000000_venue_hub.sql`      | **New** — venue_id on tasks, capacity on sub_locations, notes/contact on venues         |
+| 2   | `src/app/api/venues/route.ts`                           | **Major** — Enhanced GET with aggregated stats (tasks, events, staff, inventory counts) |
+| 3   | `src/app/api/venues/[id]/route.ts`                      | **Major** — Enhanced GET with full detail, PUT with new fields                          |
+| 4   | `src/app/api/venues/[id]/sublocations/[subId]/route.ts` | **New** — PUT to update sub-location (capacity)                                         |
+| 5   | `src/app/api/tasks/route.ts`                            | **Minor** — Accept `venue_id` in POST, improve `venue_id` GET filter                    |
+| 6   | `src/app/api/tasks/[id]/route.ts`                       | **Minor** — Include venue_id in task detail response                                    |
+| 7   | `src/app/venues/page.tsx`                               | **Major rewrite** — Expandable cards, tabs, warnings, inline editing                    |
+| 8   | `src/components/venue-expanded-view.tsx`                | **New** — Extracted tabbed detail component                                             |
+| 9   | `src/app/workflow/page.tsx`                             | **Minor** — Support direct venue_id filtering for tasks                                 |
 
 ---
 
 ## Reuse
 
-| Existing Function/File  | Path                                       | What to Reuse                                                                                             |
-| ----------------------- | ------------------------------------------ | --------------------------------------------------------------------------------------------------------- |
-| `canAccessRoute`        | `src/lib/permissions.ts`                   | Route-level access checks in middleware                                                                   |
-| `hasPermission`         | `src/lib/permissions.ts`                   | Feature-level permission checks in API routes (same pattern as admin/roles API)                           |
-| `FEATURE_PERMISSIONS`   | `src/lib/permissions.ts`                   | Already defines STAFF_READ, STAFF_WRITE, SHIFTS_READ, SHIFTS_WRITE, AVAILABILITY_READ, AVAILABILITY_WRITE |
-| `ROLE_ROUTE_ACCESS`     | `src/lib/permissions.ts`                   | Already defines /staff route access                                                                       |
-| Admin Roles API pattern | `src/app/api/admin/roles/route.ts`         | Reference for how to check permissions in API routes (fetch user_roles via user_id from session)          |
-| Shifts Timeline View    | `src/app/staff/shifts/page.tsx`            | Existing timeline rendering logic to extend                                                               |
-| Availability Calendar   | `src/components/availability-calendar.tsx` | Existing calendar UI to extend for self-service                                                           |
-| Staff Form              | `src/components/staff-form.tsx`            | Existing form to modify                                                                                   |
-| UI Components           | `src/components/ui/*`                      | Use existing shadcn/ui components (Dialog, Form, Select, etc.)                                            |
+| Existing                        | Path                               | Usage                                  |
+| ------------------------------- | ---------------------------------- | -------------------------------------- |
+| `EmptyState`                    | `src/components/empty-state.tsx`   | Empty states in tabs                   |
+| `PageSkeleton`                  | `src/components/page-skeleton.tsx` | Page loading state                     |
+| `statusBadgeClass()`            | `src/lib/utils/index.ts`           | Task status/priority badges            |
+| `useToast()`                    | `src/hooks/use-toast.ts`           | Success/error feedback                 |
+| `cn()`                          | `src/lib/utils/index.ts`           | Tailwind class merging                 |
+| `formatDateShort`, `formatTime` | `src/lib/dates.ts`                 | Date/time formatting                   |
+| `Task` interface                | `src/components/task-card.tsx`     | Task type for venue tasks              |
+| `TASK_TYPES`                    | `src/lib/i18n.tsx`                 | Task type labels                       |
+| shadcn/ui components            | `src/components/ui/*`              | Tabs, Badge, Card, Dialog, Input, etc. |
 
 ---
 
 ## Steps
 
-### Phase 1: Remove Hourly Rate from UI & Add Staff-User Linking [DONE]
+### Database
 
-- [x] **Step 1.1** — Remove `hourly_rate` field from `src/components/staff-form.tsx` (form field and schema)
-- [x] **Step 1.2** — Remove "Hourly Rate" column from `src/app/staff/page.tsx` table
-- [x] **Step 1.3** — Remove `hourly_rate` from `src/app/api/staff/route.ts` POST handler
-- [x] **Step 1.4** — Remove `hourly_rate` from `src/app/api/staff/[id]/route.ts` PUT handler
+- [ ] **Step 1** — Create migration: `venue_id` on tasks, `capacity` on sub*locations, `notes`/`contact*\*` on venues
 
-### Phase 2: Shift Scheduling Overhaul [DONE]
+### Backend API
 
-- [x] **Step 2.1** — Add Edit Shift dialog (open from existing timeline/bar or list; prepopulate form; PUT to `/api/shifts/[id]`)
-- [x] **Step 2.2** — Add Role-based filter to timeline view (dropdown to filter visible shifts by role)
-- [x] **Step 2.3** — Add Drag & Drop timeline scheduling (use `@dnd-kit` to drag shift bars to adjust start/end times)
-- [x] **Step 2.4** — Add Shift Conflict Detection (when saving a shift, check if staff already has overlapping shift in same event; show warning dialog)
-- [x] **Step 2.5** — Add Bulk Shift Assignment (select multiple staff + role + time range + event; create shifts for all in one go via `/api/shifts/bulk`)
-- [x] **Step 2.6** — Create Shift Templates system (14 predefined templates in `src/lib/shift-templates.ts`; apply dialog at `src/components/shift-template-apply-dialog.tsx`)
-- [x] **Step 2.7** — Add Staff Clock-In / Clock-Out tracking (columns: `clocked_in_at`, `clocked_out_at`; APIs at `/api/shifts/[id]/clock-in` and `/api/shifts/[id]/clock-out`; UI buttons on shifts page)
-- [x] **Step 2.8** — Add Shift Swap Request System (client-side swap request flow with accept/decline/approve; UI dialog on shifts page)
-- [x] **Step 2.9** — Add Shift Scheduling Export (CSV download + PDF via jspdf on shifts page)
+- [ ] **Step 2** — Enhance `GET /api/venues` to return aggregated stats per venue
+- [ ] **Step 3** — Enhance `GET /api/venues/[id]` to return full detail (events, tasks, shifts, inventory, notes, contacts)
+- [ ] **Step 4** — Update `PUT /api/venues/[id]` to accept new fields
+- [ ] **Step 5** — Add `PUT /api/venues/[id]/sublocations/[subId]` for sub-location capacity update
+- [ ] **Step 6** — Update `POST /api/tasks` to accept `venue_id`; improve `GET /api/tasks` venue_id filter
 
-### Phase 3: Availability Self-Service Overhaul [DONE]
+### Frontend
 
-- [x] **Step 3.1** — Add "My Availability" view for staff (`/staff/availability?view=me` or via tab) — loads current staff member's calendar only
-- [x] **Step 3.2** — Staff can click dates to set themselves as available/unavailable with a reason (self-service flip with quick reason input)
-- [x] **Step 3.3** — Manager/Admin/Backoffice view (`?view=all`) remains, with ability to override any staff member's availability
-- [x] **Step 3.4** — Staff can see colleagues' availability (colleagues panel in calendar, indicators in shift scheduling view)
-- [x] **Step 3.5** — Link Availability Calendar to Shifts page (isStaffUnavailable/getAvailabilityReason highlight conflicts)
+- [ ] **Step 7** — Refactor venue cards: warning indicators (red border + icon), task count badges, staff/inventory counts
+- [ ] **Step 8** — Add inline capacity editing on cards
+- [ ] **Step 9** — Implement accordion expansion (click card → expand below with tabs)
+- [ ] **Step 10** — Create `VenueExpandedView` component with 6 tabs: Overview, Tasks, Staff, Events, Inventory, Settings
+- [ ] **Step 11** — Implement Overview tab: notes, contacts, sub-locations with capacities
+- [ ] **Step 12** — Implement Tasks tab: fetch venue tasks, group by status, highlight urgent
+- [ ] **Step 13** — Implement Staff tab: fetch shifts for venue events, show staff details
+- [ ] **Step 14** — Implement Events tab: fetch upcoming + past events at venue
+- [ ] **Step 15** — Implement Inventory tab: fetch items by venue, group by sub-location
+- [ ] **Step 16** — Implement Settings tab: edit form with name, address, type, capacity, notes, contacts
 
-### Phase 4: Permission Enforcement in Staff Module
+### Quality
 
-- [x] **Step 4.1** — Add helper function `getUserRoles(userId)` in `src/lib/permissions.ts` plus `requireAuth()`/`authenticate()` helpers in `src/lib/api-auth.ts`
-- [x] **Step 4.2** — Add `hasPermission` checks to `GET /api/staff` (requires STAFF_READ)
-- [x] **Step 4.3** — Add `hasPermission` checks to `POST /api/staff` (requires STAFF_WRITE)
-- [x] **Step 4.4** — Add `hasPermission` checks to `PUT /api/staff/[id]` (requires STAFF_WRITE)
-- [x] **Step 4.5** — Add `hasPermission` checks to `DELETE /api/staff/[id]` (requires STAFF_WRITE)
-- [x] **Step 4.6** — Add `hasPermission` checks to shift API routes (SHIFTS_READ for GET, SHIFTS_WRITE for POST/PUT/DELETE, clock-in/clock-out, bulk)
-- [x] **Step 4.7** — Add `hasPermission` checks to availability API routes (AVAILABILITY_READ for GET, AVAILABILITY_WRITE for POST/PUT/DELETE)
-- [ ] **Step 4.8** — Gate UI actions in staff list page (only show Add/Edit/Delete buttons for users with STAFF_WRITE)
-- [ ] **Step 4.9** — Gate UI actions in shifts page (only show Add/Edit/Delete for users with SHIFTS_WRITE)
-- [ ] **Step 4.10** — Gate UI actions in availability page (staff can set own availability; managers can override anyone)
-
-### Phase 5: User Invite Flow for Staff Creation
-
-- [ ] **Step 5.1** — Update `src/components/staff-form.tsx` to include email + temporary password fields for creating a new user account
-- [ ] **Step 5.2** — Update `POST /api/staff` to: (a) create user via `supabase.auth.admin.createUser()`, (b) create profile entry, (c) create staff record linked to profile, (d) assign default staff role
-- [ ] **Step 5.3** — Add optional role assignment during staff creation (defaults to `staff` role, admin/manager can assign additional roles)
-- [ ] **Step 5.4** — Handle edit mode (staff without profile_id should be able to link to an existing profile or create one)
-
----
-
-### Phase 6: General UI Polish
-
-- [x] **Step 6.1** — Mount Toaster in root layout, add toast feedback after every CRUD operation
-- [x] **Step 6.2** — Create `PageSkeleton` component, add loading skeletons to all pages
-- [x] **Step 6.3** — Mobile-friendly nav with hamburger menu on small screens
-- [x] **Step 6.4** — Create `EmptyState` component for empty list pages
-- [x] **Step 6.5** — Standardize page shell (consistent padding/max-width across all pages)
-- [x] **Step 6.6** — Submit button loading states on all forms
-- [x] **Step 6.7** — Standardized search/filter bar component
-- [x] **Step 6.8** — Replace `confirm()` with shadcn AlertDialog
-- [ ] **Step 6.9** — Page transition animations (fade-in)
-- [ ] **Step 6.10** — Badge color consistency utility
-- [ ] **Step 6.11** — Date/time format utility (centralize date-fns patterns)
-- [ ] **Step 6.12** — Dialog auto-close on successful create/edit
+- [ ] **Step 17** — Update workflow page to support direct venue_id task filtering
+- [ ] **Step 18** — Run `npm run lint`, `npm run knip`, `npm run jscpd`, `npm run test:unit`, `npm run build`
 
 ---
 
 ## Verification
 
-1. **Unit tests**: Run `npm run test:unit` — permissions tests should still pass; any new utilities need tests
-2. **Build check**: `npm run build` — should compile without errors
-3. **Manual checks**:
-   - Create a staff member → confirm user account is created and staff record links to profile
-   - Staff list → hourly rate column is gone
-   - Shift scheduling → can create/edit/delete shifts; conflicts are detected; drag-drop works; bulk assign works; templates work; clock-in/out works; swap requests work; export works
-   - Availability → staff can set own availability; managers can override; colleagues' availability shown in shift view
-   - Permission gating → staff user cannot add/edit/delete staff members; manager can
-   - Admin page → roles are manageable
+1. `npm run lint` — no errors
+2. `npm run knip` — no unused code
+3. `npm run jscpd` — under 10% duplication
+4. `npm run test:unit` — all passing
+5. `npm run build` — compiles successfully
+6. Manual checks:
+   - Cards with urgent tasks show red border + warning icon
+   - Clicking a card expands it inline with tabbed view
+   - Tasks tab shows tasks linked via events AND direct venue_id
+   - Staff tab shows shifts with staff names and roles
+   - Events tab shows upcoming/past events
+   - Inventory tab shows items grouped by sub-location
+   - Overview tab shows notes, contacts, sub-location capacities
+   - Settings tab allows editing all venue fields
+   - Capacity editing works inline on cards
+   - Sub-location capacity can be edited in Overview tab
+   - Creating a task with venue_id (no event) works and appears in venue task list

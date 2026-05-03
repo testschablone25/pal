@@ -3,7 +3,8 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Textarea } from "@/components/ui/textarea";
+import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { PageSkeleton } from "@/components/page-skeleton";
 import { useToast } from "@/hooks/use-toast";
@@ -41,15 +42,28 @@ import {
 	Trash2,
 	Loader2,
 	Layers,
+	AlertTriangle,
+	ClipboardList,
+	Package,
+	ChevronDown,
+	ChevronRight,
+	Clock,
+	X,
 } from "lucide-react";
 import { EmptyState } from "@/components/empty-state";
-import { statusBadgeClass } from "@/lib/utils";
+import { statusBadgeClass, cn } from "@/lib/utils";
+import { VenueExpandedView } from "@/components/venue-expanded-view";
+
+// ============================================
+// Types
+// ============================================
 
 interface SubLocation {
 	id: string;
 	venue_id: string;
 	name: string;
 	description: string | null;
+	capacity: number | null;
 	created_at: string;
 }
 
@@ -59,8 +73,17 @@ interface Venue {
 	address: string | null;
 	capacity: number;
 	venue_type: string | null;
+	notes: string | null;
+	contact_name: string | null;
+	contact_phone: string | null;
+	contact_email: string | null;
 	created_at: string;
 	sub_locations?: SubLocation[];
+	open_task_count: number;
+	urgent_task_count: number;
+	upcoming_events_count: number;
+	staff_count: number;
+	inventory_count: number;
 }
 
 type VenueFormData = {
@@ -68,6 +91,10 @@ type VenueFormData = {
 	address: string;
 	capacity: number;
 	venue_type: string;
+	contact_name: string;
+	contact_phone: string;
+	contact_email: string;
+	notes: string;
 };
 
 const VENUE_TYPES = [
@@ -84,6 +111,10 @@ const venueTypeLabel: Record<string, string> = {
 	office: "Office",
 	mixed: "Mixed",
 };
+
+// ============================================
+// Venue Form
+// ============================================
 
 interface VenueFormProps {
 	formData: VenueFormData;
@@ -161,6 +192,57 @@ function VenueForm({
 					required
 				/>
 			</div>
+			<div className="grid grid-cols-2 gap-4">
+				<div>
+					<label className="text-sm text-zinc-400 mb-1 block">
+						Contact Name
+					</label>
+					<Input
+						value={formData.contact_name}
+						onChange={(e) =>
+							onFormChange({ ...formData, contact_name: e.target.value })
+						}
+						placeholder="Venue manager"
+						className="bg-zinc-950 border-zinc-800"
+					/>
+				</div>
+				<div>
+					<label className="text-sm text-zinc-400 mb-1 block">
+						Contact Phone
+					</label>
+					<Input
+						value={formData.contact_phone}
+						onChange={(e) =>
+							onFormChange({ ...formData, contact_phone: e.target.value })
+						}
+						placeholder="+49 ..."
+						className="bg-zinc-950 border-zinc-800"
+					/>
+				</div>
+			</div>
+			<div>
+				<label className="text-sm text-zinc-400 mb-1 block">
+					Contact Email
+				</label>
+				<Input
+					type="email"
+					value={formData.contact_email}
+					onChange={(e) =>
+						onFormChange({ ...formData, contact_email: e.target.value })
+					}
+					placeholder="contact@venue.com"
+					className="bg-zinc-950 border-zinc-800"
+				/>
+			</div>
+			<div>
+				<label className="text-sm text-zinc-400 mb-1 block">Notes</label>
+				<Textarea
+					value={formData.notes}
+					onChange={(e) => onFormChange({ ...formData, notes: e.target.value })}
+					placeholder="Load-in instructions, emergency contacts, venue rules..."
+					className="bg-zinc-950 border-zinc-800 min-h-[80px]"
+				/>
+			</div>
 			<div className="flex gap-2 pt-4">
 				<Button
 					type="submit"
@@ -183,11 +265,22 @@ function VenueForm({
 	);
 }
 
+// ============================================
+// Main Venues Page
+// ============================================
+
 export default function VenuesPage() {
 	const { toast } = useToast();
 	const [venues, setVenues] = useState<Venue[]>([]);
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);
+
+	// Expansion state
+	const [expandedVenueId, setExpandedVenueId] = useState<string | null>(null);
+
+	// Inline capacity editing
+	const [editingCapacity, setEditingCapacity] = useState<string | null>(null);
+	const [capacityValue, setCapacityValue] = useState("");
 
 	// Create dialog
 	const [showCreateDialog, setShowCreateDialog] = useState(false);
@@ -208,6 +301,7 @@ export default function VenuesPage() {
 	const [showSubLocationDialog, setShowSubLocationDialog] = useState(false);
 	const [newSubLocationName, setNewSubLocationName] = useState("");
 	const [newSubLocationDesc, setNewSubLocationDesc] = useState("");
+	const [newSubLocationCapacity, setNewSubLocationCapacity] = useState("");
 	const [creatingSubLocation, setCreatingSubLocation] = useState(false);
 
 	const [formData, setFormData] = useState<VenueFormData>({
@@ -215,11 +309,26 @@ export default function VenuesPage() {
 		address: "",
 		capacity: 0,
 		venue_type: "",
+		contact_name: "",
+		contact_phone: "",
+		contact_email: "",
+		notes: "",
 	});
 
 	useEffect(() => {
 		fetchVenues();
 	}, []);
+
+	// Close slide-over on Escape
+	useEffect(() => {
+		const handleKeyDown = (e: KeyboardEvent) => {
+			if (e.key === "Escape" && expandedVenueId) {
+				setExpandedVenueId(null);
+			}
+		};
+		document.addEventListener("keydown", handleKeyDown);
+		return () => document.removeEventListener("keydown", handleKeyDown);
+	}, [expandedVenueId]);
 
 	const fetchVenues = async () => {
 		try {
@@ -235,8 +344,68 @@ export default function VenuesPage() {
 	};
 
 	const resetForm = () => {
-		setFormData({ name: "", address: "", capacity: 0, venue_type: "" });
+		setFormData({
+			name: "",
+			address: "",
+			capacity: 0,
+			venue_type: "",
+			contact_name: "",
+			contact_phone: "",
+			contact_email: "",
+			notes: "",
+		});
 	};
+
+	// ===== Inline Capacity Editing =====
+
+	const startCapacityEdit = (venue: Venue) => {
+		setEditingCapacity(venue.id);
+		setCapacityValue(String(venue.capacity));
+	};
+
+	const saveCapacityEdit = async (venueId: string) => {
+		const num = parseInt(capacityValue);
+		if (isNaN(num) || num <= 0) {
+			setEditingCapacity(null);
+			return;
+		}
+
+		try {
+			const venue = venues.find((v) => v.id === venueId);
+			if (!venue) return;
+
+			const response = await fetch(`/api/venues/${venueId}`, {
+				method: "PUT",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify({
+					name: venue.name,
+					address: venue.address,
+					capacity: num,
+					venue_type: venue.venue_type,
+				}),
+			});
+
+			if (!response.ok) throw new Error("Failed to update capacity");
+
+			setEditingCapacity(null);
+			fetchVenues();
+		} catch (err) {
+			toast({
+				variant: "destructive",
+				title: "Fehler",
+				description:
+					err instanceof Error ? err.message : "Fehler beim Aktualisieren.",
+			});
+		}
+	};
+
+	// ===== Expansion =====
+
+	const toggleExpansion = (venueId: string) => {
+		setExpandedVenueId(expandedVenueId === venueId ? null : venueId);
+	};
+
+	// ===== CRUD =====
 
 	const handleCreateVenue = async (e: React.FormEvent) => {
 		e.preventDefault();
@@ -272,7 +441,6 @@ export default function VenuesPage() {
 				description: `${formData.name} wurde erfolgreich erstellt.`,
 			});
 		} catch (err) {
-			console.error("Failed to create venue:", err);
 			toast({
 				variant: "destructive",
 				title: "Fehler",
@@ -293,6 +461,10 @@ export default function VenuesPage() {
 			address: venue.address || "",
 			capacity: venue.capacity,
 			venue_type: venue.venue_type || "",
+			contact_name: venue.contact_name || "",
+			contact_phone: venue.contact_phone || "",
+			contact_email: venue.contact_email || "",
+			notes: venue.notes || "",
 		});
 		setShowEditDialog(true);
 	};
@@ -307,6 +479,10 @@ export default function VenuesPage() {
 				name: formData.name,
 				address: formData.address,
 				capacity: formData.capacity,
+				contact_name: formData.contact_name || null,
+				contact_phone: formData.contact_phone || null,
+				contact_email: formData.contact_email || null,
+				notes: formData.notes || null,
 			};
 			if (formData.venue_type) {
 				payload.venue_type = formData.venue_type;
@@ -332,7 +508,6 @@ export default function VenuesPage() {
 				description: `${formData.name} wurde erfolgreich aktualisiert.`,
 			});
 		} catch (err) {
-			console.error("Failed to update venue:", err);
 			toast({
 				variant: "destructive",
 				title: "Fehler",
@@ -362,13 +537,15 @@ export default function VenuesPage() {
 
 			setShowDeleteDialog(false);
 			setDeletingVenue(null);
+			if (expandedVenueId === deletingVenue.id) {
+				setExpandedVenueId(null);
+			}
 			fetchVenues();
 			toast({
 				title: "Veranstaltungsort gelöscht",
 				description: `${deletingVenue.name} wurde erfolgreich gelöscht.`,
 			});
 		} catch (err) {
-			console.error("Failed to delete venue:", err);
 			toast({
 				variant: "destructive",
 				title: "Fehler",
@@ -391,6 +568,7 @@ export default function VenuesPage() {
 		setSubLocationVenue(venue);
 		setNewSubLocationName("");
 		setNewSubLocationDesc("");
+		setNewSubLocationCapacity("");
 		setShowSubLocationDialog(true);
 	};
 
@@ -407,6 +585,9 @@ export default function VenuesPage() {
 					body: JSON.stringify({
 						name: newSubLocationName.trim(),
 						description: newSubLocationDesc.trim() || undefined,
+						capacity: newSubLocationCapacity
+							? parseInt(newSubLocationCapacity)
+							: undefined,
 					}),
 				},
 			);
@@ -423,7 +604,6 @@ export default function VenuesPage() {
 				description: `${newSubLocationName.trim()} wurde erfolgreich erstellt.`,
 			});
 		} catch (err) {
-			console.error("Failed to add sub-location:", err);
 			toast({
 				variant: "destructive",
 				title: "Fehler",
@@ -460,7 +640,6 @@ export default function VenuesPage() {
 				description: "Der Unterbereich wurde erfolgreich gelöscht.",
 			});
 		} catch (err) {
-			console.error("Failed to delete sub-location:", err);
 			toast({
 				variant: "destructive",
 				title: "Fehler",
@@ -471,6 +650,8 @@ export default function VenuesPage() {
 			});
 		}
 	};
+
+	// ===== Render =====
 
 	if (loading) {
 		return (
@@ -501,6 +682,7 @@ export default function VenuesPage() {
 
 	return (
 		<div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8">
+			{/* Header */}
 			<div className="mb-8">
 				<h1 className="text-3xl font-bold text-white">Venues</h1>
 				<p className="text-zinc-400 mt-2">
@@ -619,6 +801,19 @@ export default function VenuesPage() {
 								className="bg-zinc-950 border-zinc-800"
 							/>
 						</div>
+						<div>
+							<label className="text-sm text-zinc-400 mb-1 block">
+								Capacity (optional)
+							</label>
+							<Input
+								type="number"
+								min={1}
+								value={newSubLocationCapacity}
+								onChange={(e) => setNewSubLocationCapacity(e.target.value)}
+								placeholder="Max capacity for this area"
+								className="bg-zinc-950 border-zinc-800"
+							/>
+						</div>
 					</div>
 					<DialogFooter>
 						<Button
@@ -660,124 +855,289 @@ export default function VenuesPage() {
 					icon={Building2}
 					title="Keine Veranstaltungsorte"
 					description="Erstelle deinen ersten Veranstaltungsort"
-					actionLabel="Veranstaltungsort hinzufügen"
+					actionLabel="Veranstaltungsort hinzufuegen"
 					onClick={() => setShowCreateDialog(true)}
 				/>
 			) : (
 				<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-					{venues.map((venue) => (
-						<Card
-							key={venue.id}
-							className="bg-zinc-900 border-zinc-800 hover:border-violet-600/50 transition-colors"
-						>
-							<CardContent className="pt-6">
-								<div className="space-y-3">
-									<div className="flex items-start justify-between">
-										<div className="flex items-center gap-2">
-											<h3 className="text-lg font-semibold text-white">
-												{venue.name}
-											</h3>
-											{venue.venue_type && (
+					{venues.map((venue) => {
+						const isExpanded = expandedVenueId === venue.id;
+						const hasUrgent = venue.urgent_task_count > 0;
+						const hasOpenTasks = venue.open_task_count > 0;
+
+						return (
+							<div key={venue.id}>
+								{/* Venue Card */}
+								<Card
+									className={cn(
+										"bg-zinc-900 transition-all cursor-pointer",
+										hasUrgent
+											? "border-l-4 border-l-red-500 border-t-zinc-800 border-r-zinc-800 border-b-zinc-800 hover:border-l-red-400"
+											: "border-zinc-800 hover:border-violet-600/50",
+										isExpanded && "ring-1 ring-violet-600/30",
+									)}
+									onClick={() => toggleExpansion(venue.id)}
+								>
+									<CardContent className="pt-6 pb-4">
+										<div className="space-y-3">
+											{/* Top row: name, type, expand icon */}
+											<div className="flex items-start justify-between">
+												<div className="flex items-center gap-2 flex-wrap">
+													{hasUrgent && (
+														<AlertTriangle className="h-4 w-4 text-red-400 shrink-0" />
+													)}
+													<h3 className="text-lg font-semibold text-white">
+														{venue.name}
+													</h3>
+													{venue.venue_type && (
+														<Badge
+															variant="outline"
+															className={statusBadgeClass(
+																venue.venue_type || "",
+															)}
+														>
+															{venueTypeLabel[venue.venue_type] ||
+																venue.venue_type}
+														</Badge>
+													)}
+													<div className="flex items-center gap-1">
+														{isExpanded ? (
+															<ChevronDown className="h-4 w-4 text-zinc-500" />
+														) : (
+															<ChevronRight className="h-4 w-4 text-zinc-500" />
+														)}
+													</div>
+												</div>
+												<div
+													className="flex gap-1"
+													onClick={(e) => e.stopPropagation()}
+												>
+													<Button
+														variant="ghost"
+														size="icon"
+														className="h-8 w-8 text-zinc-400 hover:text-white hover:bg-zinc-800"
+														onClick={() => openEditDialog(venue)}
+													>
+														<Pencil className="h-4 w-4" />
+													</Button>
+													<Button
+														variant="ghost"
+														size="icon"
+														className="h-8 w-8 text-zinc-400 hover:text-red-400 hover:bg-red-600/10"
+														onClick={() => openDeleteDialog(venue)}
+													>
+														<Trash2 className="h-4 w-4" />
+													</Button>
+												</div>
+											</div>
+
+											{/* Address */}
+											{venue.address && (
+												<div className="flex items-center text-sm text-zinc-400">
+													<MapPin className="h-4 w-4 mr-1 shrink-0" />
+													<span className="truncate">{venue.address}</span>
+												</div>
+											)}
+
+											{/* Capacity (inline editable) */}
+											<div className="flex items-center justify-between">
+												<div
+													className="flex items-center text-sm text-zinc-300"
+													onClick={(e) => e.stopPropagation()}
+												>
+													<Users className="h-4 w-4 mr-1 shrink-0" />
+													{editingCapacity === venue.id ? (
+														<div className="flex items-center gap-1">
+															<Input
+																type="number"
+																min={1}
+																value={capacityValue}
+																onChange={(e) =>
+																	setCapacityValue(e.target.value)
+																}
+																onKeyDown={(e) => {
+																	if (e.key === "Enter")
+																		saveCapacityEdit(venue.id);
+																	if (e.key === "Escape")
+																		setEditingCapacity(null);
+																}}
+																className="w-20 h-7 bg-zinc-950 border-zinc-700 text-sm"
+																autoFocus
+															/>
+															<Button
+																size="sm"
+																variant="ghost"
+																className="h-7 text-xs text-green-400"
+																onClick={() => saveCapacityEdit(venue.id)}
+															>
+																Save
+															</Button>
+														</div>
+													) : (
+														<button
+															className="hover:text-white hover:bg-zinc-800 px-1 rounded transition-colors"
+															onClick={(e) => {
+																e.stopPropagation();
+																startCapacityEdit(venue);
+															}}
+														>
+															Capacity: {venue.capacity}
+														</button>
+													)}
+												</div>
 												<Badge
 													variant="outline"
-													className={statusBadgeClass(venue.venue_type || "")}
+													className="border-violet-600/50 text-violet-400"
 												>
-													{venueTypeLabel[venue.venue_type] || venue.venue_type}
+													{venue.capacity > 500
+														? "Large"
+														: venue.capacity > 200
+															? "Medium"
+															: "Small"}
 												</Badge>
-											)}
-										</div>
-										<div className="flex gap-1">
-											<Button
-												variant="ghost"
-												size="icon"
-												className="h-8 w-8 text-zinc-400 hover:text-white hover:bg-zinc-800"
-												onClick={() => openEditDialog(venue)}
-											>
-												<Pencil className="h-4 w-4" />
-											</Button>
-											<Button
-												variant="ghost"
-												size="icon"
-												className="h-8 w-8 text-zinc-400 hover:text-red-400 hover:bg-red-600/10"
-												onClick={() => openDeleteDialog(venue)}
-											>
-												<Trash2 className="h-4 w-4" />
-											</Button>
-										</div>
-									</div>
-									{venue.address && (
-										<div className="flex items-center text-sm text-zinc-400">
-											<MapPin className="h-4 w-4 mr-1" />
-											{venue.address}
-										</div>
-									)}
-									<div className="flex items-center justify-between">
-										<div className="flex items-center text-sm text-zinc-300">
-											<Users className="h-4 w-4 mr-1" />
-											Capacity: {venue.capacity}
-										</div>
-										<Badge
-											variant="outline"
-											className="border-violet-600/50 text-violet-400"
-										>
-											{venue.capacity > 500
-												? "Large"
-												: venue.capacity > 200
-													? "Medium"
-													: "Small"}
-										</Badge>
-									</div>
+											</div>
 
-									{/* Sub-Locations Section */}
-									<div className="border-t border-zinc-800 pt-3 mt-3">
-										<div className="flex items-center justify-between mb-2">
-											<div className="flex items-center gap-1 text-sm text-zinc-400">
-												<Layers className="h-4 w-4" />
-												<span>Sub-Locations</span>
-												<span className="text-zinc-600">
-													({(venue.sub_locations || []).length})
-												</span>
-											</div>
-											<Button
-												variant="ghost"
-												size="sm"
-												className="h-7 text-xs text-zinc-400 hover:text-white hover:bg-zinc-800"
-												onClick={() => openSubLocationDialog(venue)}
-											>
-												<Plus className="h-3 w-3 mr-1" />
-												Add
-											</Button>
-										</div>
-										{venue.sub_locations && venue.sub_locations.length > 0 ? (
-											<div className="flex flex-wrap gap-2">
-												{venue.sub_locations.map((sl) => (
-													<div
-														key={sl.id}
-														className="group flex items-center gap-1 px-2.5 py-1 bg-zinc-800/50 rounded-full text-sm text-zinc-300 border border-zinc-700/50"
-														title={sl.description || ""}
+											{/* Stats row */}
+											<div className="flex items-center gap-3 text-xs text-zinc-500">
+												{hasOpenTasks && (
+													<span
+														className={cn(
+															"flex items-center gap-1",
+															hasUrgent ? "text-red-400" : "text-zinc-400",
+														)}
 													>
-														<span>{sl.name}</span>
-														<button
-															onClick={() =>
-																handleDeleteSubLocation(venue.id, sl.id)
-															}
-															className="text-zinc-600 hover:text-red-400 opacity-0 group-hover:opacity-100 transition-opacity"
-														>
-															<Trash2 className="h-3 w-3" />
-														</button>
-													</div>
-												))}
+														<ClipboardList className="h-3 w-3" />
+														{venue.open_task_count} task
+														{venue.open_task_count !== 1 ? "s" : ""}
+														{hasUrgent && (
+															<span className="text-red-400 font-medium">
+																({venue.urgent_task_count} urgent)
+															</span>
+														)}
+													</span>
+												)}
+												{venue.staff_count > 0 && (
+													<span className="flex items-center gap-1 text-zinc-400">
+														<Clock className="h-3 w-3" />
+														{venue.staff_count} staff
+													</span>
+												)}
+												{venue.upcoming_events_count > 0 && (
+													<span className="flex items-center gap-1 text-zinc-400">
+														<Building2 className="h-3 w-3" />
+														{venue.upcoming_events_count} event
+														{venue.upcoming_events_count !== 1 ? "s" : ""}
+													</span>
+												)}
+												{venue.inventory_count > 0 && (
+													<span className="flex items-center gap-1 text-zinc-400">
+														<Package className="h-3 w-3" />
+														{venue.inventory_count} items
+													</span>
+												)}
 											</div>
-										) : (
-											<p className="text-xs text-zinc-600 italic">
-												No sub-locations — add floors, areas, or zones
-											</p>
-										)}
-									</div>
-								</div>
-							</CardContent>
-						</Card>
-					))}
+
+											{/* Sub-Locations Section */}
+											<div className="border-t border-zinc-800 pt-3 mt-3">
+												<div className="flex items-center justify-between mb-2">
+													<div className="flex items-center gap-1 text-sm text-zinc-400">
+														<Layers className="h-4 w-4" />
+														<span>Sub-Locations</span>
+														<span className="text-zinc-600">
+															({(venue.sub_locations || []).length})
+														</span>
+													</div>
+													<button
+														className="text-xs text-zinc-400 hover:text-white hover:bg-zinc-800 px-2 py-1 rounded transition-colors"
+														onClick={(e) => {
+															e.stopPropagation();
+															openSubLocationDialog(venue);
+														}}
+													>
+														<Plus className="h-3 w-3 mr-1 inline" />
+														Add
+													</button>
+												</div>
+												{venue.sub_locations &&
+												venue.sub_locations.length > 0 ? (
+													<div className="flex flex-wrap gap-2">
+														{venue.sub_locations.map((sl) => (
+															<div
+																key={sl.id}
+																className="group flex items-center gap-1 px-2.5 py-1 bg-zinc-800/50 rounded-full text-sm text-zinc-300 border border-zinc-700/50"
+																title={
+																	sl.description
+																		? `${sl.description}${sl.capacity ? ` (${sl.capacity} cap.)` : ""}`
+																		: sl.capacity
+																			? `${sl.capacity} capacity`
+																			: ""
+																}
+															>
+																<span>{sl.name}</span>
+																{sl.capacity && (
+																	<span className="text-xs text-zinc-500">
+																		{sl.capacity}
+																	</span>
+																)}
+																<button
+																	onClick={(e) => {
+																		e.stopPropagation();
+																		handleDeleteSubLocation(venue.id, sl.id);
+																	}}
+																	className="text-zinc-600 hover:text-red-400 opacity-0 group-hover:opacity-100 transition-opacity"
+																>
+																	<Trash2 className="h-3 w-3" />
+																</button>
+															</div>
+														))}
+													</div>
+												) : (
+													<p className="text-xs text-zinc-600 italic">
+														No sub-locations — add floors, areas, or zones
+													</p>
+												)}
+											</div>
+										</div>
+									</CardContent>
+								</Card>
+							</div>
+						);
+					})}
+				</div>
+			)}
+
+			{/* ===== Slide-Over Panel ===== */}
+			{expandedVenueId && (
+				<div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+					{/* Backdrop */}
+					<div
+						className="absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity"
+						onClick={() => setExpandedVenueId(null)}
+					/>
+
+					{/* Modal */}
+					<div className="relative w-full max-w-4xl max-h-[85vh] bg-zinc-900 border border-zinc-700 rounded-xl shadow-2xl flex flex-col overflow-hidden animate-modal-in">
+						{/* Panel Header */}
+						<div className="flex items-center justify-between px-6 py-4 border-b border-zinc-800 shrink-0">
+							<h2 className="text-lg font-semibold text-white truncate">
+								{venues.find((v) => v.id === expandedVenueId)?.name || "Venue"}
+							</h2>
+							<button
+								onClick={() => setExpandedVenueId(null)}
+								className="p-1.5 rounded-lg text-zinc-400 hover:text-white hover:bg-zinc-800 transition-colors"
+							>
+								<X className="h-5 w-5" />
+							</button>
+						</div>
+
+						{/* Panel Content */}
+						<div className="flex-1 overflow-y-auto p-6">
+							<VenueExpandedView
+								venueId={expandedVenueId}
+								onCapacityChange={fetchVenues}
+							/>
+						</div>
+					</div>
 				</div>
 			)}
 		</div>

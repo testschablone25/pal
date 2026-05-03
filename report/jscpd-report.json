@@ -1,18 +1,18 @@
 {
   "statistics": {
-    "detectionDate": "2026-05-02T02:28:53.038Z",
+    "detectionDate": "2026-05-03T08:17:28.257Z",
     "formats": {
       "typescript": {
         "sources": {
           "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/app/api/venues/[id]/sublocations/[subId]/route.ts": {
-            "lines": 84,
-            "tokens": 748,
+            "lines": 89,
+            "tokens": 797,
             "sources": 1,
-            "clones": 4,
-            "duplicatedLines": 38,
-            "duplicatedTokens": 371,
-            "percentage": 45.24,
-            "percentageTokens": 49.6,
+            "clones": 3,
+            "duplicatedLines": 27,
+            "duplicatedTokens": 258,
+            "percentage": 30.34,
+            "percentageTokens": 32.37,
             "newDuplicatedLines": 0,
             "newClones": 0
           },
@@ -20,11 +20,11 @@
             "lines": 78,
             "tokens": 722,
             "sources": 1,
-            "clones": 2,
-            "duplicatedLines": 22,
-            "duplicatedTokens": 209,
-            "percentage": 28.21,
-            "percentageTokens": 28.95,
+            "clones": 1,
+            "duplicatedLines": 11,
+            "duplicatedTokens": 96,
+            "percentage": 14.1,
+            "percentageTokens": 13.3,
             "newDuplicatedLines": 0,
             "newClones": 0
           },
@@ -209,14 +209,14 @@
             "newClones": 0
           },
           "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/app/api/venues/[id]/route.ts": {
-            "lines": 116,
-            "tokens": 1057,
+            "lines": 262,
+            "tokens": 2422,
             "sources": 1,
-            "clones": 11,
-            "duplicatedLines": 103,
-            "duplicatedTokens": 1013,
-            "percentage": 88.79,
-            "percentageTokens": 95.84,
+            "clones": 10,
+            "duplicatedLines": 92,
+            "duplicatedTokens": 917,
+            "percentage": 35.11,
+            "percentageTokens": 37.86,
             "newDuplicatedLines": 0,
             "newClones": 0
           },
@@ -401,20 +401,20 @@
             "newClones": 0
           },
           "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/app/api/venues/route.ts": {
-            "lines": 94,
-            "tokens": 875,
+            "lines": 251,
+            "tokens": 2451,
             "sources": 1,
-            "clones": 2,
-            "duplicatedLines": 21,
-            "duplicatedTokens": 192,
-            "percentage": 22.34,
-            "percentageTokens": 21.94,
+            "clones": 1,
+            "duplicatedLines": 10,
+            "duplicatedTokens": 96,
+            "percentage": 3.98,
+            "percentageTokens": 3.92,
             "newDuplicatedLines": 0,
             "newClones": 0
           },
           "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/app/api/tasks/route.ts": {
-            "lines": 282,
-            "tokens": 2265,
+            "lines": 287,
+            "tokens": 2310,
             "sources": 1,
             "clones": 0,
             "duplicatedLines": 0,
@@ -617,8 +617,8 @@
             "newClones": 0
           },
           "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/lib/supabase/browser.ts": {
-            "lines": 8,
-            "tokens": 58,
+            "lines": 15,
+            "tokens": 113,
             "sources": 1,
             "clones": 0,
             "duplicatedLines": 0,
@@ -918,14 +918,14 @@
           }
         },
         "total": {
-          "lines": 8817,
-          "tokens": 76879,
+          "lines": 9137,
+          "tokens": 79969,
           "sources": 76,
-          "clones": 60,
-          "duplicatedLines": 688,
-          "duplicatedTokens": 6689,
-          "percentage": 7.8,
-          "percentageTokens": 8.7,
+          "clones": 58,
+          "duplicatedLines": 666,
+          "duplicatedTokens": 6480,
+          "percentage": 7.29,
+          "percentageTokens": 8.1,
           "newDuplicatedLines": 0,
           "newClones": 0
         }
@@ -1164,11 +1164,11 @@
             "lines": 174,
             "tokens": 1012,
             "sources": 1,
-            "clones": 15,
-            "duplicatedLines": 223,
-            "duplicatedTokens": 1081,
-            "percentage": 128.16,
-            "percentageTokens": 106.82,
+            "clones": 14,
+            "duplicatedLines": 209,
+            "duplicatedTokens": 1014,
+            "percentage": 120.11,
+            "percentageTokens": 100.2,
             "newDuplicatedLines": 0,
             "newClones": 0
           },
@@ -1248,11 +1248,11 @@
             "lines": 259,
             "tokens": 1621,
             "sources": 1,
-            "clones": 2,
-            "duplicatedLines": 28,
-            "duplicatedTokens": 134,
-            "percentage": 10.81,
-            "percentageTokens": 8.27,
+            "clones": 3,
+            "duplicatedLines": 42,
+            "duplicatedTokens": 201,
+            "percentage": 16.22,
+            "percentageTokens": 12.4,
             "newDuplicatedLines": 0,
             "newClones": 0
           },
@@ -1281,14 +1281,14 @@
             "newClones": 0
           },
           "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/components/event-form.tsx": {
-            "lines": 160,
-            "tokens": 1032,
+            "lines": 168,
+            "tokens": 1058,
             "sources": 1,
             "clones": 1,
             "duplicatedLines": 14,
             "duplicatedTokens": 67,
-            "percentage": 8.75,
-            "percentageTokens": 6.49,
+            "percentage": 8.33,
+            "percentageTokens": 6.33,
             "newDuplicatedLines": 0,
             "newClones": 0
           },
@@ -1329,8 +1329,8 @@
             "newClones": 0
           },
           "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/components/calendar-view.tsx": {
-            "lines": 193,
-            "tokens": 1518,
+            "lines": 217,
+            "tokens": 1685,
             "sources": 1,
             "clones": 0,
             "duplicatedLines": 0,
@@ -1390,14 +1390,14 @@
           }
         },
         "total": {
-          "lines": 3923,
-          "tokens": 28439,
+          "lines": 3955,
+          "tokens": 28632,
           "sources": 38,
           "clones": 14,
           "duplicatedLines": 242,
           "duplicatedTokens": 1302,
-          "percentage": 6.17,
-          "percentageTokens": 4.58,
+          "percentage": 6.12,
+          "percentageTokens": 4.55,
           "newDuplicatedLines": 0,
           "newClones": 0
         }
@@ -1477,14 +1477,14 @@
             "newClones": 0
           },
           "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/app/events/[id]/page.tsx": {
-            "lines": 300,
-            "tokens": 2350,
+            "lines": 286,
+            "tokens": 2270,
             "sources": 1,
-            "clones": 2,
-            "duplicatedLines": 41,
-            "duplicatedTokens": 254,
-            "percentage": 13.67,
-            "percentageTokens": 10.81,
+            "clones": 1,
+            "duplicatedLines": 24,
+            "duplicatedTokens": 154,
+            "percentage": 8.39,
+            "percentageTokens": 6.78,
             "newDuplicatedLines": 0,
             "newClones": 0
           },
@@ -1672,11 +1672,11 @@
             "lines": 217,
             "tokens": 1636,
             "sources": 1,
-            "clones": 2,
-            "duplicatedLines": 23,
-            "duplicatedTokens": 191,
-            "percentage": 10.6,
-            "percentageTokens": 11.67,
+            "clones": 6,
+            "duplicatedLines": 69,
+            "duplicatedTokens": 562,
+            "percentage": 31.8,
+            "percentageTokens": 34.35,
             "newDuplicatedLines": 0,
             "newClones": 0
           },
@@ -1802,13 +1802,13 @@
           },
           "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/components/inventory-list.tsx": {
             "lines": 299,
-            "tokens": 2465,
+            "tokens": 2468,
             "sources": 1,
             "clones": 2,
             "duplicatedLines": 18,
             "duplicatedTokens": 178,
             "percentage": 6.02,
-            "percentageTokens": 7.22,
+            "percentageTokens": 7.21,
             "newDuplicatedLines": 0,
             "newClones": 0
           },
@@ -1816,11 +1816,11 @@
             "lines": 482,
             "tokens": 3700,
             "sources": 1,
-            "clones": 6,
-            "duplicatedLines": 66,
-            "duplicatedTokens": 576,
-            "percentage": 13.69,
-            "percentageTokens": 15.57,
+            "clones": 7,
+            "duplicatedLines": 83,
+            "duplicatedTokens": 670,
+            "percentage": 17.22,
+            "percentageTokens": 18.11,
             "newDuplicatedLines": 0,
             "newClones": 0
           },
@@ -1849,14 +1849,14 @@
             "newClones": 0
           },
           "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/components/event-form.tsx": {
-            "lines": 310,
-            "tokens": 2378,
+            "lines": 328,
+            "tokens": 2446,
             "sources": 1,
-            "clones": 8,
-            "duplicatedLines": 143,
-            "duplicatedTokens": 950,
-            "percentage": 46.13,
-            "percentageTokens": 39.95,
+            "clones": 7,
+            "duplicatedLines": 87,
+            "duplicatedTokens": 640,
+            "percentage": 26.52,
+            "percentageTokens": 26.17,
             "newDuplicatedLines": 0,
             "newClones": 0
           },
@@ -1897,14 +1897,14 @@
             "newClones": 0
           },
           "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/components/calendar-view.tsx": {
-            "lines": 346,
-            "tokens": 2920,
+            "lines": 370,
+            "tokens": 3068,
             "sources": 1,
-            "clones": 1,
-            "duplicatedLines": 17,
-            "duplicatedTokens": 100,
-            "percentage": 4.91,
-            "percentageTokens": 3.42,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
             "newDuplicatedLines": 0,
             "newClones": 0
           },
@@ -1924,11 +1924,11 @@
             "lines": 321,
             "tokens": 2332,
             "sources": 1,
-            "clones": 7,
-            "duplicatedLines": 135,
-            "duplicatedTokens": 929,
-            "percentage": 42.06,
-            "percentageTokens": 39.84,
+            "clones": 5,
+            "duplicatedLines": 66,
+            "duplicatedTokens": 512,
+            "percentage": 20.56,
+            "percentageTokens": 21.96,
             "newDuplicatedLines": 0,
             "newClones": 0
           },
@@ -1946,69 +1946,33 @@
           }
         },
         "total": {
-          "lines": 8641,
-          "tokens": 68284,
+          "lines": 8669,
+          "tokens": 68423,
           "sources": 45,
           "clones": 27,
-          "duplicatedLines": 412,
-          "duplicatedTokens": 3211,
-          "percentage": 4.77,
-          "percentageTokens": 4.7,
+          "duplicatedLines": 364,
+          "duplicatedTokens": 2980,
+          "percentage": 4.2,
+          "percentageTokens": 4.36,
           "newDuplicatedLines": 0,
           "newClones": 0
         }
       }
     },
     "total": {
-      "lines": 21381,
-      "tokens": 173602,
+      "lines": 21761,
+      "tokens": 177024,
       "sources": 159,
-      "clones": 101,
-      "duplicatedLines": 1342,
-      "duplicatedTokens": 11202,
-      "percentage": 6.28,
-      "percentageTokens": 6.45,
+      "clones": 99,
+      "duplicatedLines": 1272,
+      "duplicatedTokens": 10762,
+      "percentage": 5.85,
+      "percentageTokens": 6.08,
       "newDuplicatedLines": 0,
       "newClones": 0
     }
   },
   "duplicates": [
-    {
-      "format": "typescript",
-      "lines": 12,
-      "fragment": "} = await params;\n\t\tconst body = await request.json();\n\n\t\tconst { name, description } = body;\n\n\t\tif (!name) {\n\t\t\treturn NextResponse.json({ error: \"Name is required\" }, { status: 400 });\n\t\t}\n\n\t\tconst { data, error } = await supabase\n\t\t\t.from(\"venue_sub_locations\")\n\t\t\t.insert",
-      "tokens": 0,
-      "firstFile": {
-        "name": "src/app/api/venues/[id]/sublocations/route.ts",
-        "start": 44,
-        "end": 55,
-        "startLoc": {
-          "line": 44,
-          "column": 2,
-          "position": 398
-        },
-        "endLoc": {
-          "line": 55,
-          "column": 7,
-          "position": 511
-        }
-      },
-      "secondFile": {
-        "name": "src/app/api/venues/[id]/sublocations/[subId]/route.ts",
-        "start": 16,
-        "end": 27,
-        "startLoc": {
-          "line": 16,
-          "column": 2,
-          "position": 136
-        },
-        "endLoc": {
-          "line": 27,
-          "column": 7,
-          "position": 249
-        }
-      }
-    },
     {
       "format": "typescript",
       "lines": 12,
@@ -2031,17 +1995,17 @@
       },
       "secondFile": {
         "name": "src/app/api/venues/[id]/sublocations/[subId]/route.ts",
-        "start": 39,
-        "end": 50,
+        "start": 44,
+        "end": 55,
         "startLoc": {
-          "line": 39,
+          "line": 44,
           "column": 4,
-          "position": 347
+          "position": 396
         },
         "endLoc": {
-          "line": 50,
+          "line": 55,
           "column": 2,
-          "position": 443
+          "position": 492
         }
       }
     },
@@ -2463,17 +2427,17 @@
       },
       "secondFile": {
         "name": "src/app/api/venues/[id]/sublocations/[subId]/route.ts",
-        "start": 71,
-        "end": 79,
+        "start": 76,
+        "end": 84,
         "startLoc": {
-          "line": 71,
+          "line": 76,
           "column": 6,
-          "position": 623
+          "position": 672
         },
         "endLoc": {
-          "line": 79,
+          "line": 84,
           "column": 31,
-          "position": 704
+          "position": 753
         }
       }
     },
@@ -2520,32 +2484,32 @@
       "tokens": 0,
       "firstFile": {
         "name": "src/app/api/venues/[id]/route.ts",
-        "start": 103,
-        "end": 111,
+        "start": 249,
+        "end": 257,
         "startLoc": {
-          "line": 103,
+          "line": 249,
           "column": 3,
-          "position": 932
+          "position": 2297
         },
         "endLoc": {
-          "line": 111,
+          "line": 257,
           "column": 24,
-          "position": 1013
+          "position": 2378
         }
       },
       "secondFile": {
         "name": "src/app/api/venues/[id]/sublocations/[subId]/route.ts",
-        "start": 71,
-        "end": 79,
+        "start": 76,
+        "end": 84,
         "startLoc": {
-          "line": 71,
+          "line": 76,
           "column": 6,
-          "position": 623
+          "position": 672
         },
         "endLoc": {
-          "line": 79,
+          "line": 84,
           "column": 31,
-          "position": 704
+          "position": 753
         }
       }
     },
@@ -2571,17 +2535,17 @@
       },
       "secondFile": {
         "name": "src/app/api/venues/[id]/route.ts",
-        "start": 52,
-        "end": 60,
+        "start": 181,
+        "end": 190,
         "startLoc": {
-          "line": 52,
+          "line": 181,
           "column": 1,
-          "position": 442
+          "position": 1732
         },
         "endLoc": {
-          "line": 60,
+          "line": 190,
           "column": 5,
-          "position": 533
+          "position": 1824
         }
       }
     },
@@ -2607,17 +2571,17 @@
       },
       "secondFile": {
         "name": "src/app/api/venues/[id]/route.ts",
-        "start": 103,
-        "end": 79,
+        "start": 249,
+        "end": 84,
         "startLoc": {
-          "line": 103,
+          "line": 249,
           "column": 9,
-          "position": 920
+          "position": 2285
         },
         "endLoc": {
-          "line": 79,
+          "line": 84,
           "column": 31,
-          "position": 704
+          "position": 753
         }
       }
     },
@@ -2643,17 +2607,17 @@
       },
       "secondFile": {
         "name": "src/app/api/venues/[id]/route.ts",
-        "start": 76,
-        "end": 87,
+        "start": 222,
+        "end": 233,
         "startLoc": {
-          "line": 76,
+          "line": 222,
           "column": 14,
-          "position": 687
+          "position": 2052
         },
         "endLoc": {
-          "line": 87,
+          "line": 233,
           "column": 24,
-          "position": 783
+          "position": 2148
         }
       }
     },
@@ -2715,17 +2679,17 @@
       },
       "secondFile": {
         "name": "src/app/api/venues/[id]/route.ts",
-        "start": 103,
-        "end": 79,
+        "start": 249,
+        "end": 84,
         "startLoc": {
-          "line": 103,
+          "line": 249,
           "column": 9,
-          "position": 920
+          "position": 2285
         },
         "endLoc": {
-          "line": 79,
+          "line": 84,
           "column": 31,
-          "position": 704
+          "position": 753
         }
       }
     },
@@ -2824,16 +2788,16 @@
       "secondFile": {
         "name": "src/app/api/staff/[id]/route.ts",
         "start": 76,
-        "end": 87,
+        "end": 233,
         "startLoc": {
           "line": 76,
           "column": 9,
           "position": 601
         },
         "endLoc": {
-          "line": 87,
+          "line": 233,
           "column": 24,
-          "position": 783
+          "position": 2148
         }
       }
     },
@@ -2895,17 +2859,17 @@
       },
       "secondFile": {
         "name": "src/app/api/venues/[id]/route.ts",
-        "start": 103,
-        "end": 79,
+        "start": 249,
+        "end": 84,
         "startLoc": {
-          "line": 103,
+          "line": 249,
           "column": 9,
-          "position": 920
+          "position": 2285
         },
         "endLoc": {
-          "line": 79,
+          "line": 84,
           "column": 31,
-          "position": 704
+          "position": 753
         }
       }
     },
@@ -3003,17 +2967,17 @@
       },
       "secondFile": {
         "name": "src/app/api/venues/[id]/route.ts",
-        "start": 103,
-        "end": 79,
+        "start": 249,
+        "end": 84,
         "startLoc": {
-          "line": 103,
+          "line": 249,
           "column": 5,
-          "position": 929
+          "position": 2294
         },
         "endLoc": {
-          "line": 79,
+          "line": 84,
           "column": 31,
-          "position": 704
+          "position": 753
         }
       }
     },
@@ -3039,17 +3003,17 @@
       },
       "secondFile": {
         "name": "src/app/api/venues/[id]/route.ts",
-        "start": 77,
-        "end": 87,
+        "start": 223,
+        "end": 233,
         "startLoc": {
-          "line": 77,
+          "line": 223,
           "column": 5,
-          "position": 694
+          "position": 2059
         },
         "endLoc": {
-          "line": 87,
+          "line": 233,
           "column": 24,
-          "position": 783
+          "position": 2148
         }
       }
     },
@@ -3076,16 +3040,16 @@
       "secondFile": {
         "name": "src/app/api/rentals/[id]/route.ts",
         "start": 105,
-        "end": 79,
+        "end": 84,
         "startLoc": {
           "line": 105,
           "column": 10,
           "position": 875
         },
         "endLoc": {
-          "line": 79,
+          "line": 84,
           "column": 31,
-          "position": 704
+          "position": 753
         }
       }
     },
@@ -3183,17 +3147,17 @@
       },
       "secondFile": {
         "name": "src/app/api/venues/[id]/route.ts",
-        "start": 103,
-        "end": 79,
+        "start": 249,
+        "end": 84,
         "startLoc": {
-          "line": 103,
+          "line": 249,
           "column": 9,
-          "position": 920
+          "position": 2285
         },
         "endLoc": {
-          "line": 79,
+          "line": 84,
           "column": 31,
-          "position": 704
+          "position": 753
         }
       }
     },
@@ -3220,16 +3184,16 @@
       "secondFile": {
         "name": "src/app/api/performances/[id]/route.ts",
         "start": 117,
-        "end": 87,
+        "end": 233,
         "startLoc": {
           "line": 117,
           "column": 7,
           "position": 831
         },
         "endLoc": {
-          "line": 87,
+          "line": 233,
           "column": 24,
-          "position": 783
+          "position": 2148
         }
       }
     },
@@ -3256,16 +3220,16 @@
       "secondFile": {
         "name": "src/app/api/rentals/[id]/route.ts",
         "start": 105,
-        "end": 79,
+        "end": 84,
         "startLoc": {
           "line": 105,
           "column": 10,
           "position": 875
         },
         "endLoc": {
-          "line": 79,
+          "line": 84,
           "column": 31,
-          "position": 704
+          "position": 753
         }
       }
     },
@@ -3292,16 +3256,16 @@
       "secondFile": {
         "name": "src/app/api/staff/[id]/route.ts",
         "start": 76,
-        "end": 87,
+        "end": 233,
         "startLoc": {
           "line": 76,
           "column": 9,
           "position": 601
         },
         "endLoc": {
-          "line": 87,
+          "line": 233,
           "column": 24,
-          "position": 783
+          "position": 2148
         }
       }
     },
@@ -3363,17 +3327,17 @@
       },
       "secondFile": {
         "name": "src/app/api/venues/[id]/route.ts",
-        "start": 103,
-        "end": 79,
+        "start": 249,
+        "end": 84,
         "startLoc": {
-          "line": 103,
+          "line": 249,
           "column": 9,
-          "position": 920
+          "position": 2285
         },
         "endLoc": {
-          "line": 79,
+          "line": 84,
           "column": 31,
-          "position": 704
+          "position": 753
         }
       }
     },
@@ -3436,16 +3400,16 @@
       "secondFile": {
         "name": "src/app/api/performances/[id]/route.ts",
         "start": 117,
-        "end": 87,
+        "end": 233,
         "startLoc": {
           "line": 117,
           "column": 7,
           "position": 831
         },
         "endLoc": {
-          "line": 87,
+          "line": 233,
           "column": 24,
-          "position": 783
+          "position": 2148
         }
       }
     },
@@ -3472,16 +3436,16 @@
       "secondFile": {
         "name": "src/app/api/rentals/[id]/route.ts",
         "start": 105,
-        "end": 79,
+        "end": 84,
         "startLoc": {
           "line": 105,
           "column": 10,
           "position": 875
         },
         "endLoc": {
-          "line": 79,
+          "line": 84,
           "column": 31,
-          "position": 704
+          "position": 753
         }
       }
     },
@@ -3667,58 +3631,22 @@
     },
     {
       "format": "typescript",
-      "lines": 12,
-      "fragment": "const body = await request.json();\n\n\t\tconst { name, address, capacity, venue_type } = body;\n\n\t\tif (!name || !capacity) {\n\t\t\treturn NextResponse.json(\n\t\t\t\t{ error: \"Name and capacity are required\" },\n\t\t\t\t{ status: 400 },\n\t\t\t);\n\t\t}\n\n\t\tconst insertPayload",
-      "tokens": 0,
-      "firstFile": {
-        "name": "src/app/api/venues/route.ts",
-        "start": 61,
-        "end": 72,
-        "startLoc": {
-          "line": 61,
-          "column": 3,
-          "position": 560
-        },
-        "endLoc": {
-          "line": 72,
-          "column": 14,
-          "position": 656
-        }
-      },
-      "secondFile": {
-        "name": "src/app/api/venues/[id]/route.ts",
-        "start": 58,
-        "end": 69,
-        "startLoc": {
-          "line": 58,
-          "column": 3,
-          "position": 512
-        },
-        "endLoc": {
-          "line": 69,
-          "column": 14,
-          "position": 608
-        }
-      }
-    },
-    {
-      "format": "typescript",
       "lines": 11,
       "fragment": ")\n\t\t\t.select()\n\t\t\t.single();\n\n\t\tif (error) {\n\t\t\treturn NextResponse.json({ error: error.message }, { status: 400 });\n\t\t}\n\n\t\treturn NextResponse.json(data, { status: 201 });\n\t} catch (error) {\n\t\tconsole.error(\"Error creating venue:\"",
       "tokens": 0,
       "firstFile": {
         "name": "src/app/api/venues/route.ts",
-        "start": 79,
-        "end": 89,
+        "start": 236,
+        "end": 246,
         "startLoc": {
-          "line": 79,
+          "line": 236,
           "column": 14,
-          "position": 735
+          "position": 2311
         },
         "endLoc": {
-          "line": 89,
+          "line": 246,
           "column": 24,
-          "position": 831
+          "position": 2407
         }
       },
       "secondFile": {
@@ -4335,17 +4263,17 @@
       },
       "secondFile": {
         "name": "src/app/events/[id]/page.tsx",
-        "start": 236,
-        "end": 261,
+        "start": 222,
+        "end": 247,
         "startLoc": {
-          "line": 236,
+          "line": 222,
           "column": 4,
-          "position": 1918
+          "position": 1838
         },
         "endLoc": {
-          "line": 261,
+          "line": 247,
           "column": 2,
-          "position": 2073
+          "position": 1993
         }
       }
     },
@@ -4577,12 +4505,12 @@
         "startLoc": {
           "line": 123,
           "column": 13,
-          "position": 1169
+          "position": 1172
         },
         "endLoc": {
           "line": 131,
           "column": 24,
-          "position": 1253
+          "position": 1256
         }
       },
       "secondFile": {
@@ -4664,12 +4592,12 @@
         "startLoc": {
           "line": 40,
           "column": 1,
-          "position": 300
+          "position": 303
         },
         "endLoc": {
           "line": 50,
           "column": 13,
-          "position": 394
+          "position": 397
         }
       }
     },
@@ -4820,93 +4748,165 @@
     {
       "format": "javascript",
       "lines": 15,
-      "fragment": "\"\n                        className=\"bg-zinc-950 border-zinc-800\"\n                      />\n                    </FormControl>\n                    <FormMessage />\n                  </FormItem>\n                )}\n              />\n\n              <FormField\n                control={form.control}\n                name=\"date\"\n                render={({ field }) => (\n                  <FormItem>\n                    <FormLabel>Date ",
+      "fragment": "\"\n\t\t\t\t\t\t\t\t\t\t\t\tclassName=\"bg-zinc-950 border-zinc-800\"\n\t\t\t\t\t\t\t\t\t\t\t/>\n\t\t\t\t\t\t\t\t\t\t</FormControl>\n\t\t\t\t\t\t\t\t\t\t<FormMessage />\n\t\t\t\t\t\t\t\t\t</FormItem>\n\t\t\t\t\t\t\t\t)}\n\t\t\t\t\t\t\t/>\n\n\t\t\t\t\t\t\t<FormField\n\t\t\t\t\t\t\t\tcontrol={form.control}\n\t\t\t\t\t\t\t\tname=\"date\"\n\t\t\t\t\t\t\t\trender={({ field }) => (\n\t\t\t\t\t\t\t\t\t<FormItem>\n\t\t\t\t\t\t\t\t\t\t<FormLabel>Date ",
       "tokens": 0,
       "firstFile": {
         "name": "src/components/event-form.tsx",
-        "start": 147,
-        "end": 161,
+        "start": 157,
+        "end": 171,
         "startLoc": {
-          "line": 147,
+          "line": 157,
           "column": 22,
-          "position": 1339
+          "position": 1381
         },
         "endLoc": {
-          "line": 161,
+          "line": 171,
           "column": 6,
-          "position": 1406
+          "position": 1448
         }
       },
       "secondFile": {
-        "name": "src/components/rental-form.tsx",
-        "start": 150,
-        "end": 164,
+        "name": "src/components/inventory-form.tsx",
+        "start": 271,
+        "end": 285,
         "startLoc": {
-          "line": 150,
-          "column": 21,
-          "position": 1377
+          "line": 271,
+          "column": 9,
+          "position": 2408
         },
         "endLoc": {
-          "line": 164,
-          "column": 15,
-          "position": 1444
+          "line": 285,
+          "column": 6,
+          "position": 2475
         }
       }
     },
     {
       "format": "tsx",
-      "lines": 13,
-      "fragment": ");\n    } catch (err) {\n      setError(err instanceof Error ? err.message : 'An error occurred');\n    } finally {\n      setLoading(false);\n    }\n  };\n\n  return (\n    <Card className=\"bg-zinc-900 border-zinc-800\">\n      <CardHeader>\n        <CardTitle className=\"text-white\">\n          {",
+      "lines": 9,
+      "fragment": "} from \"react\";\nimport { useForm } from \"react-hook-form\";\nimport { zodResolver } from \"@hookform/resolvers/zod\";\nimport { z } from \"zod\";\nimport { Button } from \"@/components/ui/button\";\nimport { Input } from \"@/components/ui/input\";\nimport { Card, CardContent, CardHeader, CardTitle } from \"@/components/ui/card\";\nimport {\n\tSelect",
       "tokens": 0,
       "firstFile": {
         "name": "src/components/event-form.tsx",
-        "start": 119,
-        "end": 131,
+        "start": 3,
+        "end": 11,
         "startLoc": {
-          "line": 119,
+          "line": 3,
           "column": 2,
-          "position": 1115
+          "position": 13
         },
         "endLoc": {
-          "line": 131,
-          "column": 2,
-          "position": 1205
+          "line": 11,
+          "column": 7,
+          "position": 112
         }
       },
       "secondFile": {
-        "name": "src/components/rental-form.tsx",
-        "start": 99,
-        "end": 110,
+        "name": "src/components/staff-form.tsx",
+        "start": 3,
+        "end": 10,
         "startLoc": {
-          "line": 99,
-          "column": 8,
-          "position": 952
+          "line": 3,
+          "column": 2,
+          "position": 10
         },
         "endLoc": {
-          "line": 110,
-          "column": 4,
-          "position": 1040
+          "line": 10,
+          "column": 9,
+          "position": 108
+        }
+      }
+    },
+    {
+      "format": "tsx",
+      "lines": 18,
+      "fragment": ";\nimport { Card, CardContent, CardHeader, CardTitle } from \"@/components/ui/card\";\nimport {\n\tSelect,\n\tSelectContent,\n\tSelectItem,\n\tSelectTrigger,\n\tSelectValue,\n} from \"@/components/ui/select\";\nimport {\n\tForm,\n\tFormControl,\n\tFormField,\n\tFormItem,\n\tFormLabel,\n\tFormMessage,\n} from \"@/components/ui/form\";\nimport { useRouter",
+      "tokens": 0,
+      "firstFile": {
+        "name": "src/components/event-form.tsx",
+        "start": 8,
+        "end": 25,
+        "startLoc": {
+          "line": 8,
+          "column": 24,
+          "position": 83
+        },
+        "endLoc": {
+          "line": 25,
+          "column": 10,
+          "position": 177
+        }
+      },
+      "secondFile": {
+        "name": "src/components/inventory-form.tsx",
+        "start": 9,
+        "end": 26,
+        "startLoc": {
+          "line": 9,
+          "column": 27,
+          "position": 96
+        },
+        "endLoc": {
+          "line": 26,
+          "column": 8,
+          "position": 190
         }
       }
     },
     {
       "format": "tsx",
       "lines": 12,
-      "fragment": "\" />\n                        </SelectTrigger>\n                      </FormControl>\n                      <SelectContent className=\"bg-zinc-900 border-zinc-800\">\n                        {venues.map((venue) => (\n                          <SelectItem key={venue.id} value={venue.id}>\n                            {venue.name}\n                          </SelectItem>\n                        ))}\n                      </SelectContent>\n                    </Select>\n                    <",
+      "fragment": "} catch (err) {\n\t\t\tsetError(err instanceof Error ? err.message : \"An error occurred\");\n\t\t} finally {\n\t\t\tsetLoading(false);\n\t\t}\n\t};\n\n\treturn (\n\t\t<Card className=\"bg-zinc-900 border-zinc-800\">\n\t\t\t<CardHeader>\n\t\t\t\t<CardTitle className=\"text-white\">\n\t\t\t\t\t{mode === \"create\" ? \"Create New Event\"",
       "tokens": 0,
       "firstFile": {
         "name": "src/components/event-form.tsx",
-        "start": 183,
-        "end": 194,
+        "start": 130,
+        "end": 141,
         "startLoc": {
-          "line": 183,
-          "column": 13,
-          "position": 1550
+          "line": 130,
+          "column": 3,
+          "position": 1161
         },
         "endLoc": {
-          "line": 194,
+          "line": 141,
+          "column": 19,
+          "position": 1256
+        }
+      },
+      "secondFile": {
+        "name": "src/components/staff-form.tsx",
+        "start": 95,
+        "end": 106,
+        "startLoc": {
+          "line": 95,
+          "column": 3,
+          "position": 785
+        },
+        "endLoc": {
+          "line": 106,
+          "column": 23,
+          "position": 880
+        }
+      }
+    },
+    {
+      "format": "tsx",
+      "lines": 12,
+      "fragment": "\" />\n\t\t\t\t\t\t\t\t\t\t\t\t</SelectTrigger>\n\t\t\t\t\t\t\t\t\t\t\t</FormControl>\n\t\t\t\t\t\t\t\t\t\t\t<SelectContent className=\"bg-zinc-900 border-zinc-800\">\n\t\t\t\t\t\t\t\t\t\t\t\t{venues.map((venue) => (\n\t\t\t\t\t\t\t\t\t\t\t\t\t<SelectItem key={venue.id} value={venue.id}>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t{venue.name}\n\t\t\t\t\t\t\t\t\t\t\t\t\t</SelectItem>\n\t\t\t\t\t\t\t\t\t\t\t\t))}\n\t\t\t\t\t\t\t\t\t\t\t</SelectContent>\n\t\t\t\t\t\t\t\t\t\t</Select>\n\t\t\t\t\t\t\t\t\t\t<",
+      "tokens": 0,
+      "firstFile": {
+        "name": "src/components/event-form.tsx",
+        "start": 196,
+        "end": 207,
+        "startLoc": {
+          "line": 196,
+          "column": 13,
+          "position": 1593
+        },
+        "endLoc": {
+          "line": 207,
           "column": 2,
-          "position": 1638
+          "position": 1681
         }
       },
       "secondFile": {
@@ -4927,37 +4927,73 @@
     },
     {
       "format": "tsx",
-      "lines": 14,
-      "fragment": "</div>\n\n            {error && (\n              <div className=\"text-red-500 text-sm\">{error}</div>\n            )}\n\n            <div className=\"flex gap-4\">\n              <Button\n                type=\"submit\"\n                className=\"bg-violet-600 hover:bg-violet-700\"\n                disabled={loading}\n              >\n                {loading && <Loader2 className=\"mr-2 h-4 w-4 animate-spin\" />}\n                {",
+      "lines": 12,
+      "fragment": "</div>\n\n\t\t\t\t\t\t{error && <div className=\"text-red-500 text-sm\">{error}</div>}\n\n\t\t\t\t\t\t<div className=\"flex gap-4\">\n\t\t\t\t\t\t\t<Button\n\t\t\t\t\t\t\t\ttype=\"submit\"\n\t\t\t\t\t\t\t\tclassName=\"bg-violet-600 hover:bg-violet-700\"\n\t\t\t\t\t\t\t\tdisabled={loading}\n\t\t\t\t\t\t\t>\n\t\t\t\t\t\t\t\t{loading && <Loader2 className=\"mr-2 h-4 w-4 animate-spin\" />}\n\t\t\t\t\t\t\t\t{mode === \"create\" ? \"Create Event\"",
       "tokens": 0,
       "firstFile": {
         "name": "src/components/event-form.tsx",
-        "start": 278,
-        "end": 291,
+        "start": 298,
+        "end": 309,
         "startLoc": {
-          "line": 278,
-          "column": 13,
-          "position": 2145
+          "line": 298,
+          "column": 7,
+          "position": 2219
         },
         "endLoc": {
-          "line": 291,
-          "column": 2,
-          "position": 2234
+          "line": 309,
+          "column": 15,
+          "position": 2311
         }
       },
       "secondFile": {
-        "name": "src/components/rental-form.tsx",
-        "start": 269,
-        "end": 282,
+        "name": "src/components/staff-form.tsx",
+        "start": 191,
+        "end": 202,
         "startLoc": {
-          "line": 269,
-          "column": 13,
-          "position": 1958
+          "line": 191,
+          "column": 7,
+          "position": 1457
         },
         "endLoc": {
-          "line": 282,
-          "column": 7,
-          "position": 2047
+          "line": 202,
+          "column": 22,
+          "position": 1549
+        }
+      }
+    },
+    {
+      "format": "tsx",
+      "lines": 17,
+      "fragment": ": \"Save Changes\"}\n\t\t\t\t\t\t\t</Button>\n\t\t\t\t\t\t\t<Button\n\t\t\t\t\t\t\t\ttype=\"button\"\n\t\t\t\t\t\t\t\tvariant=\"outline\"\n\t\t\t\t\t\t\t\tonClick={() => router.back()}\n\t\t\t\t\t\t\t\tclassName=\"border-zinc-800\"\n\t\t\t\t\t\t\t>\n\t\t\t\t\t\t\t\tCancel\n\t\t\t\t\t\t\t</Button>\n\t\t\t\t\t\t</div>\n\t\t\t\t\t</form>\n\t\t\t\t</Form>\n\t\t\t</CardContent>\n\t\t</Card>\n\t);\n}",
+      "tokens": 0,
+      "firstFile": {
+        "name": "src/components/event-form.tsx",
+        "start": 309,
+        "end": 325,
+        "startLoc": {
+          "line": 309,
+          "column": 2,
+          "position": 2313
+        },
+        "endLoc": {
+          "line": 325,
+          "column": 2,
+          "position": 2398
+        }
+      },
+      "secondFile": {
+        "name": "src/components/staff-form.tsx",
+        "start": 202,
+        "end": 218,
+        "startLoc": {
+          "line": 202,
+          "column": 2,
+          "position": 1551
+        },
+        "endLoc": {
+          "line": 218,
+          "column": 2,
+          "position": 1636
         }
       }
     },
@@ -5030,42 +5066,6 @@
           "line": 410,
           "column": 2,
           "position": 3292
-        }
-      }
-    },
-    {
-      "format": "tsx",
-      "lines": 18,
-      "fragment": "};\n\n\tconst getStatusColor = (status: string) => {\n\t\tswitch (status) {\n\t\t\tcase \"published\":\n\t\t\t\treturn \"bg-green-600\";\n\t\t\tcase \"draft\":\n\t\t\t\treturn \"bg-yellow-600\";\n\t\t\tcase \"cancelled\":\n\t\t\t\treturn \"bg-red-600\";\n\t\t\tcase \"completed\":\n\t\t\t\treturn \"bg-zinc-600\";\n\t\t\tdefault:\n\t\t\t\treturn \"bg-violet-600\";\n\t\t}\n\t};\n\n\tconst renderMonthView",
-      "tokens": 0,
-      "firstFile": {
-        "name": "src/components/calendar-view.tsx",
-        "start": 113,
-        "end": 130,
-        "startLoc": {
-          "line": 113,
-          "column": 2,
-          "position": 1042
-        },
-        "endLoc": {
-          "line": 130,
-          "column": 16,
-          "position": 1142
-        }
-      },
-      "secondFile": {
-        "name": "src/app/events/[id]/page.tsx",
-        "start": 108,
-        "end": 125,
-        "startLoc": {
-          "line": 108,
-          "column": 2,
-          "position": 942
-        },
-        "endLoc": {
-          "line": 125,
-          "column": 21,
-          "position": 1042
         }
       }
     },
@@ -5251,42 +5251,6 @@
     },
     {
       "format": "tsx",
-      "lines": 22,
-      "fragment": ";\nimport { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';\nimport {\n  Select,\n  SelectContent,\n  SelectItem,\n  SelectTrigger,\n  SelectValue,\n} from '@/components/ui/select';\nimport {\n  Form,\n  FormControl,\n  FormDescription,\n  FormField,\n  FormItem,\n  FormLabel,\n  FormMessage,\n} from '@/components/ui/form';\nimport { useRouter } from 'next/navigation';\nimport { Loader2 } from 'lucide-react';\n\nconst artistSchema",
-      "tokens": 0,
-      "firstFile": {
-        "name": "src/components/artist-form.tsx",
-        "start": 9,
-        "end": 30,
-        "startLoc": {
-          "line": 9,
-          "column": 27,
-          "position": 93
-        },
-        "endLoc": {
-          "line": 30,
-          "column": 13,
-          "position": 216
-        }
-      },
-      "secondFile": {
-        "name": "src/components/event-form.tsx",
-        "start": 8,
-        "end": 29,
-        "startLoc": {
-          "line": 8,
-          "column": 24,
-          "position": 83
-        },
-        "endLoc": {
-          "line": 29,
-          "column": 12,
-          "position": 206
-        }
-      }
-    },
-    {
-      "format": "tsx",
       "lines": 11,
       "fragment": "{\n    id: string;\n    name: string;\n    city: string | null;\n    fee: number | null;\n    genre: string | null;\n    bio: string | null;\n    contact_email: string | null;\n    contact_phone: string | null;\n    promo_pack_url: string | null;\n  };",
       "tokens": 0,
@@ -5323,125 +5287,89 @@
     },
     {
       "format": "tsx",
-      "lines": 14,
-      "fragment": ");\n      router.refresh();\n    } catch (err) {\n      setError(err instanceof Error ? err.message : 'An error occurred');\n    } finally {\n      setLoading(false);\n    }\n  };\n\n  return (\n    <Card className=\"bg-zinc-900 border-zinc-800\">\n      <CardHeader>\n        <CardTitle className=\"text-white\">\n          {mode === 'create' ? 'Add New Artist'",
+      "lines": 13,
+      "fragment": ");\n    } catch (err) {\n      setError(err instanceof Error ? err.message : 'An error occurred');\n    } finally {\n      setLoading(false);\n    }\n  };\n\n  return (\n    <Card className=\"bg-zinc-900 border-zinc-800\">\n      <CardHeader>\n        <CardTitle className=\"text-white\">\n          {",
       "tokens": 0,
       "firstFile": {
         "name": "src/components/artist-form.tsx",
-        "start": 115,
+        "start": 116,
         "end": 128,
         "startLoc": {
-          "line": 115,
-          "column": 11,
-          "position": 1054
+          "line": 116,
+          "column": 2,
+          "position": 1062
         },
         "endLoc": {
           "line": 128,
-          "column": 17,
-          "position": 1161
+          "column": 2,
+          "position": 1152
         }
       },
       "secondFile": {
-        "name": "src/components/event-form.tsx",
-        "start": 118,
-        "end": 131,
+        "name": "src/components/rental-form.tsx",
+        "start": 99,
+        "end": 110,
         "startLoc": {
-          "line": 118,
-          "column": 10,
-          "position": 1107
+          "line": 99,
+          "column": 8,
+          "position": 952
         },
         "endLoc": {
-          "line": 131,
-          "column": 19,
-          "position": 1214
+          "line": 110,
+          "column": 4,
+          "position": 1040
         }
       }
     },
     {
       "format": "tsx",
-      "lines": 26,
-      "fragment": "}\n        </CardTitle>\n      </CardHeader>\n      <CardContent>\n        <Form {...form}>\n          <form onSubmit={form.handleSubmit(onSubmit)} className=\"space-y-6\">\n            <div className=\"grid grid-cols-1 md:grid-cols-2 gap-6\">\n              <FormField\n                control={form.control}\n                name=\"name\"\n                render={({ field }) => (\n                  <FormItem>\n                    <FormLabel>Name *</FormLabel>\n                    <FormControl>\n                      <Input\n                        {...field}\n                        placeholder=\"Artist/DJ name\"\n                        className=\"bg-zinc-950 border-zinc-800\"\n                      />\n                    </FormControl>\n                    <FormMessage />\n                  </FormItem>\n                )}\n              />\n\n              <",
+      "lines": 14,
+      "fragment": "</div>\n\n            {error && (\n              <div className=\"text-red-500 text-sm\">{error}</div>\n            )}\n\n            <div className=\"flex gap-4\">\n              <Button\n                type=\"submit\"\n                className=\"bg-violet-600 hover:bg-violet-700\"\n                disabled={loading}\n              >\n                {loading && <Loader2 className=\"mr-2 h-4 w-4 animate-spin\" />}\n                {",
       "tokens": 0,
       "firstFile": {
         "name": "src/components/artist-form.tsx",
-        "start": 128,
-        "end": 153,
-        "startLoc": {
-          "line": 128,
-          "column": 14,
-          "position": 1166
-        },
-        "endLoc": {
-          "line": 153,
-          "column": 2,
-          "position": 1316
-        }
-      },
-      "secondFile": {
-        "name": "src/components/event-form.tsx",
-        "start": 131,
-        "end": 156,
-        "startLoc": {
-          "line": 131,
-          "column": 13,
-          "position": 1219
-        },
-        "endLoc": {
-          "line": 156,
-          "column": 2,
-          "position": 1369
-        }
-      }
-    },
-    {
-      "format": "tsx",
-      "lines": 29,
-      "fragment": "\"\n                render={({ field }) => (\n                  <FormItem>\n                    <FormLabel>Biography</FormLabel>\n                    <FormControl>\n                      <Textarea\n                        {...field}\n                        placeholder=\"Artist biography...\"\n                        className=\"bg-zinc-950 border-zinc-800 min-h-[100px]\"\n                      />\n                    </FormControl>\n                    <FormMessage />\n                  </FormItem>\n                )}\n              />\n            </div>\n\n            {error && (\n              <div className=\"text-red-500 text-sm\">{error}</div>\n            )}\n\n            <div className=\"flex gap-4\">\n              <Button\n                type=\"submit\"\n                className=\"bg-violet-600 hover:bg-violet-700\"\n                disabled={loading}\n              >\n                {loading && <Loader2 className=\"mr-2 h-4 w-4 animate-spin\" />}\n                {mode === 'create' ? 'Create Artist'",
-      "tokens": 0,
-      "firstFile": {
-        "name": "src/components/artist-form.tsx",
-        "start": 274,
+        "start": 289,
         "end": 302,
         "startLoc": {
-          "line": 274,
-          "column": 4,
-          "position": 2027
+          "line": 289,
+          "column": 13,
+          "position": 2099
         },
         "endLoc": {
           "line": 302,
-          "column": 16,
-          "position": 2197
+          "column": 2,
+          "position": 2188
         }
       },
       "secondFile": {
-        "name": "src/components/event-form.tsx",
-        "start": 261,
-        "end": 291,
+        "name": "src/components/rental-form.tsx",
+        "start": 269,
+        "end": 282,
         "startLoc": {
-          "line": 261,
+          "line": 269,
           "column": 13,
-          "position": 2040
+          "position": 1958
         },
         "endLoc": {
-          "line": 291,
-          "column": 15,
-          "position": 2243
+          "line": 282,
+          "column": 7,
+          "position": 2047
         }
       }
     },
     {
       "format": "tsx",
-      "lines": 21,
-      "fragment": ": 'Save Changes'}\n              </Button>\n              <Button\n                type=\"button\"\n                variant=\"outline\"\n                onClick={() => router.back()}\n                className=\"border-zinc-800\"\n              >\n                Cancel\n              </Button>\n            </div>\n          </form>\n        </Form>\n      </CardContent>\n    </Card>\n  );\n}\n\nfunction Description({ children }: { children: React.ReactNode }) {\n  return <p className=\"text-sm text-zinc-400\">{children}</p>;\n}",
+      "lines": 14,
+      "fragment": ">\n                Cancel\n              </Button>\n            </div>\n          </form>\n        </Form>\n      </CardContent>\n    </Card>\n  );\n}\n\nfunction Description({ children }: { children: React.ReactNode }) {\n  return <p className=\"text-sm text-zinc-400\">{children}</p>;\n}",
       "tokens": 0,
       "firstFile": {
         "name": "src/components/artist-form.tsx",
-        "start": 302,
+        "start": 309,
         "end": 322,
         "startLoc": {
-          "line": 302,
-          "column": 2,
-          "position": 2199
+          "line": 309,
+          "column": 15,
+          "position": 2245
         },
         "endLoc": {
           "line": 322,
@@ -5451,17 +5379,17 @@
       },
       "secondFile": {
         "name": "src/components/event-form.tsx",
-        "start": 291,
-        "end": 311,
+        "start": 316,
+        "end": 329,
         "startLoc": {
-          "line": 291,
-          "column": 2,
-          "position": 2245
+          "line": 316,
+          "column": 8,
+          "position": 2359
         },
         "endLoc": {
-          "line": 311,
+          "line": 329,
           "column": 2,
-          "position": 2378
+          "position": 2446
         }
       }
     },

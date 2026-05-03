@@ -69,6 +69,7 @@ const COLUMNS: Column[] = [
 interface Event {
 	id: string;
 	name: string;
+	venue_id: string | null;
 }
 
 interface Profile {
@@ -234,14 +235,13 @@ export default function WorkflowPage() {
 				return false;
 			if (filterEvent !== "all" && task.event_id !== filterEvent) return false;
 			if (filterVenue !== "all") {
-				// Find event's venue via events list
+				// Check direct venue_id link first
+				const taskRecord = task as unknown as Record<string, unknown>;
+				if (taskRecord.venue_id === filterVenue) return true;
+				// Then check via event
 				const event = events.find((e) => e.id === task.event_id);
 				if (!event) return false;
-				// We need venue_id on events — events have venue_id in DB but not returned
-				// Use task.event?.venue_id if available, otherwise filter by event name matching venue name
-				return (
-					(task.event as Record<string, unknown>)?.venue_id === filterVenue
-				);
+				return event.venue_id === filterVenue;
 			}
 			if (filterBlocked && !task.blocked) return false;
 			if (filterNeedsApproval && !task.needs_approval) return false;

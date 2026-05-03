@@ -16,15 +16,20 @@ export async function PUT(
 		const { subId } = await params;
 		const body = await request.json();
 
-		const { name, description } = body;
+		const { name, description, capacity } = body;
 
 		if (!name) {
 			return NextResponse.json({ error: "Name is required" }, { status: 400 });
 		}
 
+		const updatePayload: Record<string, unknown> = { name, description };
+		if (capacity !== undefined) {
+			updatePayload.capacity = capacity;
+		}
+
 		const { data, error } = await supabase
 			.from("venue_sub_locations")
-			.update({ name, description })
+			.update(updatePayload)
 			.eq("id", subId)
 			.select()
 			.single();

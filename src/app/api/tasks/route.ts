@@ -86,17 +86,20 @@ export async function GET(request: NextRequest) {
 			query = query.eq("created_by", userId);
 		}
 		if (venueId) {
-			// Filter by venue — find events belonging to this venue
+			// Filter by venue — find events belonging to this venue, OR tasks directly linked
 			const { data: venueEvents } = await supabase
 				.from("events")
 				.select("id")
 				.eq("venue_id", venueId);
 			const eventIds = venueEvents?.map((e) => e.id) || [];
+
+			// Use OR to match tasks with events at this venue OR tasks with direct venue_id
+			const conditions: string[] = [];
 			if (eventIds.length > 0) {
-				query = query.in("event_id", eventIds);
-			} else {
-				query = query.is("event_id", null);
+				conditions.push(`event_id.in.(${eventIds.join(",")})`);
 			}
+			conditions.push(`venue_id.eq.${venueId}`);
+			query = query.or(conditions.join(","));
 		}
 		if (parentTaskId) {
 			query = query.eq("parent_task_id", parentTaskId);
@@ -148,6 +151,7 @@ export async function POST(request: NextRequest) {
 			priority,
 			assignee_id,
 			event_id,
+			venue_id,
 			due_date,
 			scheduled_date,
 			needs_approval,
@@ -197,6 +201,7 @@ export async function POST(request: NextRequest) {
 				priority: resolvedPriority,
 				assignee_id: resolvedAssigneeId || null,
 				event_id: resolvedEventId || null,
+				venue_id: venue_id || null,
 				due_date: due_date || null,
 				scheduled_date: scheduled_date || null,
 				needs_approval: needs_approval || false,
