@@ -12,6 +12,8 @@
 - [2026-03-25] Rider extraction generates tasks automatically via /api/artists/generate-tasks
 - [2026-03-27] Improved rider extraction to capture: stage monitors, power requirements, furniture (tables/dimensions, laptop stands), mixer USB connectivity requirements, FX pedals (correctly marked as artist brings optional), and image references
 - [2026-04-30] Form redesign: sectioned layout with collapsible advanced fields, inline toggle pills for task types, color-coded priority indicators, auto-focus on primary field
+- [2026-05-03] Shift timeline timezone fix: Supabase TIMESTAMPTZ returns UTC timestamps (may lack timezone suffix). All time-parsing functions must use `ensureUtc()` + `new Date()` to convert to local time. Sending timestamps to Supabase requires explicit timezone offset (e.g. `+02:00`) so PostgreSQL stores the correct UTC instant
+- [2026-05-03] Dashboard: added 'Verfügbarkeit' quick-access button in shift plan card header, links to `/staff/availability?view=me`
 
 ## Known Issues
 
@@ -20,6 +22,7 @@
 - The middleware is in src/proxy.ts instead of src/middleware.ts (non-standard location)
 - Dashboard API fetches use user_id query param to work around RLS issues
 - `date-fns` locale is `de` (German) throughout the dashboard
+- Shift timestamps stored without timezone context: old shifts created before 2026-05-03 were sent as naive timestamps. Supabase TIMESTAMPTZ interpreted them as UTC (or server timezone), causing display offset. New shifts include explicit timezone offset, but old data may still display incorrectly until re-saved
 
 ## Implementation Status
 

@@ -35,3 +35,17 @@
 - Double quotes for strings
 - Semicolons always
 - No Prettier -- rely on ESLint via `eslint-config-next`
+
+## Hydration-Safe Patterns
+
+- `disabled={!value}` where `value` is a string can cause hydration mismatches: `disabled={false}` renders as `disabled="false"` (an HTML attribute browsers treat as truthy), while React on the client removes the attribute entirely
+- Use strict comparison instead: `disabled={value === ""}` always returns a consistent boolean on server and client
+- Same applies to any boolean HTML attribute driven by a non-boolean value
+
+## Timeline / Aligned Layout Patterns
+
+When building a timeline with header (hour labels) and rows (shift bars):
+- The header's left spacer must exactly match the row's left column width (e.g. both use `w-48`)
+- Put filter/search UI in a separate row above the timeline header, not inline alongside the hour labels
+- Use absolute positioning for hour labels with `left: ${(i / totalHours) * 100}%`
+- Ensure all positioning functions (`getTimePosition`, `getTimeWidth`) use the same time-parsing logic so position, width, and label text are always in sync
