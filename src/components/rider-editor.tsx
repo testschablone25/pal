@@ -2342,7 +2342,9 @@ function EquipmentRow({
 		brand: string | null;
 		model: string | null;
 	}) => {
-		const displayName = [selected.brand, selected.name].filter(Boolean).join(" ");
+		const displayName = [selected.brand, selected.name]
+			.filter(Boolean)
+			.join(" ");
 		update(index, {
 			name: displayName || selected.name,
 			inventory_item_id: selected.id,
