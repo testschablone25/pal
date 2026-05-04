@@ -25,7 +25,9 @@ export default function RootLayout({
 						<div className="absolute top-1/3 -left-20 w-72 h-72 bg-blue-600/[0.03] rounded-full blur-3xl" />
 					</div>
 					<NavBar />
-					<main className="relative animate-in fade-in duration-200">{children}</main>
+					<main className="relative animate-in fade-in duration-200">
+						{children}
+					</main>
 					<Toaster />
 				</I18nProvider>
 			</body>

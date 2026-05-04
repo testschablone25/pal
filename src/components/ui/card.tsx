@@ -6,7 +6,7 @@ import { cva, type VariantProps } from "class-variance-authority";
 const cardVariants = cva("", {
   variants: {
     variant: {
-      default: "border bg-card text-card-foreground shadow-sm",
+      default: "rounded-lg border bg-card text-card-foreground shadow-sm",
       brand: "bg-brand-card-surface shadow-card",
     },
   },
