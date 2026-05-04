@@ -325,7 +325,7 @@ export function InventoryDetail({ itemId }: InventoryDetailProps) {
 						<div className="space-y-4">
 							<div>
 								<label className="text-sm text-zinc-500">Condition</label>
-								<p className="mt-1">
+								<div className="mt-1">
 									{item.condition_enum ? (
 										<Badge
 											variant="outline"
@@ -339,7 +339,7 @@ export function InventoryDetail({ itemId }: InventoryDetailProps) {
 									) : (
 										<span className="text-zinc-500">-</span>
 									)}
-								</p>
+								</div>
 							</div>
 							{item.condition_notes && (
 								<div>
