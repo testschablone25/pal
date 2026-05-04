@@ -17,6 +17,8 @@ import {
 	User,
 	QrCode,
 	ListTodo,
+	Music,
+	FileText,
 } from "lucide-react";
 import { PageSkeleton } from "@/components/page-skeleton";
 import { cn, statusBadgeClass } from "@/lib/utils";
@@ -132,6 +134,18 @@ export function InventoryDetail({ itemId }: InventoryDetailProps) {
 	const [error, setError] = useState<string | null>(null);
 	const [showCheckinModal, setShowCheckinModal] = useState(false);
 	const [showQRDialog, setShowQRDialog] = useState(false);
+	const [riderAssignments, setRiderAssignments] = useState<
+		{
+			artist_id: string;
+			artist_name: string;
+			artist_genre: string | null;
+			rider_section: string;
+			equipment_name: string;
+			quantity: number;
+			artist_brings: boolean;
+		}[]
+	>([]);
+	const [loadingRiderAssignments, setLoadingRiderAssignments] = useState(false);
 
 	const fetchData = async () => {
 		setLoading(true);
@@ -176,7 +190,23 @@ export function InventoryDetail({ itemId }: InventoryDetailProps) {
 	useEffect(() => {
 		fetchData();
 		fetchLinkedTasks();
+		fetchRiderAssignments();
 	}, [itemId]);
+
+	const fetchRiderAssignments = async () => {
+		setLoadingRiderAssignments(true);
+		try {
+			const response = await fetch(`/api/items/${itemId}/rider-assignments`);
+			if (response.ok) {
+				const data = await response.json();
+				setRiderAssignments(data.assignments || []);
+			}
+		} catch (err) {
+			console.error("Failed to fetch rider assignments:", err);
+		} finally {
+			setLoadingRiderAssignments(false);
+		}
+	};
 
 	if (loading) {
 		return (
@@ -375,6 +405,73 @@ export function InventoryDetail({ itemId }: InventoryDetailProps) {
 						>
 							Mark as Returned
 						</Button>
+					</CardContent>
+				</Card>
+			)}
+
+			{/* Rider Assignments */}
+			{!loadingRiderAssignments && riderAssignments.length > 0 && (
+				<Card className="bg-zinc-900 border-violet-800/50">
+					<CardHeader>
+						<CardTitle className="text-white flex items-center gap-2">
+							<FileText className="h-5 w-5 text-violet-400" />
+							Artist Rider Assignments
+							<Badge
+								variant="outline"
+								className="bg-zinc-800 text-zinc-400 border-zinc-700 text-[10px] ml-2"
+							>
+								{riderAssignments.length}
+							</Badge>
+						</CardTitle>
+					</CardHeader>
+					<CardContent>
+						<div className="space-y-2">
+							{riderAssignments.map((assignment, i) => (
+								<div
+									key={`rider-${assignment.artist_id}-${i}`}
+									className="flex items-center justify-between p-3 bg-violet-950/20 border border-violet-900/30 rounded-lg cursor-pointer hover:border-violet-700/50 transition-colors"
+									onClick={() =>
+										router.push(`/artists/${assignment.artist_id}`)
+									}
+								>
+									<div className="flex items-center gap-3 min-w-0">
+										<Music className="h-4 w-4 text-violet-400 flex-shrink-0" />
+										<div className="min-w-0">
+											<p className="text-white font-medium truncate">
+												{assignment.artist_name}
+											</p>
+											<div className="flex items-center gap-2 mt-0.5">
+												<Badge
+													variant="outline"
+													className="border-zinc-700 text-zinc-400 text-[10px]"
+												>
+													{assignment.rider_section}
+												</Badge>
+												{assignment.artist_genre && (
+													<span className="text-xs text-zinc-500">
+														{assignment.artist_genre}
+													</span>
+												)}
+											</div>
+										</div>
+									</div>
+									<div className="flex items-center gap-3 text-sm flex-shrink-0">
+										<span className="text-zinc-400">
+											{assignment.equipment_name}
+										</span>
+										{assignment.artist_brings ? (
+											<Badge className="bg-green-600/20 text-green-400 text-[10px] border-green-700/50">
+												Artist Brings
+											</Badge>
+										) : (
+											<Badge className="bg-red-600/20 text-red-400 text-[10px] border-red-700/50">
+												Venue Supplies
+											</Badge>
+										)}
+									</div>
+								</div>
+							))}
+						</div>
 					</CardContent>
 				</Card>
 			)}
