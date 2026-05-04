@@ -28,6 +28,10 @@
 - `date-fns` locale is `de` (German) throughout the dashboard
 - Shift timestamps stored without timezone context: old shifts created before 2026-05-03 were sent as naive timestamps. Supabase TIMESTAMPTZ interpreted them as UTC (or server timezone), causing display offset. New shifts include explicit timezone offset, but old data may still display incorrectly until re-saved
 - Task form sends empty strings `""` for UUID/date selects set to "Unassigned" / "No event" — API PUT handler now normalizes these to `null` via `|| null`, but the root cause (form sending `""` instead of `null`) remains in the form layer
+- [2026-05-04] Rider types extracted to shared module `src/lib/riders/types.ts` after two components independently defined incompatible versions of the same interfaces
+- [2026-05-04] Rider editor now supports manual form-based entry of all tech/hospitality rider fields, plus inventory item linking via typeahead autocomplete and browse-inventory picker
+- [2026-05-04] Inventory items can be linked to rider equipment entries via `inventory_item_id`/`inventory_item_name` fields on equipment objects in the JSONB rider. Reverse lookup endpoint `GET /api/items/[id]/rider-assignments` scans all artists' riders for references.
+- [2026-05-04] Artist detail page now shows event assignments (performances) and supports assigning artists to events directly from the artist page via dialog
 
 ## Implementation Status
 
@@ -74,3 +78,60 @@
 - Client fetch calls: read `response.json()` on non-OK responses to extract `errBody.error` for the toast message
 - NEVER throw generic `"Failed to update task"` — always include the status code and API error field
 - Pattern: `const errBody = await response.json().catch(() => ({})); throw new Error(errBody.error || \`Failed (${response.status})\`);`
+
+## Session Lessons (2026-05-04)
+
+### Radix PopoverTrigger Blocks Input Keystrokes
+- **Problem:** Wrapping an `<Input>` with `<PopoverTrigger asChild>` inside a controlled `<Popover open={...}>` prevents the input from receiving keystrokes. Radix intercepts pointer/key events on the trigger element.
+- **Fix:** Decouple the input from the popover — use `PopoverAnchor` with an outer wrapper div, or (simpler) ditch Radix Popover entirely for typeahead dropdowns and use a plain absolutely-positioned `<div>` with a mousedown click-outside listener.
+- **Files:** `src/components/inventory-autocomplete.tsx`
+
+### Shared Types Prevent Interface Drift
+- **Problem:** Two components (`rider-viewer.tsx`, `rider-editor.tsx`) independently defined the same TypeScript interfaces (`TechRider`, `EquipmentItem`, etc.) with slightly different shapes (optional vs required fields). This caused TS errors when passing data between them.
+- **Fix:** Extract shared types into a single module (`src/lib/riders/types.ts`) and import from there. Use optional fields (`monitors?:`) for API-returned data, with `?? []` fallbacks in consumer code.
+- **Files:** `src/lib/riders/types.ts`
+
+### shadcn Card Component Has No Border-Radius By Default
+- **Problem:** The `Card` component's default variant uses `"border bg-card text-card-foreground shadow-sm"` — no `rounded-lg`. Individual pages had to pass `rounded-lg` manually, leading to inconsistencies.
+- **Fix:** Add `rounded-lg` to the Card component's `cardVariants` default variant. All cards inherit it automatically. Same treatment applied to `DialogContent` (`rounded-lg`), `Button` (`rounded-md`), `Input` (`rounded-md`), `Textarea` (`rounded-md`), `Badge` (`rounded-full + text-xs`).
+- **Files:** `src/components/ui/card.tsx`, `dialog.tsx`, `button.tsx`, `input.tsx`, `textarea.tsx`, `badge.tsx`
+
+### Global Gradient Ambient Background
+- **Pattern:** Add fixed-position gradient blur circles to `layout.tsx` (not individual pages) so all pages get the ambient depth effect. Use `pointer-events-none` so they don't block interactions. Wrap content in `relative` so it layers above the gradient.
+- **Snippet:**
+  ```tsx
+  <div className="fixed inset-0 pointer-events-none overflow-hidden">
+    <div className="absolute -top-40 -right-40 w-96 h-96 bg-violet-600/5 rounded-full blur-3xl" />
+    <div className="absolute top-1/3 -left-20 w-72 h-72 bg-blue-600/[0.03] rounded-full blur-3xl" />
+  </div>
+  <main className="relative">...</main>
+  ```
+- **Files:** `src/app/layout.tsx`
+
+### Page Wrappers Are Mandatory for Consistent Layout
+- **Problem:** Some pages (`/inventory`, `/inventory/[id]`, `/rentals`) rendered components directly without `max-w-7xl mx-auto px-*` wrappers, causing content to start at the left screen edge with no padding.
+- **Fix:** Every page route must have a wrapper div: `className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8"`. Check with `grep -L 'px-4\|max-w-'` across all page files.
+- **Files:** `src/app/inventory/page.tsx`, `src/app/inventory/[id]/page.tsx`, `src/app/rentals/page.tsx`
+
+### Single-Task API Must Include parent_task Join
+- **Problem:** The list tasks API (`GET /api/tasks`) included `parent_task:parent_task_id (id, title)` in its select, but the single-task API (`GET /api/tasks/[id]`) did not. When the task detail dialog refetched on mount, it received a response without `parent_task`, breaking the parent→child breadcrumb navigation.
+- **Fix:** Add the same `parent_task` join to the single-task endpoint. Also, in the client dialog's useEffect, don't set `parentTaskTitle` to `null` when the response lacks a parent — only update when a value is actually received.
+- **Files:** `src/app/api/tasks/[id]/route.ts`, `src/components/task-detail-dialog.tsx`
+
+### `rounded-none` Override Breaks Global Border-Radius
+- **Problem:** `TaskCard` had explicit `rounded-none` on the `<Card>`, `<Avatar>`, and `<AvatarFallback>` elements. This overrode the Card component's default `rounded-lg`, keeping task cards square even after the global Card fix.
+- **Fix:** Remove all `rounded-none` classes. Let components inherit border-radius from their primitives. Only use `rounded-none` when intentionally opting out of a parent's rounding.
+- **Files:** `src/components/task-card.tsx`
+
+### `<p>` Cannot Contain `<div>` (HTML Spec Hydration Error)
+- **Problem:** `<Badge>` renders as a `<div>`. When placed inside a `<p>` tag, React throws a hydration error because block elements can't be nested in paragraph elements.
+- **Fix:** Change the wrapping `<p>` to `<div>`. Always check: if a component renders block-level children (badges, cards, buttons), the container must be a `<div>`, not `<p>`.
+- **Files:** `src/components/inventory-detail.tsx` (condition badge wrapper)
+
+### Edit Tool: Read-Before-Write Constraint
+- **Problem:** The `edit` tool requires having read the exact byte ranges being edited in the same session. Edits spanning lines not covered by any previous `read` call are blocked with "Edit outside read range".
+- **Workaround:** Use `bash` with `python3` or `sed` for bulk/spanning changes when the edit tool's read-range constraints become cumbersome. Reserve the `edit` tool for small, self-contained changes within a single read range.
+
+### Sed Character Escaping with Slashes
+- **Pattern:** When using `sed` to replace class names containing `/` (like `bg-zinc-900/70`), use a different delimiter: `sed 's|old|new|g'` instead of `sed 's/old/new/g'` to avoid escaping every slash.
+- **Alternative:** Use Python `str.replace()` for complex multi-line or special-character-heavy replacements.
