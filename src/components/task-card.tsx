@@ -137,7 +137,7 @@ export function TaskCard({ task, onClick }: TaskCardProps) {
 			ref={setNodeRef}
 			style={style}
 			className={cn(
-				"bg-zinc-900 border-zinc-800 cursor-pointer hover:border-zinc-700 transition-colors rounded-none",
+				"bg-zinc-900 border-zinc-800 cursor-pointer hover:border-zinc-700 transition-colors ",
 				isDragging && "opacity-50 shadow-lg shadow-violet-500/20",
 				task.blocked && "border-l-2 border-l-red-500",
 			)}
@@ -207,15 +207,15 @@ export function TaskCard({ task, onClick }: TaskCardProps) {
 							{/* Assignee Avatar */}
 							{task.assignee ? (
 								<div className="flex items-center gap-2">
-									<Avatar className="h-6 w-6 rounded-none">
+									<Avatar className="h-6 w-6 ">
 										<AvatarImage
 											src={
 												task.assignee.avatar_url ||
 												`https://api.dicebear.com/7.x/avataaars/svg?seed=${task.assignee.full_name}`
 											}
-											className="rounded-none object-cover"
+											className=" object-cover"
 										/>
-										<AvatarFallback className="bg-zinc-800 text-zinc-300 rounded-none">
+										<AvatarFallback className="bg-zinc-800 text-zinc-300 ">
 											<User className="h-3 w-3" />
 										</AvatarFallback>
 									</Avatar>

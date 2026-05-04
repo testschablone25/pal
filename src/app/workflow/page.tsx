@@ -213,8 +213,10 @@ export default function WorkflowPage() {
 
 	const filteredTasks = useMemo(() => {
 		return tasks.filter((task) => {
-			if (filterPriority !== "all" && task.priority !== filterPriority) return false;
-			if (filterAssignee !== "all" && task.assignee_id !== filterAssignee) return false;
+			if (filterPriority !== "all" && task.priority !== filterPriority)
+				return false;
+			if (filterAssignee !== "all" && task.assignee_id !== filterAssignee)
+				return false;
 			if (filterEvent !== "all" && task.event_id !== filterEvent) return false;
 			if (filterVenue !== "all") {
 				const taskRecord = task as unknown as Record<string, unknown>;
@@ -259,11 +261,15 @@ export default function WorkflowPage() {
 					if (!a.due_date && !b.due_date) return 0;
 					if (!a.due_date) return 1;
 					if (!b.due_date) return -1;
-					return new Date(a.due_date).getTime() - new Date(b.due_date).getTime();
+					return (
+						new Date(a.due_date).getTime() - new Date(b.due_date).getTime()
+					);
 				}
 				case "venue": {
-					const venueA = ((a.event as Record<string, unknown>)?.name as string) || "";
-					const venueB = ((b.event as Record<string, unknown>)?.name as string) || "";
+					const venueA =
+						((a.event as Record<string, unknown>)?.name as string) || "";
+					const venueB =
+						((b.event as Record<string, unknown>)?.name as string) || "";
 					return venueA.localeCompare(venueB);
 				}
 				default:
@@ -380,7 +386,9 @@ export default function WorkflowPage() {
 				variant: "destructive",
 				title: "Fehler",
 				description:
-					error instanceof Error ? error.message : "Fehler beim Verschieben der Aufgabe.",
+					error instanceof Error
+						? error.message
+						: "Fehler beim Verschieben der Aufgabe.",
 			});
 			fetchTasks();
 		}
@@ -429,7 +437,9 @@ export default function WorkflowPage() {
 				variant: "destructive",
 				title: "Fehler",
 				description:
-					error instanceof Error ? error.message : "Fehler beim Erstellen der Aufgabe.",
+					error instanceof Error
+						? error.message
+						: "Fehler beim Erstellen der Aufgabe.",
 			});
 			throw error;
 		}
@@ -555,7 +565,6 @@ export default function WorkflowPage() {
 		cancelled: "bg-zinc-600",
 	};
 
-
 	const activeTask = tasks.find((t) => t.id === activeId);
 
 	return (
@@ -636,19 +645,30 @@ export default function WorkflowPage() {
 						{/* Filter dropdowns */}
 						<DropdownMenu>
 							<DropdownMenuTrigger asChild>
-								<Button variant="outline" size="sm" className="border-zinc-700 gap-1.5 text-xs h-8">
+								<Button
+									variant="outline"
+									size="sm"
+									className="border-zinc-700 gap-1.5 text-xs h-8"
+								>
 									<Filter className="h-3 w-3" />
 									{t("field.priority")}
 									<ChevronDown className="h-3 w-3 opacity-50" />
 								</Button>
 							</DropdownMenuTrigger>
 							<DropdownMenuContent className="bg-zinc-900 border-zinc-700 rounded-lg">
-								<DropdownMenuItem onClick={() => setFilterPriority("all")} className="text-zinc-400 text-sm">
+								<DropdownMenuItem
+									onClick={() => setFilterPriority("all")}
+									className="text-zinc-400 text-sm"
+								>
 									{t("filter.all_priorities")}
 								</DropdownMenuItem>
 								<DropdownMenuSeparator className="bg-zinc-800" />
 								{["low", "medium", "high", "urgent"].map((p) => (
-									<DropdownMenuItem key={p} onClick={() => setFilterPriority(p)} className="text-zinc-200 text-sm">
+									<DropdownMenuItem
+										key={p}
+										onClick={() => setFilterPriority(p)}
+										className="text-zinc-200 text-sm"
+									>
 										{t(`priority.${p}`)}
 									</DropdownMenuItem>
 								))}
@@ -657,18 +677,29 @@ export default function WorkflowPage() {
 
 						<DropdownMenu>
 							<DropdownMenuTrigger asChild>
-								<Button variant="outline" size="sm" className="border-zinc-700 gap-1.5 text-xs h-8">
+								<Button
+									variant="outline"
+									size="sm"
+									className="border-zinc-700 gap-1.5 text-xs h-8"
+								>
 									{t("field.assignee")}
 									<ChevronDown className="h-3 w-3 opacity-50" />
 								</Button>
 							</DropdownMenuTrigger>
 							<DropdownMenuContent className="bg-zinc-900 border-zinc-700 max-h-60 overflow-y-auto">
-								<DropdownMenuItem onClick={() => setFilterAssignee("all")} className="text-zinc-400 text-sm">
+								<DropdownMenuItem
+									onClick={() => setFilterAssignee("all")}
+									className="text-zinc-400 text-sm"
+								>
 									{t("filter.all_assignees")}
 								</DropdownMenuItem>
 								<DropdownMenuSeparator className="bg-zinc-800" />
 								{profiles.map((profile) => (
-									<DropdownMenuItem key={profile.id} onClick={() => setFilterAssignee(profile.id)} className="text-zinc-200 text-sm">
+									<DropdownMenuItem
+										key={profile.id}
+										onClick={() => setFilterAssignee(profile.id)}
+										className="text-zinc-200 text-sm"
+									>
 										{profile.full_name || profile.email || t("app.unknown")}
 									</DropdownMenuItem>
 								))}
@@ -677,19 +708,30 @@ export default function WorkflowPage() {
 
 						<DropdownMenu>
 							<DropdownMenuTrigger asChild>
-								<Button variant="outline" size="sm" className="border-zinc-700 gap-1.5 text-xs h-8">
+								<Button
+									variant="outline"
+									size="sm"
+									className="border-zinc-700 gap-1.5 text-xs h-8"
+								>
 									<Building2 className="h-3 w-3" />
 									{t("field.event")}
 									<ChevronDown className="h-3 w-3 opacity-50" />
 								</Button>
 							</DropdownMenuTrigger>
 							<DropdownMenuContent className="bg-zinc-900 border-zinc-700 max-h-60 overflow-y-auto">
-								<DropdownMenuItem onClick={() => setFilterEvent("all")} className="text-zinc-400 text-sm">
+								<DropdownMenuItem
+									onClick={() => setFilterEvent("all")}
+									className="text-zinc-400 text-sm"
+								>
 									{t("filter.all_events")}
 								</DropdownMenuItem>
 								<DropdownMenuSeparator className="bg-zinc-800" />
 								{events.map((event) => (
-									<DropdownMenuItem key={event.id} onClick={() => setFilterEvent(event.id)} className="text-zinc-200 text-sm">
+									<DropdownMenuItem
+										key={event.id}
+										onClick={() => setFilterEvent(event.id)}
+										className="text-zinc-200 text-sm"
+									>
 										{event.name}
 									</DropdownMenuItem>
 								))}
@@ -699,7 +741,11 @@ export default function WorkflowPage() {
 						{/* Sort & group */}
 						<DropdownMenu>
 							<DropdownMenuTrigger asChild>
-								<Button variant="outline" size="sm" className="border-zinc-700 gap-1.5 text-xs h-8">
+								<Button
+									variant="outline"
+									size="sm"
+									className="border-zinc-700 gap-1.5 text-xs h-8"
+								>
 									<ArrowUpDown className="h-3 w-3" />
 									{t("app.sort")}
 									<ChevronDown className="h-3 w-3 opacity-50" />
@@ -707,20 +753,35 @@ export default function WorkflowPage() {
 							</DropdownMenuTrigger>
 							<DropdownMenuContent className="bg-zinc-900 border-zinc-700 rounded-lg">
 								<DropdownMenuItem
-									onClick={() => setSortField(sortField === "priority" ? null : "priority")}
-									className={cn("text-sm", sortField === "priority" ? "text-white" : "text-zinc-400")}
+									onClick={() =>
+										setSortField(sortField === "priority" ? null : "priority")
+									}
+									className={cn(
+										"text-sm",
+										sortField === "priority" ? "text-white" : "text-zinc-400",
+									)}
 								>
 									{t("filter.sort_priority")}
 								</DropdownMenuItem>
 								<DropdownMenuItem
-									onClick={() => setSortField(sortField === "due_date" ? null : "due_date")}
-									className={cn("text-sm", sortField === "due_date" ? "text-white" : "text-zinc-400")}
+									onClick={() =>
+										setSortField(sortField === "due_date" ? null : "due_date")
+									}
+									className={cn(
+										"text-sm",
+										sortField === "due_date" ? "text-white" : "text-zinc-400",
+									)}
 								>
 									{t("filter.sort_due_date")}
 								</DropdownMenuItem>
 								<DropdownMenuItem
-									onClick={() => setSortField(sortField === "venue" ? null : "venue")}
-									className={cn("text-sm", sortField === "venue" ? "text-white" : "text-zinc-400")}
+									onClick={() =>
+										setSortField(sortField === "venue" ? null : "venue")
+									}
+									className={cn(
+										"text-sm",
+										sortField === "venue" ? "text-white" : "text-zinc-400",
+									)}
 								>
 									{t("filter.sort_venue")}
 								</DropdownMenuItem>
@@ -796,11 +857,19 @@ export default function WorkflowPage() {
 							<div key={column.id} className="flex flex-col">
 								{/* Column header */}
 								<div className="flex items-center gap-2 mb-3 px-1">
-									<div className={cn("w-2 h-2 rounded-full", columnStatusDots[column.id])} />
+									<div
+										className={cn(
+											"w-2 h-2 rounded-full",
+											columnStatusDots[column.id],
+										)}
+									/>
 									<h3 className="text-sm font-semibold text-white">
 										{t(`status.${column.status}`)}
 									</h3>
-									<Badge variant="outline" className="border-zinc-700 text-zinc-500 text-[10px] ml-auto">
+									<Badge
+										variant="outline"
+										className="border-zinc-700 text-zinc-500 text-[10px] ml-auto"
+									>
 										{tasksByStatus[column.status]?.length || 0}
 									</Badge>
 								</div>
@@ -821,7 +890,10 @@ export default function WorkflowPage() {
 											{loading ? (
 												<div className="space-y-3">
 													{[...Array(3)].map((_, i) => (
-														<Skeleton key={i} className="h-24 bg-zinc-800/50 rounded-lg" />
+														<Skeleton
+															key={i}
+															className="h-24 bg-zinc-800/50 rounded-lg"
+														/>
 													))}
 												</div>
 											) : tasksByStatus[column.status]?.length === 0 ? (
@@ -834,7 +906,8 @@ export default function WorkflowPage() {
 														tasksByStatus[column.status]?.reduce(
 															(acc: Record<string, Task[]>, task) => {
 																const venueName =
-																	((task.event as Record<string, unknown>)?.name as string) || t("app.unknown");
+																	((task.event as Record<string, unknown>)
+																		?.name as string) || t("app.unknown");
 																if (!acc[venueName]) acc[venueName] = [];
 																acc[venueName].push(task);
 																return acc;
@@ -846,13 +919,20 @@ export default function WorkflowPage() {
 															<div className="flex items-center gap-1.5 mb-2 text-[11px] font-medium text-zinc-500 uppercase tracking-wider">
 																<Building2 className="h-3 w-3" />
 																{venueName}
-																<Badge variant="outline" className="ml-1 border-zinc-700 text-zinc-600 text-[10px]">
+																<Badge
+																	variant="outline"
+																	className="ml-1 border-zinc-700 text-zinc-600 text-[10px]"
+																>
 																	{venueTasks.length}
 																</Badge>
 															</div>
 															<div className="space-y-2">
 																{venueTasks.map((task) => (
-																	<TaskCard key={task.id} task={task} onClick={() => handleTaskClick(task)} />
+																	<TaskCard
+																		key={task.id}
+																		task={task}
+																		onClick={() => handleTaskClick(task)}
+																	/>
 																))}
 															</div>
 														</div>
@@ -861,7 +941,11 @@ export default function WorkflowPage() {
 											) : (
 												<div className="space-y-2">
 													{tasksByStatus[column.status]?.map((task) => (
-														<TaskCard key={task.id} task={task} onClick={() => handleTaskClick(task)} />
+														<TaskCard
+															key={task.id}
+															task={task}
+															onClick={() => handleTaskClick(task)}
+														/>
 													))}
 												</div>
 											)}
@@ -886,9 +970,15 @@ export default function WorkflowPage() {
 			<Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
 				<DialogContent className="bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/70 max-w-xl max-h-[85vh] overflow-y-auto">
 					<DialogHeader>
-						<DialogTitle className="text-white">{t("action.new_task")}</DialogTitle>
+						<DialogTitle className="text-white">
+							{t("action.new_task")}
+						</DialogTitle>
 					</DialogHeader>
-					<TaskForm mode="create" onSubmit={handleCreateTask} onCancel={() => setIsCreateOpen(false)} />
+					<TaskForm
+						mode="create"
+						onSubmit={handleCreateTask}
+						onCancel={() => setIsCreateOpen(false)}
+					/>
 				</DialogContent>
 			</Dialog>
 
