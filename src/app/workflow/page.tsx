@@ -50,6 +50,7 @@ import {
 	ChevronDown,
 	ArrowUpDown,
 	Building2,
+	Filter,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -89,23 +90,19 @@ export default function WorkflowPage() {
 	const { t } = useI18n();
 	const { toast } = useToast();
 
-	// Core state
 	const [tasks, setTasks] = useState<Task[]>([]);
 	const [loading, setLoading] = useState(true);
 	const [currentUserId, setCurrentUserId] = useState<string | null>(null);
 
-	// Drag state
 	const [activeId, setActiveId] = useState<string | null>(null);
 	const [activeTaskOriginalStatus, setActiveTaskOriginalStatus] = useState<
 		Task["status"] | null
 	>(null);
 
-	// Dialogs
 	const [selectedTask, setSelectedTask] = useState<Task | null>(null);
 	const [isDetailOpen, setIsDetailOpen] = useState(false);
 	const [isCreateOpen, setIsCreateOpen] = useState(false);
 
-	// Filters
 	const [searchQuery, setSearchQuery] = useState("");
 	const [filterPriority, setFilterPriority] = useState<string>("all");
 	const [filterAssignee, setFilterAssignee] = useState<string>("all");
@@ -115,11 +112,9 @@ export default function WorkflowPage() {
 	const [filterBlocked, setFilterBlocked] = useState(false);
 	const [filterNeedsApproval, setFilterNeedsApproval] = useState(false);
 
-	// Sort & Group
 	const [sortField, setSortField] = useState<SortField>(null);
 	const [groupByVenue, setGroupByVenue] = useState(false);
 
-	// Reference data
 	const [events, setEvents] = useState<Event[]>([]);
 	const [profiles, setProfiles] = useState<Profile[]>([]);
 	const [venues, setVenues] = useState<Venue[]>([]);
@@ -140,21 +135,17 @@ export default function WorkflowPage() {
 		useSensor(KeyboardSensor),
 	);
 
-	// Fetch current user on mount
 	useEffect(() => {
 		const fetchUser = async () => {
 			const supabase = createClient();
 			const {
 				data: { user },
 			} = await supabase.auth.getUser();
-			if (user) {
-				setCurrentUserId(user.id);
-			}
+			if (user) setCurrentUserId(user.id);
 		};
 		fetchUser();
 	}, []);
 
-	// Fetch data on mount
 	useEffect(() => {
 		fetchTasks();
 		fetchEvents();
@@ -162,12 +153,9 @@ export default function WorkflowPage() {
 		fetchVenues();
 	}, []);
 
-	// Re-fetch when my-tasks filter changes
 	useEffect(() => {
 		fetchTasks();
 	}, [showMyTasksOnly]);
-
-	// ===== Data fetching =====
 
 	const fetchTasks = async () => {
 		setLoading(true);
@@ -178,9 +166,7 @@ export default function WorkflowPage() {
 			} = await supabase.auth.getUser();
 
 			let url = "/api/tasks";
-			if (user && showMyTasksOnly) {
-				url += `?my_tasks=true&user_id=${user.id}`;
-			}
+			if (user && showMyTasksOnly) url += `?my_tasks=true&user_id=${user.id}`;
 
 			const response = await fetch(url);
 			const data = await response.json();
@@ -225,20 +211,14 @@ export default function WorkflowPage() {
 		}
 	};
 
-	// ===== Filtering =====
-
 	const filteredTasks = useMemo(() => {
 		return tasks.filter((task) => {
-			if (filterPriority !== "all" && task.priority !== filterPriority)
-				return false;
-			if (filterAssignee !== "all" && task.assignee_id !== filterAssignee)
-				return false;
+			if (filterPriority !== "all" && task.priority !== filterPriority) return false;
+			if (filterAssignee !== "all" && task.assignee_id !== filterAssignee) return false;
 			if (filterEvent !== "all" && task.event_id !== filterEvent) return false;
 			if (filterVenue !== "all") {
-				// Check direct venue_id link first
 				const taskRecord = task as unknown as Record<string, unknown>;
 				if (taskRecord.venue_id === filterVenue) return true;
-				// Then check via event
 				const event = events.find((e) => e.id === task.event_id);
 				if (!event) return false;
 				return event.venue_id === filterVenue;
@@ -266,12 +246,9 @@ export default function WorkflowPage() {
 		events,
 	]);
 
-	// ===== Sorting =====
-
 	const sortedTasks = useMemo(() => {
 		const tasksCopy = [...filteredTasks];
 		if (!sortField) return tasksCopy;
-
 		return tasksCopy.sort((a, b) => {
 			switch (sortField) {
 				case "priority": {
@@ -282,15 +259,11 @@ export default function WorkflowPage() {
 					if (!a.due_date && !b.due_date) return 0;
 					if (!a.due_date) return 1;
 					if (!b.due_date) return -1;
-					return (
-						new Date(a.due_date).getTime() - new Date(b.due_date).getTime()
-					);
+					return new Date(a.due_date).getTime() - new Date(b.due_date).getTime();
 				}
 				case "venue": {
-					const venueA =
-						((a.event as Record<string, unknown>)?.name as string) || "";
-					const venueB =
-						((b.event as Record<string, unknown>)?.name as string) || "";
+					const venueA = ((a.event as Record<string, unknown>)?.name as string) || "";
+					const venueB = ((b.event as Record<string, unknown>)?.name as string) || "";
 					return venueA.localeCompare(venueB);
 				}
 				default:
@@ -298,9 +271,6 @@ export default function WorkflowPage() {
 			}
 		});
 	}, [filteredTasks, sortField]);
-
-	// ===== Group by venue =====
-	// (grouping is done inline in JSX render)
 
 	const tasksByStatus = useMemo(() => {
 		const grouped: Record<string, Task[]> = {
@@ -311,9 +281,7 @@ export default function WorkflowPage() {
 			cancelled: [],
 		};
 		sortedTasks.forEach((task) => {
-			if (grouped[task.status]) {
-				grouped[task.status].push(task);
-			}
+			if (grouped[task.status]) grouped[task.status].push(task);
 		});
 		return grouped;
 	}, [sortedTasks]);
@@ -321,14 +289,10 @@ export default function WorkflowPage() {
 	const visibleColumns = useMemo(() => {
 		const hasApprovalTasks = tasks.some((t) => t.needs_approval);
 		return COLUMNS.filter((col) => {
-			if (col.id === "pending_approval") {
-				return hasApprovalTasks;
-			}
+			if (col.id === "pending_approval") return hasApprovalTasks;
 			return true;
 		});
 	}, [tasks]);
-
-	// ===== Drag handlers =====
 
 	const handleDragStart = (event: DragStartEvent) => {
 		const activeId = event.active.id as string;
@@ -340,7 +304,6 @@ export default function WorkflowPage() {
 	const handleDragOver = (event: DragOverEvent) => {
 		const { active, over } = event;
 		if (!over) return;
-
 		const activeId = active.id as string;
 		const overId = over.id as string;
 		const activeTask = tasks.find((t) => t.id === activeId);
@@ -369,7 +332,6 @@ export default function WorkflowPage() {
 		const { active, over } = event;
 		setActiveId(null);
 		setActiveTaskOriginalStatus(null);
-
 		if (!over) return;
 
 		const activeId = active.id as string;
@@ -418,15 +380,11 @@ export default function WorkflowPage() {
 				variant: "destructive",
 				title: "Fehler",
 				description:
-					error instanceof Error
-						? error.message
-						: "Fehler beim Verschieben der Aufgabe.",
+					error instanceof Error ? error.message : "Fehler beim Verschieben der Aufgabe.",
 			});
 			fetchTasks();
 		}
 	};
-
-	// ===== Task actions =====
 
 	const handleTaskClick = (task: Task) => {
 		setSelectedTask(task);
@@ -471,9 +429,7 @@ export default function WorkflowPage() {
 				variant: "destructive",
 				title: "Fehler",
 				description:
-					error instanceof Error
-						? error.message
-						: "Fehler beim Erstellen der Aufgabe.",
+					error instanceof Error ? error.message : "Fehler beim Erstellen der Aufgabe.",
 			});
 			throw error;
 		}
@@ -490,8 +446,6 @@ export default function WorkflowPage() {
 		setSortField(null);
 		setGroupByVenue(false);
 	};
-
-	// ===== Filter chip helpers =====
 
 	interface FilterChip {
 		label: string;
@@ -593,17 +547,16 @@ export default function WorkflowPage() {
 		t,
 	]);
 
-	const columnColors: Record<string, string> = {
-		todo: "bg-zinc-600",
-		in_progress: "bg-blue-600",
-		pending_approval: "bg-amber-600",
-		done: "bg-green-600",
-		cancelled: "bg-red-600",
+	const columnStatusDots: Record<string, string> = {
+		todo: "bg-zinc-500",
+		in_progress: "bg-blue-500",
+		pending_approval: "bg-amber-500",
+		done: "bg-emerald-500",
+		cancelled: "bg-zinc-600",
 	};
 
-	const activeTask = tasks.find((t) => t.id === activeId);
 
-	// ===== Render =====
+	const activeTask = tasks.find((t) => t.id === activeId);
 
 	return (
 		<div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8">
@@ -611,7 +564,7 @@ export default function WorkflowPage() {
 			<div className="flex items-center justify-between mb-8">
 				<div>
 					<h1 className="text-3xl font-bold text-white flex items-center gap-3">
-						<Kanban className="h-8 w-8 text-violet-400" />
+						<Kanban className="h-7 w-7 text-zinc-400" />
 						{t("app.title")}
 					</h1>
 					<p className="text-zinc-400 mt-2">{t("app.subtitle")}</p>
@@ -626,46 +579,76 @@ export default function WorkflowPage() {
 			</div>
 
 			{/* Filter Bar */}
-			<Card className="bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/70 mb-6">
-				<CardContent className="pt-6">
-					{/* Search + filter chips row */}
-					<div className="flex flex-wrap items-center gap-2 mb-4">
-						{/* Search */}
-						<div className="relative w-64">
-							<Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400" />
+			<Card className="bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/70 rounded-lg mb-6">
+				<CardContent className="pt-5 pb-4">
+					{/* Search + quick toggles row */}
+					<div className="flex flex-wrap items-center gap-2 mb-3">
+						<div className="relative w-56">
+							<Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500" />
 							<Input
 								placeholder={t("filter.search_placeholder")}
 								value={searchQuery}
 								onChange={(e) => setSearchQuery(e.target.value)}
-								className="pl-10 bg-zinc-950 border-zinc-800 h-9 text-sm"
+								className="pl-9 bg-zinc-950 border-zinc-700 h-9 text-sm"
 							/>
 						</div>
+
+						{/* Quick toggle badges */}
+						<button
+							onClick={() => setShowMyTasksOnly(!showMyTasksOnly)}
+							className={cn(
+								"inline-flex items-center gap-1.5 px-3 py-1.5 text-xs rounded-full border transition-all",
+								showMyTasksOnly
+									? "bg-zinc-200 text-zinc-900 border-zinc-200"
+									: "border-zinc-700 text-zinc-400 hover:text-zinc-300 hover:border-zinc-600",
+							)}
+						>
+							{t("action.my_tasks")}
+						</button>
+
+						<button
+							onClick={() => setFilterBlocked(!filterBlocked)}
+							className={cn(
+								"inline-flex items-center gap-1.5 px-3 py-1.5 text-xs rounded-full border transition-all",
+								filterBlocked
+									? "bg-zinc-200 text-zinc-900 border-zinc-200"
+									: "border-zinc-700 text-zinc-400 hover:text-zinc-300 hover:border-zinc-600",
+							)}
+						>
+							{t("action.blocked")}
+						</button>
+
+						<button
+							onClick={() => setFilterNeedsApproval(!filterNeedsApproval)}
+							className={cn(
+								"inline-flex items-center gap-1.5 px-3 py-1.5 text-xs rounded-full border transition-all",
+								filterNeedsApproval
+									? "bg-zinc-200 text-zinc-900 border-zinc-200"
+									: "border-zinc-700 text-zinc-400 hover:text-zinc-300 hover:border-zinc-600",
+							)}
+						>
+							{t("action.needs_approval")}
+						</button>
+
+						{/* Divider */}
+						<div className="w-px h-6 bg-zinc-700 mx-1" />
 
 						{/* Filter dropdowns */}
 						<DropdownMenu>
 							<DropdownMenuTrigger asChild>
-								<Button
-									variant="outline"
-									size="sm"
-									className="border-zinc-800 gap-1"
-								>
-									{t("field.priority")} <ChevronDown className="h-3 w-3" />
+								<Button variant="outline" size="sm" className="border-zinc-700 gap-1.5 text-xs h-8">
+									<Filter className="h-3 w-3" />
+									{t("field.priority")}
+									<ChevronDown className="h-3 w-3 opacity-50" />
 								</Button>
 							</DropdownMenuTrigger>
-							<DropdownMenuContent className="bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/70 rounded-lg">
-								<DropdownMenuItem
-									onClick={() => setFilterPriority("all")}
-									className="text-zinc-400"
-								>
+							<DropdownMenuContent className="bg-zinc-900 border-zinc-700 rounded-lg">
+								<DropdownMenuItem onClick={() => setFilterPriority("all")} className="text-zinc-400 text-sm">
 									{t("filter.all_priorities")}
 								</DropdownMenuItem>
 								<DropdownMenuSeparator className="bg-zinc-800" />
 								{["low", "medium", "high", "urgent"].map((p) => (
-									<DropdownMenuItem
-										key={p}
-										onClick={() => setFilterPriority(p)}
-										className="text-zinc-200"
-									>
+									<DropdownMenuItem key={p} onClick={() => setFilterPriority(p)} className="text-zinc-200 text-sm">
 										{t(`priority.${p}`)}
 									</DropdownMenuItem>
 								))}
@@ -674,28 +657,18 @@ export default function WorkflowPage() {
 
 						<DropdownMenu>
 							<DropdownMenuTrigger asChild>
-								<Button
-									variant="outline"
-									size="sm"
-									className="border-zinc-800 gap-1"
-								>
-									{t("field.assignee")} <ChevronDown className="h-3 w-3" />
+								<Button variant="outline" size="sm" className="border-zinc-700 gap-1.5 text-xs h-8">
+									{t("field.assignee")}
+									<ChevronDown className="h-3 w-3 opacity-50" />
 								</Button>
 							</DropdownMenuTrigger>
-							<DropdownMenuContent className="bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/70 max-h-60 overflow-y-auto">
-								<DropdownMenuItem
-									onClick={() => setFilterAssignee("all")}
-									className="text-zinc-400"
-								>
+							<DropdownMenuContent className="bg-zinc-900 border-zinc-700 max-h-60 overflow-y-auto">
+								<DropdownMenuItem onClick={() => setFilterAssignee("all")} className="text-zinc-400 text-sm">
 									{t("filter.all_assignees")}
 								</DropdownMenuItem>
 								<DropdownMenuSeparator className="bg-zinc-800" />
 								{profiles.map((profile) => (
-									<DropdownMenuItem
-										key={profile.id}
-										onClick={() => setFilterAssignee(profile.id)}
-										className="text-zinc-200"
-									>
+									<DropdownMenuItem key={profile.id} onClick={() => setFilterAssignee(profile.id)} className="text-zinc-200 text-sm">
 										{profile.full_name || profile.email || t("app.unknown")}
 									</DropdownMenuItem>
 								))}
@@ -704,178 +677,77 @@ export default function WorkflowPage() {
 
 						<DropdownMenu>
 							<DropdownMenuTrigger asChild>
-								<Button
-									variant="outline"
-									size="sm"
-									className="border-zinc-800 gap-1"
-								>
-									{t("field.event")} <ChevronDown className="h-3 w-3" />
+								<Button variant="outline" size="sm" className="border-zinc-700 gap-1.5 text-xs h-8">
+									<Building2 className="h-3 w-3" />
+									{t("field.event")}
+									<ChevronDown className="h-3 w-3 opacity-50" />
 								</Button>
 							</DropdownMenuTrigger>
-							<DropdownMenuContent className="bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/70 max-h-60 overflow-y-auto">
-								<DropdownMenuItem
-									onClick={() => setFilterEvent("all")}
-									className="text-zinc-400"
-								>
+							<DropdownMenuContent className="bg-zinc-900 border-zinc-700 max-h-60 overflow-y-auto">
+								<DropdownMenuItem onClick={() => setFilterEvent("all")} className="text-zinc-400 text-sm">
 									{t("filter.all_events")}
 								</DropdownMenuItem>
 								<DropdownMenuSeparator className="bg-zinc-800" />
 								{events.map((event) => (
-									<DropdownMenuItem
-										key={event.id}
-										onClick={() => setFilterEvent(event.id)}
-										className="text-zinc-200"
-									>
+									<DropdownMenuItem key={event.id} onClick={() => setFilterEvent(event.id)} className="text-zinc-200 text-sm">
 										{event.name}
 									</DropdownMenuItem>
 								))}
 							</DropdownMenuContent>
 						</DropdownMenu>
 
+						{/* Sort & group */}
 						<DropdownMenu>
 							<DropdownMenuTrigger asChild>
-								<Button
-									variant="outline"
-									size="sm"
-									className="border-zinc-800 gap-1"
-								>
-									<Building2 className="h-3.5 w-3.5" />
-									{t("field.venue")} <ChevronDown className="h-3 w-3" />
+								<Button variant="outline" size="sm" className="border-zinc-700 gap-1.5 text-xs h-8">
+									<ArrowUpDown className="h-3 w-3" />
+									{t("app.sort")}
+									<ChevronDown className="h-3 w-3 opacity-50" />
 								</Button>
 							</DropdownMenuTrigger>
-							<DropdownMenuContent className="bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/70 rounded-lg">
+							<DropdownMenuContent className="bg-zinc-900 border-zinc-700 rounded-lg">
 								<DropdownMenuItem
-									onClick={() => setFilterVenue("all")}
-									className="text-zinc-400"
-								>
-									{t("filter.all_venues")}
-								</DropdownMenuItem>
-								<DropdownMenuSeparator className="bg-zinc-800" />
-								{venues.map((venue) => (
-									<DropdownMenuItem
-										key={venue.id}
-										onClick={() => setFilterVenue(venue.id)}
-										className="text-zinc-200"
-									>
-										{venue.name}
-									</DropdownMenuItem>
-								))}
-							</DropdownMenuContent>
-						</DropdownMenu>
-
-						{/* Toggle filters */}
-						<Button
-							variant={showMyTasksOnly ? "default" : "outline"}
-							size="sm"
-							onClick={() => setShowMyTasksOnly(!showMyTasksOnly)}
-							className={
-								showMyTasksOnly
-									? "bg-violet-600 hover:bg-violet-700"
-									: "border-zinc-800"
-							}
-						>
-							{showMyTasksOnly ? t("action.my_tasks") : t("action.all_tasks")}
-						</Button>
-
-						<Button
-							variant={filterBlocked ? "default" : "outline"}
-							size="sm"
-							onClick={() => setFilterBlocked(!filterBlocked)}
-							className={
-								filterBlocked
-									? "bg-red-600 hover:bg-red-700"
-									: "border-zinc-800"
-							}
-						>
-							{t("action.blocked")}
-						</Button>
-
-						<Button
-							variant={filterNeedsApproval ? "default" : "outline"}
-							size="sm"
-							onClick={() => setFilterNeedsApproval(!filterNeedsApproval)}
-							className={
-								filterNeedsApproval
-									? "bg-amber-600 hover:bg-amber-700"
-									: "border-zinc-800"
-							}
-						>
-							{t("action.needs_approval")}
-						</Button>
-
-						{/* Sort by */}
-						<DropdownMenu>
-							<DropdownMenuTrigger asChild>
-								<Button
-									variant="outline"
-									size="sm"
-									className="border-zinc-800 gap-1"
-								>
-									<ArrowUpDown className="h-3.5 w-3.5" />
-									{t("app.sort")} <ChevronDown className="h-3 w-3" />
-								</Button>
-							</DropdownMenuTrigger>
-							<DropdownMenuContent className="bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/70 rounded-lg">
-								<DropdownMenuItem
-									onClick={() =>
-										setSortField(sortField === "priority" ? null : "priority")
-									}
-									className={cn(
-										"text-zinc-200",
-										sortField === "priority" && "text-violet-400",
-									)}
+									onClick={() => setSortField(sortField === "priority" ? null : "priority")}
+									className={cn("text-sm", sortField === "priority" ? "text-white" : "text-zinc-400")}
 								>
 									{t("filter.sort_priority")}
 								</DropdownMenuItem>
 								<DropdownMenuItem
-									onClick={() =>
-										setSortField(sortField === "due_date" ? null : "due_date")
-									}
-									className={cn(
-										"text-zinc-200",
-										sortField === "due_date" && "text-violet-400",
-									)}
+									onClick={() => setSortField(sortField === "due_date" ? null : "due_date")}
+									className={cn("text-sm", sortField === "due_date" ? "text-white" : "text-zinc-400")}
 								>
 									{t("filter.sort_due_date")}
 								</DropdownMenuItem>
 								<DropdownMenuItem
-									onClick={() =>
-										setSortField(sortField === "venue" ? null : "venue")
-									}
-									className={cn(
-										"text-zinc-200",
-										sortField === "venue" && "text-violet-400",
-									)}
+									onClick={() => setSortField(sortField === "venue" ? null : "venue")}
+									className={cn("text-sm", sortField === "venue" ? "text-white" : "text-zinc-400")}
 								>
 									{t("filter.sort_venue")}
 								</DropdownMenuItem>
 							</DropdownMenuContent>
 						</DropdownMenu>
 
-						{/* Group by venue */}
-						<Button
-							variant={groupByVenue ? "default" : "outline"}
-							size="sm"
+						<button
 							onClick={() => setGroupByVenue(!groupByVenue)}
-							className={
+							className={cn(
+								"inline-flex items-center gap-1.5 px-3 py-1.5 text-xs rounded-full border transition-all",
 								groupByVenue
-									? "bg-emerald-600 hover:bg-emerald-700"
-									: "border-zinc-800"
-							}
+									? "bg-zinc-200 text-zinc-900 border-zinc-200"
+									: "border-zinc-700 text-zinc-400 hover:text-zinc-300 hover:border-zinc-600",
+							)}
 						>
-							<Building2 className="h-3.5 w-3.5 mr-1" />
+							<Building2 className="h-3 w-3" />
 							{t("filter.group_by_venue")}
-						</Button>
+						</button>
 
-						{/* Clear */}
 						{activeFilters.length > 0 && (
 							<Button
 								variant="ghost"
 								size="sm"
 								onClick={clearFilters}
-								className="text-zinc-400 hover:text-white"
+								className="text-zinc-500 hover:text-white text-xs h-8"
 							>
-								<X className="h-3.5 w-3.5 mr-1" />
+								<X className="h-3 w-3 mr-1" />
 								{t("app.clear")}
 							</Button>
 						)}
@@ -883,16 +755,16 @@ export default function WorkflowPage() {
 
 					{/* Active filter chips */}
 					{activeFilters.length > 0 && (
-						<div className="flex flex-wrap gap-2">
+						<div className="flex flex-wrap gap-1.5">
 							{activeFilters.map((chip, i) => (
 								<Badge
 									key={i}
-									variant="secondary"
-									className="bg-zinc-800 text-zinc-300 border-zinc-700 cursor-pointer hover:bg-zinc-700 gap-1"
+									variant="outline"
+									className="border-zinc-700 text-zinc-400 text-xs cursor-pointer hover:bg-zinc-800 gap-1"
 									onClick={chip.onClear}
 								>
 									{chip.label}
-									<X className="h-3 w-3" />
+									<X className="h-2.5 w-2.5" />
 								</Badge>
 							))}
 						</div>
@@ -910,7 +782,7 @@ export default function WorkflowPage() {
 				autoScroll={false}
 			>
 				<div
-					className="grid grid-cols-1 gap-4"
+					className="grid gap-4"
 					style={{
 						gridTemplateColumns: `repeat(${visibleColumns.length}, minmax(0, 1fr))`,
 					}}
@@ -922,20 +794,13 @@ export default function WorkflowPage() {
 
 						return (
 							<div key={column.id} className="flex flex-col">
-								<div className="flex items-center gap-2 mb-4">
-									<div
-										className={cn(
-											"w-3 h-3 rounded-full",
-											columnColors[column.id],
-										)}
-									/>
-									<h3 className="font-semibold text-white">
+								{/* Column header */}
+								<div className="flex items-center gap-2 mb-3 px-1">
+									<div className={cn("w-2 h-2 rounded-full", columnStatusDots[column.id])} />
+									<h3 className="text-sm font-semibold text-white">
 										{t(`status.${column.status}`)}
 									</h3>
-									<Badge
-										variant="outline"
-										className="bg-zinc-800 text-zinc-400 border-zinc-700"
-									>
+									<Badge variant="outline" className="border-zinc-700 text-zinc-500 text-[10px] ml-auto">
 										{tasksByStatus[column.status]?.length || 0}
 									</Badge>
 								</div>
@@ -947,31 +812,29 @@ export default function WorkflowPage() {
 									<DroppableColumn columnId={column.id}>
 										<div
 											className={cn(
-												"flex-1 min-h-[200px] p-2 border-2 border-dashed transition-colors",
-												"bg-zinc-950/50 border-zinc-800",
-												activeId && "border-violet-600/50 bg-violet-950/20",
-												hasBlockedTasks && "bg-red-950/20 border-red-800/50",
+												"flex-1 min-h-[200px] p-3 rounded-lg transition-colors",
+												"bg-zinc-950/60 border border-zinc-800/60",
+												activeId && "border-violet-600/40 bg-violet-950/10",
+												hasBlockedTasks && "border-red-800/40 bg-red-950/10",
 											)}
 										>
 											{loading ? (
 												<div className="space-y-3">
 													{[...Array(3)].map((_, i) => (
-														<Skeleton key={i} className="h-24 bg-zinc-800" />
+														<Skeleton key={i} className="h-24 bg-zinc-800/50 rounded-lg" />
 													))}
 												</div>
 											) : tasksByStatus[column.status]?.length === 0 ? (
-												<div className="flex items-center justify-center h-32 text-zinc-500 text-sm">
+												<div className="flex items-center justify-center h-32 text-zinc-600 text-sm">
 													{t("app.no_results")}
 												</div>
 											) : groupByVenue ? (
-												/* Grouped by venue within the column */
 												<div className="space-y-4">
 													{Object.entries(
 														tasksByStatus[column.status]?.reduce(
 															(acc: Record<string, Task[]>, task) => {
 																const venueName =
-																	((task.event as Record<string, unknown>)
-																		?.name as string) || t("app.unknown");
+																	((task.event as Record<string, unknown>)?.name as string) || t("app.unknown");
 																if (!acc[venueName]) acc[venueName] = [];
 																acc[venueName].push(task);
 																return acc;
@@ -980,37 +843,25 @@ export default function WorkflowPage() {
 														) || {},
 													).map(([venueName, venueTasks]) => (
 														<div key={venueName}>
-															<div className="flex items-center gap-1.5 mb-2 text-xs font-medium text-zinc-500 uppercase tracking-wider">
+															<div className="flex items-center gap-1.5 mb-2 text-[11px] font-medium text-zinc-500 uppercase tracking-wider">
 																<Building2 className="h-3 w-3" />
 																{venueName}
-																<Badge
-																	variant="outline"
-																	className="ml-1 bg-zinc-800 text-zinc-500 border-zinc-700 text-[10px]"
-																>
+																<Badge variant="outline" className="ml-1 border-zinc-700 text-zinc-600 text-[10px]">
 																	{venueTasks.length}
 																</Badge>
 															</div>
 															<div className="space-y-2">
 																{venueTasks.map((task) => (
-																	<TaskCard
-																		key={task.id}
-																		task={task}
-																		onClick={() => handleTaskClick(task)}
-																	/>
+																	<TaskCard key={task.id} task={task} onClick={() => handleTaskClick(task)} />
 																))}
 															</div>
 														</div>
 													))}
 												</div>
 											) : (
-												/* Default flat list */
-												<div className="space-y-3">
+												<div className="space-y-2">
 													{tasksByStatus[column.status]?.map((task) => (
-														<TaskCard
-															key={task.id}
-															task={task}
-															onClick={() => handleTaskClick(task)}
-														/>
+														<TaskCard key={task.id} task={task} onClick={() => handleTaskClick(task)} />
 													))}
 												</div>
 											)}
@@ -1035,15 +886,9 @@ export default function WorkflowPage() {
 			<Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
 				<DialogContent className="bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/70 max-w-xl max-h-[85vh] overflow-y-auto">
 					<DialogHeader>
-						<DialogTitle className="text-white">
-							{t("action.new_task")}
-						</DialogTitle>
+						<DialogTitle className="text-white">{t("action.new_task")}</DialogTitle>
 					</DialogHeader>
-					<TaskForm
-						mode="create"
-						onSubmit={handleCreateTask}
-						onCancel={() => setIsCreateOpen(false)}
-					/>
+					<TaskForm mode="create" onSubmit={handleCreateTask} onCancel={() => setIsCreateOpen(false)} />
 				</DialogContent>
 			</Dialog>
 
