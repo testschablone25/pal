@@ -173,49 +173,16 @@ export default function StaffPage() {
 	};
 
 	const getContractTypeBadge = (type: string) => {
-		switch (type) {
-			case "permanent":
-				return (
-					<Badge className="bg-emerald-600/20 text-emerald-400 border-emerald-600/50">
-						Permanent
-					</Badge>
-				);
-			case "freelance":
-				return (
-					<Badge className="bg-blue-600/20 text-blue-400 border-blue-600/50">
-						Freelance
-					</Badge>
-				);
-			case "minor":
-				return (
-					<Badge className="bg-amber-600/20 text-amber-400 border-amber-600/50">
-						Minor
-					</Badge>
-				);
-			default:
-				return <Badge variant="outline">{type}</Badge>;
-		}
+		return (
+			<Badge variant="outline" className="border-zinc-700 text-zinc-400 capitalize">
+				{type}
+			</Badge>
+		);
 	};
 
 	const getRoleBadge = (role: string) => {
-		const colors: Record<string, string> = {
-			"Bar Staff": "bg-blue-600/20 text-blue-400 border-blue-600/50",
-			Security: "bg-red-600/20 text-red-400 border-red-600/50",
-			"Door Staff": "bg-orange-600/20 text-orange-400 border-orange-600/50",
-			Cloakroom: "bg-cyan-600/20 text-cyan-400 border-cyan-600/50",
-			Cleaner: "bg-gray-600/20 text-gray-400 border-gray-600/50",
-			Manager: "bg-yellow-600/20 text-yellow-400 border-yellow-600/50",
-			"Sound Engineer": "bg-pink-600/20 text-pink-400 border-pink-600/50",
-			Lighting: "bg-indigo-600/20 text-indigo-400 border-indigo-600/50",
-			"VIP Host": "bg-rose-600/20 text-rose-400 border-rose-600/50",
-			Runner: "bg-teal-600/20 text-teal-400 border-teal-600/50",
-		};
 		return (
-			<Badge
-				className={
-					colors[role] || "bg-zinc-600/20 text-zinc-400 border-zinc-600/50"
-				}
-			>
+			<Badge variant="outline" className="border-zinc-700 text-zinc-400">
 				{role}
 			</Badge>
 		);
@@ -233,12 +200,10 @@ export default function StaffPage() {
 			{/* Quick Actions */}
 			<div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
 				<Link href="/staff/new">
-					<Card className="bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/70 hover:border-violet-600/50 transition-colors cursor-pointer">
+					<Card className="bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/70 hover:border-zinc-700 transition-all cursor-pointer">
 						<CardContent className="pt-6">
 							<div className="flex items-center gap-4">
-								<div className="p-3 bg-violet-600/20">
-									<Users className="h-6 w-6 text-violet-400" />
-								</div>
+									<Users className="h-5 w-5 text-zinc-400" />
 								<div>
 									<h3 className="font-semibold text-white">Add Staff</h3>
 									<p className="text-sm text-zinc-400">
@@ -251,12 +216,10 @@ export default function StaffPage() {
 				</Link>
 
 				<Link href="/staff/shifts">
-					<Card className="bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/70 hover:border-violet-600/50 transition-colors cursor-pointer">
+					<Card className="bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/70 hover:border-zinc-700 transition-all cursor-pointer">
 						<CardContent className="pt-6">
 							<div className="flex items-center gap-4">
-								<div className="p-3 bg-blue-600/20">
-									<Clock className="h-6 w-6 text-blue-400" />
-								</div>
+									<Clock className="h-5 w-5 text-zinc-400" />
 								<div>
 									<h3 className="font-semibold text-white">Shift Schedule</h3>
 									<p className="text-sm text-zinc-400">
@@ -269,12 +232,10 @@ export default function StaffPage() {
 				</Link>
 
 				<Link href="/staff/availability">
-					<Card className="bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/70 hover:border-violet-600/50 transition-colors cursor-pointer">
+					<Card className="bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/70 hover:border-zinc-700 transition-all cursor-pointer">
 						<CardContent className="pt-6">
 							<div className="flex items-center gap-4">
-								<div className="p-3 bg-emerald-600/20">
-									<Calendar className="h-6 w-6 text-emerald-400" />
-								</div>
+									<Calendar className="h-5 w-5 text-zinc-400" />
 								<div>
 									<h3 className="font-semibold text-white">{total} Staff</h3>
 									<p className="text-sm text-zinc-400">Manage availability</p>
@@ -383,7 +344,7 @@ export default function StaffPage() {
 										</TableCell>
 										<TableCell>
 											{member.is_minor ? (
-												<Badge className="bg-amber-600/20 text-amber-400 border-amber-600/50">
+												<Badge variant="outline" className="border-zinc-700 text-zinc-400">
 													Yes
 												</Badge>
 											) : (

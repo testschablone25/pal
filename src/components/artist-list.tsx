@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { PageSkeleton } from "@/components/page-skeleton";
-import { Plus, MapPin, Music, Search } from "lucide-react";
+import { Plus, MapPin, Music } from "lucide-react";
 import { SearchFilterBar } from "@/components/search-filter-bar";
 import Link from "next/link";
 import { EmptyState } from "@/components/empty-state";
@@ -128,9 +128,7 @@ export function ArtistList() {
 			{/* Section header + count */}
 			<div className="flex justify-between items-center">
 				<div className="flex items-center gap-2">
-					<div className="p-1.5 bg-violet-600/20 rounded-md">
-						<Music className="h-4 w-4 text-violet-400" />
-					</div>
+						<Music className="h-4 w-4 text-zinc-400" />
 					<p className="text-sm text-zinc-400">
 						{loading ? "Loading..." : `${total} artists found`}
 					</p>

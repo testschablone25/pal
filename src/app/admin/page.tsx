@@ -239,9 +239,7 @@ export default function AdminRolesPage() {
                 <ArrowLeft className="h-5 w-5" />
               </Button>
             </Link>
-            <div className="p-3 bg-red-600/20">
-              <Shield className="h-8 w-8 text-red-400" />
-            </div>
+            <Shield className="h-5 w-5 text-zinc-400" />
             <div>
               <h1 className="text-3xl font-bold text-white">Rollenverwaltung</h1>
               <p className="text-zinc-400">Benutzerrollen zuweisen und verwalten</p>
