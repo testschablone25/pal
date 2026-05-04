@@ -72,6 +72,11 @@ const taskSelect = `
     email,
     avatar_url
   ),
+  parent_task:parent_task_id (
+    id,
+    title,
+    status
+  ),
   task_items (
     item_id,
     goal_sub_location_id,

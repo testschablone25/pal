@@ -511,11 +511,13 @@ export function TaskDetailDialog({
 				})
 				.then((fetched) => {
 					setFullTask(fetched);
-					// Also set parent title from fetched data
+					// Preserve parent title from fetched data if available;
+					// only update when we have a value to avoid clearing it
 					if (fetched.parent_task) {
 						setParentTaskTitle(fetched.parent_task.title);
-					} else {
-						setParentTaskTitle(null);
+					} else if (fetched.parent_task_id && !fetched.parent_task) {
+						// API returned parent_task_id but no joined object —
+						// keep the existing title if we have one from the board
 					}
 				})
 				.catch((err) => {
