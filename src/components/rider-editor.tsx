@@ -55,6 +55,7 @@ import type {
 	BacklineItem,
 } from "@/lib/riders/types";
 import { InventoryItemPicker } from "@/components/inventory-item-picker";
+import { InventoryAutocomplete } from "@/components/inventory-autocomplete";
 
 // ---------- Props ----------
 
@@ -2322,25 +2323,43 @@ function EquipmentRow({
 	update,
 	remove,
 	onLinkInventory,
+	excludeIds = [],
 }: {
 	item: EquipmentItem;
 	index: number;
 	update: (index: number, update: Partial<EquipmentItem>) => void;
 	remove: (index: number) => void;
 	onLinkInventory?: () => void;
+	excludeIds?: string[];
 }) {
 	const borderColor = item.artist_brings
 		? "border-green-900/30 bg-green-950/20"
 		: "border-red-900/30 bg-red-950/20";
 
+	const handleAutocompleteSelect = (selected: {
+		id: string;
+		name: string;
+		brand: string | null;
+		model: string | null;
+	}) => {
+		const displayName = [selected.brand, selected.name].filter(Boolean).join(" ");
+		update(index, {
+			name: displayName || selected.name,
+			inventory_item_id: selected.id,
+			inventory_item_name: selected.name,
+		});
+	};
+
 	return (
 		<div className={`flex gap-2 items-start p-2 rounded border ${borderColor}`}>
 			<div className="flex-1 space-y-1">
 				<div className="flex gap-2">
-					<Input
-						placeholder="Equipment name"
+					<InventoryAutocomplete
 						value={item.name}
-						onChange={(e) => update(index, { name: e.target.value })}
+						onChange={(val) => update(index, { name: val })}
+						onSelectItem={handleAutocompleteSelect}
+						placeholder="Equipment name (type to search inventory)"
+						excludeIds={excludeIds}
 						className="bg-zinc-950 border-zinc-800 flex-1"
 					/>
 					<Button
@@ -2348,7 +2367,7 @@ function EquipmentRow({
 						size="icon"
 						className="text-violet-400 hover:bg-violet-950/50 flex-shrink-0"
 						onClick={onLinkInventory}
-						title="Link to inventory item"
+						title="Browse inventory"
 					>
 						<Link2 className="h-4 w-4" />
 					</Button>
