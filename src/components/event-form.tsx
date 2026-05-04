@@ -135,7 +135,7 @@ export function EventForm({
 	};
 
 	return (
-		<Card className="bg-zinc-900 border-zinc-800">
+		<Card className="bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/70 rounded-lg">
 			<CardHeader>
 				<CardTitle className="text-white">
 					{mode === "create" ? "Create New Event" : "Edit Event"}
@@ -196,7 +196,7 @@ export function EventForm({
 													<SelectValue placeholder="Select venue" />
 												</SelectTrigger>
 											</FormControl>
-											<SelectContent className="bg-zinc-900 border-zinc-800">
+											<SelectContent className="bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/70 rounded-lg">
 												{venues.map((venue) => (
 													<SelectItem key={venue.id} value={venue.id}>
 														{venue.name}
@@ -224,7 +224,7 @@ export function EventForm({
 													<SelectValue placeholder="Select status" />
 												</SelectTrigger>
 											</FormControl>
-											<SelectContent className="bg-zinc-900 border-zinc-800">
+											<SelectContent className="bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/70 rounded-lg">
 												<SelectItem value="draft">Draft</SelectItem>
 												<SelectItem value="published">Published</SelectItem>
 												<SelectItem value="cancelled">Cancelled</SelectItem>
@@ -312,7 +312,7 @@ export function EventForm({
 								type="button"
 								variant="outline"
 								onClick={() => router.back()}
-								className="border-zinc-800"
+								className="border-zinc-700"
 							>
 								Cancel
 							</Button>

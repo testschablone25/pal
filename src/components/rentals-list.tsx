@@ -249,7 +249,7 @@ export function RentalsList() {
 			</div>
 
 			{/* Tabs */}
-			<Card className="bg-zinc-900 border-zinc-800">
+			<Card className="bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/70 rounded-lg">
 				<CardContent className="pt-6">
 					<Tabs defaultValue="active">
 						<TabsList className="bg-zinc-800 border-zinc-700">
@@ -287,7 +287,7 @@ export function RentalsList() {
 									onClick={() => setShowCreateDialog(true)}
 								/>
 							) : (
-								<Card className="bg-zinc-900 border-zinc-800">
+								<Card className="bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/70 rounded-lg">
 									<CardContent className="p-0">
 										{renderTable(activeRentals, true)}
 									</CardContent>
@@ -312,7 +312,7 @@ export function RentalsList() {
 									title="Keine vergangenen Vermietungen"
 								/>
 							) : (
-								<Card className="bg-zinc-900 border-zinc-800">
+								<Card className="bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/70 rounded-lg">
 									<CardContent className="p-0">
 										{renderTable(pastRentals, false)}
 									</CardContent>

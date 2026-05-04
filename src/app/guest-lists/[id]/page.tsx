@@ -229,7 +229,7 @@ export default function GuestListDetailPage() {
 					<Skeleton className="h-10 w-10 bg-zinc-800" />
 					<Skeleton className="h-10 w-64 bg-zinc-800" />
 				</div>
-				<Card className="bg-zinc-900 border-zinc-800">
+				<Card className="bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/70 rounded-lg">
 					<CardContent className="pt-6">
 						<Skeleton className="h-64 w-full bg-zinc-800" />
 					</CardContent>
@@ -241,7 +241,7 @@ export default function GuestListDetailPage() {
 	if (error || !guestList) {
 		return (
 			<div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8">
-				<Card className="bg-zinc-900 border-zinc-800">
+				<Card className="bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/70 rounded-lg">
 					<CardContent className="py-12 text-center">
 						<p className="text-red-400">{error || "Guest list not found"}</p>
 						<Button
@@ -265,7 +265,7 @@ export default function GuestListDetailPage() {
 					<Button
 						variant="outline"
 						size="icon"
-						className="border-zinc-800"
+						className="border-zinc-700"
 						onClick={() => router.push("/guest-lists")}
 					>
 						<ArrowLeft className="h-4 w-4" />
@@ -287,7 +287,7 @@ export default function GuestListDetailPage() {
 							Add Guest
 						</Button>
 					</DialogTrigger>
-					<DialogContent className="bg-zinc-900 border-zinc-800">
+					<DialogContent className="bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/70 rounded-lg">
 						<DialogHeader>
 							<DialogTitle className="text-white">
 								Add Guest to List
@@ -351,7 +351,7 @@ export default function GuestListDetailPage() {
 									<SelectTrigger className="bg-zinc-950 border-zinc-800">
 										<SelectValue />
 									</SelectTrigger>
-									<SelectContent className="bg-zinc-900 border-zinc-800">
+									<SelectContent className="bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/70 rounded-lg">
 										<SelectItem value="presale">Presale</SelectItem>
 										<SelectItem value="guestlist">Guestlist</SelectItem>
 										<SelectItem value="walkin">Walk-in</SelectItem>
@@ -387,7 +387,7 @@ export default function GuestListDetailPage() {
 									type="button"
 									variant="outline"
 									onClick={() => setShowAddDialog(false)}
-									className="border-zinc-800"
+									className="border-zinc-700"
 								>
 									Cancel
 								</Button>
@@ -399,13 +399,13 @@ export default function GuestListDetailPage() {
 
 			{/* Stats */}
 			<div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-				<Card className="bg-zinc-900 border-zinc-800">
+				<Card className="bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/70 rounded-lg">
 					<CardContent className="pt-4 pb-4">
 						<p className="text-sm text-zinc-400">Total Guests</p>
 						<p className="text-2xl font-bold text-white">{entries.length}</p>
 					</CardContent>
 				</Card>
-				<Card className="bg-zinc-900 border-zinc-800">
+				<Card className="bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/70 rounded-lg">
 					<CardContent className="pt-4 pb-4">
 						<p className="text-sm text-zinc-400">Pending</p>
 						<p className="text-2xl font-bold text-yellow-400">
@@ -413,7 +413,7 @@ export default function GuestListDetailPage() {
 						</p>
 					</CardContent>
 				</Card>
-				<Card className="bg-zinc-900 border-zinc-800">
+				<Card className="bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/70 rounded-lg">
 					<CardContent className="pt-4 pb-4">
 						<p className="text-sm text-zinc-400">Checked In</p>
 						<p className="text-2xl font-bold text-green-400">
@@ -421,7 +421,7 @@ export default function GuestListDetailPage() {
 						</p>
 					</CardContent>
 				</Card>
-				<Card className="bg-zinc-900 border-zinc-800">
+				<Card className="bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/70 rounded-lg">
 					<CardContent className="pt-4 pb-4">
 						<p className="text-sm text-zinc-400">With Plus Ones</p>
 						<p className="text-2xl font-bold text-blue-400">
@@ -432,7 +432,7 @@ export default function GuestListDetailPage() {
 			</div>
 
 			{/* Guest Entries Table */}
-			<Card className="bg-zinc-900 border-zinc-800">
+			<Card className="bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/70 rounded-lg">
 				<CardHeader>
 					<CardTitle className="text-white">Guest Entries</CardTitle>
 				</CardHeader>
@@ -451,7 +451,7 @@ export default function GuestListDetailPage() {
 					) : (
 						<Table>
 							<TableHeader>
-								<TableRow className="border-zinc-800">
+								<TableRow className="border-zinc-700">
 									<TableHead className="text-zinc-400">Name</TableHead>
 									<TableHead className="text-zinc-400">Contact</TableHead>
 									<TableHead className="text-zinc-400">Category</TableHead>
@@ -462,7 +462,7 @@ export default function GuestListDetailPage() {
 							</TableHeader>
 							<TableBody>
 								{entries.map((entry) => (
-									<TableRow key={entry.id} className="border-zinc-800">
+									<TableRow key={entry.id} className="border-zinc-700">
 										<TableCell className="text-white font-medium">
 											{entry.guest_name}
 										</TableCell>
@@ -514,7 +514,7 @@ export default function GuestListDetailPage() {
 			</Card>
 
 			<AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
-				<AlertDialogContent className="bg-zinc-900 border-zinc-800">
+				<AlertDialogContent className="bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/70 rounded-lg">
 					<AlertDialogHeader>
 						<AlertDialogTitle>Löschen bestätigen</AlertDialogTitle>
 						<AlertDialogDescription>
@@ -523,7 +523,7 @@ export default function GuestListDetailPage() {
 						</AlertDialogDescription>
 					</AlertDialogHeader>
 					<AlertDialogFooter>
-						<AlertDialogCancel className="border-zinc-800">
+						<AlertDialogCancel className="border-zinc-700">
 							Abbrechen
 						</AlertDialogCancel>
 						<AlertDialogAction

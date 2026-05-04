@@ -166,7 +166,7 @@ function VenueForm({
 					<SelectTrigger className="bg-zinc-950 border-zinc-800">
 						<SelectValue placeholder="Select venue type" />
 					</SelectTrigger>
-					<SelectContent className="bg-zinc-900 border-zinc-800">
+					<SelectContent className="bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/70 rounded-lg">
 						{VENUE_TYPES.filter((t) => t.value).map((type) => (
 							<SelectItem key={type.value} value={type.value}>
 								{type.label}
@@ -256,7 +256,7 @@ function VenueForm({
 					type="button"
 					variant="outline"
 					onClick={onCancel}
-					className="border-zinc-800"
+					className="border-zinc-700"
 				>
 					Cancel
 				</Button>
@@ -664,7 +664,7 @@ export default function VenuesPage() {
 	if (error) {
 		return (
 			<div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8">
-				<Card className="bg-zinc-900 border-zinc-800">
+				<Card className="bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/70 rounded-lg">
 					<CardContent className="py-12 text-center">
 						<p className="text-red-400">{error}</p>
 						<Button
@@ -692,7 +692,7 @@ export default function VenuesPage() {
 
 			{/* Create Dialog */}
 			<Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
-				<DialogContent className="bg-zinc-900 border-zinc-800">
+				<DialogContent className="bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/70 rounded-lg">
 					<DialogHeader>
 						<DialogTitle className="text-white">Add New Venue</DialogTitle>
 						<DialogDescription className="text-zinc-400">
@@ -715,7 +715,7 @@ export default function VenuesPage() {
 
 			{/* Edit Dialog */}
 			<Dialog open={showEditDialog} onOpenChange={setShowEditDialog}>
-				<DialogContent className="bg-zinc-900 border-zinc-800">
+				<DialogContent className="bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/70 rounded-lg">
 					<DialogHeader>
 						<DialogTitle className="text-white">Edit Venue</DialogTitle>
 						<DialogDescription className="text-zinc-400">
@@ -739,7 +739,7 @@ export default function VenuesPage() {
 
 			{/* Delete Confirmation */}
 			<AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
-				<AlertDialogContent className="bg-zinc-900 border-zinc-800">
+				<AlertDialogContent className="bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/70 rounded-lg">
 					<AlertDialogHeader>
 						<AlertDialogTitle className="text-white">
 							Delete Venue
@@ -772,7 +772,7 @@ export default function VenuesPage() {
 				open={showSubLocationDialog}
 				onOpenChange={setShowSubLocationDialog}
 			>
-				<DialogContent className="bg-zinc-900 border-zinc-800">
+				<DialogContent className="bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/70 rounded-lg">
 					<DialogHeader>
 						<DialogTitle className="text-white">Add Sub-Location</DialogTitle>
 						<DialogDescription className="text-zinc-400">
@@ -819,7 +819,7 @@ export default function VenuesPage() {
 						<Button
 							variant="outline"
 							onClick={() => setShowSubLocationDialog(false)}
-							className="border-zinc-800"
+							className="border-zinc-700"
 						>
 							Cancel
 						</Button>

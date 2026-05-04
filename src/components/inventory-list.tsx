@@ -142,7 +142,7 @@ export function InventoryList() {
 	return (
 		<div className="space-y-6">
 			{/* Search and Filters */}
-			<Card className="bg-zinc-900 border-zinc-800">
+			<Card className="bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/70 rounded-lg">
 				<CardContent className="pt-6">
 					<div className="flex flex-col md:flex-row gap-4">
 						<div className="flex-1">
@@ -194,7 +194,7 @@ export function InventoryList() {
 					onClick={() => setShowCreateDialog(true)}
 				/>
 			) : (
-				<Card className="bg-zinc-900 border-zinc-800">
+				<Card className="bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/70 rounded-lg">
 					<CardContent className="p-0">
 						<Table>
 							<TableHeader>

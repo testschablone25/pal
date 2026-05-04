@@ -1122,7 +1122,7 @@ export default function ShiftsPage() {
 			</div>
 
 			{/* Event Selector */}
-			<Card className="bg-zinc-900 border-zinc-800 mb-6">
+			<Card className="bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/70 mb-6">
 				<CardContent className="pt-6">
 					<div className="flex flex-col md:flex-row gap-4 items-start md:items-center justify-between">
 						<div className="flex-1 w-full md:w-auto">
@@ -1136,7 +1136,7 @@ export default function ShiftsPage() {
 								<SelectTrigger className="bg-zinc-950 border-zinc-800 w-full md:w-[300px]">
 									<SelectValue placeholder="Choose an event" />
 								</SelectTrigger>
-								<SelectContent className="bg-zinc-900 border-zinc-800">
+								<SelectContent className="bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/70">
 									{events.map((event) => (
 										<SelectItem key={event.id} value={event.id}>
 											{event.name} - {new Date(event.date).toLocaleDateString()}
@@ -1183,7 +1183,7 @@ export default function ShiftsPage() {
 										Export
 									</Button>
 								</DropdownMenuTrigger>
-								<DropdownMenuContent className="bg-zinc-900 border-zinc-800">
+								<DropdownMenuContent className="bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/70">
 									<DropdownMenuItem
 										onClick={handleExportCSV}
 										className="text-zinc-300 hover:text-white hover:bg-zinc-800 cursor-pointer"
@@ -1204,7 +1204,7 @@ export default function ShiftsPage() {
 			</Card>
 
 			{loading ? (
-				<Card className="bg-zinc-900 border-zinc-800">
+				<Card className="bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/70">
 					<CardContent className="pt-6 space-y-4">
 						{[...Array(5)].map((_, i) => (
 							<Skeleton key={i} className="h-16 w-full bg-zinc-800" />
@@ -1212,7 +1212,7 @@ export default function ShiftsPage() {
 					</CardContent>
 				</Card>
 			) : !selectedEventId ? (
-				<Card className="bg-zinc-900 border-zinc-800">
+				<Card className="bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/70">
 					<CardContent className="py-12 text-center">
 						<Calendar className="h-12 w-12 mx-auto text-zinc-600 mb-4" />
 						<p className="text-zinc-400">
@@ -1224,7 +1224,7 @@ export default function ShiftsPage() {
 				<>
 					{/* Event Info */}
 					{selectedEvent && (
-						<Card className="bg-zinc-900 border-zinc-800 mb-6">
+						<Card className="bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/70 mb-6">
 							<CardContent className="pt-6">
 								<div className="flex flex-wrap gap-6">
 									<div>
@@ -1273,7 +1273,7 @@ export default function ShiftsPage() {
 					)}
 
 					{/* Timeline View */}
-					<Card className="bg-zinc-900 border-zinc-800 mb-6">
+					<Card className="bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/70 mb-6">
 						<CardHeader>
 							<CardTitle className="text-white flex items-center gap-2">
 								<Clock className="h-5 w-5" />
@@ -1462,7 +1462,7 @@ export default function ShiftsPage() {
 					</Card>
 
 					{/* Shifts List */}
-					<Card className="bg-zinc-900 border-zinc-800">
+					<Card className="bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/70">
 						<CardHeader>
 							<CardTitle className="text-white">All Shifts</CardTitle>
 						</CardHeader>
@@ -1616,7 +1616,7 @@ export default function ShiftsPage() {
 
 					{/* Pending Swaps */}
 					{swapRequests.length > 0 && (
-						<Card className="bg-zinc-900 border-zinc-800 mt-6">
+						<Card className="bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/70 mt-6">
 							<CardHeader>
 								<CardTitle className="text-white flex items-center gap-2">
 									<ArrowUpDown className="h-5 w-5" />
@@ -1715,7 +1715,7 @@ export default function ShiftsPage() {
 					}
 				}}
 			>
-				<DialogContent className="bg-zinc-900 border-zinc-800 max-w-md">
+				<DialogContent className="bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/70 max-w-md">
 					<DialogHeader>
 						<DialogTitle className="text-white">
 							{editingShift ? "Edit Shift" : "Add New Shift"}
@@ -1744,7 +1744,7 @@ export default function ShiftsPage() {
 													<SelectValue placeholder="Select staff member" />
 												</SelectTrigger>
 											</FormControl>
-											<SelectContent className="bg-zinc-900 border-zinc-800">
+											<SelectContent className="bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/70">
 												{staff.map((member) => {
 													const unavailable = isStaffUnavailable(member.id);
 													return (
@@ -1781,7 +1781,7 @@ export default function ShiftsPage() {
 													<SelectValue placeholder="Select role" />
 												</SelectTrigger>
 											</FormControl>
-											<SelectContent className="bg-zinc-900 border-zinc-800">
+											<SelectContent className="bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/70">
 												{STAFF_ROLES.map((role) => (
 													<SelectItem key={role} value={role}>
 														{role}
@@ -1870,7 +1870,7 @@ export default function ShiftsPage() {
 													<SelectValue placeholder="Select status" />
 												</SelectTrigger>
 											</FormControl>
-											<SelectContent className="bg-zinc-900 border-zinc-800">
+											<SelectContent className="bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/70">
 												<SelectItem value="scheduled">Scheduled</SelectItem>
 												<SelectItem value="confirmed">Confirmed</SelectItem>
 												<SelectItem value="completed">Completed</SelectItem>
@@ -1910,7 +1910,7 @@ export default function ShiftsPage() {
 
 			{/* Delete Confirmation Dialog */}
 			<Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
-				<DialogContent className="bg-zinc-900 border-zinc-800">
+				<DialogContent className="bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/70">
 					<DialogHeader>
 						<DialogTitle className="text-white">Delete Shift</DialogTitle>
 						<DialogDescription className="text-zinc-400">
@@ -1942,7 +1942,7 @@ export default function ShiftsPage() {
 				open={conflictDialogOpen}
 				onOpenChange={setConflictDialogOpen}
 			>
-				<AlertDialogContent className="bg-zinc-900 border-zinc-800">
+				<AlertDialogContent className="bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/70">
 					<AlertDialogHeader>
 						<AlertDialogTitle className="text-white flex items-center gap-2">
 							<AlertTriangle className="h-5 w-5 text-amber-400" />
@@ -1985,7 +1985,7 @@ export default function ShiftsPage() {
 
 			{/* Bulk Shift Assignment Dialog */}
 			<Dialog open={bulkDialogOpen} onOpenChange={setBulkDialogOpen}>
-				<DialogContent className="bg-zinc-900 border-zinc-800 max-w-md max-h-[80vh] overflow-y-auto">
+				<DialogContent className="bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/70 max-w-md max-h-[80vh] overflow-y-auto">
 					<DialogHeader>
 						<DialogTitle className="text-white">
 							Bulk Shift Assignment
@@ -2003,7 +2003,7 @@ export default function ShiftsPage() {
 								<SelectTrigger className="bg-zinc-950 border-zinc-800">
 									<SelectValue placeholder="Select role" />
 								</SelectTrigger>
-								<SelectContent className="bg-zinc-900 border-zinc-800">
+								<SelectContent className="bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/70">
 									{STAFF_ROLES.map((role) => (
 										<SelectItem key={role} value={role}>
 											{role}
@@ -2128,7 +2128,7 @@ export default function ShiftsPage() {
 
 			{/* Swap Request Dialog */}
 			<Dialog open={swapDialogOpen} onOpenChange={setSwapDialogOpen}>
-				<DialogContent className="bg-zinc-900 border-zinc-800 max-w-md">
+				<DialogContent className="bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/70 max-w-md">
 					<DialogHeader>
 						<DialogTitle className="text-white">Request Shift Swap</DialogTitle>
 						<DialogDescription className="text-zinc-400">
@@ -2154,7 +2154,7 @@ export default function ShiftsPage() {
 								<SelectTrigger className="bg-zinc-950 border-zinc-800">
 									<SelectValue placeholder="Choose a staff member" />
 								</SelectTrigger>
-								<SelectContent className="bg-zinc-900 border-zinc-800">
+								<SelectContent className="bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/70">
 									{staff
 										.filter(
 											(s) =>

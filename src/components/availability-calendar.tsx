@@ -738,7 +738,7 @@ export function AvailabilityCalendar({
 			className={`space-y-6 ${multiSelectMode && selectedDates.size > 0 ? "pb-24" : ""}`}
 		>
 			{/* ── Tab Bar ── */}
-			<Card className="bg-zinc-900 border-zinc-800">
+			<Card className="bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/70">
 				<CardContent className="pt-6">
 					<Tabs value={activeTab} onValueChange={handleTabChange}>
 						<TabsList className="bg-zinc-950 border border-zinc-800">
@@ -763,7 +763,7 @@ export function AvailabilityCalendar({
 
 			{/* ── Quick Action Bar (self mode) ── */}
 			{viewMode === "self" && (
-				<Card className="bg-zinc-900 border-zinc-800">
+				<Card className="bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/70">
 					<CardContent className="pt-4 pb-4">
 						<div className="flex flex-wrap gap-3 items-center">
 							<span className="text-sm text-zinc-400 font-medium mr-2">
@@ -835,7 +835,7 @@ export function AvailabilityCalendar({
 
 			{/* ── Staff Selector (all mode) ── */}
 			{viewMode === "all" && (
-				<Card className="bg-zinc-900 border-zinc-800">
+				<Card className="bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/70">
 					<CardContent className="pt-6">
 						<div className="flex flex-col md:flex-row gap-4 items-start md:items-center">
 							<div className="flex-1 w-full md:w-auto">
@@ -849,7 +849,7 @@ export function AvailabilityCalendar({
 									<SelectTrigger className="bg-zinc-950 border-zinc-800 w-full md:w-[300px]">
 										<SelectValue placeholder="Choose staff member" />
 									</SelectTrigger>
-									<SelectContent className="bg-zinc-900 border-zinc-800">
+									<SelectContent className="bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/70">
 										{staff.map((member) => (
 											<SelectItem key={member.id} value={member.id}>
 												{member.profiles?.full_name || "Unknown"} -{" "}
@@ -873,7 +873,7 @@ export function AvailabilityCalendar({
 			<div className="flex flex-col lg:flex-row gap-6">
 				{/* Calendar */}
 				<div className="flex-1">
-					<Card className="bg-zinc-900 border-zinc-800">
+					<Card className="bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/70">
 						<CardHeader>
 							<div className="flex items-center justify-between">
 								<CardTitle className="text-white flex items-center gap-2">
@@ -956,7 +956,7 @@ export function AvailabilityCalendar({
 				{/* ── Colleagues Panel (self mode) ── */}
 				{viewMode === "self" && (
 					<div className="w-full lg:w-72 shrink-0">
-						<Card className="bg-zinc-900 border-zinc-800 h-full">
+						<Card className="bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/70 h-full">
 							<CardHeader>
 								<CardTitle className="text-white text-sm flex items-center gap-2">
 									<Users className="h-4 w-4" />
@@ -1043,7 +1043,7 @@ export function AvailabilityCalendar({
 
 			{/* ── Manager Override badges on availability entries ── */}
 			{viewMode === "all" && availability.some((a) => a.set_by) && (
-				<Card className="bg-zinc-900 border-zinc-800">
+				<Card className="bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/70">
 					<CardContent className="pt-4 pb-4">
 						<p className="text-xs text-zinc-500 flex items-center gap-2">
 							<Shield className="h-3 w-3" />
@@ -1134,7 +1134,7 @@ export function AvailabilityCalendar({
 					<span />
 				</PopoverTrigger>
 				<PopoverContent
-					className="bg-zinc-900 border-zinc-800 w-72"
+					className="bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/70 w-72"
 					align="start"
 					side="bottom"
 					onOpenAutoFocus={(e) => e.preventDefault()}
@@ -1256,7 +1256,7 @@ export function AvailabilityCalendar({
 
 			{/* ── Full Dialog (all/manager mode) ── */}
 			<Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-				<DialogContent className="bg-zinc-900 border-zinc-800">
+				<DialogContent className="bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/70">
 					<DialogHeader>
 						<DialogTitle className="text-white">Set Availability</DialogTitle>
 						<DialogDescription className="text-zinc-400">

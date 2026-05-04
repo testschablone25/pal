@@ -50,7 +50,7 @@ export default function EditStaffPage() {
 					<Skeleton className="h-10 w-64 bg-zinc-800" />
 					<Skeleton className="h-5 w-96 mt-2 bg-zinc-800" />
 				</div>
-				<Card className="bg-zinc-900 border-zinc-800">
+				<Card className="bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/70">
 					<CardContent className="pt-6 space-y-6">
 						<Skeleton className="h-10 w-full bg-zinc-800" />
 						<Skeleton className="h-10 w-full bg-zinc-800" />
@@ -64,7 +64,7 @@ export default function EditStaffPage() {
 	if (error || !staff) {
 		return (
 			<div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8">
-				<Card className="bg-zinc-900 border-zinc-800">
+				<Card className="bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/70">
 					<CardContent className="py-12 text-center">
 						<p className="text-red-400">{error || "Staff member not found"}</p>
 					</CardContent>

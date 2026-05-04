@@ -140,7 +140,7 @@ export default function EventDetailPage() {
 	if (!event) {
 		return (
 			<div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8">
-				<Card className="bg-zinc-900 border-zinc-800">
+				<Card className="bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/70 rounded-lg">
 					<CardContent className="py-12 text-center">
 						<p className="text-zinc-400">Event not found</p>
 						<Link href="/events">
@@ -197,12 +197,12 @@ export default function EventDetailPage() {
 					<Button
 						variant="outline"
 						onClick={handleDownloadItinerary}
-						className="border-zinc-800"
+						className="border-zinc-700"
 					>
 						<Download className="h-4 w-4 mr-2" />
 						Itinerary PDF
 					</Button>
-					<Button variant="outline" className="border-zinc-800">
+					<Button variant="outline" className="border-zinc-700">
 						<Share2 className="h-4 w-4 mr-2" />
 						Share
 					</Button>
@@ -222,7 +222,7 @@ export default function EventDetailPage() {
 			</div>
 
 			<AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
-				<AlertDialogContent className="bg-zinc-900 border-zinc-800">
+				<AlertDialogContent className="bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/70 rounded-lg">
 					<AlertDialogHeader>
 						<AlertDialogTitle>Löschen bestätigen</AlertDialogTitle>
 						<AlertDialogDescription>
@@ -231,7 +231,7 @@ export default function EventDetailPage() {
 						</AlertDialogDescription>
 					</AlertDialogHeader>
 					<AlertDialogFooter>
-						<AlertDialogCancel className="border-zinc-800">
+						<AlertDialogCancel className="border-zinc-700">
 							Abbrechen
 						</AlertDialogCancel>
 						<AlertDialogAction
@@ -246,7 +246,7 @@ export default function EventDetailPage() {
 
 			{/* Venue info */}
 			{event.venues && (
-				<Card className="bg-zinc-900 border-zinc-800 mb-6">
+				<Card className="bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/70 mb-6">
 					<CardHeader>
 						<CardTitle className="text-lg">Venue</CardTitle>
 					</CardHeader>
@@ -271,7 +271,7 @@ export default function EventDetailPage() {
 
 			{/* Add Performance Modal */}
 			<Dialog open={addPerformanceOpen} onOpenChange={setAddPerformanceOpen}>
-				<DialogContent className="bg-zinc-900 border-zinc-800">
+				<DialogContent className="bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/70 rounded-lg">
 					<DialogHeader>
 						<DialogTitle>Add Performance</DialogTitle>
 					</DialogHeader>

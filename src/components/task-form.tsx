@@ -554,7 +554,7 @@ export function TaskForm({
 												</SelectValue>
 											</SelectTrigger>
 										</FormControl>
-										<SelectContent className="bg-zinc-900 border-zinc-800">
+										<SelectContent className="bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/70 rounded-lg">
 											{PRIORITIES.map((p) => (
 												<SelectItem key={p.value} value={p.value}>
 													<div className="flex items-center gap-2">
@@ -590,7 +590,7 @@ export function TaskForm({
 												<SelectValue placeholder="Assignee" />
 											</SelectTrigger>
 										</FormControl>
-										<SelectContent className="bg-zinc-900 border-zinc-800">
+										<SelectContent className="bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/70 rounded-lg">
 											<SelectItem value="_none">Unassigned</SelectItem>
 											{profiles
 												.filter((p) => p.id)
@@ -624,7 +624,7 @@ export function TaskForm({
 												<SelectValue placeholder="Event" />
 											</SelectTrigger>
 										</FormControl>
-										<SelectContent className="bg-zinc-900 border-zinc-800">
+										<SelectContent className="bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/70 rounded-lg">
 											<SelectItem value="_none">No event</SelectItem>
 											{events
 												.filter((e) => e.id)
@@ -717,7 +717,7 @@ export function TaskForm({
 										<Checkbox
 											checked={field.value}
 											onCheckedChange={field.onChange}
-											className="border-zinc-800"
+											className="border-zinc-700"
 										/>
 									</FormControl>
 									<FormLabel className="!mt-0 cursor-pointer text-sm text-zinc-300">
@@ -782,7 +782,7 @@ export function TaskForm({
 												<Command>
 													<CommandInput
 														placeholder="Search tasks..."
-														className="border-zinc-800"
+														className="border-zinc-700"
 													/>
 													<CommandList>
 														<CommandEmpty>No tasks found.</CommandEmpty>
@@ -895,7 +895,7 @@ export function TaskForm({
 									<Command>
 										<CommandInput
 											placeholder="Search items..."
-											className="border-zinc-800"
+											className="border-zinc-700"
 										/>
 										<CommandList>
 											<CommandEmpty>No items found.</CommandEmpty>
@@ -971,7 +971,7 @@ export function TaskForm({
 														<SelectTrigger className="w-[130px] bg-zinc-950 border-zinc-800 h-7 text-[11px]">
 															<SelectValue placeholder="Venue" />
 														</SelectTrigger>
-														<SelectContent className="bg-zinc-900 border-zinc-800">
+														<SelectContent className="bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/70 rounded-lg">
 															<SelectItem
 																value="none"
 																className="text-zinc-500 text-xs"
@@ -1006,7 +1006,7 @@ export function TaskForm({
 														<SelectTrigger className="w-[110px] bg-zinc-950 border-zinc-800 h-7 text-[11px]">
 															<SelectValue placeholder="Area" />
 														</SelectTrigger>
-														<SelectContent className="bg-zinc-900 border-zinc-800">
+														<SelectContent className="bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/70 rounded-lg">
 															<SelectItem
 																value="none"
 																className="text-zinc-500 text-xs"

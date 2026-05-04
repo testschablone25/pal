@@ -122,7 +122,7 @@ export function ArtistForm({ artist, mode = 'create' }: ArtistFormProps) {
   };
 
   return (
-    <Card className="bg-zinc-900 border-zinc-800">
+    <Card className="bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/70 rounded-lg">
       <CardHeader>
         <CardTitle className="text-white">
           {mode === 'create' ? 'Add New Artist' : 'Edit Artist'}
@@ -162,7 +162,7 @@ export function ArtistForm({ artist, mode = 'create' }: ArtistFormProps) {
                           <SelectValue placeholder="Select genre" />
                         </SelectTrigger>
                       </FormControl>
-                      <SelectContent className="bg-zinc-900 border-zinc-800">
+                      <SelectContent className="bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/70 rounded-lg">
                         {GENRES.map((genre) => (
                           <SelectItem key={genre} value={genre.toLowerCase()}>
                             {genre}
@@ -305,7 +305,7 @@ export function ArtistForm({ artist, mode = 'create' }: ArtistFormProps) {
                 type="button"
                 variant="outline"
                 onClick={() => router.back()}
-                className="border-zinc-800"
+                className="border-zinc-700"
               >
                 Cancel
               </Button>

@@ -135,7 +135,7 @@ export default function GuestListsPage() {
 
 			{/* Create Form Modal */}
 			{showCreateForm && (
-				<Card className="bg-zinc-900 border-zinc-800 mb-6">
+				<Card className="bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/70 mb-6">
 					<CardHeader>
 						<CardTitle className="text-white">Create New Guest List</CardTitle>
 					</CardHeader>
@@ -182,7 +182,7 @@ export default function GuestListsPage() {
 									type="button"
 									variant="outline"
 									onClick={() => setShowCreateForm(false)}
-									className="border-zinc-800"
+									className="border-zinc-700"
 								>
 									Cancel
 								</Button>
@@ -208,7 +208,7 @@ export default function GuestListsPage() {
 
 			{/* Guest Lists Grid */}
 			{guestLists.length === 0 ? (
-				<Card className="bg-zinc-900 border-zinc-800">
+				<Card className="bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/70 rounded-lg">
 					<CardContent className="py-12 text-center">
 						<List className="h-12 w-12 mx-auto text-zinc-600 mb-4" />
 						<p className="text-zinc-400">No guest lists yet</p>
@@ -226,7 +226,7 @@ export default function GuestListsPage() {
 						const counts = getStatusCounts(list.entries || []);
 						return (
 							<Link key={list.id} href={`/guest-lists/${list.id}`}>
-								<Card className="bg-zinc-900 border-zinc-800 hover:border-violet-600/50 transition-colors cursor-pointer h-full">
+								<Card className="bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/70 hover:border-violet-600/50 transition-colors cursor-pointer h-full">
 									<CardContent className="pt-6">
 										<div className="space-y-3">
 											<h3 className="text-lg font-semibold text-white">

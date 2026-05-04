@@ -218,7 +218,7 @@ export function RiderViewer({
 
 	return (
 		<>
-			<Card className="bg-zinc-900 border-zinc-800">
+			<Card className="bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/70">
 				<CardHeader className="flex flex-row items-center justify-between pb-3">
 					<CardTitle className="flex items-center gap-2">
 						<FileText className="h-5 w-5 text-violet-400" />
@@ -279,7 +279,7 @@ export function RiderViewer({
 									Upload PDF
 								</Button>
 							</DialogTrigger>
-							<DialogContent className="bg-zinc-900 border-zinc-800">
+							<DialogContent className="bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/70">
 								<DialogHeader>
 									<DialogTitle>Upload Rider PDF - {artistName}</DialogTitle>
 								</DialogHeader>
@@ -307,7 +307,7 @@ export function RiderViewer({
 											<SelectTrigger className="bg-zinc-950 border-zinc-800">
 												<SelectValue />
 											</SelectTrigger>
-											<SelectContent className="bg-zinc-900 border-zinc-800">
+											<SelectContent className="bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/70">
 												<SelectItem value="both">
 													Both (Technical + Hospitality)
 												</SelectItem>
@@ -1021,7 +1021,7 @@ export function RiderViewer({
 
 				{/* Delete Confirmation Dialog */}
 				<Dialog open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm}>
-					<DialogContent className="bg-zinc-900 border-zinc-800">
+					<DialogContent className="bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/70">
 						<DialogHeader>
 							<DialogTitle className="flex items-center gap-2 text-red-400">
 								<AlertTriangle className="h-5 w-5" />
@@ -1070,7 +1070,7 @@ export function RiderViewer({
 
 				{/* Task Summary Dialog */}
 				<Dialog open={showTaskSummary} onOpenChange={setShowTaskSummary}>
-					<DialogContent className="bg-zinc-900 border-zinc-800 max-w-2xl max-h-[80vh] overflow-y-auto">
+					<DialogContent className="bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/70 max-w-2xl max-h-[80vh] overflow-y-auto">
 						<DialogHeader>
 							<DialogTitle className="flex items-center gap-2">
 								<CheckCircle2 className="h-5 w-5 text-green-400" />
@@ -1188,7 +1188,7 @@ export function RiderViewer({
 
 				{/* Archive History Dialog */}
 				<Dialog open={isArchiveOpen} onOpenChange={setIsArchiveOpen}>
-					<DialogContent className="bg-zinc-900 border-zinc-800 max-w-2xl">
+					<DialogContent className="bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/70 max-w-2xl">
 						<DialogHeader>
 							<DialogTitle className="flex items-center gap-2">
 								<History className="h-5 w-5 text-violet-400" />

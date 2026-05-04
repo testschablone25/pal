@@ -188,7 +188,7 @@ export function CheckinCheckoutModal({
 							<SelectTrigger className="bg-zinc-950 border-zinc-800">
 								<SelectValue placeholder="Select action" />
 							</SelectTrigger>
-							<SelectContent className="bg-zinc-900 border-zinc-800">
+							<SelectContent className="bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/70 rounded-lg">
 								{ACTIONS.map((a) => (
 									<SelectItem key={a.value} value={a.value}>
 										{a.label}
@@ -205,7 +205,7 @@ export function CheckinCheckoutModal({
 							<SelectTrigger className="bg-zinc-950 border-zinc-800">
 								<SelectValue placeholder="Select venue..." />
 							</SelectTrigger>
-							<SelectContent className="bg-zinc-900 border-zinc-800">
+							<SelectContent className="bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/70 rounded-lg">
 								{venues.map((venue) => (
 									<SelectItem key={venue.id} value={venue.id}>
 										{venue.name}
@@ -226,7 +226,7 @@ export function CheckinCheckoutModal({
 								<SelectTrigger className="bg-zinc-950 border-zinc-800">
 									<SelectValue placeholder="Select area..." />
 								</SelectTrigger>
-								<SelectContent className="bg-zinc-900 border-zinc-800">
+								<SelectContent className="bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/70 rounded-lg">
 									{subLocations.map((sl) => (
 										<SelectItem key={sl.id} value={sl.id}>
 											{sl.name}
@@ -258,7 +258,7 @@ export function CheckinCheckoutModal({
 					<Button
 						variant="outline"
 						onClick={() => onOpenChange(false)}
-						className="border-zinc-800"
+						className="border-zinc-700"
 					>
 						Cancel
 					</Button>

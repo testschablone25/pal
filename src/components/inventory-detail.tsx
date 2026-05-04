@@ -218,7 +218,7 @@ export function InventoryDetail({ itemId }: InventoryDetailProps) {
 
 	if (error || !item) {
 		return (
-			<Card className="bg-zinc-900 border-zinc-800">
+			<Card className="bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/70 rounded-lg">
 				<CardContent className="py-12 text-center">
 					<Package className="h-12 w-12 mx-auto text-zinc-600 mb-4" />
 					<p className="text-red-400">{error || "Item not found"}</p>
@@ -257,7 +257,7 @@ export function InventoryDetail({ itemId }: InventoryDetailProps) {
 			</Button>
 
 			{/* Item Details */}
-			<Card className="bg-zinc-900 border-zinc-800">
+			<Card className="bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/70 rounded-lg">
 				<CardHeader className="flex flex-row items-center justify-between">
 					<div>
 						<CardTitle className="text-white text-2xl">{item.name}</CardTitle>
@@ -272,7 +272,7 @@ export function InventoryDetail({ itemId }: InventoryDetailProps) {
 						<Button
 							variant="outline"
 							onClick={() => setShowQRDialog(true)}
-							className="border-zinc-800"
+							className="border-zinc-700"
 						>
 							<QrCode className="h-4 w-4 mr-2 text-violet-400" />
 							QR Code
@@ -280,7 +280,7 @@ export function InventoryDetail({ itemId }: InventoryDetailProps) {
 						<Button
 							variant="outline"
 							onClick={() => setShowCheckinModal(true)}
-							className="border-zinc-800"
+							className="border-zinc-700"
 						>
 							<MapPin className="h-4 w-4 mr-2" />
 							Check In / Out
@@ -477,7 +477,7 @@ export function InventoryDetail({ itemId }: InventoryDetailProps) {
 			)}
 
 			{/* Linked Tasks */}
-			<Card className="bg-zinc-900 border-zinc-800">
+			<Card className="bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/70 rounded-lg">
 				<CardHeader>
 					<CardTitle className="text-white flex items-center gap-2">
 						<ListTodo className="h-5 w-5 text-violet-400" />
@@ -589,7 +589,7 @@ export function InventoryDetail({ itemId }: InventoryDetailProps) {
 			</Card>
 
 			{/* Location Timeline */}
-			<Card className="bg-zinc-900 border-zinc-800">
+			<Card className="bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/70 rounded-lg">
 				<CardHeader>
 					<CardTitle className="text-white flex items-center gap-2">
 						<MapPin className="h-5 w-5 text-violet-400" />

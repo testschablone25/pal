@@ -200,7 +200,7 @@ export function InventoryForm({
 	};
 
 	return (
-		<Card className="bg-zinc-900 border-zinc-800">
+		<Card className="bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/70 rounded-lg">
 			<CardHeader>
 				<CardTitle className="text-white">
 					{mode === "create" ? "Add New Item" : "Edit Item"}
@@ -246,7 +246,7 @@ export function InventoryForm({
 													<SelectValue placeholder="Select category" />
 												</SelectTrigger>
 											</FormControl>
-											<SelectContent className="bg-zinc-900 border-zinc-800">
+											<SelectContent className="bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/70 rounded-lg">
 												{CATEGORIES.map((cat) => (
 													<SelectItem key={cat.value} value={cat.value}>
 														{cat.label}
@@ -328,7 +328,7 @@ export function InventoryForm({
 													<SelectValue placeholder="Select condition" />
 												</SelectTrigger>
 											</FormControl>
-											<SelectContent className="bg-zinc-900 border-zinc-800">
+											<SelectContent className="bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/70 rounded-lg">
 												{CONDITIONS.map((cond) => (
 													<SelectItem key={cond.value} value={cond.value}>
 														{cond.label}
@@ -371,7 +371,7 @@ export function InventoryForm({
 											<SelectValue placeholder="Select venue..." />
 										</SelectTrigger>
 									</FormControl>
-									<SelectContent className="bg-zinc-900 border-zinc-800">
+									<SelectContent className="bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/70 rounded-lg">
 										{venues.map((venue) => (
 											<SelectItem key={venue.id} value={venue.id}>
 												{venue.name}
@@ -398,7 +398,7 @@ export function InventoryForm({
 														<SelectValue placeholder="Select area..." />
 													</SelectTrigger>
 												</FormControl>
-												<SelectContent className="bg-zinc-900 border-zinc-800">
+												<SelectContent className="bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/70 rounded-lg">
 													{subLocations.map((sl) => (
 														<SelectItem key={sl.id} value={sl.id}>
 															{sl.name}
@@ -469,7 +469,7 @@ export function InventoryForm({
 									type="button"
 									variant="outline"
 									onClick={onCancel}
-									className="border-zinc-800"
+									className="border-zinc-700"
 								>
 									Cancel
 								</Button>

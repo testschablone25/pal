@@ -19,8 +19,13 @@ export default function RootLayout({
 		<html lang="de">
 			<body className="font-[family-name:var(--font-montserrat)] antialiased bg-zinc-950 text-white min-h-screen">
 				<I18nProvider>
+					{/* Gradient ambient background */}
+					<div className="fixed inset-0 pointer-events-none overflow-hidden">
+						<div className="absolute -top-40 -right-40 w-96 h-96 bg-violet-600/5 rounded-full blur-3xl" />
+						<div className="absolute top-1/3 -left-20 w-72 h-72 bg-blue-600/[0.03] rounded-full blur-3xl" />
+					</div>
 					<NavBar />
-					<main className="animate-in fade-in duration-200">{children}</main>
+					<main className="relative animate-in fade-in duration-200">{children}</main>
 					<Toaster />
 				</I18nProvider>
 			</body>

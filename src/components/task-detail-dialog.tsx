@@ -256,7 +256,7 @@ function InlineEditField({
 						<SelectTrigger className="h-7 text-xs bg-zinc-950 border-zinc-800 w-auto min-w-[120px]">
 							<SelectValue />
 						</SelectTrigger>
-						<SelectContent className="bg-zinc-900 border-zinc-800">
+						<SelectContent className="bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/70 rounded-lg">
 							{options.map((opt) => (
 								<SelectItem
 									key={opt.value}
@@ -1112,7 +1112,7 @@ export function TaskDetailDialog({
 														setShowRejectInput(false);
 														setRejectReason("");
 													}}
-													className="border-zinc-800"
+													className="border-zinc-700"
 												>
 													{t("app.cancel")}
 												</Button>
@@ -1394,7 +1394,7 @@ export function TaskDetailDialog({
 									variant="outline"
 									size="sm"
 									onClick={() => setIsEditing(true)}
-									className="border-zinc-800"
+									className="border-zinc-700"
 								>
 									<Edit className="h-4 w-4 mr-2" />
 									{t("app.edit")}
@@ -1474,7 +1474,7 @@ export function TaskDetailDialog({
 												setShowBlockInput(false);
 												setBlockReason("");
 											}}
-											className="border-zinc-800"
+											className="border-zinc-700"
 										>
 											{t("app.cancel")}
 										</Button>
@@ -1547,7 +1547,7 @@ export function TaskDetailDialog({
 												setShowSubtaskForm(false);
 												setSubtaskTitle("");
 											}}
-											className="border-zinc-800"
+											className="border-zinc-700"
 										>
 											<X className="h-4 w-4" />
 										</Button>

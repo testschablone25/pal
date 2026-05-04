@@ -100,7 +100,7 @@ export function StaffForm({ staff, mode = "create" }: StaffFormProps) {
 	};
 
 	return (
-		<Card className="bg-zinc-900 border-zinc-800">
+		<Card className="bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/70 rounded-lg">
 			<CardHeader>
 				<CardTitle className="text-white">
 					{mode === "create" ? "Add New Staff Member" : "Edit Staff Member"}
@@ -125,7 +125,7 @@ export function StaffForm({ staff, mode = "create" }: StaffFormProps) {
 													<SelectValue placeholder="Select role" />
 												</SelectTrigger>
 											</FormControl>
-											<SelectContent className="bg-zinc-900 border-zinc-800">
+											<SelectContent className="bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/70 rounded-lg">
 												{STAFF_ROLES.map((role) => (
 													<SelectItem key={role} value={role}>
 														{role}
@@ -153,7 +153,7 @@ export function StaffForm({ staff, mode = "create" }: StaffFormProps) {
 													<SelectValue placeholder="Select contract type" />
 												</SelectTrigger>
 											</FormControl>
-											<SelectContent className="bg-zinc-900 border-zinc-800">
+											<SelectContent className="bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/70 rounded-lg">
 												<SelectItem value="permanent">Permanent</SelectItem>
 												<SelectItem value="freelance">Freelance</SelectItem>
 												<SelectItem value="minor">Minor</SelectItem>
@@ -205,7 +205,7 @@ export function StaffForm({ staff, mode = "create" }: StaffFormProps) {
 								type="button"
 								variant="outline"
 								onClick={() => router.back()}
-								className="border-zinc-800"
+								className="border-zinc-700"
 							>
 								Cancel
 							</Button>

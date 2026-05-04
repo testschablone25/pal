@@ -260,7 +260,7 @@ export function CalendarView({ onSelectEvent, venueId }: CalendarViewProps) {
 
 	return (
 		<>
-			<Card className="bg-zinc-900 border-zinc-800">
+			<Card className="bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/70 rounded-lg">
 				<CardContent className="pt-6">
 					{/* Header */}
 					<div className="flex justify-between items-center mb-6">
@@ -276,7 +276,7 @@ export function CalendarView({ onSelectEvent, venueId }: CalendarViewProps) {
 									variant="outline"
 									size="icon"
 									onClick={navigatePrev}
-									className="border-zinc-800"
+									className="border-zinc-700"
 								>
 									<ChevronLeft className="h-4 w-4" />
 								</Button>
@@ -284,7 +284,7 @@ export function CalendarView({ onSelectEvent, venueId }: CalendarViewProps) {
 									variant="outline"
 									size="sm"
 									onClick={goToToday}
-									className="border-zinc-800"
+									className="border-zinc-700"
 								>
 									Today
 								</Button>
@@ -292,7 +292,7 @@ export function CalendarView({ onSelectEvent, venueId }: CalendarViewProps) {
 									variant="outline"
 									size="icon"
 									onClick={navigateNext}
-									className="border-zinc-800"
+									className="border-zinc-700"
 								>
 									<ChevronRight className="h-4 w-4" />
 								</Button>

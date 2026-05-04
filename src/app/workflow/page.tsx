@@ -626,7 +626,7 @@ export default function WorkflowPage() {
 			</div>
 
 			{/* Filter Bar */}
-			<Card className="bg-zinc-900 border-zinc-800 mb-6">
+			<Card className="bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/70 mb-6">
 				<CardContent className="pt-6">
 					{/* Search + filter chips row */}
 					<div className="flex flex-wrap items-center gap-2 mb-4">
@@ -652,7 +652,7 @@ export default function WorkflowPage() {
 									{t("field.priority")} <ChevronDown className="h-3 w-3" />
 								</Button>
 							</DropdownMenuTrigger>
-							<DropdownMenuContent className="bg-zinc-900 border-zinc-800">
+							<DropdownMenuContent className="bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/70 rounded-lg">
 								<DropdownMenuItem
 									onClick={() => setFilterPriority("all")}
 									className="text-zinc-400"
@@ -682,7 +682,7 @@ export default function WorkflowPage() {
 									{t("field.assignee")} <ChevronDown className="h-3 w-3" />
 								</Button>
 							</DropdownMenuTrigger>
-							<DropdownMenuContent className="bg-zinc-900 border-zinc-800 max-h-60 overflow-y-auto">
+							<DropdownMenuContent className="bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/70 max-h-60 overflow-y-auto">
 								<DropdownMenuItem
 									onClick={() => setFilterAssignee("all")}
 									className="text-zinc-400"
@@ -712,7 +712,7 @@ export default function WorkflowPage() {
 									{t("field.event")} <ChevronDown className="h-3 w-3" />
 								</Button>
 							</DropdownMenuTrigger>
-							<DropdownMenuContent className="bg-zinc-900 border-zinc-800 max-h-60 overflow-y-auto">
+							<DropdownMenuContent className="bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/70 max-h-60 overflow-y-auto">
 								<DropdownMenuItem
 									onClick={() => setFilterEvent("all")}
 									className="text-zinc-400"
@@ -743,7 +743,7 @@ export default function WorkflowPage() {
 									{t("field.venue")} <ChevronDown className="h-3 w-3" />
 								</Button>
 							</DropdownMenuTrigger>
-							<DropdownMenuContent className="bg-zinc-900 border-zinc-800">
+							<DropdownMenuContent className="bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/70 rounded-lg">
 								<DropdownMenuItem
 									onClick={() => setFilterVenue("all")}
 									className="text-zinc-400"
@@ -815,7 +815,7 @@ export default function WorkflowPage() {
 									{t("app.sort")} <ChevronDown className="h-3 w-3" />
 								</Button>
 							</DropdownMenuTrigger>
-							<DropdownMenuContent className="bg-zinc-900 border-zinc-800">
+							<DropdownMenuContent className="bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/70 rounded-lg">
 								<DropdownMenuItem
 									onClick={() =>
 										setSortField(sortField === "priority" ? null : "priority")
@@ -1033,7 +1033,7 @@ export default function WorkflowPage() {
 
 			{/* Create Task Dialog */}
 			<Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
-				<DialogContent className="bg-zinc-900 border-zinc-800 max-w-xl max-h-[85vh] overflow-y-auto">
+				<DialogContent className="bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/70 max-w-xl max-h-[85vh] overflow-y-auto">
 					<DialogHeader>
 						<DialogTitle className="text-white">
 							{t("action.new_task")}

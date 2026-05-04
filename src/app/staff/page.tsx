@@ -233,7 +233,7 @@ export default function StaffPage() {
 			{/* Quick Actions */}
 			<div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
 				<Link href="/staff/new">
-					<Card className="bg-zinc-900 border-zinc-800 hover:border-violet-600/50 transition-colors cursor-pointer">
+					<Card className="bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/70 hover:border-violet-600/50 transition-colors cursor-pointer">
 						<CardContent className="pt-6">
 							<div className="flex items-center gap-4">
 								<div className="p-3 bg-violet-600/20">
@@ -251,7 +251,7 @@ export default function StaffPage() {
 				</Link>
 
 				<Link href="/staff/shifts">
-					<Card className="bg-zinc-900 border-zinc-800 hover:border-violet-600/50 transition-colors cursor-pointer">
+					<Card className="bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/70 hover:border-violet-600/50 transition-colors cursor-pointer">
 						<CardContent className="pt-6">
 							<div className="flex items-center gap-4">
 								<div className="p-3 bg-blue-600/20">
@@ -269,7 +269,7 @@ export default function StaffPage() {
 				</Link>
 
 				<Link href="/staff/availability">
-					<Card className="bg-zinc-900 border-zinc-800 hover:border-violet-600/50 transition-colors cursor-pointer">
+					<Card className="bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/70 hover:border-violet-600/50 transition-colors cursor-pointer">
 						<CardContent className="pt-6">
 							<div className="flex items-center gap-4">
 								<div className="p-3 bg-emerald-600/20">
@@ -286,7 +286,7 @@ export default function StaffPage() {
 			</div>
 
 			{/* Search and Filters */}
-			<Card className="bg-zinc-900 border-zinc-800 mb-6">
+			<Card className="bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/70 mb-6">
 				<CardContent className="pt-6">
 					<SearchFilterBar
 						placeholder="Search by name..."
@@ -319,7 +319,7 @@ export default function StaffPage() {
 			</Card>
 
 			{/* Staff Table */}
-			<Card className="bg-zinc-900 border-zinc-800">
+			<Card className="bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/70 rounded-lg">
 				<CardHeader className="flex flex-row items-center justify-between">
 					<CardTitle className="text-white">Staff Directory</CardTitle>
 					<Link href="/staff/new">
@@ -353,7 +353,7 @@ export default function StaffPage() {
 					) : (
 						<Table>
 							<TableHeader>
-								<TableRow className="border-zinc-800">
+								<TableRow className="border-zinc-700">
 									<TableHead className="text-zinc-400">Name</TableHead>
 									<TableHead className="text-zinc-400">Role</TableHead>
 									<TableHead className="text-zinc-400">Contract</TableHead>
@@ -366,7 +366,7 @@ export default function StaffPage() {
 							</TableHeader>
 							<TableBody>
 								{staff.map((member) => (
-									<TableRow key={member.id} className="border-zinc-800">
+									<TableRow key={member.id} className="border-zinc-700">
 										<TableCell>
 											<div>
 												<p className="font-medium text-white">
@@ -421,7 +421,7 @@ export default function StaffPage() {
 
 			{/* Delete Confirmation Dialog */}
 			<Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
-				<DialogContent className="bg-zinc-900 border-zinc-800">
+				<DialogContent className="bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/70 rounded-lg">
 					<DialogHeader>
 						<DialogTitle className="text-white">
 							Delete Staff Member
@@ -438,7 +438,7 @@ export default function StaffPage() {
 						<Button
 							variant="outline"
 							onClick={() => setDeleteDialogOpen(false)}
-							className="border-zinc-800"
+							className="border-zinc-700"
 						>
 							Cancel
 						</Button>

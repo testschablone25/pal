@@ -250,7 +250,7 @@ export default function AdminRolesPage() {
         </div>
 
         {/* Search */}
-        <Card className="bg-zinc-900 border-zinc-800">
+        <Card className="bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/70 rounded-lg">
           <CardContent className="pt-6">
             <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-zinc-500" />
@@ -265,7 +265,7 @@ export default function AdminRolesPage() {
         </Card>
 
         {/* Users List */}
-        <Card className="bg-zinc-900 border-zinc-800">
+        <Card className="bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/70 rounded-lg">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Users className="h-5 w-5 text-violet-400" />
@@ -344,7 +344,7 @@ export default function AdminRolesPage() {
         </Card>
 
         {/* Role Legend */}
-        <Card className="bg-zinc-900 border-zinc-800">
+        <Card className="bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/70 rounded-lg">
           <CardHeader>
             <CardTitle className="text-lg">Rollen-Übersicht</CardTitle>
           </CardHeader>
@@ -367,7 +367,7 @@ export default function AdminRolesPage() {
 
         {/* Add Role Dialog */}
         <Dialog open={isAddRoleDialogOpen} onOpenChange={setIsAddRoleDialogOpen}>
-          <DialogContent className="bg-zinc-900 border-zinc-800">
+          <DialogContent className="bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/70 rounded-lg">
             <DialogHeader>
               <DialogTitle className="text-white">Rolle hinzufügen</DialogTitle>
               <DialogDescription>
@@ -416,7 +416,7 @@ export default function AdminRolesPage() {
 
         {/* Remove Role Dialog */}
         <Dialog open={isRemoveRoleDialogOpen} onOpenChange={setIsRemoveRoleDialogOpen}>
-          <DialogContent className="bg-zinc-900 border-zinc-800">
+          <DialogContent className="bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/70 rounded-lg">
             <DialogHeader>
               <DialogTitle className="text-white">Rolle entfernen</DialogTitle>
               <DialogDescription>

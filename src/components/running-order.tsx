@@ -255,7 +255,7 @@ export function RunningOrder({
 
 	if (loading) {
 		return (
-			<Card className="bg-zinc-900 border-zinc-800">
+			<Card className="bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/70 rounded-lg">
 				<CardHeader>
 					<CardTitle>Running Order</CardTitle>
 				</CardHeader>
@@ -272,7 +272,7 @@ export function RunningOrder({
 
 	return (
 		<>
-			<Card className="bg-zinc-900 border-zinc-800">
+			<Card className="bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/70 rounded-lg">
 				<CardHeader className="flex flex-row items-center justify-between">
 					<CardTitle className="flex items-center gap-2">
 						Running Order
@@ -332,7 +332,7 @@ export function RunningOrder({
 			</Card>
 
 			<AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
-				<AlertDialogContent className="bg-zinc-900 border-zinc-800">
+				<AlertDialogContent className="bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/70 rounded-lg">
 					<AlertDialogHeader>
 						<AlertDialogTitle>Löschen bestätigen</AlertDialogTitle>
 						<AlertDialogDescription>
@@ -341,7 +341,7 @@ export function RunningOrder({
 						</AlertDialogDescription>
 					</AlertDialogHeader>
 					<AlertDialogFooter>
-						<AlertDialogCancel className="border-zinc-800">
+						<AlertDialogCancel className="border-zinc-700">
 							Abbrechen
 						</AlertDialogCancel>
 						<AlertDialogAction

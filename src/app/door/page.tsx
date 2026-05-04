@@ -140,7 +140,7 @@ export default function DoorScannerPage() {
 
           {/* Scanner Tab */}
           <TabsContent value="scanner">
-            <Card className="bg-zinc-900 border-zinc-800">
+            <Card className="bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/70 rounded-lg">
               <CardHeader>
                 <CardTitle className="text-white">QR Code Scanner</CardTitle>
               </CardHeader>
@@ -163,7 +163,7 @@ export default function DoorScannerPage() {
           {/* Manual Entry Tab */}
           <TabsContent value="manual" className="space-y-6">
             {/* Manual QR token entry */}
-            <Card className="bg-zinc-900 border-zinc-800">
+            <Card className="bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/70 rounded-lg">
               <CardHeader>
                 <CardTitle className="text-white">Manual Check-in</CardTitle>
               </CardHeader>
@@ -197,7 +197,7 @@ export default function DoorScannerPage() {
             </Card>
 
             {/* Walk-in form */}
-            <Card className="bg-zinc-900 border-zinc-800">
+            <Card className="bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/70 rounded-lg">
               <CardHeader>
                 <CardTitle className="text-white">Add Walk-in Guest</CardTitle>
               </CardHeader>

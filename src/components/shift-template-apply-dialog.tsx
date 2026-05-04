@@ -285,7 +285,7 @@ export function ShiftTemplateApplyDialog({
 					<Button
 						variant="outline"
 						onClick={handleClose}
-						className="border-zinc-800"
+						className="border-zinc-700"
 					>
 						{appliedTemplates.size > 0 ? "Done" : "Cancel"}
 					</Button>
