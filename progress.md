@@ -1,42 +1,31 @@
-# Progress
+# PAL Remediation — Progress
 
-## Status
-Completed — Session 5 (Under-engineering)
+## ✅ Done (Session 1-6 + Current)
 
-## Tasks
-- [x] U1: Create loading.tsx + error.tsx for all 10 route segments (root + 9 sub-routes = 20 files)
-- [x] U2: Create reusable pagination-controls.tsx component
-- [x] D5: NavBar filters by role using canAccessRoute from @/lib/permissions
+| Batch | Item | Status | Notes |
+|---|---|---|---|
+| P0.1 | Event edit page | ✅ | `src/app/events/[id]/edit/page.tsx` created, thin wrapper around `EventForm mode="edit"` |
+| P0.2 | Fix Share button | ✅ | Copys URL to clipboard via `navigator.clipboard.writeText` |
+| P0.3 | Event status management | ✅ | Toolbar with Publish/Cancel/Complete buttons on event detail |
+| P0.4 | Guest list + door links | ✅ | Navigation buttons on event detail page |
+| P1.1 | Wire pagination | ✅ | Artist list + Inventory list wired with `PaginationControls` |
+| P1.2 | Squash migration | ✅ | `20260603000000_squash.sql` created, 12 old migrations archived |
+| P2.1 | Staff shifts decomposition | ✅ | 2,217→946 lines (57%↓). 4 modules + 3 shared files extracted |
 
-## Files Changed
+## 🚧 In Progress
 
-### U1 — Loading/Error Boundaries (20 new files)
-- `src/app/loading.tsx` — Root loading skeleton (PageSkeleton)
-- `src/app/error.tsx` — Root error boundary ('use client', retry button)
-- `src/app/events/loading.tsx` + `error.tsx`
-- `src/app/artists/loading.tsx` + `error.tsx`
-- `src/app/staff/loading.tsx` + `error.tsx`
-- `src/app/inventory/loading.tsx` + `error.tsx`
-- `src/app/workflow/loading.tsx` + `error.tsx`
-- `src/app/venues/loading.tsx` + `error.tsx`
-- `src/app/guest-lists/loading.tsx` + `error.tsx`
-- `src/app/door/loading.tsx` + `error.tsx`
-- `src/app/rentals/loading.tsx` + `error.tsx`
+_None_
 
-### U2 — Pagination (1 new file)
-- `src/components/pagination-controls.tsx` — Reusable pagination with page window of 5, prev/next, ellipsis, item count
+## ⏳ Remaining
 
-### D5 — NavBar Role Filtering (1 modified file)
-- `src/components/nav-bar.tsx`
-  - Added `useState`/`useEffect` for fetching user roles from Supabase on mount
-  - Added `createClient` import from `@/lib/supabase/browser`
-  - Added `canAccessRoute`/`AppRole` import from `@/lib/permissions`
-  - Desktop + mobile nav items filtered via `canAccessRoute(userRoles, href)`
-  - If user has no roles, only Dashboard link shown
-  - Removed unused `onNavigate` prop from `MobileNavLink`
-
-## Verification
-- `npx tsc --noEmit`: zero new type errors (all pre-existing test file issues)
-- `npm run lint`: zero new lint issues from changed files
-- All loading.tsx files use server component pattern (no 'use client')
-- All error.tsx files use 'use client' with error message + retry button
+| ID | Item | Effort | Notes |
+|---|---|---|---|
+| P1.3 | E2E tests | 3h | Door/check-in, event→shift, rider→task |
+| P2.2 | Venues decomposition | 2h | 1,145-line monolith |
+| P3.1 | Overdue rental alerts | 1h | Dashboard overdue strip |
+| P3.2 | Dashboard shift clock-in | 1h | Clock-in on dashboard hero |
+| P3.3 | Artist→Event linking | 1h | Add to event from artist detail |
+| P3.4 | Sub-location capacity UI | 30min | Show capacity in venue view |
+| P4.1 | Language consistency | 4h | Decision needed (DE vs EN) |
+| P4.2 | Integration tests | 2h | Guest list→check-in, item→QR→delivery |
+| P5.1 | Role taxonomy | 3h | Depends on P2.1 |

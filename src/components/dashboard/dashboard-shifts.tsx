@@ -1,11 +1,13 @@
 "use client";
 
+import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { formatDateShort, formatTime } from "@/lib/dates";
 import { canAccessRoute, type AppRole } from "@/lib/permissions";
-import { Clock, Users } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+import { Clock, Users, LogIn, LogOut } from "lucide-react";
 import Link from "next/link";
 
 interface ShiftEvent {
@@ -59,6 +61,49 @@ export function DashboardShifts({
 	userRoles,
 	getInitials,
 }: DashboardShiftsProps) {
+	const { toast } = useToast();
+	const [clockingIn, setClockingIn] = useState(false);
+
+	// Find the first today shift that isn't completed
+	const activeShift = todayShifts.find(
+		(s) => s.status !== "cancelled" && s.status !== "completed",
+	);
+	const isClockedIn = todayShifts.some((s) => s.status === "confirmed");
+
+	const handleClockAction = async () => {
+		if (!activeShift) return;
+		setClockingIn(true);
+		try {
+			const action = isClockedIn ? "clock-out" : "clock-in";
+			const response = await fetch(`/api/shifts/${activeShift.id}/${action}`, {
+				method: "POST",
+			});
+
+			if (!response.ok) {
+				const data = await response.json();
+				throw new Error(data.error || `Failed to ${action}`);
+			}
+
+			toast({
+				title: isClockedIn ? "Clock Out erfolgreich" : "Clock In erfolgreich",
+				description: isClockedIn
+					? "Du wurdest ausgeclockt."
+					: "Du wurdest eingestempelt.",
+			});
+
+			// Reload to reflect new state
+			window.location.reload();
+		} catch (err) {
+			toast({
+				variant: "destructive",
+				title: "Fehler",
+				description: err instanceof Error ? err.message : "Action failed",
+			});
+		} finally {
+			setClockingIn(false);
+		}
+	};
+
 	return (
 		<>
 			{/* Today's Shift */}
@@ -86,6 +131,29 @@ export function DashboardShifts({
 				</div>
 
 				<div className="px-4 pb-4 space-y-2">
+					{activeShift && (
+						<Button
+							size="sm"
+							onClick={handleClockAction}
+							disabled={clockingIn}
+							className={
+								isClockedIn
+									? "w-full bg-red-600/20 text-red-400 hover:bg-red-600/30 border border-red-700/30"
+									: "w-full bg-emerald-600/20 text-emerald-400 hover:bg-emerald-600/30 border border-emerald-700/30"
+							}
+						>
+							{isClockedIn ? (
+								<LogOut className="h-4 w-4 mr-2" />
+							) : (
+								<LogIn className="h-4 w-4 mr-2" />
+							)}
+							{clockingIn
+								? "Processing..."
+								: isClockedIn
+									? "Clock Out"
+									: "Clock In"}
+						</Button>
+					)}
 					{!staffRecord ? (
 						<p className="text-xs text-zinc-500 py-2">
 							Kein Staff-Profil verknüpft.

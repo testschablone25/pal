@@ -107,6 +107,7 @@ export default function DashboardPage() {
 	const [pendingApprovalCount, setPendingApprovalCount] = useState(0);
 	const [activeRentalsCount, setActiveRentalsCount] = useState(0);
 	const [dueThisWeek, setDueThisWeek] = useState(0);
+	const [overdueRentalsCount, setOverdueRentalsCount] = useState(0);
 
 	// Task dialog state
 	const [selectedTask, setSelectedTask] = useState<Task | null>(null);
@@ -144,6 +145,17 @@ export default function DashboardPage() {
 			setPendingApprovalCount(data.pendingApprovalCount || 0);
 			setActiveRentalsCount(data.activeRentalsCount || 0);
 			setDueThisWeek(data.dueThisWeek || 0);
+
+			// Fetch overdue rentals count
+			try {
+				const rentalsResp = await fetch("/api/rentals?status=overdue&limit=1");
+				if (rentalsResp.ok) {
+					const rentalsData = await rentalsResp.json();
+					setOverdueRentalsCount(rentalsData.total || 0);
+				}
+			} catch {
+				// Non-critical
+			}
 		} catch (error) {
 			console.error("Dashboard error:", error);
 		} finally {
@@ -267,6 +279,25 @@ export default function DashboardPage() {
 					onSignOut={handleSignOut}
 					getInitials={getInitials}
 				/>
+
+				{/* ===== OVERDUE RENTALS STRIP ===== */}
+				{overdueRentalsCount > 0 && (
+					<Link href="/rentals?status=overdue">
+						<div className="rounded-lg bg-amber-950/20 backdrop-blur-sm border border-amber-800/30 p-4 flex items-center gap-3 hover:bg-amber-950/30 transition-colors cursor-pointer">
+							<AlertTriangle className="h-5 w-5 text-amber-400 shrink-0" />
+							<div>
+								<p className="text-sm font-semibold text-amber-300">
+									{overdueRentalsCount} überfällige{" "}
+									{overdueRentalsCount === 1 ? "Verleih" : "Verleihe"}
+								</p>
+								<p className="text-xs text-amber-400/70">
+									Ausgeliehene Artikel sind überfällig — bitte Rückgabe prüfen
+								</p>
+							</div>
+							<ArrowRight className="h-4 w-4 text-amber-400/50 ml-auto shrink-0" />
+						</div>
+					</Link>
+				)}
 
 				{/* ===== STAT STRIP ===== */}
 				<DashboardStats

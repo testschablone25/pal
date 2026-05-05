@@ -52,7 +52,7 @@ export default function EditEventPage() {
 	return (
 		<div className="max-w-3xl mx-auto px-4 py-8">
 			<EventForm
-				event={event as EventFormEvent}
+				event={event as unknown as EventFormEvent}
 				mode="edit"
 				onSuccess={() => router.push(`/events/${eventId}`)}
 			/>

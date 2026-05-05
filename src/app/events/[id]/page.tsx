@@ -117,6 +117,52 @@ export default function EventDetailPage() {
 		}
 	};
 
+	const handleShare = async () => {
+		try {
+			await navigator.clipboard.writeText(window.location.href);
+			toast({
+				title: "Link copied",
+				description: "Event URL copied to clipboard.",
+			});
+		} catch (error) {
+			console.error("Failed to copy URL:", error);
+			toast({
+				variant: "destructive",
+				title: "Error",
+				description: "Failed to copy URL to clipboard.",
+			});
+		}
+	};
+
+	const handleStatusChange = async (newStatus: string) => {
+		try {
+			const response = await fetch(`/api/events/${eventId}`, {
+				method: "PUT",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify({ status: newStatus }),
+			});
+
+			if (!response.ok) {
+				const err = await response.json();
+				throw new Error(err.error || "Failed to update status");
+			}
+
+			setEvent((prev) => (prev ? { ...prev, status: newStatus } : prev));
+			toast({
+				title: "Status updated",
+				description: `Event is now ${newStatus}.`,
+			});
+		} catch (error) {
+			console.error("Failed to update status:", error);
+			toast({
+				variant: "destructive",
+				title: "Error",
+				description:
+					error instanceof Error ? error.message : "Could not update status",
+			});
+		}
+	};
+
 	const handleDeleteEvent = async () => {
 		try {
 			await fetch(`/api/events/${eventId}`, { method: "DELETE" });
