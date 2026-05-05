@@ -45,6 +45,7 @@ import {
 } from "lucide-react";
 
 import { EmptyState } from "@/components/empty-state";
+import { useToast } from "@/hooks/use-toast";
 
 /* ───────────────────────────────────────────
    Types
@@ -153,6 +154,7 @@ export function AvailabilityCalendar({
 	viewMode = "all",
 	onViewModeChange,
 }: AvailabilityCalendarProps) {
+	const { toast } = useToast();
 	/* ── state ── */
 	const [staff, setStaff] = useState<StaffMember[]>([]);
 	const [selectedStaffId, setSelectedStaffId] = useState<string>(

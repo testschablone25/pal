@@ -135,7 +135,7 @@ export function ArtistList() {
 			{/* Section header + count */}
 			<div className="flex justify-between items-center">
 				<div className="flex items-center gap-2">
-						<Music className="h-4 w-4 text-zinc-400" />
+					<Music className="h-4 w-4 text-zinc-400" />
 					<p className="text-sm text-zinc-400">
 						{loading ? "Loading..." : `${total} artists found`}
 					</p>

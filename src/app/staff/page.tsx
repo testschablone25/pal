@@ -198,7 +198,7 @@ export default function StaffPage() {
 			</div>
 
 			{/* Quick Actions */}
-			<div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+			<div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
 				<Link href="/staff/new">
 					<Card className="bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/70 hover:border-zinc-700 transition-all cursor-pointer">
 						<CardContent className="pt-6">
@@ -231,14 +231,28 @@ export default function StaffPage() {
 					</Card>
 				</Link>
 
+				<Link href="/staff/availability?view=me">
+					<Card className="bg-zinc-900/70 backdrop-blur-sm border border-emerald-700/50 hover:border-emerald-500 transition-all cursor-pointer">
+						<CardContent className="pt-6">
+							<div className="flex items-center gap-4">
+								<Calendar className="h-5 w-5 text-emerald-400" />
+								<div>
+									<h3 className="font-semibold text-white">My Availability</h3>
+									<p className="text-sm text-zinc-400">Set my schedule</p>
+								</div>
+							</div>
+						</CardContent>
+					</Card>
+				</Link>
+
 				<Link href="/staff/availability">
 					<Card className="bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/70 hover:border-zinc-700 transition-all cursor-pointer">
 						<CardContent className="pt-6">
 							<div className="flex items-center gap-4">
-									<Calendar className="h-5 w-5 text-zinc-400" />
+								<Users className="h-5 w-5 text-zinc-400" />
 								<div>
 									<h3 className="font-semibold text-white">{total} Staff</h3>
-									<p className="text-sm text-zinc-400">Manage availability</p>
+									<p className="text-sm text-zinc-400">All availability</p>
 								</div>
 							</div>
 						</CardContent>

@@ -19,7 +19,7 @@ These are complete and shipped. Not re-opening.
 | **5 — Boundaries**   | 20 loading/error boundaries, NavBar role filtering                                                                   | Files exist for all 10 route segments |
 | **6 — Unit Tests**   | 6 test files, 47 tests covering dashboard, pagination, task-detail, task-form                                        | 70/71 passing                         |
 | **7 — Batches 1-4**  | P0 dead ends fixed (edit page, share, status, door links), P1.1 pagination wired, P1.2 squash migration created      | `npx tsc --noEmit` clean              |
-| **8 — Architecture** | P2.1 staff shifts decomposed 2,217→946 lines, P2.2 venues decomposed 1,145→578 lines, P1.3 e2e tests (26), P3 UX    | jscpd 5.17%, knip clean               |
+| **8 — Architecture** | P2.1 staff shifts decomposed 2,217→946 lines, P2.2 venues decomposed 1,145→578 lines, P1.3 e2e tests (26), P3 UX     | jscpd 5.17%, knip clean               |
 
 ---
 
