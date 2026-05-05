@@ -39,6 +39,11 @@ import {
 	Trash2,
 	Plus,
 	ListTodo,
+	CheckCircle2,
+	XCircle,
+	Ban,
+	UserCheck,
+	DoorOpen,
 } from "lucide-react";
 import Link from "next/link";
 import { useToast } from "@/hooks/use-toast";
@@ -330,6 +335,66 @@ export default function EventDetailPage() {
 					</AlertDialogFooter>
 				</AlertDialogContent>
 			</AlertDialog>
+
+			{/* Status Management */}
+			{event.status && (
+				<div className="flex flex-wrap gap-2 mb-6">
+					{event.status !== "published" && (
+						<Button
+							size="sm"
+							onClick={() => handleStatusChange("published")}
+							className="bg-emerald-600 hover:bg-emerald-700"
+						>
+							<CheckCircle2 className="h-4 w-4 mr-1.5" />
+							Publish
+						</Button>
+					)}
+					{event.status !== "cancelled" && (
+						<Button
+							size="sm"
+							onClick={() => handleStatusChange("cancelled")}
+							variant="outline"
+							className="border-red-700 text-red-400 hover:bg-red-950"
+						>
+							<XCircle className="h-4 w-4 mr-1.5" />
+							Cancel
+						</Button>
+					)}
+					{event.status !== "completed" && (
+						<Button
+							size="sm"
+							onClick={() => handleStatusChange("completed")}
+							variant="outline"
+							className="border-zinc-700"
+						>
+							<Ban className="h-4 w-4 mr-1.5" />
+							Complete
+						</Button>
+					)}
+					<Button
+						size="sm"
+						variant="outline"
+						className="border-zinc-700"
+						asChild
+					>
+						<Link href={`/guest-lists?event_id=${eventId}`}>
+							<UserCheck className="h-4 w-4 mr-1.5" />
+							Guest List
+						</Link>
+					</Button>
+					<Button
+						size="sm"
+						variant="outline"
+						className="border-zinc-700"
+						asChild
+					>
+						<Link href={`/door?event_id=${eventId}`}>
+							<DoorOpen className="h-4 w-4 mr-1.5" />
+							Door
+						</Link>
+					</Button>
+				</div>
+			)}
 
 			{/* Venue info */}
 			{event.venues && (

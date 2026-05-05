@@ -6,6 +6,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { PageSkeleton } from "@/components/page-skeleton";
+import { PaginationControls } from "@/components/pagination-controls";
 import {
 	Table,
 	TableBody,
@@ -84,6 +85,9 @@ export function InventoryList() {
 	const [debouncedSearch, setDebouncedSearch] = useState("");
 	const [category, setCategory] = useState("");
 	const [total, setTotal] = useState(0);
+	const [currentPage, setCurrentPage] = useState(1);
+	const pageSize = 25;
+	const totalPages = Math.ceil(total / pageSize);
 	const [showCreateDialog, setShowCreateDialog] = useState(false);
 	const [qrDialogItem, setQrDialogItem] = useState<{
 		id: string;
@@ -103,6 +107,8 @@ export function InventoryList() {
 			const params = new URLSearchParams();
 			if (debouncedSearch) params.append("search", debouncedSearch);
 			if (category) params.append("category", category);
+			params.append("limit", String(pageSize));
+			params.append("offset", String((currentPage - 1) * pageSize));
 
 			const response = await fetch(`/api/items?${params.toString()}`);
 			const data: ItemsResponse = await response.json();
@@ -113,7 +119,7 @@ export function InventoryList() {
 		} finally {
 			setLoading(false);
 		}
-	}, [debouncedSearch, category]);
+	}, [debouncedSearch, category, currentPage]);
 
 	useEffect(() => {
 		fetchItems();
@@ -181,6 +187,17 @@ export function InventoryList() {
 					{loading ? "Loading..." : `${total} items found`}
 				</p>
 			</div>
+
+			<PaginationControls
+				currentPage={currentPage}
+				totalPages={totalPages}
+				totalItems={total}
+				onPageChange={(page) => {
+					setCurrentPage(page);
+					window.scrollTo({ top: 0, behavior: "smooth" });
+				}}
+				className="mb-2"
+			/>
 
 			{/* Items table */}
 			{loading ? (

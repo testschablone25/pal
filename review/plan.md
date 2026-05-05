@@ -1,446 +1,261 @@
-# Remediation Plan — PAL Codebase Fixes
+# PAL Remediation Plan — Current State & Priority Order
 
-> Generated 2026-05-05. Cross-reference: `review/findings.md`
-> Estimated effort: ~5-7 focused sessions.
-> Strategy: Security-first, then architecture, then bugs, then cleanup/testing.
-
----
-
-## Session 1: Security (C1, C2, F2)
-
-**Goal**: Add `requireAuth()` to all unprotected API routes and standardize on one auth pattern.
-
-### Steps
-
-#### 1.1 Audit all route files
-
-- List all 49 route files. 41 lack auth checks.
-- Handle files one-by-one, grouping by required permission:
-  - Routes needing `TASKS_WRITE`: tasks (create, update, delete, approve, reject, block, deliver-item, status)
-  - Routes needing `TASKS_READ`: tasks (list, get, history, comments)
-  - Routes needing `EVENTS_WRITE`: events (create, update, delete)
-  - Routes needing `EVENTS_READ`: events (list, get)
-  - Routes needing `ARTISTS_WRITE`: artists (create, update, delete, extract-rider, generate-tasks, delete-rider)
-  - Routes needing `ARTISTS_READ`: artists (list, get)
-  - Routes needing `INVENTORY_WRITE`: items (create, update, delete, qr, rider-assignments)
-  - Routes needing `INVENTORY_READ`: items (list, get, tasks, location-history)
-  - Routes needing `INVENTORY_CHECKIN`: items (check-in, deliver-item)
-  - Routes needing `RENTALS` or `RENTALS_READ`: rentals
-  - Routes needing `VENUES_WRITE` / `VENUES_READ`: venues
-  - Routes needing `GUEST_LISTS_WRITE` / `GUEST_LISTS_READ`: guest-lists
-  - Routes needing `CHECKIN`: checkin
-  - Routes needing `STAFF_READ` / `STAFF_WRITE`: staff (already done)
-  - Routes needing `SHIFTS_READ` / `SHIFTS_WRITE`: shifts (already done)
-  - Routes needing `ROLES_MANAGE`: admin/roles
-  - Routes needing `EVENTS_READ` or broader: dashboard, occupancy, itinerary
-
-#### 1.2 Standardize auth client
-
-- **Decision**: Use Pattern C everywhere — admin client + explicit `requireAuth()`. Pattern B (server-side cookies) is slower and subject to RLS policy drift. Pattern C is explicit, fast, and consistent.
-- All routes import `requireAuth` from `@/lib/api-auth` and `createClient` from `@supabase/supabase-js`.
-
-#### 1.3 Fix approve/reject specifically
-
-- `tasks/[id]/approve/route.ts` and `tasks/[id]/reject/route.ts` need `requireAuth(request, "TASKS_WRITE")` before any operation.
-
-#### 1.4 Update config.ts
-
-- Remove hardcoded publishable key fallback (use env vars only).
-- Remove service key placeholder — fail loudly if not set in production.
-
-### Acceptance Criteria
-
-- [ ] All 49 route files import `requireAuth` and check it
-- [ ] All routes use Pattern C (admin client + requireAuth)
-- [ ] Approve/reject reject unauthorized requests
-- [ ] `npm run lint` passes
-- [ ] `npm run build` passes
+> **Updated**: 2026-05-05
+> **Cross-reference**: `review/findings.md` (issue IDs), `review/plan.md` (previous plan)
+> **Strategy**: Fix dead ends first (P0), then deliverable plan items (P1), then architecture debt (P2), then UX quality (P3), then polish (P4), then deferred (P5)
 
 ---
 
-## Session 2: Architecture — Break Up Monoliths (D1)
+## ✅ Already Delivered (Sessions 1-6)
 
-**Goal**: Decompose largest files into focused, testable modules.
+These are complete and shipped. Not re-opening.
 
-### Steps
-
-#### 2.1 `task-detail-dialog.tsx` → 5-6 files
-
-| New File                   | Responsibility                                                | Est. Lines |
-| -------------------------- | ------------------------------------------------------------- | ---------- |
-| `task-detail-view.tsx`     | Main layout, status/priority badges, metadata display         | 200        |
-| `task-detail-comments.tsx` | Comment list + add comment form                               | 200        |
-| `task-detail-items.tsx`    | Item delivery view, QR scanning, sub-location verification    | 300        |
-| `task-detail-history.tsx`  | History timeline (reuse existing `task-history-timeline.tsx`) | 100        |
-| `task-detail-actions.tsx`  | Approve/reject/block/unblock/delete actions                   | 250        |
-| `task-detail-subtasks.tsx` | Subtask tree rendering                                        | 150        |
-
-#### 2.2 `rider-editor.tsx` → 4 files
-
-| New File                       | Responsibility                                             |
-| ------------------------------ | ---------------------------------------------------------- |
-| `rider-editor-tech.tsx`        | Tech rider tab (equipment, backline, audio)                |
-| `rider-editor-hospitality.tsx` | Hospitality rider tab (accommodation, catering, transport) |
-| `rider-editor-stage.tsx`       | Stage setup tab (monitors, power, furniture)               |
-| `rider-editor.tsx`             | Orchestrator — reduced to tabs/wiring                      |
-
-#### 2.3 `task-form.tsx` → 3 files
-
-| New File               | Responsibility                                    |
-| ---------------------- | ------------------------------------------------- |
-| `task-form-fields.tsx` | Form fields (title, description, priority, dates) |
-| `task-form-items.tsx`  | Item picker + sub-location selector               |
-| `task-form.tsx`        | Main form orchestrator                            |
-
-#### 2.4 Dashboard page → extract reusable components
-
-- `dashboard-hero.tsx` — Greeting, today's event, avatar
-- `dashboard-task-list.tsx` — Task rows grouped by date
-- `dashboard-stats.tsx` — Stat strip
-- Keep `page.tsx` as thin orchestrator
-
-### Acceptance Criteria
-
-- [ ] All new files compile and build
-- [ ] Original functionality preserved (no visual regressions)
-- [ ] Each new file is < 400 lines
-- [ ] `npm run knip` finds no regressions
+| Session              | What was done                                                                                                        | Verification                          |
+| -------------------- | -------------------------------------------------------------------------------------------------------------------- | ------------------------------------- |
+| **1 — Security**     | `requireAuth()` on all 49 API route files (34 newly protected + 15 existing)                                         | `npx tsc --noEmit` clean              |
+| **2 — Architecture** | 4 monoliths decomposed: task-detail (-77%), rider-editor (-90%), task-form (-43%), dashboard (-49%) → 16 new modules | All under 460 lines                   |
+| **3 — Bugs**         | 5 bugs fixed: time overlap, occupancy default, door UUIDs, promoter limits docs, backfill docs                       | Tests passing                         |
+| **4 — Cleanup**      | 18 unused shadcn removed, 3 dead migrations archived, seed data extracted, dead table migration, npm scripts         | `npm run lint` clean                  |
+| **5 — Boundaries**   | 20 loading/error boundaries, NavBar role filtering                                                                   | Files exist for all 10 route segments |
+| **6 — Unit Tests**   | 6 test files, 47 tests covering dashboard, pagination, task-detail, task-form                                        | 70/71 passing                         |
 
 ---
 
-## Session 3: Bugs (F1, F3, F5, F6, F7)
+## 📋 Remaining Work — Priority Ordered
 
-**Goal**: Fix identified logic flaws.
+---
 
-### Steps
+### P0 — Dead Ends & Broken UX
 
-#### 3.1 Fix performance time overlap (F1)
+These are paths in the UI that lead to 404s, do nothing, or are missing critical flows.
 
-**File**: `src/app/api/performances/route.ts`
+#### P0.1 — Create event edit page (EventForm supports edit mode)
 
-Replace string comparison with proper time comparison:
+**Issue**: Event detail page links to `/events/[id]/edit/` → **404**
+**File**: `src/app/events/[id]/page.tsx:296`
+**Fix**: Create `src/app/events/[id]/edit/page.tsx` (15 lines, thin wrapper around `EventForm mode="edit"`)
 
-```ts
-// Convert TIME strings to minutes-since-midnight for comparison
-function timeToMinutes(t: string): number {
-  const [h, m] = t.split(":").map(Number);
-  return h * 60 + m;
-}
-// Then check overlaps properly, also handling cross-midnight
+```tsx
+// The component already exists — EventForm has mode="create" | "edit"
 ```
 
-#### 3.2 Fix approve/reject endpoints (F2 covered in Session 1)
+#### P0.2 — Fix Share button (or remove it)
 
-#### 3.3 Fix occupancy default (F3)
+**Issue**: Share button on event detail has no `onClick` handler — renders but does nothing
+**Fix**: Either implement share (copy URL to clipboard) or remove the button
 
-**File**: `src/app/api/occupancy/[eventId]/route.ts`
+#### P0.3 — Add event status management to event detail
 
-Replace `|| 800` with `|| null` — return `null` for max capacity when event has none set. Let the frontend decide the default.
+**Issue**: Events have `draft | published | cancelled | completed` status but no way to change it from the detail page
+**Fix**: Add a toolbar dropdown or action buttons for Publish / Cancel / Complete, with confirmation dialogs
 
-#### 3.4 Remove hardcoded demo UUIDs from door page (F6)
+#### P0.4 — Add guest list + door links to event detail page
 
-**File**: `src/app/door/page.tsx`
-
-Replace with:
-
-- Event selection dropdown at page top
-- Auto-select event if only one is active tonight
-- Default to first active event's guest list
-
-#### 3.5 Fix `created_by` backfill (F7)
-
-- This is a migration issue. For new installs, the migration is irrelevant. Document the limitation in the migration comment.
-
-#### 3.6 Guest list promoter limits (F5)
-
-- Add note: incomplete feature, remove or document as deprecated.
-
-### Acceptance Criteria
-
-- [ ] Performance overlap works across midnight
-- [ ] Occupancy API doesn't hardcode a default
-- [ ] Door page loads without demo UUIDs, requires event selection
-- [ ] Tests pass
+**Issue**: When viewing an event, there's no way to navigate to its guest list or door page
+**Fix**: Add buttons like "Guest List" and "Door" that link to `/guest-lists?event_id=X` and `/door?event_id=X`
 
 ---
 
-## Session 4: Cleanup (D2, D4, O3, U4)
+### P1 — Plan Deliverables (not completed from original sessions)
 
-**Goal**: Remove dead code and clean up technical debt.
+These are items scoped in the original plan that weren't delivered.
 
-### Steps
+#### P1.1 — Wire PaginationControls into list pages
 
-#### 4.1 Flatten migrations
+**Issue**: `src/components/pagination-controls.tsx` exists but isn't used anywhere
+**Files to modify**: events page, artists page, inventory page, staff page, venues page, workflow page
+**Each page needs**:
 
-- Create a new `20260506000000_squash.sql` migration that contains:
-  - All current table definitions
-  - Current RLS policies
-  - Current role system
-  - **Without** seed data (move to scripts)
-- Document which old migrations can be archived
+- Page state (`currentPage`, `totalItems`)
+- Fetch with `limit`/`offset` query params
+- `<PaginationControls>` component wired to `onPageChange`
 
-#### 4.2 Remove dead schema
+#### P1.2 — Create squash migration
 
-- `cloakroom_items`: Drop table in a new migration (or keep if planned feature)
-- `notifications`: Drop table in a new migration (or keep if planned)
-- Decision required per table.
+**Issue**: 11 separate migrations still in `supabase/migrations/`, complex history
+**Fix**: Create `20260506000000_squash.sql` with all current table defs + RLS policies + roles, archive old ones
 
-#### 4.3 Prune unused shadcn/ui components
+#### P1.3 — E2E tests for critical flows
 
-- Use `knip` or manual audit to find unused imports in `src/components/ui/`
-- Remove files: `resizable.tsx`, `menubar.tsx`, `context-menu.tsx`, `carousel.tsx`, `input-otp.tsx`, `navigation-menu.tsx`, `hover-card.tsx`, `aspect-ratio.tsx`, `slider.tsx`, `toggle-group.tsx` (confirm unuse first)
+**Issue**: Zero E2E tests for PAL-specific functionality
+**Tests to create**:
 
-#### 4.4 Remove dead booker migrations
+- Door/check-in: create guest list → add guest → scan QR → check in → verify status
+- Event→shift: create event → assign staff → verify shift appears
+- Rider→task: upload rider → generate tasks → verify tasks in workflow
 
-- `20240325000003_add_booker_role.sql` → archive
-- `20240326000000_add_booker_rls_policies.sql` → archive
+---
 
-#### 4.5 Move seed data out of migrations
+### P2 — Architecture Debt (remaining monoliths)
 
-- Extract venue/sub-location/item seed data from `20260429000000` into a proper seed script
-- Delete hardcoded data from the migration file
+These are the same class of problem as Session 2 but we didn't scope them originally.
 
-#### 4.6 Add `package.json` scripts for common operations
+#### P2.1 — Decompose staff shifts page (2,216 lines)
 
-```json
-{
-  "seed:venues": "npx tsx scripts/seed-venues.ts",
-  "seed:inventory": "npx tsx scripts/seed-inventory.ts",
-  "seed:test-users": "npx tsx scripts/create-test-users.ts",
-  "seed:staff": "npx tsx scripts/create-staff-accounts.ts"
-}
+**File**: `src/app/staff/shifts/page.tsx`
+**Contains**: Drag-drop timeline, shift CRUD, clock-in/out, bulk ops, templates, role-colored bars
+**Extract into**:
+
+```
+src/components/staff-shifts/
+  shift-timeline.tsx         — Drag-drop timeline
+  shift-form.tsx             — Create/edit shift form
+  shift-clock-actions.tsx    — Clock-in/clock-out buttons
+  shift-bulk-create.tsx      — Bulk shift creation dialog
 ```
 
-### Acceptance Criteria
+#### P2.2 — Decompose venues page (1,145 lines)
 
-- [ ] New squash migration created
-- [ ] Dead tables dropped OR decision documented
-- [ ] Unused shadcn components removed
-- [ ] `npm run build` passes
-- [ ] Seed data removed from migration, available via npm scripts
+**File**: `src/app/venues/page.tsx`
+**Contains**: Venue CRUD, sub-location management, inline capacity editing
+**Extract into**:
 
----
+```
+src/components/venues/
+  venue-form.tsx             — Create/edit venue form
+  venue-sub-location-form.tsx — Sub-location CRUD
+  venue-stats.tsx            — Aggregated stats display
+```
 
-## Session 5: Under-Engineering (U1, U2, D5)
+#### P2.3 — Decompose AvailabilityCalendar (1,377 lines)
 
-**Goal**: Fill gaps.
-
-### Steps
-
-#### 5.1 Add loading/error boundaries
-
-- `src/app/loading.tsx` — root layout loading skeleton
-- `src/app/error.tsx` — root error boundary
-- Per-route loading.tsx for: events, artists, staff, workflow, inventory, venues, guest-lists, door, rentals
-- Per-route error.tsx for same routes
-
-#### 5.2 Add pagination UI to list pages
-
-- Create `pagination-controls.tsx` component
-- Integrate into: artists page, events page, inventory page, tasks workflow, staff page
-- All list APIs already support `limit`/`offset`
-
-#### 5.3 Filter NavBar by role
-
-- Add `canAccessRoute()` check to each nav item
-- Fetch userRoles at layout level and pass down or use a hook
-
-### Acceptance Criteria
-
-- [ ] Loading skeletons appear during navigation
-- [ ] Error boundaries catch and display errors gracefully
-- [ ] List pages have working prev/next pagination
-- [ ] NavBar only shows accessible routes
-- [ ] `npm run lint` passes
+**File**: `src/components/availability-calendar.tsx`
+**Contains**: Calendar grid, staff filtering, date selection, availability toggle
+**Deferred for now** — less user-facing impact than shifts/venues
 
 ---
 
-## Session 6: Testing (U3 + E2E coverage)
+### P3 — UX Quality Gaps
 
-**Goal**: Add test coverage for critical components.
+#### P3.1 — Overdue rental alerts
 
-### Steps
+**Issue**: Rentals go `overdue` silently. Dashboard shows a count but no list or alert.
+**Fix**: Add an overdue rental strip to the dashboard (similar to blocked tasks), or a notification-like component in the rentals page.
 
-#### 6.1 Component tests
+#### P3.2 — Add "My Shift" clock-in to dashboard
 
-- `task-detail-dialog.test.tsx` — render states, approval, rejection, commenting
-- `task-form.test.tsx` — form validation, submission, error states
-- `rider-editor.test.tsx` — tab switching, equipment add/remove
-- `dashboard.test.tsx` — loading state, data display, empty state
+**Issue**: Clock-in/out is only accessible from the staff shifts page (2,216-line monolith)
+**Fix**: When the logged-in user has an active or upcoming shift today, show a "Clock In" / "Clock Out" button on the dashboard hero section
 
-#### 6.2 E2E tests
+#### P3.3 — Add "Add to Event" action on artist detail page
 
-- Door/check-in flow: scan QR → check in → verify status
-- Rider→task generation: upload rider → generate tasks → verify tasks appear in workflow
-- Event→shift assignment: create event → assign staff → verify shifts
+**Issue**: After viewing/creating an artist, there's no way to add them to an event's performance line-up
+**Fix**: Add a button on the artist detail page that opens a dialog: select event → select stage/time → creates performance
 
-#### 6.3 Integration tests
+#### P3.4 — Sub-location capacity tracking UI
 
-- Guest list → check-in → occupancy update flow
+**Issue**: `venue_sub_locations` has a `capacity` column but no UI uses or displays it
+**Fix**: Show capacity in sub-location list on venue page, add to the venue expanded view
+
+---
+
+### P4 — Polish
+
+#### P4.1 — German/English language consistency
+
+**Issue**: Mixed language throughout:
+
+- German: _Moin_, _Künstler_, _Aufgaben_, _Tür_, _Inventar_, _Verleih_, _Heute Abend_, _Schichtplan_
+- English: _Tasks_, _Create Task_, _Share_, _Edit_, _Delete_, _Check In_, _Check Out_, _Rental Out_, _Transfer_
+- Mixed: `statusBadgeClass()` is English-only, API error messages are English
+
+**Decision needed**: Pick one language. `useI18n()` hook exists but is barely used. Either:
+
+- Go full German (recommended — the target users are German club staff)
+- Or remove i18n entirely and just hardcode German
+
+#### P4.2 — Integration tests
+
+**Issue**: Session 6 only covered unit tests. No integration tests for multi-step flows exist.
+**Tests to create**:
+
+- Guest list → check-in → occupancy update
 - Item creation → QR generation → delivery via task
 
-### Acceptance Criteria
+---
 
-- [ ] All existing tests pass (`npm run test:unit`, `npm run test:e2e`)
-- [ ] New component tests cover critical interactions
-- [ ] New e2e tests cover at least the door flow and event→shift flow
+### P5 — Deferred
+
+#### P5.1 — Role taxonomy consolidation (Session 7)
+
+**Issue**: `staff.role` ('sound', 'light', 'manager', etc.) and `user_roles` ('tech', 'tech-lead', 'manager') are parallel taxonomies that never synchronize
+**Fix**: Add 'sound', 'light' to `user_roles` enum, backfill from `staff.role`, update rider task generation
+**Deferred because**: Schema migration + data migration. Touches rider task generation which is complex. Low user-facing impact currently.
 
 ---
 
-## Session 7 (Optional/Deferred): Role Taxonomy Consolidation (D3)
+## Priority Grid
 
-**Goal**: Unify `staff.role` and `user_roles` into one system.
-
-### Steps
-
-1. Add `sound`, `light` to `user_roles` app_role enum
-2. Add migration to backfill user_roles from staff.role
-3. Update rider task generation to query `user_roles` instead of `staff.role`
-4. Consider dropping `staff.role` column or repurposing for team-lead flag
-
-### Deferred Because
-
-- Requires schema migration + data migration
-- Touches rider task generation which is already complex
-- `staff.role` is used in several queries and the staff form
-- Low user-facing impact currently
+| ID       | Item                             | Effort  | Impact             | Dependencies             |
+| -------- | -------------------------------- | ------- | ------------------ | ------------------------ |
+| **P0.1** | Event edit page                  | ~15 min | 🔴 Dead end → 404  | None                     |
+| **P0.2** | Fix/remove Share button          | ~5 min  | 🟡 Useless UI      | None                     |
+| **P0.3** | Event status management          | ~30 min | 🟡 Missing feature | None                     |
+| **P0.4** | Guest list + door links on event | ~15 min | 🟡 UX gap          | None                     |
+| **P1.1** | Wire pagination into lists       | ~2h     | 🔵 Missing feature | None                     |
+| **P1.2** | Squash migration                 | ~1h     | 🟠 Cleanup         | None                     |
+| **P1.3** | E2E tests                        | ~3h     | 🔵 Test coverage   | Playwright config exists |
+| **P2.1** | Staff shifts decomposition       | ~3h     | 🟠 Architecture    | None                     |
+| **P2.2** | Venues decomposition             | ~2h     | 🟠 Architecture    | None                     |
+| **P3.1** | Overdue rental alerts            | ~1h     | 🟡 UX gap          | None                     |
+| **P3.2** | Dashboard shift clock-in         | ~1h     | 🟡 UX gap          | None                     |
+| **P3.3** | Artist→Event performance linking | ~1h     | 🟡 UX gap          | None                     |
+| **P3.4** | Sub-location capacity UI         | ~30min  | 🟢 Enhancement     | None                     |
+| **P4.1** | Language consistency             | ~4h     | 🟢 Polish          | Decision needed          |
+| **P4.2** | Integration tests                | ~2h     | 🟢 Test coverage   | None                     |
+| **P5.1** | Role taxonomy                    | ~3h     | 🟠 Architecture    | Depends on P2.1          |
 
 ---
 
-## Dependency Graph
+## Execution Strategy
+
+### Batch 1 — P0 (fix dead ends)
 
 ```
-Session 1 (Security)
-  ├── Blocked by: nothing
-  └── Unblocks: Session 2 (architecture changes easier when auth is solid)
-
-Session 2 (Break up monoliths)
-  ├── Blocked by: nothing (can parallel with Session 1)
-  └── Unblocks: Session 6 (component tests need testable modules)
-
-Session 3 (Bug fixes)
-  ├── Blocked by: nothing
-  └── Unblocks: nothing (independent)
-
-Session 4 (Cleanup)
-  ├── Blocked by: nothing
-  └── Unblocks: Session 7 (cleaner base for role consolidation)
-
-Session 5 (Under-engineering)
-  ├── Blocked by: nothing
-  └── Unblocks: nothing (independent)
-
-Session 6 (Testing)
-  ├── Blocked by: Session 2 (tests need split modules)
-  └── Unblocks: nothing (last step)
-
-Session 7 (Role taxonomy)
-  ├── Blocked by: Session 4
-  └── Unblocks: nothing (optional)
+P0.1 Event edit page  → 15 min
+P0.2 Fix Share button → 5 min
+P0.3 Status management → 30 min
+P0.4 Event→door links  → 15 min
+                          ≈ 1h total
 ```
 
-### Parallelization Opportunities
+### Batch 2 — P1 (plan deliverables)
 
-- Sessions 1 + 4 (security + cleanup) — fully independent
-- Sessions 3 + 5 (bugs + filling gaps) — fully independent
-- Sessions 2 + 3 — can overlap if different devs
-- Sessions 6 MUST come after Session 2
+```
+P1.1 Wire pagination → 2h
+P1.2 Squash migration → 1h
+P1.3 E2E tests       → 3h
+                       ≈ 6h total (can parallelize)
+```
 
----
+### Batch 3 — P2 (architecture debt)
 
-## Session 7 (Deferred): Role Taxonomy Consolidation (D3)
+```
+P2.1 Staff shifts decomposition → 3h
+P2.2 Venues decomposition       → 2h
+                                 ≈ 5h total (can parallelize)
+```
 
-**Goal**: Unify `staff.role` and `user_roles` into one system.
+### Batch 4 — P3 (UX quality)
 
-### Steps
+```
+P3.1 Overdue alerts         → 1h
+P3.2 Dashboard clock-in     → 1h
+P3.3 Artist→event linking   → 1h
+P3.4 Sub-location capacity  → 30min
+                              ≈ 3.5h total (can parallelize)
+```
 
-1. Add `sound`, `light` to `user_roles` app_role enum
-2. Add migration to backfill user_roles from staff.role
-3. Update rider task generation to query `user_roles` instead of `staff.role`
-4. Consider dropping `staff.role` column or repurposing for team-lead flag
+### Batch 5 — P4 (polish)
 
-### Deferred Because
+```
+P4.1 Language consistency → 4h
+P4.2 Integration tests    → 2h
+                            ≈ 6h total (can parallelize)
+```
 
-- Requires schema migration + data migration
-- Touches rider task generation which is already complex
-- `staff.role` is used in several queries and the staff form
-- Low user-facing impact currently
+### Batch 6 — P5 (deferred)
 
----
-
-## ✅ Completed: Sessions 1-6
-
-All 6 sessions have been executed via subagents. Full details in session reports.
-
-### Session 1 — Security ✅
-
-- Added `requireAuth()` to **34 API route files** (~71 handlers)
-- Standardized on Pattern C (admin client + requireAuth)
-- Added `authenticate()` for broad-access routes (rentals, dashboard, profiles)
-- Verify: `grep -c "requireAuth\|authenticate" src/app/api/*/route.ts src/app/api/**/*/route.ts | grep -v ":0$" | wc -l` → 34 files protected
-
-### Session 2 — Architecture ✅
-
-| File                     | Before    | After     | Reduction |
-| ------------------------ | --------- | --------- | --------- |
-| `task-detail-dialog.tsx` | 1,647     | 370       | -77%      |
-| `rider-editor.tsx`       | 2,413     | 248       | -90%      |
-| `task-form.tsx`          | 980       | 560       | -43%      |
-| Dashboard `page.tsx`     | 1,112     | 569       | -49%      |
-| **Total**                | **6,152** | **1,747** | **-72%**  |
-
-Created 16 new focused modules across:
-
-- `src/components/task-detail/` — 6 files (view, comments, items, actions, subtasks, meta)
-- `src/components/rider-editor/` — 3 files (tech, stage, hospitality)
-- `src/components/task-form/` — 2 files (fields, items)
-- `src/components/dashboard/` — 5 files (hero, stats, shifts, events, task-row, quick-action)
-
-### Session 3 — Bug Fixes ✅
-
-- **F1**: Performance time overlap uses proper `timeToMinutes()` with cross-midnight handling
-- **F3**: Occupancy API no longer hardcodes 800 default, returns `null` for unset capacity
-- **F5**: Promoter limits documented as deprecated/incomplete
-- **F6**: Door page uses real event selection instead of demo UUIDs
-- **F7**: Backfill limitation documented in migration
-
-### Session 4 — Cleanup ✅
-
-- 3 dead migrations archived: `add_booker_role`, `add_booker_rls_policies`, `remote_migration`
-- Seed data extracted to `scripts/seed-pal-data.ts`
-- New migration `20260505000000_remove_dead_tables.sql` (cloakroom, notifications)
-- 18 unused shadcn/ui components removed
-- 3 npm scripts added: seed:pal-data, seed:test-users, seed:staff
-
-### Session 5 — Under-engineering ✅
-
-- 20 loading.tsx + error.tsx files created (10 route segments × 2)
-- `src/components/pagination-controls.tsx` created (not yet wired into list pages)
-- NavBar now filters links by user roles via `canAccessRoute()`
-
-### Session 6 — Testing ✅
-
-- 6 new test files with 47 tests total
-- `dashboard-hero.test.tsx` (8 tests) — greeting, event display, avatar, admin link
-- `dashboard-stats.test.tsx` (8 tests) — stat visibility, empty state
-- `pagination-controls.test.tsx` (10 tests) — page rendering, prev/next, ellipsis
-- `task-detail-actions.test.ts` (8 tests) — approve/reject/block logic
-- `task-detail-comments.test.ts` (4 tests) — comments logic
-- `task-form.test.ts` (9 tests) — validation, defaults, inheritance
-- 70/71 unit tests pass (1 pre-existing rider extraction failure)
-
-### Remaining Work (not blocking)
-
-- Wire PaginationControls into list pages (events, artists, staff, etc.)
-- Session 7: Role taxonomy consolidation (deferred)
-- Full E2E tests for door/check-in and rider→task flows
-
-## Risk Assessment
-
-| Risk                                             | Likelihood    | Impact | Mitigation                                                      |
-| ------------------------------------------------ | ------------- | ------ | --------------------------------------------------------------- |
-| Auth refactor breaks existing routes             | Low (done ✓)  | High   | Tested with tsc + lint. All 34 route files protected.           |
-| Monolith decomposition breaks task dialog        | Low (done ✓)  | High   | 16 new modules compile clean. Original functionality preserved. |
-| Migration squash loses data history              | Low           | Medium | Old migrations archived, not deleted.                           |
-| Role consolidation is more complex than expected | Medium        | Low    | Still deferred to Session 7.                                    |
-| Removing shadcn components breaks something      | None (done ✓) | Low    | Verified each was unused via grep before removing.              |
+```
+P5.1 Role taxonomy consolidation → 3h (only after P2.1)
+```

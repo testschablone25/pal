@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { PageSkeleton } from "@/components/page-skeleton";
+import { PaginationControls } from "@/components/pagination-controls";
 import { Plus, MapPin, Music } from "lucide-react";
 import { SearchFilterBar } from "@/components/search-filter-bar";
 import Link from "next/link";
@@ -48,6 +49,9 @@ export function ArtistList() {
 	const [filterGenre, setFilterGenre] = useState<string>("");
 	const [filterCity, setFilterCity] = useState("");
 	const [total, setTotal] = useState(0);
+	const [currentPage, setCurrentPage] = useState(1);
+	const pageSize = 24;
+	const totalPages = Math.ceil(total / pageSize);
 
 	const fetchArtists = async () => {
 		setLoading(true);
@@ -56,6 +60,8 @@ export function ArtistList() {
 			if (searchName) params.append("name", searchName);
 			if (filterGenre) params.append("genre", filterGenre);
 			if (filterCity) params.append("city", filterCity);
+			params.append("limit", String(pageSize));
+			params.append("offset", String((currentPage - 1) * pageSize));
 
 			const response = await fetch(`/api/artists?${params.toString()}`);
 			const data: ArtistListResponse = await response.json();
@@ -70,12 +76,13 @@ export function ArtistList() {
 
 	useEffect(() => {
 		fetchArtists();
-	}, [searchName, filterGenre, filterCity]);
+	}, [searchName, filterGenre, filterCity, currentPage]);
 
 	const clearFilters = () => {
 		setSearchName("");
 		setFilterGenre("");
 		setFilterCity("");
+		setCurrentPage(1);
 		setArtists([]);
 		fetchArtists();
 	};
@@ -207,6 +214,17 @@ export function ArtistList() {
 					))}
 				</div>
 			)}
+
+			<PaginationControls
+				currentPage={currentPage}
+				totalPages={totalPages}
+				totalItems={total}
+				onPageChange={(page) => {
+					setCurrentPage(page);
+					window.scrollTo({ top: 0, behavior: "smooth" });
+				}}
+				className="mt-6"
+			/>
 		</div>
 	);
 }
