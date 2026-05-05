@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
@@ -16,6 +17,11 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useI18n } from "@/lib/i18n";
+import { createClient } from "@/lib/supabase/browser";
+import {
+	canAccessRoute,
+	type AppRole,
+} from "@/lib/permissions";
 import {
 	Sheet,
 	SheetContent,
@@ -69,12 +75,10 @@ function MobileNavLink({
 	href,
 	label,
 	icon: Icon,
-	onNavigate,
 }: {
 	href: string;
 	label: string;
 	icon: React.ComponentType<{ className?: string }>;
-	onNavigate?: () => void;
 }) {
 	const pathname = usePathname();
 	const isActive =
@@ -99,6 +103,40 @@ function MobileNavLink({
 }
 
 export function NavBar() {
+	const [userRoles, setUserRoles] = useState<AppRole[]>([]);
+
+	useEffect(() => {
+		const fetchRoles = async () => {
+			try {
+				const supabase = createClient();
+				const {
+					data: { user },
+				} = await supabase.auth.getUser();
+				if (!user) {
+					setUserRoles([]);
+					return;
+				}
+				const { data } = await supabase
+					.from("user_roles")
+					.select("role")
+					.eq("user_id", user.id);
+				const roles: AppRole[] = data
+					? data.map((r: { role: string }) => r.role as AppRole)
+					: [];
+				setUserRoles(roles);
+			} catch (err) {
+				console.error("Failed to fetch user roles:", err);
+				setUserRoles([]);
+			}
+		};
+		fetchRoles();
+	}, []);
+
+	const filteredNavItems =
+		userRoles.length === 0
+			? navItems.filter((item) => item.href === "/")
+			: navItems.filter((item) => canAccessRoute(userRoles, item.href));
+
 	return (
 		<nav className="sticky top-0 z-50 bg-zinc-950/80 backdrop-blur-lg border-b border-zinc-800">
 			<div className="max-w-7xl mx-auto px-4">
@@ -112,7 +150,7 @@ export function NavBar() {
 
 					{/* Desktop nav items */}
 					<div className="hidden md:flex items-center gap-1">
-						{navItems.map((item) => (
+						{filteredNavItems.map((item) => (
 							<NavLink key={item.href} {...item} />
 						))}
 					</div>
@@ -152,7 +190,7 @@ export function NavBar() {
 
 									{/* Nav items */}
 									<div className="flex-1 flex flex-col gap-1 px-3 py-4 overflow-y-auto">
-										{navItems.map((item) => (
+										{filteredNavItems.map((item) => (
 											<MobileNavLink key={item.href} {...item} />
 										))}
 									</div>

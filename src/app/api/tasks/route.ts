@@ -4,12 +4,15 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import { supabaseConfig } from "@/lib/supabase/config";
+import { requireAuth } from "@/lib/api-auth";
 
 const supabase = createClient(supabaseConfig.url, supabaseConfig.serviceKey);
 
 // GET /api/tasks - List all tasks with optional filtering
 export async function GET(request: NextRequest) {
 	try {
+		const auth = await requireAuth(request, "TASKS_READ");
+		if (!auth.authorized) return auth.response;
 		const searchParams = request.nextUrl.searchParams;
 		const status = searchParams.get("status");
 		const priority = searchParams.get("priority");
@@ -142,6 +145,9 @@ export async function GET(request: NextRequest) {
 // POST /api/tasks - Create a new task
 export async function POST(request: NextRequest) {
 	try {
+		const auth = await requireAuth(request, "TASKS_WRITE");
+		if (!auth.authorized) return auth.response;
+
 		const body = await request.json();
 
 		const {

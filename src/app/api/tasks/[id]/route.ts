@@ -4,6 +4,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import { supabaseConfig } from "@/lib/supabase/config";
+import { requireAuth } from "@/lib/api-auth";
 
 const supabase = createClient(supabaseConfig.url, supabaseConfig.serviceKey);
 
@@ -103,10 +104,13 @@ const taskSelect = `
 
 // GET /api/tasks/[id] - Get single task
 export async function GET(
-	_request: NextRequest,
+	request: NextRequest,
 	{ params }: { params: Promise<{ id: string }> },
 ) {
 	try {
+		const auth = await requireAuth(request, "TASKS_READ");
+		if (!auth.authorized) return auth.response;
+
 		const { id } = await params;
 
 		// Fetch the main task
@@ -154,6 +158,9 @@ export async function PUT(
 	{ params }: { params: Promise<{ id: string }> },
 ) {
 	try {
+		const auth = await requireAuth(request, "TASKS_WRITE");
+		if (!auth.authorized) return auth.response;
+
 		const { id } = await params;
 		const body = await request.json();
 
@@ -332,10 +339,13 @@ export async function PUT(
 
 // DELETE /api/tasks/[id] - Delete task
 export async function DELETE(
-	_request: NextRequest,
+	request: NextRequest,
 	{ params }: { params: Promise<{ id: string }> },
 ) {
 	try {
+		const auth = await requireAuth(request, "TASKS_WRITE");
+		if (!auth.authorized) return auth.response;
+
 		const { id } = await params;
 
 		const { error } = await supabase.from("tasks").delete().eq("id", id);

@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useParams, useRouter } from "next/navigation";
+import { createClient } from "@/lib/supabase/browser";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -23,6 +24,9 @@ import {
 } from "@/components/ui/alert-dialog";
 import { RunningOrder } from "@/components/running-order";
 import { PerformanceForm } from "@/components/performance-form";
+import { TaskForm } from "@/components/task-form";
+import { TaskCard, type Task } from "@/components/task-card";
+import { TaskDetailDialog } from "@/components/task-detail-dialog";
 import { formatDateFull } from "@/lib/dates";
 import {
 	CalendarDays,
@@ -34,6 +38,7 @@ import {
 	Share2,
 	Trash2,
 	Plus,
+	ListTodo,
 } from "lucide-react";
 import Link from "next/link";
 import { useToast } from "@/hooks/use-toast";
@@ -64,6 +69,14 @@ export default function EventDetailPage() {
 	const [addPerformanceOpen, setAddPerformanceOpen] = useState(false);
 	const [refreshKey, setRefreshKey] = useState(0);
 	const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+
+	// Task state
+	const [eventTasks, setEventTasks] = useState<Task[]>([]);
+	const [tasksLoading, setTasksLoading] = useState(true);
+	const [createTaskOpen, setCreateTaskOpen] = useState(false);
+	const [selectedTask, setSelectedTask] = useState<Task | null>(null);
+	const [taskDetailOpen, setTaskDetailOpen] = useState(false);
+
 	const { toast } = useToast();
 
 	useEffect(() => {
@@ -112,7 +125,7 @@ export default function EventDetailPage() {
 		setAddPerformanceOpen(true);
 	};
 
-	const handlePerformanceSuccess = (performance: any) => {
+	const handlePerformanceSuccess = (_performance: Record<string, unknown>) => {
 		setAddPerformanceOpen(false);
 		setRefreshKey((prev) => prev + 1);
 		toast({
@@ -127,6 +140,80 @@ export default function EventDetailPage() {
 			title: "Error",
 			description: error,
 		});
+	};
+
+	// ===== Task Functions =====
+
+	const fetchEventTasks = useCallback(async () => {
+		setTasksLoading(true);
+		try {
+			const response = await fetch(`/api/tasks?event_id=${eventId}&limit=50`);
+			const data = await response.json();
+			setEventTasks(data.tasks || []);
+		} catch (error) {
+			console.error("Failed to fetch tasks:", error);
+		} finally {
+			setTasksLoading(false);
+		}
+	}, [eventId]);
+
+	useEffect(() => {
+		if (eventId) {
+			fetchEventTasks();
+		}
+	}, [eventId, fetchEventTasks]);
+
+	const handleCreateTask = async (values: {
+		title: string;
+		description?: string;
+		status: string;
+		priority: string;
+		assignee_id?: string;
+		event_id?: string;
+		due_date?: string;
+		needs_approval?: boolean;
+		items?: { item_id: string; goal_sub_location_id?: string | null }[];
+		created_by?: string;
+		parent_task_id?: string | null;
+		task_type?: string | null;
+	}) => {
+		const supabase = createClient();
+		const {
+			data: { user },
+		} = await supabase.auth.getUser();
+
+		const response = await fetch("/api/tasks", {
+			method: "POST",
+			headers: { "Content-Type": "application/json" },
+			body: JSON.stringify({
+				...values,
+				event_id: eventId,
+				created_by: user?.id || values.created_by,
+			}),
+		});
+
+		if (!response.ok) {
+			const err = await response.json();
+			throw new Error(err.error || "Failed to create task");
+		}
+
+		const newTask = await response.json();
+		setEventTasks((prev) => [newTask, ...prev]);
+		setCreateTaskOpen(false);
+		toast({
+			title: "Task created",
+			description: "The task has been added to this event.",
+		});
+	};
+
+	const handleTaskUpdated = (updatedTask: Task) => {
+		setEventTasks((prev) =>
+			prev.map((t) => (t.id === updatedTask.id ? updatedTask : t)),
+		);
+	};
+
+	const handleTaskDeleted = (taskId: string) => {
+		setEventTasks((prev) => prev.filter((t) => t.id !== taskId));
 	};
 
 	if (loading) {
@@ -269,9 +356,69 @@ export default function EventDetailPage() {
 				onAddPerformance={handleAddPerformance}
 			/>
 
+			{/* Tasks Section */}
+			<Card className="bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/70 mb-6">
+				<CardHeader className="flex flex-row items-center justify-between">
+					<CardTitle className="text-lg flex items-center gap-2">
+						<ListTodo className="h-5 w-5 text-violet-400" />
+						Tasks
+						<Badge
+							variant="secondary"
+							className="bg-zinc-800 text-zinc-400 border-zinc-700 ml-1"
+						>
+							{eventTasks.length}
+						</Badge>
+					</CardTitle>
+					<Button
+						onClick={() => setCreateTaskOpen(true)}
+						className="bg-violet-600 hover:bg-violet-700"
+						size="sm"
+					>
+						<Plus className="h-4 w-4 mr-1.5" />
+						Create Task
+					</Button>
+				</CardHeader>
+				<CardContent>
+					{tasksLoading ? (
+						<div className="flex items-center justify-center py-8">
+							<div className="h-6 w-6 animate-spin rounded-full border-2 border-zinc-600 border-t-violet-500" />
+						</div>
+					) : eventTasks.length === 0 ? (
+						<div className="text-center py-8">
+							<ListTodo className="h-8 w-8 text-zinc-600 mx-auto mb-2" />
+							<p className="text-zinc-500 text-sm">
+								No tasks for this event yet.
+							</p>
+							<Button
+								variant="outline"
+								size="sm"
+								onClick={() => setCreateTaskOpen(true)}
+								className="mt-3 border-zinc-700"
+							>
+								<Plus className="h-4 w-4 mr-1.5" />
+								Create first task
+							</Button>
+						</div>
+					) : (
+						<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+							{eventTasks.map((task) => (
+								<TaskCard
+									key={task.id}
+									task={task}
+									onClick={() => {
+										setSelectedTask(task);
+										setTaskDetailOpen(true);
+									}}
+								/>
+							))}
+						</div>
+					)}
+				</CardContent>
+			</Card>
+
 			{/* Add Performance Modal */}
 			<Dialog open={addPerformanceOpen} onOpenChange={setAddPerformanceOpen}>
-				<DialogContent className="bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/70 rounded-lg">
+				<DialogContent className="bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/70 rounded-lg max-w-lg">
 					<DialogHeader>
 						<DialogTitle>Add Performance</DialogTitle>
 					</DialogHeader>
@@ -282,6 +429,33 @@ export default function EventDetailPage() {
 					/>
 				</DialogContent>
 			</Dialog>
+
+			{/* Create Task Modal */}
+			<Dialog open={createTaskOpen} onOpenChange={setCreateTaskOpen}>
+				<DialogContent className="bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/70 rounded-lg max-w-xl max-h-[90vh] overflow-y-auto">
+					<DialogHeader>
+						<DialogTitle>Create Task for {event.name}</DialogTitle>
+					</DialogHeader>
+					<TaskForm
+						mode="create"
+						parentTask={{ event_id: eventId }}
+						onSubmit={handleCreateTask}
+						onCancel={() => setCreateTaskOpen(false)}
+					/>
+				</DialogContent>
+			</Dialog>
+
+			{/* Task Detail Modal */}
+			<TaskDetailDialog
+				task={selectedTask}
+				open={taskDetailOpen}
+				onOpenChange={(open) => {
+					setTaskDetailOpen(open);
+					if (!open) setSelectedTask(null);
+				}}
+				onTaskUpdated={handleTaskUpdated}
+				onTaskDeleted={handleTaskDeleted}
+			/>
 		</div>
 	);
 }

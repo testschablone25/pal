@@ -1,11 +1,15 @@
 import { createClient } from '@supabase/supabase-js';
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { supabaseConfig } from '@/lib/supabase/config';
-import { isValidRole, hasPermission, type AppRole } from '@/lib/permissions';
+import { isValidRole } from '@/lib/permissions';
+import { requireAuth } from '@/lib/api-auth';
 
 // GET: List all users with their roles
 export async function GET(request: Request) {
   try {
+    const auth = await requireAuth(new NextRequest(request.url, { headers: request.headers }), 'ROLES_MANAGE');
+    if (!auth.authorized) return auth.response;
+
     const supabase = createClient(supabaseConfig.url, supabaseConfig.serviceKey, {
       auth: { autoRefreshToken: false, persistSession: false }
     });
@@ -16,18 +20,6 @@ export async function GET(request: Request) {
 
     if (!requestingUserId) {
       return NextResponse.json({ error: 'Missing user_id' }, { status: 400 });
-    }
-
-    // Check if requesting user has permission to manage roles
-    const { data: requestingUserRoles } = await supabase
-      .from('user_roles')
-      .select('role')
-      .eq('user_id', requestingUserId);
-
-    const userRoles = requestingUserRoles?.map(r => r.role as AppRole) || [];
-    
-    if (!hasPermission(userRoles, 'ROLES_MANAGE')) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
     }
 
     // Fetch all profiles with their roles
@@ -73,6 +65,9 @@ export async function GET(request: Request) {
 // POST: Add a role to a user
 export async function POST(request: Request) {
   try {
+    const auth = await requireAuth(new NextRequest(request.url, { headers: request.headers }), 'ROLES_MANAGE');
+    if (!auth.authorized) return auth.response;
+
     const supabase = createClient(supabaseConfig.url, supabaseConfig.serviceKey, {
       auth: { autoRefreshToken: false, persistSession: false }
     });
@@ -87,18 +82,6 @@ export async function POST(request: Request) {
     // Validate role
     if (!isValidRole(role)) {
       return NextResponse.json({ error: 'Invalid role' }, { status: 400 });
-    }
-
-    // Check if requesting user has permission to manage roles
-    const { data: requestingUserRoles } = await supabase
-      .from('user_roles')
-      .select('role')
-      .eq('user_id', requesting_user_id);
-
-    const userRoles = requestingUserRoles?.map(r => r.role as AppRole) || [];
-    
-    if (!hasPermission(userRoles, 'ROLES_MANAGE')) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
     }
 
     // Check if user already has this role
@@ -135,6 +118,9 @@ export async function POST(request: Request) {
 // DELETE: Remove a role from a user
 export async function DELETE(request: Request) {
   try {
+    const auth = await requireAuth(new NextRequest(request.url, { headers: request.headers }), 'ROLES_MANAGE');
+    if (!auth.authorized) return auth.response;
+
     const supabase = createClient(supabaseConfig.url, supabaseConfig.serviceKey, {
       auth: { autoRefreshToken: false, persistSession: false }
     });
@@ -149,18 +135,6 @@ export async function DELETE(request: Request) {
     // Validate role
     if (!isValidRole(role)) {
       return NextResponse.json({ error: 'Invalid role' }, { status: 400 });
-    }
-
-    // Check if requesting user has permission to manage roles
-    const { data: requestingUserRoles } = await supabase
-      .from('user_roles')
-      .select('role')
-      .eq('user_id', requesting_user_id);
-
-    const userRoles = requestingUserRoles?.map(r => r.role as AppRole) || [];
-    
-    if (!hasPermission(userRoles, 'ROLES_MANAGE')) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
     }
 
     // Prevent removing the last admin

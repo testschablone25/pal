@@ -1,16 +1,20 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import { supabaseConfig } from "@/lib/supabase/config";
+import { requireAuth } from "@/lib/api-auth";
 import { generateQRToken, generateQRDataURL, generateQRSVG } from "@/lib/qr";
 
 const supabase = createClient(supabaseConfig.url, supabaseConfig.serviceKey);
 
 // GET /api/items/[id]/qr — Get or generate QR code for an item
 export async function GET(
-	_request: NextRequest,
+	request: NextRequest,
 	{ params }: { params: Promise<{ id: string }> },
 ) {
 	try {
+		const auth = await requireAuth(request, "INVENTORY_READ");
+		if (!auth.authorized) return auth.response;
+
 		const { id } = await params;
 
 		// Fetch the item
@@ -78,10 +82,13 @@ export async function GET(
 
 // POST /api/items/[id]/qr — Force re-generate QR token for an item
 export async function POST(
-	_request: NextRequest,
+	request: NextRequest,
 	{ params }: { params: Promise<{ id: string }> },
 ) {
 	try {
+		const auth = await requireAuth(request, "INVENTORY_WRITE");
+		if (!auth.authorized) return auth.response;
+
 		const { id } = await params;
 
 		// Check item exists

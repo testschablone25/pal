@@ -1,6 +1,6 @@
 {
   "statistics": {
-    "detectionDate": "2026-05-03T08:17:28.257Z",
+    "detectionDate": "2026-05-04T19:06:16.475Z",
     "formats": {
       "typescript": {
         "sources": {
@@ -160,6 +160,18 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
+          "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/app/api/items/[id]/rider-assignments/route.ts": {
+            "lines": 208,
+            "tokens": 1894,
+            "sources": 1,
+            "clones": 14,
+            "duplicatedLines": 136,
+            "duplicatedTokens": 1258,
+            "percentage": 65.38,
+            "percentageTokens": 66.42,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
           "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/app/api/items/[id]/qr/route.ts": {
             "lines": 132,
             "tokens": 1120,
@@ -209,26 +221,26 @@
             "newClones": 0
           },
           "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/app/api/venues/[id]/route.ts": {
-            "lines": 262,
-            "tokens": 2422,
+            "lines": 267,
+            "tokens": 2510,
             "sources": 1,
-            "clones": 10,
-            "duplicatedLines": 92,
-            "duplicatedTokens": 917,
-            "percentage": 35.11,
-            "percentageTokens": 37.86,
+            "clones": 9,
+            "duplicatedLines": 83,
+            "duplicatedTokens": 825,
+            "percentage": 31.09,
+            "percentageTokens": 32.87,
             "newDuplicatedLines": 0,
             "newClones": 0
           },
           "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/app/api/tasks/[id]/route.ts": {
-            "lines": 347,
-            "tokens": 2633,
+            "lines": 354,
+            "tokens": 2657,
             "sources": 1,
-            "clones": 2,
-            "duplicatedLines": 17,
-            "duplicatedTokens": 185,
-            "percentage": 4.9,
-            "percentageTokens": 7.03,
+            "clones": 1,
+            "duplicatedLines": 8,
+            "duplicatedTokens": 93,
+            "percentage": 2.26,
+            "percentageTokens": 3.5,
             "newDuplicatedLines": 0,
             "newClones": 0
           },
@@ -401,14 +413,14 @@
             "newClones": 0
           },
           "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/app/api/venues/route.ts": {
-            "lines": 251,
-            "tokens": 2451,
+            "lines": 266,
+            "tokens": 2516,
             "sources": 1,
             "clones": 1,
             "duplicatedLines": 10,
             "duplicatedTokens": 96,
-            "percentage": 3.98,
-            "percentageTokens": 3.92,
+            "percentage": 3.76,
+            "percentageTokens": 3.82,
             "newDuplicatedLines": 0,
             "newClones": 0
           },
@@ -521,8 +533,8 @@
             "newClones": 0
           },
           "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/app/api/dashboard/route.ts": {
-            "lines": 135,
-            "tokens": 1403,
+            "lines": 260,
+            "tokens": 2648,
             "sources": 1,
             "clones": 0,
             "duplicatedLines": 0,
@@ -619,6 +631,18 @@
           "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/lib/supabase/browser.ts": {
             "lines": 15,
             "tokens": 113,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/lib/riders/types.ts": {
+            "lines": 113,
+            "tokens": 743,
             "sources": 1,
             "clones": 0,
             "duplicatedLines": 0,
@@ -820,6 +844,18 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
+          "/Users/oliverjeschke/Desktop/glibber/repos/pal/scripts/create-staff-accounts.ts": {
+            "lines": 262,
+            "tokens": 1914,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
           "/Users/oliverjeschke/Desktop/glibber/repos/pal/scripts/assign-staff-shifts.ts": {
             "lines": 238,
             "tokens": 2533,
@@ -869,8 +905,8 @@
             "newClones": 0
           },
           "/Users/oliverjeschke/Desktop/glibber/repos/pal/tailwind.config.ts": {
-            "lines": 107,
-            "tokens": 700,
+            "lines": 117,
+            "tokens": 765,
             "sources": 1,
             "clones": 0,
             "duplicatedLines": 0,
@@ -918,14 +954,14 @@
           }
         },
         "total": {
-          "lines": 9137,
-          "tokens": 79969,
-          "sources": 76,
-          "clones": 58,
-          "duplicatedLines": 666,
-          "duplicatedTokens": 6480,
-          "percentage": 7.29,
-          "percentageTokens": 8.1,
+          "lines": 9882,
+          "tokens": 86007,
+          "sources": 79,
+          "clones": 64,
+          "duplicatedLines": 725,
+          "duplicatedTokens": 7017,
+          "percentage": 7.34,
+          "percentageTokens": 8.16,
           "newDuplicatedLines": 0,
           "newClones": 0
         }
@@ -981,20 +1017,8 @@
             "newClones": 0
           },
           "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/app/events/[id]/page.tsx": {
-            "lines": 146,
-            "tokens": 1107,
-            "sources": 1,
-            "clones": 0,
-            "duplicatedLines": 0,
-            "duplicatedTokens": 0,
-            "percentage": 0,
-            "percentageTokens": 0,
-            "newDuplicatedLines": 0,
-            "newClones": 0
-          },
-          "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/app/artists/[id]/page.tsx": {
-            "lines": 128,
-            "tokens": 918,
+            "lines": 235,
+            "tokens": 1728,
             "sources": 1,
             "clones": 0,
             "duplicatedLines": 0,
@@ -1005,8 +1029,8 @@
             "newClones": 0
           },
           "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/app/staff/page.tsx": {
-            "lines": 232,
-            "tokens": 1798,
+            "lines": 111,
+            "tokens": 864,
             "sources": 1,
             "clones": 0,
             "duplicatedLines": 0,
@@ -1065,8 +1089,8 @@
             "newClones": 0
           },
           "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/app/admin/page.tsx": {
-            "lines": 218,
-            "tokens": 1768,
+            "lines": 216,
+            "tokens": 1752,
             "sources": 1,
             "clones": 0,
             "duplicatedLines": 0,
@@ -1244,6 +1268,18 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
+          "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/components/inventory-item-picker.tsx": {
+            "lines": 85,
+            "tokens": 662,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
           "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/components/inventory-form.tsx": {
             "lines": 259,
             "tokens": 1621,
@@ -1253,6 +1289,18 @@
             "duplicatedTokens": 201,
             "percentage": 16.22,
             "percentageTokens": 12.4,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/components/inventory-autocomplete.tsx": {
+            "lines": 29,
+            "tokens": 223,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
             "newDuplicatedLines": 0,
             "newClones": 0
           },
@@ -1341,8 +1389,8 @@
             "newClones": 0
           },
           "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/components/artist-list.tsx": {
-            "lines": 84,
-            "tokens": 617,
+            "lines": 89,
+            "tokens": 649,
             "sources": 1,
             "clones": 0,
             "duplicatedLines": 0,
@@ -1390,14 +1438,14 @@
           }
         },
         "total": {
-          "lines": 3955,
-          "tokens": 28632,
-          "sources": 38,
+          "lines": 3912,
+          "tokens": 28302,
+          "sources": 39,
           "clones": 14,
           "duplicatedLines": 242,
           "duplicatedTokens": 1302,
-          "percentage": 6.12,
-          "percentageTokens": 4.55,
+          "percentage": 6.19,
+          "percentageTokens": 4.6,
           "newDuplicatedLines": 0,
           "newClones": 0
         }
@@ -1420,11 +1468,11 @@
             "lines": 88,
             "tokens": 806,
             "sources": 1,
-            "clones": 5,
-            "duplicatedLines": 82,
-            "duplicatedTokens": 750,
-            "percentage": 93.18,
-            "percentageTokens": 93.05,
+            "clones": 2,
+            "duplicatedLines": 32,
+            "duplicatedTokens": 270,
+            "percentage": 36.36,
+            "percentageTokens": 33.5,
             "newDuplicatedLines": 0,
             "newClones": 0
           },
@@ -1453,8 +1501,8 @@
             "newClones": 0
           },
           "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/app/inventory/[id]/page.tsx": {
-            "lines": 9,
-            "tokens": 88,
+            "lines": 13,
+            "tokens": 110,
             "sources": 1,
             "clones": 0,
             "duplicatedLines": 0,
@@ -1477,14 +1525,14 @@
             "newClones": 0
           },
           "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/app/events/[id]/page.tsx": {
-            "lines": 286,
-            "tokens": 2270,
+            "lines": 461,
+            "tokens": 3760,
             "sources": 1,
             "clones": 1,
             "duplicatedLines": 24,
             "duplicatedTokens": 154,
-            "percentage": 8.39,
-            "percentageTokens": 6.78,
+            "percentage": 5.21,
+            "percentageTokens": 4.1,
             "newDuplicatedLines": 0,
             "newClones": 0
           },
@@ -1500,21 +1548,9 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/app/artists/[id]/page.tsx": {
-            "lines": 301,
-            "tokens": 2301,
-            "sources": 1,
-            "clones": 3,
-            "duplicatedLines": 50,
-            "duplicatedTokens": 480,
-            "percentage": 16.61,
-            "percentageTokens": 20.86,
-            "newDuplicatedLines": 0,
-            "newClones": 0
-          },
           "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/app/staff/page.tsx": {
-            "lines": 456,
-            "tokens": 3491,
+            "lines": 417,
+            "tokens": 3252,
             "sources": 1,
             "clones": 0,
             "duplicatedLines": 0,
@@ -1537,8 +1573,8 @@
             "newClones": 0
           },
           "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/app/rentals/page.tsx": {
-            "lines": 4,
-            "tokens": 35,
+            "lines": 14,
+            "tokens": 119,
             "sources": 1,
             "clones": 0,
             "duplicatedLines": 0,
@@ -1561,8 +1597,8 @@
             "newClones": 0
           },
           "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/app/inventory/page.tsx": {
-            "lines": 4,
-            "tokens": 35,
+            "lines": 14,
+            "tokens": 121,
             "sources": 1,
             "clones": 0,
             "duplicatedLines": 0,
@@ -1621,8 +1657,8 @@
             "newClones": 0
           },
           "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/app/admin/page.tsx": {
-            "lines": 449,
-            "tokens": 3879,
+            "lines": 447,
+            "tokens": 3863,
             "sources": 1,
             "clones": 0,
             "duplicatedLines": 0,
@@ -1812,6 +1848,18 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
+          "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/components/inventory-item-picker.tsx": {
+            "lines": 187,
+            "tokens": 1549,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
           "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/components/inventory-form.tsx": {
             "lines": 482,
             "tokens": 3700,
@@ -1821,6 +1869,18 @@
             "duplicatedTokens": 670,
             "percentage": 17.22,
             "percentageTokens": 18.11,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/components/inventory-autocomplete.tsx": {
+            "lines": 214,
+            "tokens": 1780,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
             "newDuplicatedLines": 0,
             "newClones": 0
           },
@@ -1909,8 +1969,8 @@
             "newClones": 0
           },
           "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/components/artist-list.tsx": {
-            "lines": 206,
-            "tokens": 1619,
+            "lines": 211,
+            "tokens": 1651,
             "sources": 1,
             "clones": 0,
             "duplicatedLines": 0,
@@ -1933,8 +1993,8 @@
             "newClones": 0
           },
           "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/app/layout.tsx": {
-            "lines": 28,
-            "tokens": 212,
+            "lines": 35,
+            "tokens": 261,
             "sources": 1,
             "clones": 0,
             "duplicatedLines": 0,
@@ -1946,28 +2006,28 @@
           }
         },
         "total": {
-          "lines": 8669,
-          "tokens": 68423,
-          "sources": 45,
-          "clones": 27,
-          "duplicatedLines": 364,
-          "duplicatedTokens": 2980,
-          "percentage": 4.2,
-          "percentageTokens": 4.36,
+          "lines": 8939,
+          "tokens": 70959,
+          "sources": 46,
+          "clones": 24,
+          "duplicatedLines": 314,
+          "duplicatedTokens": 2500,
+          "percentage": 3.51,
+          "percentageTokens": 3.52,
           "newDuplicatedLines": 0,
           "newClones": 0
         }
       }
     },
     "total": {
-      "lines": 21761,
-      "tokens": 177024,
-      "sources": 159,
-      "clones": 99,
-      "duplicatedLines": 1272,
-      "duplicatedTokens": 10762,
-      "percentage": 5.85,
-      "percentageTokens": 6.08,
+      "lines": 22733,
+      "tokens": 185268,
+      "sources": 164,
+      "clones": 102,
+      "duplicatedLines": 1281,
+      "duplicatedTokens": 10819,
+      "percentage": 5.63,
+      "percentageTokens": 5.84,
       "newDuplicatedLines": 0,
       "newClones": 0
     }
@@ -2335,6 +2395,258 @@
     },
     {
       "format": "typescript",
+      "lines": 11,
+      "fragment": ") {\n\t\t\t\t\tif (\n\t\t\t\t\t\ttypeof item === \"object\" &&\n\t\t\t\t\t\titem !== null &&\n\t\t\t\t\t\t(item as Record<string, unknown>).inventory_item_id === id\n\t\t\t\t\t) {\n\t\t\t\t\t\tassignments.push({\n\t\t\t\t\t\t\tartist_id: artist.id,\n\t\t\t\t\t\t\tartist_name: artist.name,\n\t\t\t\t\t\t\tartist_genre: artist.genre,\n\t\t\t\t\t\t\trider_section: \"Stage Monitors\"",
+      "tokens": 0,
+      "firstFile": {
+        "name": "src/app/api/items/[id]/rider-assignments/route.ts",
+        "start": 77,
+        "end": 87,
+        "startLoc": {
+          "line": 77,
+          "column": 9,
+          "position": 691
+        },
+        "endLoc": {
+          "line": 87,
+          "column": 17,
+          "position": 784
+        }
+      },
+      "secondFile": {
+        "name": "src/app/api/items/[id]/rider-assignments/route.ts",
+        "start": 47,
+        "end": 57,
+        "startLoc": {
+          "line": 47,
+          "column": 10,
+          "position": 410
+        },
+        "endLoc": {
+          "line": 57,
+          "column": 12,
+          "position": 503
+        }
+      }
+    },
+    {
+      "format": "typescript",
+      "lines": 11,
+      "fragment": ") {\n\t\t\t\t\tif (\n\t\t\t\t\t\ttypeof item === \"object\" &&\n\t\t\t\t\t\titem !== null &&\n\t\t\t\t\t\t(item as Record<string, unknown>).inventory_item_id === id\n\t\t\t\t\t) {\n\t\t\t\t\t\tassignments.push({\n\t\t\t\t\t\t\tartist_id: artist.id,\n\t\t\t\t\t\t\tartist_name: artist.name,\n\t\t\t\t\t\t\tartist_genre: artist.genre,\n\t\t\t\t\t\t\trider_section: \"Stage Furniture\"",
+      "tokens": 0,
+      "firstFile": {
+        "name": "src/app/api/items/[id]/rider-assignments/route.ts",
+        "start": 100,
+        "end": 110,
+        "startLoc": {
+          "line": 100,
+          "column": 10,
+          "position": 908
+        },
+        "endLoc": {
+          "line": 110,
+          "column": 18,
+          "position": 1001
+        }
+      },
+      "secondFile": {
+        "name": "src/app/api/items/[id]/rider-assignments/route.ts",
+        "start": 47,
+        "end": 57,
+        "startLoc": {
+          "line": 47,
+          "column": 10,
+          "position": 410
+        },
+        "endLoc": {
+          "line": 57,
+          "column": 12,
+          "position": 503
+        }
+      }
+    },
+    {
+      "format": "typescript",
+      "lines": 10,
+      "fragment": ",\n\t\t\t\t\t\t\tequipment_name: String(\n\t\t\t\t\t\t\t\t(item as Record<string, unknown>).type || \"Unknown\",\n\t\t\t\t\t\t\t),\n\t\t\t\t\t\t\tquantity: Number((item as Record<string, unknown>).quantity) || 1,\n\t\t\t\t\t\t\tartist_brings: false,\n\t\t\t\t\t\t});\n\t\t\t\t\t}\n\t\t\t\t}\n\t\t\t}",
+      "tokens": 0,
+      "firstFile": {
+        "name": "src/app/api/items/[id]/rider-assignments/route.ts",
+        "start": 110,
+        "end": 119,
+        "startLoc": {
+          "line": 110,
+          "column": 18,
+          "position": 1002
+        },
+        "endLoc": {
+          "line": 119,
+          "column": 2,
+          "position": 1084
+        }
+      },
+      "secondFile": {
+        "name": "src/app/api/items/[id]/rider-assignments/route.ts",
+        "start": 87,
+        "end": 97,
+        "startLoc": {
+          "line": 87,
+          "column": 17,
+          "position": 785
+        },
+        "endLoc": {
+          "line": 97,
+          "column": 6,
+          "position": 868
+        }
+      }
+    },
+    {
+      "format": "typescript",
+      "lines": 11,
+      "fragment": ") {\n\t\t\t\t\tif (\n\t\t\t\t\t\ttypeof item === \"object\" &&\n\t\t\t\t\t\titem !== null &&\n\t\t\t\t\t\t(item as Record<string, unknown>).inventory_item_id === id\n\t\t\t\t\t) {\n\t\t\t\t\t\tassignments.push({\n\t\t\t\t\t\t\tartist_id: artist.id,\n\t\t\t\t\t\t\tartist_name: artist.name,\n\t\t\t\t\t\t\tartist_genre: artist.genre,\n\t\t\t\t\t\t\trider_section: \"Backline CDJs\"",
+      "tokens": 0,
+      "firstFile": {
+        "name": "src/app/api/items/[id]/rider-assignments/route.ts",
+        "start": 125,
+        "end": 135,
+        "startLoc": {
+          "line": 125,
+          "column": 5,
+          "position": 1164
+        },
+        "endLoc": {
+          "line": 135,
+          "column": 16,
+          "position": 1257
+        }
+      },
+      "secondFile": {
+        "name": "src/app/api/items/[id]/rider-assignments/route.ts",
+        "start": 47,
+        "end": 57,
+        "startLoc": {
+          "line": 47,
+          "column": 10,
+          "position": 410
+        },
+        "endLoc": {
+          "line": 57,
+          "column": 12,
+          "position": 503
+        }
+      }
+    },
+    {
+      "format": "typescript",
+      "lines": 11,
+      "fragment": ") {\n\t\t\t\t\tif (\n\t\t\t\t\t\ttypeof item === \"object\" &&\n\t\t\t\t\t\titem !== null &&\n\t\t\t\t\t\t(item as Record<string, unknown>).inventory_item_id === id\n\t\t\t\t\t) {\n\t\t\t\t\t\tassignments.push({\n\t\t\t\t\t\t\tartist_id: artist.id,\n\t\t\t\t\t\t\tartist_name: artist.name,\n\t\t\t\t\t\t\tartist_genre: artist.genre,\n\t\t\t\t\t\t\trider_section: \"Backline Turntables\"",
+      "tokens": 0,
+      "firstFile": {
+        "name": "src/app/api/items/[id]/rider-assignments/route.ts",
+        "start": 148,
+        "end": 158,
+        "startLoc": {
+          "line": 148,
+          "column": 11,
+          "position": 1381
+        },
+        "endLoc": {
+          "line": 158,
+          "column": 22,
+          "position": 1474
+        }
+      },
+      "secondFile": {
+        "name": "src/app/api/items/[id]/rider-assignments/route.ts",
+        "start": 47,
+        "end": 57,
+        "startLoc": {
+          "line": 47,
+          "column": 10,
+          "position": 410
+        },
+        "endLoc": {
+          "line": 57,
+          "column": 12,
+          "position": 503
+        }
+      }
+    },
+    {
+      "format": "typescript",
+      "lines": 10,
+      "fragment": ",\n\t\t\t\t\t\t\tequipment_name: String(\n\t\t\t\t\t\t\t\t(item as Record<string, unknown>).model || \"Unknown\",\n\t\t\t\t\t\t\t),\n\t\t\t\t\t\t\tquantity: Number((item as Record<string, unknown>).quantity) || 1,\n\t\t\t\t\t\t\tartist_brings: false,\n\t\t\t\t\t\t});\n\t\t\t\t\t}\n\t\t\t\t}\n\t\t\t}",
+      "tokens": 0,
+      "firstFile": {
+        "name": "src/app/api/items/[id]/rider-assignments/route.ts",
+        "start": 158,
+        "end": 167,
+        "startLoc": {
+          "line": 158,
+          "column": 22,
+          "position": 1475
+        },
+        "endLoc": {
+          "line": 167,
+          "column": 2,
+          "position": 1557
+        }
+      },
+      "secondFile": {
+        "name": "src/app/api/items/[id]/rider-assignments/route.ts",
+        "start": 135,
+        "end": 145,
+        "startLoc": {
+          "line": 135,
+          "column": 16,
+          "position": 1258
+        },
+        "endLoc": {
+          "line": 145,
+          "column": 6,
+          "position": 1341
+        }
+      }
+    },
+    {
+      "format": "typescript",
+      "lines": 11,
+      "fragment": ") {\n\t\t\t\t\tif (\n\t\t\t\t\t\ttypeof item === \"object\" &&\n\t\t\t\t\t\titem !== null &&\n\t\t\t\t\t\t(item as Record<string, unknown>).inventory_item_id === id\n\t\t\t\t\t) {\n\t\t\t\t\t\tassignments.push({\n\t\t\t\t\t\t\tartist_id: artist.id,\n\t\t\t\t\t\t\tartist_name: artist.name,\n\t\t\t\t\t\t\tartist_genre: artist.genre,\n\t\t\t\t\t\t\trider_section: \"Preferred Mixer\"",
+      "tokens": 0,
+      "firstFile": {
+        "name": "src/app/api/items/[id]/rider-assignments/route.ts",
+        "start": 175,
+        "end": 185,
+        "startLoc": {
+          "line": 175,
+          "column": 7,
+          "position": 1639
+        },
+        "endLoc": {
+          "line": 185,
+          "column": 18,
+          "position": 1732
+        }
+      },
+      "secondFile": {
+        "name": "src/app/api/items/[id]/rider-assignments/route.ts",
+        "start": 47,
+        "end": 57,
+        "startLoc": {
+          "line": 47,
+          "column": 10,
+          "position": 410
+        },
+        "endLoc": {
+          "line": 57,
+          "column": 12,
+          "position": 503
+        }
+      }
+    },
+    {
+      "format": "typescript",
       "lines": 26,
       "fragment": "const token = generateQRToken();\n\n\t\t// Save token to item\n\t\tconst { error: updateError } = await supabase\n\t\t\t.from(\"items\")\n\t\t\t.update({ qr_token: token })\n\t\t\t.eq(\"id\", id);\n\n\t\tif (updateError) {\n\t\t\treturn NextResponse.json({ error: updateError.message }, { status: 500 });\n\t\t}\n\n\t\t// Generate QR code images\n\t\tconst [dataUrl, svg] = await Promise.all([\n\t\t\tgenerateQRDataURL(token),\n\t\t\tgenerateQRSVG(token),\n\t\t]);\n\n\t\treturn NextResponse.json({\n\t\t\ttoken,\n\t\t\tdataUrl,\n\t\t\tsvg,\n\t\t\tnew_token: true,\n\t\t});\n\t} catch (error) {\n\t\tconsole.error(\"Error re-generating QR code:\"",
       "tokens": 0,
@@ -2444,7 +2756,7 @@
     {
       "format": "tsx",
       "lines": 23,
-      "fragment": "();\n\t\t}\n\t}, [params.id]);\n\n\tif (loading) {\n\t\treturn (\n\t\t\t<div className=\"max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8\">\n\t\t\t\t<div className=\"mb-8\">\n\t\t\t\t\t<Skeleton className=\"h-10 w-64 bg-zinc-800\" />\n\t\t\t\t\t<Skeleton className=\"h-5 w-96 mt-2 bg-zinc-800\" />\n\t\t\t\t</div>\n\t\t\t\t<Card className=\"bg-zinc-900 border-zinc-800\">\n\t\t\t\t\t<CardContent className=\"pt-6 space-y-6\">\n\t\t\t\t\t\t<Skeleton className=\"h-10 w-full bg-zinc-800\" />\n\t\t\t\t\t\t<Skeleton className=\"h-10 w-full bg-zinc-800\" />\n\t\t\t\t\t\t<Skeleton className=\"h-10 w-full bg-zinc-800\" />\n\t\t\t\t\t</CardContent>\n\t\t\t\t</Card>\n\t\t\t</div>\n\t\t);\n\t}\n\n\tif (error || !artist",
+      "fragment": "();\n\t\t}\n\t}, [params.id]);\n\n\tif (loading) {\n\t\treturn (\n\t\t\t<div className=\"max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8\">\n\t\t\t\t<div className=\"mb-8\">\n\t\t\t\t\t<Skeleton className=\"h-10 w-64 bg-zinc-800\" />\n\t\t\t\t\t<Skeleton className=\"h-5 w-96 mt-2 bg-zinc-800\" />\n\t\t\t\t</div>\n\t\t\t\t<Card className=\"bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/70\">\n\t\t\t\t\t<CardContent className=\"pt-6 space-y-6\">\n\t\t\t\t\t\t<Skeleton className=\"h-10 w-full bg-zinc-800\" />\n\t\t\t\t\t\t<Skeleton className=\"h-10 w-full bg-zinc-800\" />\n\t\t\t\t\t\t<Skeleton className=\"h-10 w-full bg-zinc-800\" />\n\t\t\t\t\t</CardContent>\n\t\t\t\t</Card>\n\t\t\t</div>\n\t\t);\n\t}\n\n\tif (error || !artist",
       "tokens": 0,
       "firstFile": {
         "name": "src/app/artists/[id]/edit/page.tsx",
@@ -2484,17 +2796,17 @@
       "tokens": 0,
       "firstFile": {
         "name": "src/app/api/venues/[id]/route.ts",
-        "start": 249,
-        "end": 257,
+        "start": 254,
+        "end": 262,
         "startLoc": {
-          "line": 249,
+          "line": 254,
           "column": 3,
-          "position": 2297
+          "position": 2385
         },
         "endLoc": {
-          "line": 257,
+          "line": 262,
           "column": 24,
-          "position": 2378
+          "position": 2466
         }
       },
       "secondFile": {
@@ -2515,68 +2827,32 @@
     },
     {
       "format": "typescript",
-      "lines": 10,
-      "fragment": "export async function PUT(\n\trequest: NextRequest,\n\t{ params }: { params: Promise<{ id: string }> },\n) {\n\ttry {\n\t\tconst { id } = await params;\n\t\tconst body = await request.json();\n\n\t\tconst {\n\t\t\ttitle",
-      "tokens": 0,
-      "firstFile": {
-        "name": "src/app/api/tasks/[id]/route.ts",
-        "start": 147,
-        "end": 156,
-        "startLoc": {
-          "line": 147,
-          "column": 1,
-          "position": 766
-        },
-        "endLoc": {
-          "line": 156,
-          "column": 6,
-          "position": 858
-        }
-      },
-      "secondFile": {
-        "name": "src/app/api/venues/[id]/route.ts",
-        "start": 181,
-        "end": 190,
-        "startLoc": {
-          "line": 181,
-          "column": 1,
-          "position": 1732
-        },
-        "endLoc": {
-          "line": 190,
-          "column": 5,
-          "position": 1824
-        }
-      }
-    },
-    {
-      "format": "typescript",
       "lines": 9,
       "fragment": ").delete().eq(\"id\", id);\n\n\t\tif (error) {\n\t\t\treturn NextResponse.json({ error: error.message }, { status: 400 });\n\t\t}\n\n\t\treturn NextResponse.json({ success: true });\n\t} catch (error) {\n\t\tconsole.error(\"Error deleting task:\"",
       "tokens": 0,
       "firstFile": {
         "name": "src/app/api/tasks/[id]/route.ts",
-        "start": 334,
-        "end": 342,
+        "start": 341,
+        "end": 349,
         "startLoc": {
-          "line": 334,
+          "line": 341,
           "column": 8,
-          "position": 2496
+          "position": 2520
         },
         "endLoc": {
-          "line": 342,
+          "line": 349,
           "column": 23,
-          "position": 2589
+          "position": 2613
         }
       },
       "secondFile": {
         "name": "src/app/api/venues/[id]/route.ts",
-        "start": 249,
+        "start": 254,
         "end": 84,
         "startLoc": {
-          "line": 249,
+          "line": 254,
           "column": 9,
-          "position": 2285
+          "position": 2373
         },
         "endLoc": {
           "line": 84,
@@ -2607,17 +2883,17 @@
       },
       "secondFile": {
         "name": "src/app/api/venues/[id]/route.ts",
-        "start": 222,
-        "end": 233,
+        "start": 227,
+        "end": 238,
         "startLoc": {
-          "line": 222,
+          "line": 227,
           "column": 14,
-          "position": 2052
+          "position": 2140
         },
         "endLoc": {
-          "line": 233,
+          "line": 238,
           "column": 24,
-          "position": 2148
+          "position": 2236
         }
       }
     },
@@ -2679,12 +2955,12 @@
       },
       "secondFile": {
         "name": "src/app/api/venues/[id]/route.ts",
-        "start": 249,
+        "start": 254,
         "end": 84,
         "startLoc": {
-          "line": 249,
+          "line": 254,
           "column": 9,
-          "position": 2285
+          "position": 2373
         },
         "endLoc": {
           "line": 84,
@@ -2788,16 +3064,16 @@
       "secondFile": {
         "name": "src/app/api/staff/[id]/route.ts",
         "start": 76,
-        "end": 233,
+        "end": 238,
         "startLoc": {
           "line": 76,
           "column": 9,
           "position": 601
         },
         "endLoc": {
-          "line": 233,
+          "line": 238,
           "column": 24,
-          "position": 2148
+          "position": 2236
         }
       }
     },
@@ -2859,12 +3135,12 @@
       },
       "secondFile": {
         "name": "src/app/api/venues/[id]/route.ts",
-        "start": 249,
+        "start": 254,
         "end": 84,
         "startLoc": {
-          "line": 249,
+          "line": 254,
           "column": 9,
-          "position": 2285
+          "position": 2373
         },
         "endLoc": {
           "line": 84,
@@ -2967,12 +3243,12 @@
       },
       "secondFile": {
         "name": "src/app/api/venues/[id]/route.ts",
-        "start": 249,
+        "start": 254,
         "end": 84,
         "startLoc": {
-          "line": 249,
+          "line": 254,
           "column": 5,
-          "position": 2294
+          "position": 2382
         },
         "endLoc": {
           "line": 84,
@@ -3003,17 +3279,17 @@
       },
       "secondFile": {
         "name": "src/app/api/venues/[id]/route.ts",
-        "start": 223,
-        "end": 233,
+        "start": 228,
+        "end": 238,
         "startLoc": {
-          "line": 223,
+          "line": 228,
           "column": 5,
-          "position": 2059
+          "position": 2147
         },
         "endLoc": {
-          "line": 233,
+          "line": 238,
           "column": 24,
-          "position": 2148
+          "position": 2236
         }
       }
     },
@@ -3147,12 +3423,12 @@
       },
       "secondFile": {
         "name": "src/app/api/venues/[id]/route.ts",
-        "start": 249,
+        "start": 254,
         "end": 84,
         "startLoc": {
-          "line": 249,
+          "line": 254,
           "column": 9,
-          "position": 2285
+          "position": 2373
         },
         "endLoc": {
           "line": 84,
@@ -3184,16 +3460,16 @@
       "secondFile": {
         "name": "src/app/api/performances/[id]/route.ts",
         "start": 117,
-        "end": 233,
+        "end": 238,
         "startLoc": {
           "line": 117,
           "column": 7,
           "position": 831
         },
         "endLoc": {
-          "line": 233,
+          "line": 238,
           "column": 24,
-          "position": 2148
+          "position": 2236
         }
       }
     },
@@ -3256,16 +3532,16 @@
       "secondFile": {
         "name": "src/app/api/staff/[id]/route.ts",
         "start": 76,
-        "end": 233,
+        "end": 238,
         "startLoc": {
           "line": 76,
           "column": 9,
           "position": 601
         },
         "endLoc": {
-          "line": 233,
+          "line": 238,
           "column": 24,
-          "position": 2148
+          "position": 2236
         }
       }
     },
@@ -3327,12 +3603,12 @@
       },
       "secondFile": {
         "name": "src/app/api/venues/[id]/route.ts",
-        "start": 249,
+        "start": 254,
         "end": 84,
         "startLoc": {
-          "line": 249,
+          "line": 254,
           "column": 9,
-          "position": 2285
+          "position": 2373
         },
         "endLoc": {
           "line": 84,
@@ -3400,16 +3676,16 @@
       "secondFile": {
         "name": "src/app/api/performances/[id]/route.ts",
         "start": 117,
-        "end": 233,
+        "end": 238,
         "startLoc": {
           "line": 117,
           "column": 7,
           "position": 831
         },
         "endLoc": {
-          "line": 233,
+          "line": 238,
           "column": 24,
-          "position": 2148
+          "position": 2236
         }
       }
     },
@@ -3522,131 +3798,23 @@
       }
     },
     {
-      "format": "tsx",
-      "lines": 11,
-      "fragment": "interface Artist {\n\tid: string;\n\tname: string;\n\tcity: string | null;\n\tfee: number | null;\n\tgenre: string | null;\n\tbio: string | null;\n\tcontact_email: string | null;\n\tcontact_phone: string | null;\n\tpromo_pack_url: string | null;\n\ttech_rider",
-      "tokens": 0,
-      "firstFile": {
-        "name": "src/app/artists/[id]/page.tsx",
-        "start": 74,
-        "end": 84,
-        "startLoc": {
-          "line": 74,
-          "column": 1,
-          "position": 500
-        },
-        "endLoc": {
-          "line": 84,
-          "column": 11,
-          "position": 598
-        }
-      },
-      "secondFile": {
-        "name": "src/app/artists/[id]/edit/page.tsx",
-        "start": 9,
-        "end": 19,
-        "startLoc": {
-          "line": 9,
-          "column": 1,
-          "position": 76
-        },
-        "endLoc": {
-          "line": 19,
-          "column": 2,
-          "position": 173
-        }
-      }
-    },
-    {
-      "format": "tsx",
-      "lines": 30,
-      "fragment": "();\n\tconst [artist, setArtist] = useState<Artist | null>(null);\n\tconst [loading, setLoading] = useState(true);\n\tconst [error, setError] = useState<string | null>(null);\n\n\tuseEffect(() => {\n\t\tconst fetchArtist = async () => {\n\t\t\ttry {\n\t\t\t\tconst response = await fetch(`/api/artists/${params.id}`);\n\t\t\t\tif (!response.ok) {\n\t\t\t\t\tthrow new Error(\"Artist not found\");\n\t\t\t\t}\n\t\t\t\tconst data = await response.json();\n\t\t\t\tsetArtist(data);\n\t\t\t} catch (err) {\n\t\t\t\tsetError(err instanceof Error ? err.message : \"Failed to load artist\");\n\t\t\t} finally {\n\t\t\t\tsetLoading(false);\n\t\t\t}\n\t\t};\n\n\t\tif (params.id) {\n\t\t\tfetchArtist();\n\t\t}\n\t}, [params.id]);\n\n\tif (loading) {\n\t\treturn (\n\t\t\t<div className=\"max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8\">\n\t\t\t\t<div className=\"flex items-center gap-4 mb-8",
-      "tokens": 0,
-      "firstFile": {
-        "name": "src/app/artists/[id]/page.tsx",
-        "start": 92,
-        "end": 121,
-        "startLoc": {
-          "line": 92,
-          "column": 10,
-          "position": 668
-        },
-        "endLoc": {
-          "line": 121,
-          "column": 29,
-          "position": 961
-        }
-      },
-      "secondFile": {
-        "name": "src/app/artists/[id]/edit/page.tsx",
-        "start": 22,
-        "end": 51,
-        "startLoc": {
-          "line": 22,
-          "column": 10,
-          "position": 196
-        },
-        "endLoc": {
-          "line": 51,
-          "column": 5,
-          "position": 489
-        }
-      }
-    },
-    {
-      "format": "tsx",
-      "lines": 12,
-      "fragment": ">\n\t\t\t</div>\n\t\t);\n\t}\n\n\tif (error || !artist) {\n\t\treturn (\n\t\t\t<div className=\"max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8\">\n\t\t\t\t<Card className=\"bg-zinc-900 border-zinc-800\">\n\t\t\t\t\t<CardContent className=\"py-12 text-center\">\n\t\t\t\t\t\t<p className=\"text-red-400\">{error || \"Artist not found\"}</p>\n\t\t\t\t\t\t<",
-      "tokens": 0,
-      "firstFile": {
-        "name": "src/app/artists/[id]/page.tsx",
-        "start": 144,
-        "end": 155,
-        "startLoc": {
-          "line": 144,
-          "column": 4,
-          "position": 1170
-        },
-        "endLoc": {
-          "line": 155,
-          "column": 2,
-          "position": 1259
-        }
-      },
-      "secondFile": {
-        "name": "src/app/artists/[id]/edit/page.tsx",
-        "start": 61,
-        "end": 72,
-        "startLoc": {
-          "line": 61,
-          "column": 5,
-          "position": 588
-        },
-        "endLoc": {
-          "line": 72,
-          "column": 3,
-          "position": 677
-        }
-      }
-    },
-    {
       "format": "typescript",
       "lines": 11,
       "fragment": ")\n\t\t\t.select()\n\t\t\t.single();\n\n\t\tif (error) {\n\t\t\treturn NextResponse.json({ error: error.message }, { status: 400 });\n\t\t}\n\n\t\treturn NextResponse.json(data, { status: 201 });\n\t} catch (error) {\n\t\tconsole.error(\"Error creating venue:\"",
       "tokens": 0,
       "firstFile": {
         "name": "src/app/api/venues/route.ts",
-        "start": 236,
-        "end": 246,
+        "start": 251,
+        "end": 261,
         "startLoc": {
-          "line": 236,
+          "line": 251,
           "column": 14,
-          "position": 2311
+          "position": 2376
         },
         "endLoc": {
-          "line": 246,
+          "line": 261,
           "column": 24,
-          "position": 2407
+          "position": 2472
         }
       },
       "secondFile": {
@@ -4244,7 +4412,7 @@
     {
       "format": "tsx",
       "lines": 25,
-      "fragment": ">\n\n\t\t\t<AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>\n\t\t\t\t<AlertDialogContent className=\"bg-zinc-900 border-zinc-800\">\n\t\t\t\t\t<AlertDialogHeader>\n\t\t\t\t\t\t<AlertDialogTitle>Löschen bestätigen</AlertDialogTitle>\n\t\t\t\t\t\t<AlertDialogDescription>\n\t\t\t\t\t\t\tSind Sie sicher? Diese Aktion kann nicht rückgängig gemacht\n\t\t\t\t\t\t\twerden.\n\t\t\t\t\t\t</AlertDialogDescription>\n\t\t\t\t\t</AlertDialogHeader>\n\t\t\t\t\t<AlertDialogFooter>\n\t\t\t\t\t\t<AlertDialogCancel className=\"border-zinc-800\">\n\t\t\t\t\t\t\tAbbrechen\n\t\t\t\t\t\t</AlertDialogCancel>\n\t\t\t\t\t\t<AlertDialogAction\n\t\t\t\t\t\t\tonClick={handleDelete}\n\t\t\t\t\t\t\tclassName=\"bg-red-600 hover:bg-red-700\"\n\t\t\t\t\t\t>\n\t\t\t\t\t\t\tLöschen\n\t\t\t\t\t\t</AlertDialogAction>\n\t\t\t\t\t</AlertDialogFooter>\n\t\t\t\t</AlertDialogContent>\n\t\t\t</AlertDialog>\n\t\t<",
+      "fragment": ">\n\n\t\t\t<AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>\n\t\t\t\t<AlertDialogContent className=\"bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/70 rounded-lg\">\n\t\t\t\t\t<AlertDialogHeader>\n\t\t\t\t\t\t<AlertDialogTitle>Löschen bestätigen</AlertDialogTitle>\n\t\t\t\t\t\t<AlertDialogDescription>\n\t\t\t\t\t\t\tSind Sie sicher? Diese Aktion kann nicht rückgängig gemacht\n\t\t\t\t\t\t\twerden.\n\t\t\t\t\t\t</AlertDialogDescription>\n\t\t\t\t\t</AlertDialogHeader>\n\t\t\t\t\t<AlertDialogFooter>\n\t\t\t\t\t\t<AlertDialogCancel className=\"border-zinc-700\">\n\t\t\t\t\t\t\tAbbrechen\n\t\t\t\t\t\t</AlertDialogCancel>\n\t\t\t\t\t\t<AlertDialogAction\n\t\t\t\t\t\t\tonClick={handleDelete}\n\t\t\t\t\t\t\tclassName=\"bg-red-600 hover:bg-red-700\"\n\t\t\t\t\t\t>\n\t\t\t\t\t\t\tLöschen\n\t\t\t\t\t\t</AlertDialogAction>\n\t\t\t\t\t</AlertDialogFooter>\n\t\t\t\t</AlertDialogContent>\n\t\t\t</AlertDialog>\n\t\t<",
       "tokens": 0,
       "firstFile": {
         "name": "src/components/running-order.tsx",
@@ -4263,17 +4431,17 @@
       },
       "secondFile": {
         "name": "src/app/events/[id]/page.tsx",
-        "start": 222,
-        "end": 247,
+        "start": 310,
+        "end": 335,
         "startLoc": {
-          "line": 222,
+          "line": 310,
           "column": 4,
-          "position": 1838
+          "position": 2717
         },
         "endLoc": {
-          "line": 247,
+          "line": 335,
           "column": 2,
-          "position": 1993
+          "position": 2872
         }
       }
     },
@@ -4604,7 +4772,7 @@
     {
       "format": "tsx",
       "lines": 13,
-      "fragment": ");\n\t\t} catch (err) {\n\t\t\tsetError(err instanceof Error ? err.message : \"An error occurred\");\n\t\t} finally {\n\t\t\tsetLoading(false);\n\t\t}\n\t};\n\n\treturn (\n\t\t<Card className=\"bg-zinc-900 border-zinc-800\">\n\t\t\t<CardHeader>\n\t\t\t\t<CardTitle className=\"text-white\">\n\t\t\t\t\t{mode === \"create\" ? \"Add New Item\"",
+      "fragment": ");\n\t\t} catch (err) {\n\t\t\tsetError(err instanceof Error ? err.message : \"An error occurred\");\n\t\t} finally {\n\t\t\tsetLoading(false);\n\t\t}\n\t};\n\n\treturn (\n\t\t<Card className=\"bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/70 rounded-lg\">\n\t\t\t<CardHeader>\n\t\t\t\t<CardTitle className=\"text-white\">\n\t\t\t\t\t{mode === \"create\" ? \"Add New Item\"",
       "tokens": 0,
       "firstFile": {
         "name": "src/components/inventory-form.tsx",
@@ -4856,7 +5024,7 @@
     {
       "format": "tsx",
       "lines": 12,
-      "fragment": "} catch (err) {\n\t\t\tsetError(err instanceof Error ? err.message : \"An error occurred\");\n\t\t} finally {\n\t\t\tsetLoading(false);\n\t\t}\n\t};\n\n\treturn (\n\t\t<Card className=\"bg-zinc-900 border-zinc-800\">\n\t\t\t<CardHeader>\n\t\t\t\t<CardTitle className=\"text-white\">\n\t\t\t\t\t{mode === \"create\" ? \"Create New Event\"",
+      "fragment": "} catch (err) {\n\t\t\tsetError(err instanceof Error ? err.message : \"An error occurred\");\n\t\t} finally {\n\t\t\tsetLoading(false);\n\t\t}\n\t};\n\n\treturn (\n\t\t<Card className=\"bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/70 rounded-lg\">\n\t\t\t<CardHeader>\n\t\t\t\t<CardTitle className=\"text-white\">\n\t\t\t\t\t{mode === \"create\" ? \"Create New Event\"",
       "tokens": 0,
       "firstFile": {
         "name": "src/components/event-form.tsx",
@@ -4892,7 +5060,7 @@
     {
       "format": "tsx",
       "lines": 12,
-      "fragment": "\" />\n\t\t\t\t\t\t\t\t\t\t\t\t</SelectTrigger>\n\t\t\t\t\t\t\t\t\t\t\t</FormControl>\n\t\t\t\t\t\t\t\t\t\t\t<SelectContent className=\"bg-zinc-900 border-zinc-800\">\n\t\t\t\t\t\t\t\t\t\t\t\t{venues.map((venue) => (\n\t\t\t\t\t\t\t\t\t\t\t\t\t<SelectItem key={venue.id} value={venue.id}>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t{venue.name}\n\t\t\t\t\t\t\t\t\t\t\t\t\t</SelectItem>\n\t\t\t\t\t\t\t\t\t\t\t\t))}\n\t\t\t\t\t\t\t\t\t\t\t</SelectContent>\n\t\t\t\t\t\t\t\t\t\t</Select>\n\t\t\t\t\t\t\t\t\t\t<",
+      "fragment": "\" />\n\t\t\t\t\t\t\t\t\t\t\t\t</SelectTrigger>\n\t\t\t\t\t\t\t\t\t\t\t</FormControl>\n\t\t\t\t\t\t\t\t\t\t\t<SelectContent className=\"bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/70 rounded-lg\">\n\t\t\t\t\t\t\t\t\t\t\t\t{venues.map((venue) => (\n\t\t\t\t\t\t\t\t\t\t\t\t\t<SelectItem key={venue.id} value={venue.id}>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t{venue.name}\n\t\t\t\t\t\t\t\t\t\t\t\t\t</SelectItem>\n\t\t\t\t\t\t\t\t\t\t\t\t))}\n\t\t\t\t\t\t\t\t\t\t\t</SelectContent>\n\t\t\t\t\t\t\t\t\t\t</Select>\n\t\t\t\t\t\t\t\t\t\t<",
       "tokens": 0,
       "firstFile": {
         "name": "src/components/event-form.tsx",
@@ -4964,7 +5132,7 @@
     {
       "format": "tsx",
       "lines": 17,
-      "fragment": ": \"Save Changes\"}\n\t\t\t\t\t\t\t</Button>\n\t\t\t\t\t\t\t<Button\n\t\t\t\t\t\t\t\ttype=\"button\"\n\t\t\t\t\t\t\t\tvariant=\"outline\"\n\t\t\t\t\t\t\t\tonClick={() => router.back()}\n\t\t\t\t\t\t\t\tclassName=\"border-zinc-800\"\n\t\t\t\t\t\t\t>\n\t\t\t\t\t\t\t\tCancel\n\t\t\t\t\t\t\t</Button>\n\t\t\t\t\t\t</div>\n\t\t\t\t\t</form>\n\t\t\t\t</Form>\n\t\t\t</CardContent>\n\t\t</Card>\n\t);\n}",
+      "fragment": ": \"Save Changes\"}\n\t\t\t\t\t\t\t</Button>\n\t\t\t\t\t\t\t<Button\n\t\t\t\t\t\t\t\ttype=\"button\"\n\t\t\t\t\t\t\t\tvariant=\"outline\"\n\t\t\t\t\t\t\t\tonClick={() => router.back()}\n\t\t\t\t\t\t\t\tclassName=\"border-zinc-700\"\n\t\t\t\t\t\t\t>\n\t\t\t\t\t\t\t\tCancel\n\t\t\t\t\t\t\t</Button>\n\t\t\t\t\t\t</div>\n\t\t\t\t\t</form>\n\t\t\t\t</Form>\n\t\t\t</CardContent>\n\t\t</Card>\n\t);\n}",
       "tokens": 0,
       "firstFile": {
         "name": "src/components/event-form.tsx",
@@ -5036,7 +5204,7 @@
     {
       "format": "tsx",
       "lines": 11,
-      "fragment": ">\n\t\t\t\t\t\t\t\t<SelectContent className=\"bg-zinc-900 border-zinc-800\">\n\t\t\t\t\t\t\t\t\t{subLocations.map((sl) => (\n\t\t\t\t\t\t\t\t\t\t<SelectItem key={sl.id} value={sl.id}>\n\t\t\t\t\t\t\t\t\t\t\t{sl.name}\n\t\t\t\t\t\t\t\t\t\t\t{sl.description ? ` — ${sl.description}` : \"\"}\n\t\t\t\t\t\t\t\t\t\t</SelectItem>\n\t\t\t\t\t\t\t\t\t))}\n\t\t\t\t\t\t\t\t</SelectContent>\n\t\t\t\t\t\t\t</Select>\n\t\t\t\t\t\t</",
+      "fragment": ">\n\t\t\t\t\t\t\t\t<SelectContent className=\"bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/70 rounded-lg\">\n\t\t\t\t\t\t\t\t\t{subLocations.map((sl) => (\n\t\t\t\t\t\t\t\t\t\t<SelectItem key={sl.id} value={sl.id}>\n\t\t\t\t\t\t\t\t\t\t\t{sl.name}\n\t\t\t\t\t\t\t\t\t\t\t{sl.description ? ` — ${sl.description}` : \"\"}\n\t\t\t\t\t\t\t\t\t\t</SelectItem>\n\t\t\t\t\t\t\t\t\t))}\n\t\t\t\t\t\t\t\t</SelectContent>\n\t\t\t\t\t\t\t</Select>\n\t\t\t\t\t\t</",
       "tokens": 0,
       "firstFile": {
         "name": "src/components/checkin-checkout-modal.tsx",
@@ -5288,7 +5456,7 @@
     {
       "format": "tsx",
       "lines": 13,
-      "fragment": ");\n    } catch (err) {\n      setError(err instanceof Error ? err.message : 'An error occurred');\n    } finally {\n      setLoading(false);\n    }\n  };\n\n  return (\n    <Card className=\"bg-zinc-900 border-zinc-800\">\n      <CardHeader>\n        <CardTitle className=\"text-white\">\n          {",
+      "fragment": ");\n    } catch (err) {\n      setError(err instanceof Error ? err.message : 'An error occurred');\n    } finally {\n      setLoading(false);\n    }\n  };\n\n  return (\n    <Card className=\"bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/70 rounded-lg\">\n      <CardHeader>\n        <CardTitle className=\"text-white\">\n          {",
       "tokens": 0,
       "firstFile": {
         "name": "src/components/artist-form.tsx",

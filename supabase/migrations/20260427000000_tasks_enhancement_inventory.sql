@@ -20,6 +20,10 @@ ALTER TABLE tasks ALTER COLUMN event_id DROP NOT NULL;
 UPDATE tasks SET status = 'pending_approval' WHERE status = 'review';
 
 -- Backfill created_by for existing tasks (use assignee_id as fallback)
+-- NOTE: This is an approximation and may be incorrect for manager-assigned tasks.
+-- In a production environment, the true creator should be determined from audit logs
+-- or migration scripts that capture the original creation context.
+-- See review/findings.md (F7) for details.
 UPDATE tasks SET created_by = assignee_id WHERE created_by IS NULL AND assignee_id IS NOT NULL;
 
 -- ============================

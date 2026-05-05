@@ -190,12 +190,9 @@ export default function WorkflowPage() {
 
 	const fetchProfiles = async () => {
 		try {
-			const response = await fetch("/api/staff");
+			const response = await fetch("/api/profiles");
 			const data = await response.json();
-			const staffProfiles = (data.staff || [])
-				.filter((s: { profiles: Profile | null }) => s.profiles)
-				.map((s: { profiles: Profile }) => s.profiles);
-			setProfiles(staffProfiles);
+			setProfiles(data.profiles || []);
 		} catch (error) {
 			console.error("Failed to fetch profiles:", error);
 		}

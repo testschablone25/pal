@@ -4,6 +4,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import { supabaseConfig } from "@/lib/supabase/config";
+import { requireAuth } from "@/lib/api-auth";
 
 const supabase = createClient(supabaseConfig.url, supabaseConfig.serviceKey);
 
@@ -13,6 +14,9 @@ export async function PUT(
 	{ params }: { params: Promise<{ id: string; subId: string }> },
 ) {
 	try {
+		const auth = await requireAuth(request, "VENUES_WRITE");
+		if (!auth.authorized) return auth.response;
+
 		const { subId } = await params;
 		const body = await request.json();
 
@@ -64,10 +68,13 @@ export async function PUT(
 
 // DELETE /api/venues/[id]/sublocations/[subId] - Delete a sub-location
 export async function DELETE(
-	_request: NextRequest,
+	request: NextRequest,
 	{ params }: { params: Promise<{ id: string; subId: string }> },
 ) {
 	try {
+		const auth = await requireAuth(request, "VENUES_WRITE");
+		if (!auth.authorized) return auth.response;
+
 		const { subId } = await params;
 
 		const { error } = await supabase

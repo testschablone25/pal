@@ -1,11 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { supabaseConfig } from '@/lib/supabase/config';
+import { authenticate } from '@/lib/api-auth';
 
 const supabase = createClient(supabaseConfig.url, supabaseConfig.serviceKey);
 
 export async function GET(request: NextRequest) {
   try {
+    const auth = await authenticate(request);
+    if (!auth.authorized) return auth.response;
     const searchParams = request.nextUrl.searchParams;
     const status = searchParams.get('status');
     const itemId = searchParams.get('item_id');
@@ -49,6 +52,9 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
+    const auth = await authenticate(request);
+    if (!auth.authorized) return auth.response;
+
     const body = await request.json();
 
     const {

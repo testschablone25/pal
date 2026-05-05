@@ -1,8 +1,12 @@
 import { createClient } from "@supabase/supabase-js";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { supabaseConfig } from "@/lib/supabase/config";
+import { authenticate } from "@/lib/api-auth";
 
-export async function GET(request: Request) {
+export async function GET(request: NextRequest) {
+	const auth = await authenticate(request);
+	if (!auth.authorized) return auth.response;
+
 	const supabase = createClient(supabaseConfig.url, supabaseConfig.serviceKey, {
 		auth: { autoRefreshToken: false, persistSession: false },
 	});

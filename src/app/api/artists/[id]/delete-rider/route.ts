@@ -5,6 +5,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { supabaseConfig } from '@/lib/supabase/config';
+import { requireAuth } from '@/lib/api-auth';
 
 const supabase = createClient(supabaseConfig.url, supabaseConfig.serviceKey);
 
@@ -14,6 +15,9 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const auth = await requireAuth(request, 'ARTISTS_WRITE');
+    if (!auth.authorized) return auth.response;
+
     const { id } = await params;
 
     // Get current rider data to archive

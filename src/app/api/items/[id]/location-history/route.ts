@@ -1,14 +1,18 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import { supabaseConfig } from "@/lib/supabase/config";
+import { requireAuth } from "@/lib/api-auth";
 
 const supabase = createClient(supabaseConfig.url, supabaseConfig.serviceKey);
 
 export async function GET(
-	_request: NextRequest,
+	request: NextRequest,
 	{ params }: { params: Promise<{ id: string }> },
 ) {
 	try {
+		const auth = await requireAuth(request, "INVENTORY_READ");
+		if (!auth.authorized) return auth.response;
+
 		const { id } = await params;
 
 		const { data, error } = await supabase
@@ -45,6 +49,9 @@ export async function POST(
 	{ params }: { params: Promise<{ id: string }> },
 ) {
 	try {
+		const auth = await requireAuth(request, "INVENTORY_WRITE");
+		if (!auth.authorized) return auth.response;
+
 		const { id } = await params;
 		const body = await request.json();
 

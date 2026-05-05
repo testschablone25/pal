@@ -4,6 +4,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { supabaseConfig } from '@/lib/supabase/config';
+import { requireAuth } from '@/lib/api-auth';
 
 const supabase = createClient(supabaseConfig.url, supabaseConfig.serviceKey);
 
@@ -13,6 +14,9 @@ export async function GET(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const auth = await requireAuth(request, 'ARTISTS_READ');
+    if (!auth.authorized) return auth.response;
+
     const { id } = await params;
 
     const { data, error } = await supabase
@@ -50,6 +54,9 @@ export async function PUT(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const auth = await requireAuth(request, 'ARTISTS_WRITE');
+    if (!auth.authorized) return auth.response;
+
     const { id } = await params;
     const body = await request.json();
 
@@ -109,6 +116,9 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const auth = await requireAuth(request, 'ARTISTS_WRITE');
+    if (!auth.authorized) return auth.response;
+
     const { id } = await params;
 
     const { error } = await supabase

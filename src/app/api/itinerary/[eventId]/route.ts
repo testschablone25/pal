@@ -4,6 +4,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { supabaseConfig } from '@/lib/supabase/config';
+import { requireAuth } from '@/lib/api-auth';
 import { generateItineraryPDF, formatItineraryData } from '@/lib/itinerary';
 
 const supabase = createClient(supabaseConfig.url, supabaseConfig.serviceKey);
@@ -14,6 +15,9 @@ export async function GET(
   { params }: { params: Promise<{ eventId: string }> }
 ) {
   try {
+    const auth = await requireAuth(request, 'EVENTS_READ');
+    if (!auth.authorized) return auth.response;
+
     const { eventId } = await params;
     const searchParams = request.nextUrl.searchParams;
     const format = searchParams.get('format') || 'json';
@@ -136,6 +140,9 @@ export async function PUT(
   { params }: { params: Promise<{ eventId: string }> }
 ) {
   try {
+    const auth = await requireAuth(request, 'EVENTS_WRITE');
+    if (!auth.authorized) return auth.response;
+
     const { eventId } = await params;
     const body = await request.json();
     

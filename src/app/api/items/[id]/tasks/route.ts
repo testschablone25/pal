@@ -1,15 +1,19 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import { supabaseConfig } from "@/lib/supabase/config";
+import { requireAuth } from "@/lib/api-auth";
 
 const supabase = createClient(supabaseConfig.url, supabaseConfig.serviceKey);
 
 // GET /api/items/[id]/tasks — Fetch all tasks linked to this item
 export async function GET(
-	_request: NextRequest,
+	request: NextRequest,
 	{ params }: { params: Promise<{ id: string }> },
 ) {
 	try {
+		const auth = await requireAuth(request, "TASKS_READ");
+		if (!auth.authorized) return auth.response;
+
 		const { id } = await params;
 
 		// Fetch all task_items rows for this item, with task + sublocation data

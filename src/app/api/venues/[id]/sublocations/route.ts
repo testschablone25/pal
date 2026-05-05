@@ -4,15 +4,19 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import { supabaseConfig } from "@/lib/supabase/config";
+import { requireAuth } from "@/lib/api-auth";
 
 const supabase = createClient(supabaseConfig.url, supabaseConfig.serviceKey);
 
 // GET /api/venues/[id]/sublocations - List all sub-locations for a venue
 export async function GET(
-	_request: NextRequest,
+	request: NextRequest,
 	{ params }: { params: Promise<{ id: string }> },
 ) {
 	try {
+		const auth = await requireAuth(request, "VENUES_READ");
+		if (!auth.authorized) return auth.response;
+
 		const { id: venueId } = await params;
 
 		const { data, error } = await supabase
@@ -41,6 +45,9 @@ export async function POST(
 	{ params }: { params: Promise<{ id: string }> },
 ) {
 	try {
+		const auth = await requireAuth(request, "VENUES_WRITE");
+		if (!auth.authorized) return auth.response;
+
 		const { id: venueId } = await params;
 		const body = await request.json();
 
