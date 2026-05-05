@@ -181,6 +181,7 @@ export function AvailabilityCalendar({
 	const [quickNotes, setQuickNotes] = useState("");
 	const [quickAvailableFrom, setQuickAvailableFrom] = useState("");
 	const [quickAvailableUntil, setQuickAvailableUntil] = useState("");
+	const [quickError, setQuickError] = useState<string | null>(null);
 
 	// Multi-select mode (self mode)
 	const [multiSelectMode, setMultiSelectMode] = useState(false);
@@ -367,7 +368,6 @@ export function AvailabilityCalendar({
 		if (viewMode === "self") {
 			setQuickDate(date);
 			setQuickReason(existing?.reason || "");
-			setShowQuickReason(existing?.available === false);
 			setPopoverOpen(true);
 			// Also fetch colleagues for this date
 			fetchColleaguesAvailability(date);
@@ -398,7 +398,9 @@ export function AvailabilityCalendar({
 
 			setPopoverOpen(false);
 			setQuickReason("");
-			setShowQuickReason(false);
+			setQuickNotes("");
+			setQuickAvailableFrom("");
+			setQuickAvailableUntil("");
 			fetchAvailability();
 			if (colleaguesDate === quickDate) {
 				fetchColleaguesAvailability(quickDate);
@@ -437,7 +439,6 @@ export function AvailabilityCalendar({
 			setQuickNotes("");
 			setQuickAvailableFrom("");
 			setQuickAvailableUntil("");
-			setShowQuickReason(false);
 			fetchAvailability();
 			if (colleaguesDate === quickDate) {
 				fetchColleaguesAvailability(quickDate);
