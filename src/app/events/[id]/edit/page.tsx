@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { EventForm } from "@/components/event-form";
 import { PageSkeleton } from "@/components/page-skeleton";
@@ -13,11 +13,7 @@ export default function EditEventPage() {
 	const [event, setEvent] = useState<Record<string, unknown> | null>(null);
 	const [loading, setLoading] = useState(true);
 
-	useEffect(() => {
-		fetchEvent();
-	}, [eventId]);
-
-	const fetchEvent = async () => {
+	const fetchEvent = useCallback(async () => {
 		try {
 			const response = await fetch(`/api/events/${eventId}`);
 			const data = await response.json();
@@ -27,7 +23,11 @@ export default function EditEventPage() {
 		} finally {
 			setLoading(false);
 		}
-	};
+	}, [eventId]);
+
+	useEffect(() => {
+		fetchEvent();
+	}, [fetchEvent]);
 
 	if (loading) {
 		return (

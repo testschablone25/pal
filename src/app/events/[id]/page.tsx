@@ -340,7 +340,11 @@ export default function EventDetailPage() {
 						<Download className="h-4 w-4 mr-2" />
 						Itinerary PDF
 					</Button>
-					<Button variant="outline" className="border-zinc-700">
+					<Button
+						variant="outline"
+						onClick={handleShare}
+						className="border-zinc-700"
+					>
 						<Share2 className="h-4 w-4 mr-2" />
 						Share
 					</Button>
