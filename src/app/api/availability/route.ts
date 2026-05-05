@@ -92,7 +92,7 @@ export async function POST(request: NextRequest) {
 
 		const body = await request.json();
 
-		const { staff_id, date, available, reason, set_by } = body;
+		const { staff_id, date, available, reason, set_by, available_from, available_until, notes } = body;
 
 		// Validate required fields
 		if (!staff_id) {
@@ -118,7 +118,10 @@ export async function POST(request: NextRequest) {
 			staff_id,
 			date,
 			available,
-			reason: available ? null : reason,
+			reason: reason || null,
+			notes: notes || null,
+			available_from: available_from || null,
+			available_until: available_until || null,
 		};
 
 		// Track who set this (manager override)

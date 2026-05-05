@@ -28,6 +28,7 @@ import {
 } from "@/components/ui/popover";
 
 import { Textarea } from "@/components/ui/textarea";
+import { Input } from "@/components/ui/input";
 import {
 	ChevronLeft,
 	ChevronRight,
@@ -169,12 +170,17 @@ export function AvailabilityCalendar({
 	const [dialogOpen, setDialogOpen] = useState(false);
 	const [selectedDate, setSelectedDate] = useState<string | null>(null);
 	const [reason, setReason] = useState("");
+	const [notes, setNotes] = useState("");
+	const [availableFrom, setAvailableFrom] = useState("");
+	const [availableUntil, setAvailableUntil] = useState("");
 
 	// Quick popover (self mode)
 	const [popoverOpen, setPopoverOpen] = useState(false);
 	const [quickDate, setQuickDate] = useState<string | null>(null);
 	const [quickReason, setQuickReason] = useState("");
-	const [showQuickReason, setShowQuickReason] = useState(false);
+	const [quickNotes, setQuickNotes] = useState("");
+	const [quickAvailableFrom, setQuickAvailableFrom] = useState("");
+	const [quickAvailableUntil, setQuickAvailableUntil] = useState("");
 
 	// Multi-select mode (self mode)
 	const [multiSelectMode, setMultiSelectMode] = useState(false);
@@ -428,6 +434,9 @@ export function AvailabilityCalendar({
 
 			setPopoverOpen(false);
 			setQuickReason("");
+			setQuickNotes("");
+			setQuickAvailableFrom("");
+			setQuickAvailableUntil("");
 			setShowQuickReason(false);
 			fetchAvailability();
 			if (colleaguesDate === quickDate) {
@@ -445,7 +454,7 @@ export function AvailabilityCalendar({
 
 		setSaving(true);
 		try {
-			await Promise.all(
+			const results = await Promise.allSettled(
 				Array.from(selectedDates).map((date) =>
 					fetch("/api/availability", {
 						method: "POST",
@@ -454,17 +463,37 @@ export function AvailabilityCalendar({
 							staff_id: targetStaffId,
 							date,
 							available,
-							reason: available ? null : bulkReason,
+							reason: bulkReason.trim() || null,
 						}),
 					}),
 				),
 			);
+
+			const failed = results.filter((r) => r.status === "rejected").length;
 			setSelectedDates(new Set());
 			setBulkReason("");
 			setShowBulkReason(false);
 			fetchAvailability();
+
+			if (failed > 0) {
+				toast({
+					variant: "destructive",
+					title: "Partial failure",
+					description: `${failed} of ${selectedDates.size} days failed to save.`,
+				});
+			} else {
+				toast({
+					title: "Availability saved",
+					description: `${selectedDates.size} day${selectedDates.size !== 1 ? "s" : ""} updated successfully.`,
+				});
+			}
 		} catch (error) {
 			console.error("Error saving bulk availability:", error);
+			toast({
+				variant: "destructive",
+				title: "Error",
+				description: "Failed to save availability. Please try again.",
+			});
 		} finally {
 			setSaving(false);
 		}
@@ -783,7 +812,12 @@ export function AvailabilityCalendar({
 								Available this week
 								{quickDate && (
 									<span className="ml-1 text-emerald-600">
-										({new Date(quickDate + 'T12:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric' })})
+										(
+										{new Date(quickDate + "T12:00:00").toLocaleDateString(
+											"en-US",
+											{ month: "short", day: "numeric" },
+										)}
+										)
 									</span>
 								)}
 							</Button>
@@ -798,7 +832,12 @@ export function AvailabilityCalendar({
 								Unavailable this week
 								{quickDate && (
 									<span className="ml-1 text-red-600">
-										({new Date(quickDate + 'T12:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric' })})
+										(
+										{new Date(quickDate + "T12:00:00").toLocaleDateString(
+											"en-US",
+											{ month: "short", day: "numeric" },
+										)}
+										)
 									</span>
 								)}
 							</Button>
@@ -1170,27 +1209,97 @@ export function AvailabilityCalendar({
 							</div>
 						)}
 
+						{/* Time constraint inputs */}
+						<div className="grid grid-cols-2 gap-2">
+							<div className="space-y-1">
+								<label className="text-xs text-zinc-400 block">
+									Available from
+								</label>
+								<Input
+									type="time"
+									value={quickAvailableFrom}
+									onChange={(e) =>
+										setQuickAvailableFrom(e.target.value)
+									}
+									className="bg-zinc-950 border-zinc-800 text-xs h-8"
+								/>
+							</div>
+							<div className="space-y-1">
+								<label className="text-xs text-zinc-400 block">
+									Available until
+								</label>
+								<Input
+									type="time"
+									value={quickAvailableUntil}
+									onChange={(e) =>
+										setQuickAvailableUntil(e.target.value)
+									}
+									className="bg-zinc-950 border-zinc-800 text-xs h-8"
+								/>
+							</div>
+						</div>
+
+						{/* Reason textarea */}
+						<div className="space-y-1">
+							<label className="text-xs text-zinc-400 block">
+								Reason
+							</label>
+							<Input
+								type="text"
+								value={quickReason}
+								onChange={(e) => setQuickReason(e.target.value)}
+								placeholder="e.g., Vacation, Sick leave..."
+								className="bg-zinc-950 border-zinc-800 text-xs h-8"
+							/>
+						</div>
+
+						{/* Notes textarea */}
+						<div className="space-y-1">
+							<label className="text-xs text-zinc-400 block">
+								Notes (e.g. &quot;only available until 2pm&quot;, &quot;coming in at 12 after appointment&quot;)
+							</label>
+							<Textarea
+								value={quickNotes}
+								onChange={(e) => setQuickNotes(e.target.value)}
+								placeholder="e.g., Have a doctor's appointment, will come in at 12:00"
+								className="bg-zinc-950 border-zinc-800 text-xs h-16"
+							/>
+						</div>
+
+						{/* Error message */}
+						{quickError && (
+							<p className="text-xs text-red-400 flex items-center gap-1">
+								<AlertTriangle className="h-3 w-3" />
+								{quickError}
+							</p>
+						)}
+
 						{/* Quick action buttons */}
 						<div className="flex gap-2">
 							<Button
 								size="sm"
-								onClick={() => {
-									setShowQuickReason(false);
-									handleSelfQuickSet(true);
-								}}
+								onClick={() => handleSelfQuickSet(true)}
 								disabled={saving}
 								className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-xs"
 							>
-								<Check className="h-3.5 w-3.5 mr-1" />
+								{saving ? (
+									<Loader2 className="h-3.5 w-3.5 mr-1 animate-spin" />
+								) : (
+									<Check className="h-3.5 w-3.5 mr-1" />
+								)}
 								Available
 							</Button>
 							<Button
 								size="sm"
-								onClick={() => setShowQuickReason(true)}
-								disabled={saving || showQuickReason}
+								onClick={() => handleSelfQuickSet(false)}
+								disabled={saving}
 								className="flex-1 bg-red-600 hover:bg-red-700 text-xs"
 							>
-								<X className="h-3.5 w-3.5 mr-1" />
+								{saving ? (
+									<Loader2 className="h-3.5 w-3.5 mr-1 animate-spin" />
+								) : (
+									<X className="h-3.5 w-3.5 mr-1" />
+								)}
 								Unavailable
 							</Button>
 							<Button
@@ -1204,34 +1313,6 @@ export function AvailabilityCalendar({
 								Clear
 							</Button>
 						</div>
-
-						{/* Reason textarea (unavailable) */}
-						{showQuickReason && (
-							<div className="space-y-2">
-								<label className="text-xs text-zinc-400 block">
-									Reason (required)
-								</label>
-								<Textarea
-									value={quickReason}
-									onChange={(e) => setQuickReason(e.target.value)}
-									placeholder="e.g., Vacation, Personal day..."
-									className="bg-zinc-950 border-zinc-800 text-xs h-20"
-								/>
-								<Button
-									size="sm"
-									onClick={() => handleSelfQuickSet(false)}
-									disabled={saving || !quickReason.trim()}
-									className="w-full bg-red-600 hover:bg-red-700"
-								>
-									{saving ? (
-										<Loader2 className="mr-2 h-4 w-4 animate-spin" />
-									) : (
-										<X className="mr-2 h-4 w-4" />
-									)}
-									Confirm Unavailable
-								</Button>
-							</div>
-						)}
 
 						{/* Manager override info in self mode */}
 						{quickDate &&
@@ -1323,14 +1404,56 @@ export function AvailabilityCalendar({
 						})()}
 
 					<div className="space-y-4">
+						{/* Time constraints */}
+						<div className="grid grid-cols-2 gap-4">
+							<div>
+								<label className="text-sm text-zinc-400 mb-2 block">
+									Available from
+								</label>
+								<Input
+									type="time"
+									value={availableFrom}
+									onChange={(e) =>
+										setAvailableFrom(e.target.value)
+									}
+									className="bg-zinc-950 border-zinc-800"
+								/>
+							</div>
+							<div>
+								<label className="text-sm text-zinc-400 mb-2 block">
+									Available until
+								</label>
+								<Input
+									type="time"
+									value={availableUntil}
+									onChange={(e) =>
+										setAvailableUntil(e.target.value)
+									}
+									className="bg-zinc-950 border-zinc-800"
+								/>
+							</div>
+						</div>
+
 						<div>
 							<label className="text-sm text-zinc-400 mb-2 block">
-								Reason (if unavailable)
+								Reason
 							</label>
-							<Textarea
+							<Input
 								value={reason}
 								onChange={(e) => setReason(e.target.value)}
-								placeholder="e.g., Vacation, Personal day, Sick leave..."
+								placeholder="e.g., Vacation, Sick leave..."
+								className="bg-zinc-950 border-zinc-800"
+							/>
+						</div>
+
+						<div>
+							<label className="text-sm text-zinc-400 mb-2 block">
+								Notes (e.g. &quot;only available until 2pm&quot;, &quot;coming in at 12 after appointment&quot;)
+							</label>
+							<Textarea
+								value={notes}
+								onChange={(e) => setNotes(e.target.value)}
+								placeholder="e.g., Have a doctor's appointment, will come in at 12:00"
 								className="bg-zinc-950 border-zinc-800"
 							/>
 						</div>

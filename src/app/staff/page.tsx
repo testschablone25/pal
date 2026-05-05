@@ -174,7 +174,10 @@ export default function StaffPage() {
 
 	const getContractTypeBadge = (type: string) => {
 		return (
-			<Badge variant="outline" className="border-zinc-700 text-zinc-400 capitalize">
+			<Badge
+				variant="outline"
+				className="border-zinc-700 text-zinc-400 capitalize"
+			>
 				{type}
 			</Badge>
 		);
@@ -203,7 +206,7 @@ export default function StaffPage() {
 					<Card className="bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/70 hover:border-zinc-700 transition-all cursor-pointer">
 						<CardContent className="pt-6">
 							<div className="flex items-center gap-4">
-									<Users className="h-5 w-5 text-zinc-400" />
+								<Users className="h-5 w-5 text-zinc-400" />
 								<div>
 									<h3 className="font-semibold text-white">Add Staff</h3>
 									<p className="text-sm text-zinc-400">
@@ -219,7 +222,7 @@ export default function StaffPage() {
 					<Card className="bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/70 hover:border-zinc-700 transition-all cursor-pointer">
 						<CardContent className="pt-6">
 							<div className="flex items-center gap-4">
-									<Clock className="h-5 w-5 text-zinc-400" />
+								<Clock className="h-5 w-5 text-zinc-400" />
 								<div>
 									<h3 className="font-semibold text-white">Shift Schedule</h3>
 									<p className="text-sm text-zinc-400">
@@ -358,7 +361,10 @@ export default function StaffPage() {
 										</TableCell>
 										<TableCell>
 											{member.is_minor ? (
-												<Badge variant="outline" className="border-zinc-700 text-zinc-400">
+												<Badge
+													variant="outline"
+													className="border-zinc-700 text-zinc-400"
+												>
 													Yes
 												</Badge>
 											) : (
