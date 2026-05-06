@@ -92,7 +92,16 @@ export async function POST(request: NextRequest) {
 
 		const body = await request.json();
 
-		const { staff_id, date, available, reason, set_by, available_from, available_until, notes } = body;
+		const {
+			staff_id,
+			date,
+			available,
+			reason,
+			set_by,
+			available_from,
+			available_until,
+			notes,
+		} = body;
 
 		// Validate required fields
 		if (!staff_id) {

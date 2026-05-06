@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useMemo } from "react";
 import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import {
@@ -183,7 +184,7 @@ export function TaskForm({
 
 	const form = useForm<TaskFormValues>({
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any
-		resolver: z.object({}).passthrough() as any,
+		resolver: zodResolver(taskSchema) as any,
 		defaultValues: {
 			title: task?.title || "",
 			description: task?.description || "",

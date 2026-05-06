@@ -1219,9 +1219,7 @@ export function AvailabilityCalendar({
 								<Input
 									type="time"
 									value={quickAvailableFrom}
-									onChange={(e) =>
-										setQuickAvailableFrom(e.target.value)
-									}
+									onChange={(e) => setQuickAvailableFrom(e.target.value)}
 									className="bg-zinc-950 border-zinc-800 text-xs h-8"
 								/>
 							</div>
@@ -1232,9 +1230,7 @@ export function AvailabilityCalendar({
 								<Input
 									type="time"
 									value={quickAvailableUntil}
-									onChange={(e) =>
-										setQuickAvailableUntil(e.target.value)
-									}
+									onChange={(e) => setQuickAvailableUntil(e.target.value)}
 									className="bg-zinc-950 border-zinc-800 text-xs h-8"
 								/>
 							</div>
@@ -1242,9 +1238,7 @@ export function AvailabilityCalendar({
 
 						{/* Reason textarea */}
 						<div className="space-y-1">
-							<label className="text-xs text-zinc-400 block">
-								Reason
-							</label>
+							<label className="text-xs text-zinc-400 block">Reason</label>
 							<Input
 								type="text"
 								value={quickReason}
@@ -1257,7 +1251,8 @@ export function AvailabilityCalendar({
 						{/* Notes textarea */}
 						<div className="space-y-1">
 							<label className="text-xs text-zinc-400 block">
-								Notes (e.g. &quot;only available until 2pm&quot;, &quot;coming in at 12 after appointment&quot;)
+								Notes (e.g. &quot;only available until 2pm&quot;, &quot;coming
+								in at 12 after appointment&quot;)
 							</label>
 							<Textarea
 								value={quickNotes}
@@ -1414,9 +1409,7 @@ export function AvailabilityCalendar({
 								<Input
 									type="time"
 									value={availableFrom}
-									onChange={(e) =>
-										setAvailableFrom(e.target.value)
-									}
+									onChange={(e) => setAvailableFrom(e.target.value)}
 									className="bg-zinc-950 border-zinc-800"
 								/>
 							</div>
@@ -1427,18 +1420,14 @@ export function AvailabilityCalendar({
 								<Input
 									type="time"
 									value={availableUntil}
-									onChange={(e) =>
-										setAvailableUntil(e.target.value)
-									}
+									onChange={(e) => setAvailableUntil(e.target.value)}
 									className="bg-zinc-950 border-zinc-800"
 								/>
 							</div>
 						</div>
 
 						<div>
-							<label className="text-sm text-zinc-400 mb-2 block">
-								Reason
-							</label>
+							<label className="text-sm text-zinc-400 mb-2 block">Reason</label>
 							<Input
 								value={reason}
 								onChange={(e) => setReason(e.target.value)}
@@ -1449,7 +1438,8 @@ export function AvailabilityCalendar({
 
 						<div>
 							<label className="text-sm text-zinc-400 mb-2 block">
-								Notes (e.g. &quot;only available until 2pm&quot;, &quot;coming in at 12 after appointment&quot;)
+								Notes (e.g. &quot;only available until 2pm&quot;, &quot;coming
+								in at 12 after appointment&quot;)
 							</label>
 							<Textarea
 								value={notes}
