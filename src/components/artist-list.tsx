@@ -16,14 +16,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { PageSkeleton } from "@/components/page-skeleton";
 import { PaginationControls } from "@/components/pagination-controls";
-import {
-	Plus,
-	MapPin,
-	Music,
-	Pencil,
-	Trash2,
-	Loader2,
-} from "lucide-react";
+import { Plus, MapPin, Music, Pencil, Trash2, Loader2, ExternalLink } from "lucide-react";
 import { SearchFilterBar } from "@/components/search-filter-bar";
 import Link from "next/link";
 import { EmptyState } from "@/components/empty-state";
@@ -115,10 +108,9 @@ export function ArtistList() {
 		if (!deletingArtist) return;
 		setDeleting(true);
 		try {
-			const response = await fetch(
-				`/api/artists/${deletingArtist.id}`,
-				{ method: "DELETE" },
-			);
+			const response = await fetch(`/api/artists/${deletingArtist.id}`, {
+				method: "DELETE",
+			});
 			if (!response.ok) throw new Error("Failed to delete artist");
 
 			setShowDeleteDialog(false);
@@ -133,9 +125,7 @@ export function ArtistList() {
 				variant: "destructive",
 				title: "Error",
 				description:
-					err instanceof Error
-						? err.message
-						: "Failed to delete artist",
+					err instanceof Error ? err.message : "Failed to delete artist",
 			});
 		} finally {
 			setDeleting(false);
@@ -216,72 +206,89 @@ export function ArtistList() {
 			) : (
 				<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
 					{artists.map((artist) => (
-						<Card
+						<Link
 							key={artist.id}
-							className="bg-zinc-900 border-zinc-800 hover:border-violet-600/50 transition-all"
+							href={`/artists/${artist.id}`}
+							className="block group"
 						>
-							<CardContent className="pt-6 pb-4">
-								<div className="space-y-3">
-									{/* Top row: name + fee + actions */}
-									<div className="flex items-start justify-between gap-2">
-										<div className="min-w-0 flex-1">
-											<h3 className="text-lg font-semibold text-white truncate">
-												{artist.name}
-											</h3>
-										</div>
-										<div className="flex items-center gap-1 shrink-0">
-											{artist.fee && (
-												<span className="text-violet-400 font-medium text-sm mr-1">
-													€{artist.fee.toLocaleString()}
-												</span>
-											)}
-											<Link
-												href={`/artists/${artist.id}/edit`}
-												onClick={(e) => e.stopPropagation()}
-											>
+							<Card className="bg-zinc-900 border-zinc-800 hover:border-violet-600/50 transition-all cursor-pointer">
+								<CardContent className="pt-6 pb-4">
+									<div className="space-y-3">
+										{/* Top row: name + fee + actions */}
+										<div className="flex items-start justify-between gap-2">
+											<div className="min-w-0 flex-1">
+												<h3 className="text-lg font-semibold text-white truncate group-hover:text-violet-300 transition-colors">
+													{artist.name}
+												</h3>
+											</div>
+											<div className="flex items-center gap-1 shrink-0">
+												{artist.fee && (
+													<span className="text-violet-400 font-medium text-sm mr-1">
+														€{artist.fee.toLocaleString()}
+													</span>
+												)}
+												<Link
+													href={`/artists/${artist.id}`}
+													onClick={(e) => e.stopPropagation()}
+												>
+													<Button
+														variant="ghost"
+														size="icon"
+														className="h-8 w-8 text-zinc-400 hover:text-white hover:bg-zinc-800"
+														title="View artist"
+													>
+														<ExternalLink className="h-4 w-4" />
+													</Button>
+												</Link>
+												<Link
+													href={`/artists/${artist.id}/edit`}
+													onClick={(e) => e.stopPropagation()}
+												>
+													<Button
+														variant="ghost"
+														size="icon"
+														className="h-8 w-8 text-zinc-400 hover:text-white hover:bg-zinc-800"
+													>
+														<Pencil className="h-4 w-4" />
+													</Button>
+												</Link>
 												<Button
 													variant="ghost"
 													size="icon"
-													className="h-8 w-8 text-zinc-400 hover:text-white hover:bg-zinc-800"
+													className="h-8 w-8 text-zinc-400 hover:text-red-400 hover:bg-red-600/10"
+													onClick={(e) => {
+														e.preventDefault();
+														e.stopPropagation();
+														setDeletingArtist(artist);
+														setShowDeleteDialog(true);
+													}}
 												>
-													<Pencil className="h-4 w-4" />
+													<Trash2 className="h-4 w-4" />
 												</Button>
-											</Link>
-											<Button
-												variant="ghost"
-												size="icon"
-												className="h-8 w-8 text-zinc-400 hover:text-red-400 hover:bg-red-600/10"
-												onClick={(e) => {
-													e.preventDefault();
-													setDeletingArtist(artist);
-													setShowDeleteDialog(true);
-												}}
-											>
-												<Trash2 className="h-4 w-4" />
-											</Button>
+											</div>
+										</div>
+
+										{/* Genre badge + city */}
+										<div className="flex flex-wrap items-center gap-2">
+											{artist.genre && (
+												<Badge
+													variant="outline"
+													className="border-violet-600/50 text-violet-400"
+												>
+													{artist.genre}
+												</Badge>
+											)}
+											{artist.city && (
+												<div className="flex items-center text-sm text-zinc-400">
+													<MapPin className="h-4 w-4 mr-1" />
+													{artist.city}
+												</div>
+											)}
 										</div>
 									</div>
-
-									{/* Genre badge + city */}
-									<div className="flex flex-wrap items-center gap-2">
-										{artist.genre && (
-											<Badge
-												variant="outline"
-												className="border-violet-600/50 text-violet-400"
-											>
-												{artist.genre}
-											</Badge>
-										)}
-										{artist.city && (
-											<div className="flex items-center text-sm text-zinc-400">
-												<MapPin className="h-4 w-4 mr-1" />
-												{artist.city}
-											</div>
-										)}
-									</div>
-								</div>
-							</CardContent>
-						</Card>
+								</CardContent>
+							</Card>
+						</Link>
 					))}
 				</div>
 			)}
@@ -306,10 +313,9 @@ export function ArtistList() {
 						</AlertDialogTitle>
 						<AlertDialogDescription className="text-zinc-400">
 							Are you sure you want to delete{" "}
-							<strong className="text-zinc-200">
-								{deletingArtist?.name}
-							</strong>
-							? This action cannot be undone.
+							<strong className="text-zinc-200">{deletingArtist?.name}</strong>?
+							Any event performances for this artist will also be removed.
+							This action cannot be undone.
 						</AlertDialogDescription>
 					</AlertDialogHeader>
 					<AlertDialogFooter>
@@ -321,9 +327,7 @@ export function ArtistList() {
 							disabled={deleting}
 							className="bg-red-600 hover:bg-red-700 text-white"
 						>
-							{deleting && (
-								<Loader2 className="mr-2 h-4 w-4 animate-spin" />
-							)}
+							{deleting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
 							Delete
 						</AlertDialogAction>
 					</AlertDialogFooter>

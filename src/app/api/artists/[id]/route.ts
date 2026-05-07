@@ -110,7 +110,7 @@ export async function PUT(
   }
 }
 
-// DELETE /api/artists/[id] - Delete artist
+// DELETE /api/artists/[id] - Delete artist and associated performances
 export async function DELETE(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -120,6 +120,18 @@ export async function DELETE(
     if (!auth.authorized) return auth.response;
 
     const { id } = await params;
+
+    // First delete all performances referencing this artist
+    // to avoid foreign key constraint violations
+    const { error: perfError } = await supabase
+      .from('performances')
+      .delete()
+      .eq('artist_id', id);
+
+    if (perfError) {
+      console.error('Error deleting artist performances:', perfError);
+      // Continue anyway — the artist delete below will surface the constraint
+    }
 
     const { error } = await supabase
       .from('artists')
