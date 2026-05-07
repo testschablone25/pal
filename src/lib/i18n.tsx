@@ -499,9 +499,7 @@ export function I18nProvider({ children }: { children: ReactNode }) {
 		[locale, toggleLocale, t],
 	);
 
-	return (
-		<I18nContext.Provider value={ctx}>{children}</I18nContext.Provider>
-	);
+	return <I18nContext.Provider value={ctx}>{children}</I18nContext.Provider>;
 }
 
 // ============================================

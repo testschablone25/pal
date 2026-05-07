@@ -47,11 +47,7 @@ import type { Venue, SubLocation } from "./types";
 
 // ── Client Venues Page ────────────────────────────────────────────────
 
-export function VenuesClient({
-	initialVenues,
-}: {
-	initialVenues: Venue[];
-}) {
+export function VenuesClient({ initialVenues }: { initialVenues: Venue[] }) {
 	const { toast } = useToast();
 	const [venues, setVenues] = useState<Venue[]>(initialVenues);
 	const [expandedVenueId, setExpandedVenueId] = useState<string | null>(null);
@@ -313,10 +309,8 @@ export function VenuesClient({
 						</AlertDialogTitle>
 						<AlertDialogDescription className="text-zinc-400">
 							Are you sure you want to delete{" "}
-							<strong className="text-zinc-200">
-								{deletingVenue?.name}
-							</strong>
-							? This action cannot be undone.
+							<strong className="text-zinc-200">{deletingVenue?.name}</strong>?
+							This action cannot be undone.
 						</AlertDialogDescription>
 					</AlertDialogHeader>
 					<AlertDialogFooter>
@@ -328,9 +322,7 @@ export function VenuesClient({
 							disabled={deleting}
 							className="bg-red-600 hover:bg-red-700 text-white"
 						>
-							{deleting && (
-								<Loader2 className="mr-2 h-4 w-4 animate-spin" />
-							)}
+							{deleting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
 							Delete
 						</AlertDialogAction>
 					</AlertDialogFooter>
@@ -470,9 +462,7 @@ export function VenuesClient({
 												inventoryCount={venue.inventory_count}
 												subLocations={venue.sub_locations || []}
 												onCapacityChange={fetchVenues}
-												onAddSubLocation={() =>
-													setSubLocationVenue(venue)
-												}
+												onAddSubLocation={() => setSubLocationVenue(venue)}
 												onDeleteSubLocation={(subLocationId) => {
 													fetch(
 														`/api/venues/${venue.id}/sublocations/${subLocationId}`,
@@ -508,8 +498,7 @@ export function VenuesClient({
 					<div className="relative w-full max-w-4xl max-h-[85vh] bg-zinc-900 border border-zinc-700 rounded-xl shadow-2xl flex flex-col overflow-hidden animate-modal-in">
 						<div className="flex items-center justify-between px-6 py-4 border-b border-zinc-800 shrink-0">
 							<h2 className="text-lg font-semibold text-white truncate">
-								{venues.find((v) => v.id === expandedVenueId)?.name ||
-									"Venue"}
+								{venues.find((v) => v.id === expandedVenueId)?.name || "Venue"}
 							</h2>
 							<button
 								onClick={() => setExpandedVenueId(null)}
@@ -530,5 +519,3 @@ export function VenuesClient({
 		</div>
 	);
 }
-
-

@@ -36,7 +36,9 @@ export default function RootLayout({
 }>) {
 	return (
 		<html lang="de">
-			<body className={`${montserrat.variable} font-[family-name:var(--font-montserrat)] antialiased bg-zinc-950 text-white min-h-screen`}>
+			<body
+				className={`${montserrat.variable} font-[family-name:var(--font-montserrat)] antialiased bg-zinc-950 text-white min-h-screen`}
+			>
 				<I18nProvider>
 					<UserProvider>
 						{/* Gradient ambient background */}
