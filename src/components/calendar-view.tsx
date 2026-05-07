@@ -35,7 +35,7 @@ const EventForm = dynamic(
 	{ ssr: false },
 );
 
-interface Event {
+export interface Event {
 	id: string;
 	name: string;
 	date: string;
@@ -251,16 +251,12 @@ export function CalendarView({
 						{/* Day columns */}
 						{days.map((day) => (
 							<div key={day.toISOString()} className="space-y-0">
-								{hours.map((hour) => {
-									const dayEvents = getEventsForDate(day);
-									// This is simplified - in production, you'd match events to hours
-									return (
-										<div
-											key={hour}
-											className="h-12 border-t border-zinc-800 hover:bg-zinc-900/50"
-										/>
-									);
-								})}
+								{hours.map((hour) => (
+								<div
+									key={hour}
+									className="h-12 border-t border-zinc-800 hover:bg-zinc-900/50"
+								/>
+							))}
 							</div>
 						))}
 					</div>

@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { createClient as createAdminClient } from "@supabase/supabase-js";
 import { supabaseConfig } from "@/lib/supabase/config";
-import { CalendarView } from "@/components/calendar-view";
+import { CalendarView, type Event } from "@/components/calendar-view";
 import { PageSkeleton } from "@/components/page-skeleton";
 import { format, startOfMonth, endOfMonth } from "date-fns";
 
@@ -59,11 +59,7 @@ export default async function EventsPage() {
 						Manage your nightclub events and nights
 					</p>
 				</div>
-				<CalendarView
-					initialEvents={
-						(initialEvents as Array<Record<string, unknown>>) || []
-					}
-				/>
+				<CalendarView initialEvents={(initialEvents as Event[]) || []} />
 			</div>
 		</Suspense>
 	);
