@@ -1,6 +1,6 @@
 {
   "statistics": {
-    "detectionDate": "2026-05-07T11:48:06.508Z",
+    "detectionDate": "2026-05-07T13:09:04.590Z",
     "formats": {
       "typescript": {
         "sources": {
@@ -724,6 +724,18 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
+          "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/app/venues/types.ts": {
+            "lines": 29,
+            "tokens": 218,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
           "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/lib/shift-templates.ts": {
             "lines": 188,
             "tokens": 1301,
@@ -773,8 +785,8 @@
             "newClones": 0
           },
           "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/lib/api-cache.ts": {
-            "lines": 27,
-            "tokens": 116,
+            "lines": 15,
+            "tokens": 56,
             "sources": 1,
             "clones": 0,
             "duplicatedLines": 0,
@@ -809,8 +821,8 @@
             "newClones": 0
           },
           "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/proxy.ts": {
-            "lines": 90,
-            "tokens": 624,
+            "lines": 91,
+            "tokens": 628,
             "sources": 1,
             "clones": 0,
             "duplicatedLines": 0,
@@ -1062,14 +1074,14 @@
           }
         },
         "total": {
-          "lines": 11271,
-          "tokens": 97347,
-          "sources": 88,
+          "lines": 11289,
+          "tokens": 97509,
+          "sources": 89,
           "clones": 96,
           "duplicatedLines": 1019,
           "duplicatedTokens": 10329,
-          "percentage": 9.04,
-          "percentageTokens": 10.61,
+          "percentage": 9.03,
+          "percentageTokens": 10.59,
           "newDuplicatedLines": 0,
           "newClones": 0
         }
@@ -1412,6 +1424,30 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
+          "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/app/workflow/workflow-board.tsx": {
+            "lines": 277,
+            "tokens": 2254,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/app/workflow/page.tsx": {
+            "lines": 6,
+            "tokens": 42,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
           "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/app/workflow/loading.tsx": {
             "lines": 0,
             "tokens": 3,
@@ -1427,6 +1463,18 @@
           "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/app/workflow/error.tsx": {
             "lines": 0,
             "tokens": 3,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/app/venues/page.tsx": {
+            "lines": 6,
+            "tokens": 51,
             "sources": 1,
             "clones": 0,
             "duplicatedLines": 0,
@@ -1460,9 +1508,21 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
+          "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/app/staff/staff-client.tsx": {
+            "lines": 114,
+            "tokens": 833,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
           "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/app/staff/page.tsx": {
-            "lines": 116,
-            "tokens": 901,
+            "lines": 9,
+            "tokens": 77,
             "sources": 1,
             "clones": 0,
             "duplicatedLines": 0,
@@ -1505,6 +1565,18 @@
             "duplicatedTokens": 335,
             "percentage": 41.9,
             "percentageTokens": 42.73,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/app/settings/page.tsx": {
+            "lines": 195,
+            "tokens": 1357,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
             "newDuplicatedLines": 0,
             "newClones": 0
           },
@@ -1569,8 +1641,8 @@
             "newClones": 0
           },
           "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/app/guest-lists/page.tsx": {
-            "lines": 106,
-            "tokens": 821,
+            "lines": 6,
+            "tokens": 46,
             "sources": 1,
             "clones": 0,
             "duplicatedLines": 0,
@@ -1592,9 +1664,33 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
+          "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/app/guest-lists/guest-lists-client.tsx": {
+            "lines": 83,
+            "tokens": 641,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
           "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/app/guest-lists/error.tsx": {
             "lines": 0,
             "tokens": 3,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/app/events/page.tsx": {
+            "lines": 17,
+            "tokens": 158,
             "sources": 1,
             "clones": 0,
             "duplicatedLines": 0,
@@ -1664,9 +1760,9 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/app/contacts/page.tsx": {
-            "lines": 311,
-            "tokens": 2233,
+          "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/app/contacts/loading.tsx": {
+            "lines": 0,
+            "tokens": 3,
             "sources": 1,
             "clones": 0,
             "duplicatedLines": 0,
@@ -1676,9 +1772,9 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/app/contacts/loading.tsx": {
-            "lines": 0,
-            "tokens": 3,
+          "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/app/contacts/contacts-client.tsx": {
+            "lines": 235,
+            "tokens": 1714,
             "sources": 1,
             "clones": 0,
             "duplicatedLines": 0,
@@ -1893,8 +1989,8 @@
             "newClones": 0
           },
           "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/components/nav-bar.tsx": {
-            "lines": 145,
-            "tokens": 1006,
+            "lines": 221,
+            "tokens": 1566,
             "sources": 1,
             "clones": 0,
             "duplicatedLines": 0,
@@ -2037,8 +2133,8 @@
             "newClones": 0
           },
           "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/components/calendar-view.tsx": {
-            "lines": 217,
-            "tokens": 1685,
+            "lines": 213,
+            "tokens": 1660,
             "sources": 1,
             "clones": 0,
             "duplicatedLines": 0,
@@ -2096,6 +2192,18 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
+          "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/app/layout.tsx": {
+            "lines": 0,
+            "tokens": 9,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
           "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/app/error.tsx": {
             "lines": 0,
             "tokens": 3,
@@ -2134,14 +2242,14 @@
           }
         },
         "total": {
-          "lines": 6836,
-          "tokens": 54543,
-          "sources": 88,
+          "lines": 7323,
+          "tokens": 58305,
+          "sources": 96,
           "clones": 15,
           "duplicatedLines": 256,
           "duplicatedTokens": 1370,
-          "percentage": 3.74,
-          "percentageTokens": 2.51,
+          "percentage": 3.5,
+          "percentageTokens": 2.35,
           "newDuplicatedLines": 0,
           "newClones": 0
         }
@@ -2532,6 +2640,30 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
+          "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/app/workflow/workflow-board.tsx": {
+            "lines": 357,
+            "tokens": 2863,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/app/workflow/page.tsx": {
+            "lines": 87,
+            "tokens": 752,
+            "sources": 1,
+            "clones": 1,
+            "duplicatedLines": 11,
+            "duplicatedTokens": 93,
+            "percentage": 12.64,
+            "percentageTokens": 12.37,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
           "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/app/workflow/loading.tsx": {
             "lines": 8,
             "tokens": 63,
@@ -2553,6 +2685,18 @@
             "duplicatedTokens": 850,
             "percentage": 267.74,
             "percentageTokens": 324.43,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/app/venues/page.tsx": {
+            "lines": 46,
+            "tokens": 402,
+            "sources": 1,
+            "clones": 1,
+            "duplicatedLines": 10,
+            "duplicatedTokens": 88,
+            "percentage": 21.74,
+            "percentageTokens": 21.89,
             "newDuplicatedLines": 0,
             "newClones": 0
           },
@@ -2580,15 +2724,27 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/app/staff/page.tsx": {
-            "lines": 452,
-            "tokens": 3499,
+          "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/app/staff/staff-client.tsx": {
+            "lines": 305,
+            "tokens": 2473,
             "sources": 1,
-            "clones": 2,
-            "duplicatedLines": 12,
-            "duplicatedTokens": 126,
-            "percentage": 2.65,
-            "percentageTokens": 3.6,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/app/staff/page.tsx": {
+            "lines": 49,
+            "tokens": 422,
+            "sources": 1,
+            "clones": 1,
+            "duplicatedLines": 10,
+            "duplicatedTokens": 88,
+            "percentage": 20.41,
+            "percentageTokens": 20.85,
             "newDuplicatedLines": 0,
             "newClones": 0
           },
@@ -2625,6 +2781,18 @@
             "duplicatedTokens": 515,
             "percentage": 23.75,
             "percentageTokens": 27.15,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/app/settings/page.tsx": {
+            "lines": 391,
+            "tokens": 2943,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
             "newDuplicatedLines": 0,
             "newClones": 0
           },
@@ -2713,8 +2881,8 @@
             "newClones": 0
           },
           "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/app/guest-lists/page.tsx": {
-            "lines": 270,
-            "tokens": 2279,
+            "lines": 86,
+            "tokens": 640,
             "sources": 1,
             "clones": 0,
             "duplicatedLines": 0,
@@ -2727,6 +2895,18 @@
           "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/app/guest-lists/loading.tsx": {
             "lines": 8,
             "tokens": 63,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/app/guest-lists/guest-lists-client.tsx": {
+            "lines": 226,
+            "tokens": 1854,
             "sources": 1,
             "clones": 0,
             "duplicatedLines": 0,
@@ -2749,8 +2929,8 @@
             "newClones": 0
           },
           "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/app/events/page.tsx": {
-            "lines": 16,
-            "tokens": 121,
+            "lines": 65,
+            "tokens": 596,
             "sources": 1,
             "clones": 0,
             "duplicatedLines": 0,
@@ -2821,8 +3001,8 @@
             "newClones": 0
           },
           "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/app/contacts/page.tsx": {
-            "lines": 452,
-            "tokens": 3430,
+            "lines": 4,
+            "tokens": 35,
             "sources": 1,
             "clones": 0,
             "duplicatedLines": 0,
@@ -2835,6 +3015,18 @@
           "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/app/contacts/loading.tsx": {
             "lines": 8,
             "tokens": 63,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/app/contacts/contacts-client.tsx": {
+            "lines": 384,
+            "tokens": 2956,
             "sources": 1,
             "clones": 0,
             "duplicatedLines": 0,
@@ -3073,14 +3265,14 @@
             "newClones": 0
           },
           "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/components/nav-bar.tsx": {
-            "lines": 204,
-            "tokens": 1511,
+            "lines": 291,
+            "tokens": 2143,
             "sources": 1,
             "clones": 2,
             "duplicatedLines": 28,
             "duplicatedTokens": 232,
-            "percentage": 13.73,
-            "percentageTokens": 15.35,
+            "percentage": 9.62,
+            "percentageTokens": 10.83,
             "newDuplicatedLines": 0,
             "newClones": 0
           },
@@ -3217,8 +3409,8 @@
             "newClones": 0
           },
           "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/components/calendar-view.tsx": {
-            "lines": 376,
-            "tokens": 3123,
+            "lines": 377,
+            "tokens": 3122,
             "sources": 1,
             "clones": 0,
             "duplicatedLines": 0,
@@ -3253,14 +3445,14 @@
             "newClones": 0
           },
           "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/app/page.tsx": {
-            "lines": 275,
-            "tokens": 2738,
+            "lines": 269,
+            "tokens": 2725,
             "sources": 1,
-            "clones": 0,
-            "duplicatedLines": 0,
-            "duplicatedTokens": 0,
-            "percentage": 0,
-            "percentageTokens": 0,
+            "clones": 1,
+            "duplicatedLines": 11,
+            "duplicatedTokens": 93,
+            "percentage": 4.09,
+            "percentageTokens": 3.41,
             "newDuplicatedLines": 0,
             "newClones": 0
           },
@@ -3277,8 +3469,8 @@
             "newClones": 0
           },
           "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/app/layout.tsx": {
-            "lines": 38,
-            "tokens": 284,
+            "lines": 58,
+            "tokens": 392,
             "sources": 1,
             "clones": 0,
             "duplicatedLines": 0,
@@ -3302,28 +3494,28 @@
           }
         },
         "total": {
-          "lines": 15369,
-          "tokens": 127567,
-          "sources": 96,
-          "clones": 41,
-          "duplicatedLines": 453,
-          "duplicatedTokens": 4356,
-          "percentage": 2.95,
-          "percentageTokens": 3.41,
+          "lines": 16281,
+          "tokens": 134900,
+          "sources": 103,
+          "clones": 42,
+          "duplicatedLines": 468,
+          "duplicatedTokens": 4474,
+          "percentage": 2.87,
+          "percentageTokens": 3.32,
           "newDuplicatedLines": 0,
           "newClones": 0
         }
       }
     },
     "total": {
-      "lines": 33476,
-      "tokens": 279457,
-      "sources": 272,
-      "clones": 152,
-      "duplicatedLines": 1728,
-      "duplicatedTokens": 16055,
-      "percentage": 5.16,
-      "percentageTokens": 5.75,
+      "lines": 34893,
+      "tokens": 290714,
+      "sources": 288,
+      "clones": 153,
+      "duplicatedLines": 1743,
+      "duplicatedTokens": 16173,
+      "percentage": 5,
+      "percentageTokens": 5.56,
       "newDuplicatedLines": 0,
       "newClones": 0
     }
@@ -7039,37 +7231,37 @@
     },
     {
       "format": "tsx",
-      "lines": 7,
-      "fragment": "\">\n\t\t\t\t\t<Card className=\"bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/70 hover:border-zinc-700 transition-all cursor-pointer\">\n\t\t\t\t\t\t<CardContent className=\"pt-6\">\n\t\t\t\t\t\t\t<div className=\"flex items-center gap-4\">\n\t\t\t\t\t\t\t\t<Users className=\"h-5 w-5 text-zinc-400\" />\n\t\t\t\t\t\t\t\t<div>\n\t\t\t\t\t\t\t\t\t<h3 className=\"font-semibold text-white\">{",
+      "lines": 11,
+      "fragment": "() {\n\tconst supabase = await createClient();\n\tconst {\n\t\tdata: { user },\n\t} = await supabase.auth.getUser();\n\n\tif (!user) redirect(\"/login\");\n\n\tconst adminClient = getAdmin();\n\n\tconst { data: staff",
       "tokens": 0,
       "firstFile": {
         "name": "src/app/staff/page.tsx",
-        "start": 264,
-        "end": 270,
+        "start": 15,
+        "end": 25,
         "startLoc": {
-          "line": 264,
-          "column": 20,
-          "position": 2053
+          "line": 15,
+          "column": 10,
+          "position": 165
         },
         "endLoc": {
-          "line": 270,
-          "column": 2,
-          "position": 2116
+          "line": 25,
+          "column": 6,
+          "position": 253
         }
       },
       "secondFile": {
-        "name": "src/app/staff/page.tsx",
-        "start": 218,
-        "end": 224,
+        "name": "src/app/venues/page.tsx",
+        "start": 18,
+        "end": 28,
         "startLoc": {
-          "line": 218,
+          "line": 18,
           "column": 11,
-          "position": 1672
+          "position": 192
         },
         "endLoc": {
-          "line": 224,
-          "column": 4,
-          "position": 1735
+          "line": 28,
+          "column": 7,
+          "position": 280
         }
       }
     },
@@ -7692,32 +7884,32 @@
       "tokens": 0,
       "firstFile": {
         "name": "src/components/nav-bar.tsx",
-        "start": 68,
-        "end": 82,
+        "start": 79,
+        "end": 93,
         "startLoc": {
-          "line": 68,
+          "line": 79,
           "column": 14,
-          "position": 556
+          "position": 628
         },
         "endLoc": {
-          "line": 82,
+          "line": 93,
           "column": 11,
-          "position": 672
+          "position": 744
         }
       },
       "secondFile": {
         "name": "src/components/nav-bar.tsx",
-        "start": 39,
-        "end": 53,
+        "start": 50,
+        "end": 64,
         "startLoc": {
-          "line": 39,
+          "line": 50,
           "column": 8,
-          "position": 365
+          "position": 437
         },
         "endLoc": {
-          "line": 53,
+          "line": 64,
           "column": 5,
-          "position": 481
+          "position": 553
         }
       }
     },
@@ -8618,6 +8810,42 @@
           "line": 329,
           "column": 2,
           "position": 2446
+        }
+      }
+    },
+    {
+      "format": "tsx",
+      "lines": 12,
+      "fragment": "() {\n\tconst supabase = await createClient();\n\tconst {\n\t\tdata: { user },\n\t} = await supabase.auth.getUser();\n\n\tif (!user) redirect(\"/login\");\n\n\tconst adminClient = getAdmin();\n\tconst userId = user.id;\n\n\t// Single Date() to keep today/now/weekEnd consistent across queries",
+      "tokens": 0,
+      "firstFile": {
+        "name": "src/app/page.tsx",
+        "start": 26,
+        "end": 37,
+        "startLoc": {
+          "line": 26,
+          "column": 14,
+          "position": 203
+        },
+        "endLoc": {
+          "line": 37,
+          "column": 69,
+          "position": 296
+        }
+      },
+      "secondFile": {
+        "name": "src/app/workflow/page.tsx",
+        "start": 16,
+        "end": 27,
+        "startLoc": {
+          "line": 16,
+          "column": 13,
+          "position": 172
+        },
+        "endLoc": {
+          "line": 27,
+          "column": 6,
+          "position": 265
         }
       }
     },

@@ -41,7 +41,10 @@ export default async function StaffPage() {
 				</div>
 			}
 		>
-			<StaffClient initialStaff={(staff as Array<Record<string, unknown>>) || []} initialTotal={count || 0} />
+			<StaffClient
+				initialStaff={(staff as Array<Record<string, unknown>>) || []}
+				initialTotal={count || 0}
+			/>
 		</Suspense>
 	);
 }

@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import {
 	Home,
 	Calendar,
@@ -12,10 +12,14 @@ import {
 	Package,
 	Phone,
 	Menu,
+	LogOut,
+	Settings,
 } from "lucide-react";
+import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
 import { useI18n } from "@/lib/i18n";
 import { useUser } from "@/lib/user-context";
+import { createClient as createBrowserClient } from "@/lib/supabase/browser";
 import { canAccessRoute } from "@/lib/permissions";
 import {
 	Sheet,
@@ -24,6 +28,13 @@ import {
 	SheetClose,
 } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
+import {
+	DropdownMenu,
+	DropdownMenuTrigger,
+	DropdownMenuContent,
+	DropdownMenuItem,
+	DropdownMenuSeparator,
+} from "@/components/ui/dropdown-menu";
 
 const navItems = [
 	{ href: "/", label: "Dashboard", icon: Home },
@@ -128,6 +139,9 @@ export function NavBar() {
 							<LanguageToggle />
 						</div>
 
+						{/* User menu */}
+						<UserMenu />
+
 						{/* Mobile hamburger */}
 						<Sheet>
 							<SheetTrigger asChild>
@@ -173,6 +187,79 @@ export function NavBar() {
 				</div>
 			</div>
 		</nav>
+	);
+}
+
+function UserMenu() {
+	const router = useRouter();
+	const { userId } = useUser();
+	const [email, setEmail] = useState<string | null>(null);
+	const [open, setOpen] = useState(false);
+
+	useEffect(() => {
+		async function loadEmail() {
+			if (!userId) return;
+			const supabase = createBrowserClient();
+			const {
+				data: { user },
+			} = await supabase.auth.getUser();
+			if (user?.email) setEmail(user.email);
+		}
+		loadEmail();
+	}, [userId]);
+
+	async function handleSignOut() {
+		setOpen(false);
+		const supabase = createBrowserClient();
+		await supabase.auth.signOut();
+		router.push("/login");
+		router.refresh();
+	}
+
+	if (!userId) return null;
+
+	const initials = email ? email.slice(0, 2).toUpperCase() : "??";
+
+	return (
+		<DropdownMenu open={open} onOpenChange={setOpen}>
+			<DropdownMenuTrigger asChild>
+				<button
+					className="flex items-center justify-center w-8 h-8 rounded-full bg-violet-600/20 text-violet-400 text-xs font-bold hover:bg-violet-600/30 transition-colors"
+					title={email ?? "User menu"}
+				>
+					{initials}
+				</button>
+			</DropdownMenuTrigger>
+			<DropdownMenuContent
+				align="end"
+				sideOffset={8}
+				className="w-56 bg-zinc-900 border-zinc-800"
+			>
+				{email && (
+					<div className="px-3 py-2 text-sm text-zinc-400 truncate border-b border-zinc-800">
+						{email}
+					</div>
+				)}
+				<DropdownMenuItem
+					onClick={() => {
+						setOpen(false);
+						router.push("/settings");
+					}}
+					className="text-zinc-300 focus:text-white focus:bg-zinc-800 cursor-pointer"
+				>
+					<Settings className="h-4 w-4 mr-2" />
+					Settings
+				</DropdownMenuItem>
+				<DropdownMenuSeparator className="bg-zinc-800" />
+				<DropdownMenuItem
+					onClick={handleSignOut}
+					className="text-red-400 focus:text-red-300 focus:bg-red-500/10 cursor-pointer"
+				>
+					<LogOut className="h-4 w-4 mr-2" />
+					Sign Out
+				</DropdownMenuItem>
+			</DropdownMenuContent>
+		</DropdownMenu>
 	);
 }
 

@@ -60,7 +60,8 @@ export function StaffClient({
 	initialTotal: number;
 }) {
 	const { toast } = useToast();
-	const [staff, setStaff] = useState<Array<Record<string, unknown>>>(initialStaff);
+	const [staff, setStaff] =
+		useState<Array<Record<string, unknown>>>(initialStaff);
 	const [total] = useState(initialTotal);
 	const [searchName, setSearchName] = useState("");
 	const [filterRole, setFilterRole] = useState<string>("");
@@ -217,9 +218,7 @@ export function StaffClient({
 													href={`/staff/${s.id}/edit`}
 													className="text-white hover:text-violet-400 transition-colors"
 												>
-													{profile?.full_name ||
-														profile?.email ||
-														"Unknown"}
+													{profile?.full_name || profile?.email || "Unknown"}
 												</Link>
 											</TableCell>
 											<TableCell>
@@ -277,7 +276,9 @@ export function StaffClient({
 			<Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
 				<DialogContent className="bg-zinc-900/70 border-zinc-800/70">
 					<DialogHeader>
-						<DialogTitle className="text-white">Delete Staff Member</DialogTitle>
+						<DialogTitle className="text-white">
+							Delete Staff Member
+						</DialogTitle>
 						<DialogDescription className="text-zinc-400">
 							Are you sure you want to delete this staff member?
 						</DialogDescription>
