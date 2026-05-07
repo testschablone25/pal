@@ -16,12 +16,26 @@ import {
 } from "@/components/ui/alert-dialog";
 import { PageSkeleton } from "@/components/page-skeleton";
 import { PaginationControls } from "@/components/pagination-controls";
-import { Plus, MapPin, Music, Pencil, Trash2, Loader2 } from "lucide-react";
+import {
+	Plus,
+	MapPin,
+	Music,
+	Pencil,
+	Trash2,
+	Loader2,
+	Mail,
+	Disc3,
+} from "lucide-react";
 import { SearchFilterBar } from "@/components/search-filter-bar";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { EmptyState } from "@/components/empty-state";
 import { useToast } from "@/hooks/use-toast";
+
+interface Label {
+	id: string;
+	name: string;
+}
 
 interface Artist {
 	id: string;
@@ -32,6 +46,8 @@ interface Artist {
 	contact_email: string | null;
 	contact_phone: string | null;
 	created_at: string;
+	performance_count: number;
+	labels: Label[];
 }
 
 interface ArtistListResponse {
@@ -39,6 +55,11 @@ interface ArtistListResponse {
 	total: number;
 	limit: number;
 	offset: number;
+}
+
+interface LabelOption {
+	id: string;
+	name: string;
 }
 
 const GENRES = [
@@ -62,15 +83,27 @@ export function ArtistList() {
 	const [searchName, setSearchName] = useState("");
 	const [filterGenre, setFilterGenre] = useState<string>("");
 	const [filterCity, setFilterCity] = useState("");
+	const [filterLabelId, setFilterLabelId] = useState<string>("");
 	const [total, setTotal] = useState(0);
 	const [currentPage, setCurrentPage] = useState(1);
 	const pageSize = 24;
 	const totalPages = Math.ceil(total / pageSize);
 
+	// Labels list for filter dropdown
+	const [labelOptions, setLabelOptions] = useState<LabelOption[]>([]);
+
 	// Delete state
 	const [deletingArtist, setDeletingArtist] = useState<Artist | null>(null);
 	const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 	const [deleting, setDeleting] = useState(false);
+
+	// Load labels for filter
+	useEffect(() => {
+		fetch("/api/labels")
+			.then((r) => r.json())
+			.then((data) => setLabelOptions(data.labels || []))
+			.catch(() => {});
+	}, []);
 
 	const fetchArtists = async () => {
 		setLoading(true);
@@ -79,6 +112,7 @@ export function ArtistList() {
 			if (searchName) params.append("name", searchName);
 			if (filterGenre) params.append("genre", filterGenre);
 			if (filterCity) params.append("city", filterCity);
+			if (filterLabelId) params.append("label_id", filterLabelId);
 			params.append("limit", String(pageSize));
 			params.append("offset", String((currentPage - 1) * pageSize));
 
@@ -95,12 +129,13 @@ export function ArtistList() {
 
 	useEffect(() => {
 		fetchArtists();
-	}, [searchName, filterGenre, filterCity, currentPage]);
+	}, [searchName, filterGenre, filterCity, filterLabelId, currentPage]);
 
 	const clearFilters = () => {
 		setSearchName("");
 		setFilterGenre("");
 		setFilterCity("");
+		setFilterLabelId("");
 		setCurrentPage(1);
 		setArtists([]);
 		fetchArtists();
@@ -118,8 +153,7 @@ export function ArtistList() {
 				throw new Error(body.error || "Failed to delete artist");
 			}
 
-			// Remove from local state immediately — no re-fetch needed
-			// since the server delete succeeded.
+			// Remove from local state immediately
 			setArtists((prev) => prev.filter((a) => a.id !== deletingArtist.id));
 			setTotal((prev) => Math.max(0, prev - 1));
 
@@ -162,6 +196,16 @@ export function ArtistList() {
 									})),
 									value: filterGenre,
 									onChange: setFilterGenre,
+								},
+								{
+									key: "label",
+									label: "Label",
+									options: labelOptions.map((l) => ({
+										value: l.id,
+										label: l.name,
+									})),
+									value: filterLabelId,
+									onChange: setFilterLabelId,
 								},
 							]}
 						/>
@@ -220,7 +264,8 @@ export function ArtistList() {
 							<div
 								onClick={() => router.push(`/artists/${artist.id}`)}
 								onKeyDown={(e) => {
-									if (e.key === "Enter") router.push(`/artists/${artist.id}`);
+									if (e.key === "Enter")
+										router.push(`/artists/${artist.id}`);
 								}}
 								role="button"
 								tabIndex={0}
@@ -229,7 +274,7 @@ export function ArtistList() {
 								<Card className="bg-zinc-900 border-zinc-800 hover:border-violet-600/50 transition-all">
 									<CardContent className="pt-6 pb-4">
 										<div className="space-y-3">
-											{/* Top row: name + fee + actions */}
+											{/* Top row: name + actions */}
 											<div className="flex items-start justify-between gap-2">
 												<div className="min-w-0 flex-1">
 													<h3 className="text-lg font-semibold text-white truncate group-hover:text-violet-300 transition-colors">
@@ -237,11 +282,6 @@ export function ArtistList() {
 													</h3>
 												</div>
 												<div className="flex items-center gap-1 shrink-0">
-													{artist.fee && (
-														<span className="text-violet-400 font-medium text-sm mr-1">
-															€{artist.fee.toLocaleString()}
-														</span>
-													)}
 													<Link
 														href={`/artists/${artist.id}/edit`}
 														onClick={(e) => e.stopPropagation()}
@@ -287,6 +327,32 @@ export function ArtistList() {
 													</div>
 												)}
 											</div>
+
+											{/* Labels */}
+											{artist.labels && artist.labels.length > 0 && (
+												<div className="flex flex-wrap items-center gap-1.5">
+													<Disc3 className="h-3.5 w-3.5 text-zinc-500 shrink-0" />
+													{artist.labels.map((label) => (
+														<Badge
+															key={label.id}
+															variant="outline"
+															className="border-amber-600/40 text-amber-400 text-[11px] px-1.5 py-0"
+														>
+															{label.name}
+														</Badge>
+													))}
+												</div>
+											)}
+
+											{/* Contact email */}
+											{artist.contact_email && (
+												<div className="flex items-center text-sm text-zinc-500">
+													<Mail className="h-3.5 w-3.5 mr-1.5 shrink-0" />
+													<span className="truncate">
+														{artist.contact_email}
+													</span>
+												</div>
+											)}
 										</div>
 									</CardContent>
 								</Card>
@@ -316,9 +382,11 @@ export function ArtistList() {
 						</AlertDialogTitle>
 						<AlertDialogDescription className="text-zinc-400">
 							Are you sure you want to delete{" "}
-							<strong className="text-zinc-200">{deletingArtist?.name}</strong>?
-							Any event performances for this artist will also be removed. This
-							action cannot be undone.
+							<strong className="text-zinc-200">
+								{deletingArtist?.name}
+							</strong>
+							? Any event performances for this artist will also be removed.
+							This action cannot be undone.
 						</AlertDialogDescription>
 					</AlertDialogHeader>
 					<AlertDialogFooter>
@@ -330,7 +398,9 @@ export function ArtistList() {
 							disabled={deleting}
 							className="bg-red-600 hover:bg-red-700 text-white"
 						>
-							{deleting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+							{deleting && (
+								<Loader2 className="mr-2 h-4 w-4 animate-spin" />
+							)}
 							Delete
 						</AlertDialogAction>
 					</AlertDialogFooter>

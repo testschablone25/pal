@@ -18,12 +18,36 @@ export async function GET(request: NextRequest) {
 		const name = searchParams.get("name");
 		const genre = searchParams.get("genre");
 		const city = searchParams.get("city");
+		const labelId = searchParams.get("label_id");
 		const limit = searchParams.get("limit") || "50";
 		const offset = searchParams.get("offset") || "0";
 
+		// When filtering by label, first get matching artist IDs from junction table
+		let matchingArtistIds: string[] | null = null;
+		if (labelId) {
+			const { data: junctionRows } = await supabase
+				.from("artist_labels")
+				.select("artist_id")
+				.eq("label_id", labelId);
+
+			matchingArtistIds = (junctionRows || []).map((r) => r.artist_id);
+
+			// If no artists match this label, return empty early
+			if (matchingArtistIds.length === 0) {
+				return NextResponse.json(
+					{ artists: [], total: 0, limit: parseInt(limit), offset: parseInt(offset) },
+					{ headers: cacheHeaders(30) },
+				);
+			}
+		}
+
+		// Build the query with performance count + labels subqueries
 		let query = supabase
 			.from("artists")
-			.select("*", { count: "exact" })
+			.select(
+				`*, performance_count:performances(count), artist_labels(label_id, labels(id, name))`,
+				{ count: "exact" },
+			)
 			.order("name", { ascending: true })
 			.range(parseInt(offset), parseInt(offset) + parseInt(limit) - 1);
 
@@ -37,6 +61,9 @@ export async function GET(request: NextRequest) {
 		if (city) {
 			query = query.ilike("city", `%${city}%`);
 		}
+		if (matchingArtistIds) {
+			query = query.in("id", matchingArtistIds);
+		}
 
 		const { data, error, count } = await query;
 
@@ -44,9 +71,26 @@ export async function GET(request: NextRequest) {
 			return NextResponse.json({ error: error.message }, { status: 500 });
 		}
 
+		// Normalize subquery formats
+		const artists = (data || []).map((artist: Record<string, unknown>) => {
+			const rawLabels = artist.artist_labels as
+				| { labels: { id: string; name: string } | null }[]
+				| undefined;
+			return {
+				...artist,
+				performance_count:
+					(artist.performance_count as { count: number }[])?.[0]?.count ?? 0,
+				labels: (rawLabels || [])
+					.map((al) => al.labels)
+					.filter(Boolean)
+					.filter((l): l is { id: string; name: string } => l !== null)
+					.sort((a, b) => a.name.localeCompare(b.name)),
+			};
+		});
+
 		return NextResponse.json(
 			{
-				artists: data,
+				artists,
 				total: count || 0,
 				limit: parseInt(limit),
 				offset: parseInt(offset),
