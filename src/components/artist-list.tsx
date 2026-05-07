@@ -264,8 +264,7 @@ export function ArtistList() {
 							<div
 								onClick={() => router.push(`/artists/${artist.id}`)}
 								onKeyDown={(e) => {
-									if (e.key === "Enter")
-										router.push(`/artists/${artist.id}`);
+									if (e.key === "Enter") router.push(`/artists/${artist.id}`);
 								}}
 								role="button"
 								tabIndex={0}
@@ -382,11 +381,9 @@ export function ArtistList() {
 						</AlertDialogTitle>
 						<AlertDialogDescription className="text-zinc-400">
 							Are you sure you want to delete{" "}
-							<strong className="text-zinc-200">
-								{deletingArtist?.name}
-							</strong>
-							? Any event performances for this artist will also be removed.
-							This action cannot be undone.
+							<strong className="text-zinc-200">{deletingArtist?.name}</strong>?
+							Any event performances for this artist will also be removed. This
+							action cannot be undone.
 						</AlertDialogDescription>
 					</AlertDialogHeader>
 					<AlertDialogFooter>
@@ -398,9 +395,7 @@ export function ArtistList() {
 							disabled={deleting}
 							className="bg-red-600 hover:bg-red-700 text-white"
 						>
-							{deleting && (
-								<Loader2 className="mr-2 h-4 w-4 animate-spin" />
-							)}
+							{deleting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
 							Delete
 						</AlertDialogAction>
 					</AlertDialogFooter>

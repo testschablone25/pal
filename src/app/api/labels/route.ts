@@ -24,7 +24,10 @@ export async function GET(request: NextRequest) {
 			return NextResponse.json({ error: error.message }, { status: 500 });
 		}
 
-		return NextResponse.json({ labels: data || [] }, { headers: cacheHeaders(60) });
+		return NextResponse.json(
+			{ labels: data || [] },
+			{ headers: cacheHeaders(60) },
+		);
 	} catch (error) {
 		console.error("Error fetching labels:", error);
 		return NextResponse.json(
@@ -44,7 +47,10 @@ export async function POST(request: NextRequest) {
 		const { name } = body;
 
 		if (!name || !name.trim()) {
-			return NextResponse.json({ error: "Label name is required" }, { status: 400 });
+			return NextResponse.json(
+				{ error: "Label name is required" },
+				{ status: 400 },
+			);
 		}
 
 		const { data, error } = await supabase
