@@ -49,15 +49,20 @@ interface Event {
 interface CalendarViewProps {
 	onSelectEvent?: (event: Event) => void;
 	venueId?: string;
+	initialEvents?: Event[];
 }
 
 type ViewMode = "month" | "week" | "day";
 
-export function CalendarView({ onSelectEvent, venueId }: CalendarViewProps) {
+export function CalendarView({
+	onSelectEvent,
+	venueId,
+	initialEvents,
+}: CalendarViewProps) {
 	const [currentDate, setCurrentDate] = useState(new Date());
 	const [viewMode, setViewMode] = useState<ViewMode>("month");
-	const [events, setEvents] = useState<Event[]>([]);
-	const [loading, setLoading] = useState(true);
+	const [events, setEvents] = useState<Event[]>(initialEvents || []);
+	const [loading, setLoading] = useState(!initialEvents);
 	const [showCreateDialog, setShowCreateDialog] = useState(false);
 
 	useEffect(() => {

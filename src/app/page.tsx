@@ -1,4 +1,4 @@
-import { Suspense } from "react";
+import { Suspense, cache } from "react";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { createClient as createAdminClient } from "@supabase/supabase-js";
@@ -14,6 +14,13 @@ import type { AppRole } from "@/lib/permissions";
 
 type NormalizedRow = Record<string, unknown>;
 
+// Cache admin client across dashboard re-renders (e.g. when streaming)
+const getAdmin = cache(() =>
+	createAdminClient(supabaseConfig.url, supabaseConfig.serviceKey, {
+		auth: { autoRefreshToken: false, persistSession: false },
+	}),
+);
+
 // ── Page (Server Component) ───────────────────────────────────────────
 
 export default async function DashboardPage() {
@@ -22,107 +29,91 @@ export default async function DashboardPage() {
 		data: { user },
 	} = await supabase.auth.getUser();
 
-	if (!user) {
-		redirect("/login");
-	}
+	if (!user) redirect("/login");
 
-	const adminClient = createAdminClient(
-		supabaseConfig.url,
-		supabaseConfig.serviceKey,
-		{
-			auth: { autoRefreshToken: false, persistSession: false },
-		},
-	);
-
+	const adminClient = getAdmin();
 	const userId = user.id;
-	const today = new Date().toISOString().split("T")[0];
 
-	// Profile
+	// Single Date() to keep today/now/weekEnd consistent across queries
+	const now = new Date();
+	const today = now.toISOString().split("T")[0];
+	const weekEnd = new Date(now);
+	weekEnd.setDate(weekEnd.getDate() + 7);
+	const weekEndStr = weekEnd.toISOString().split("T")[0];
+
+	// Profile (must succeed first — fast, single row by PK)
 	const { data: profile } = await adminClient
 		.from("profiles")
 		.select("*")
 		.eq("id", userId)
 		.single();
 
-	if (!profile) {
-		redirect("/login");
-	}
+	if (!profile) redirect("/login");
 
-	// Fan out independent queries
-	const weekEnd = new Date();
-	weekEnd.setDate(weekEnd.getDate() + 7);
-	const weekEndStr = weekEnd.toISOString().split("T")[0];
-
-	const [
-		roleResult,
-		staffResult,
-		tasksResult,
-		eventsResult,
-		blockedResult,
-		pendingApprovalResult,
-		activeRentalsResult,
-		dueThisWeekResult,
-		overdueRentalsResult,
-	] = await Promise.all([
-		adminClient.from("user_roles").select("role").eq("user_id", userId),
-		adminClient.from("staff").select("*").eq("profile_id", userId).single(),
-		adminClient
-			.from("tasks")
-			.select(
-				"id, title, status, priority, due_date, scheduled_date, blocked, events(id, name, date, venue_id, venues(name))",
-			)
-			.eq("assignee_id", userId)
-			.in("status", ["todo", "in_progress", "pending_approval"])
-			.order("priority", { ascending: false })
-			.limit(50),
-		adminClient
-			.from("events")
-			.select(
-				"id, name, date, door_time, end_time, status, venue_id, venues(name)",
-			)
-			.gte("date", today)
-			.eq("status", "published")
-			.order("date", { ascending: true })
-			.limit(10),
-		adminClient
-			.from("tasks")
-			.select("*", { count: "exact", head: true })
-			.eq("blocked", true)
-			.eq("assignee_id", userId),
-		adminClient
-			.from("tasks")
-			.select("*", { count: "exact", head: true })
-			.eq("status", "pending_approval"),
-		adminClient
-			.from("rentals")
-			.select("*", { count: "exact", head: true })
-			.in("status", ["active", "overdue"]),
-		adminClient
-			.from("tasks")
-			.select("*", { count: "exact", head: true })
-			.gte("due_date", today)
-			.lte("due_date", weekEndStr)
-			.eq("assignee_id", userId),
-		adminClient
-			.from("rentals")
-			.select("*", { count: "exact", head: true })
-			.eq("status", "overdue"),
-	]);
+	// ── Phase 1: Fan out all independent queries ──────────────────
+	// Was 9 queries (including 5 count:exact). Now 5 — counts are derived from data.
+	const [roleResult, staffResult, tasksResult, eventsResult, rentalsResult] =
+		await Promise.all([
+			adminClient.from("user_roles").select("role").eq("user_id", userId),
+			adminClient.from("staff").select("*").eq("profile_id", userId).single(),
+			adminClient
+				.from("tasks")
+				.select(
+					"id, title, status, priority, due_date, scheduled_date, blocked, events(id, name, date, venue_id, venues(name))",
+				)
+				.eq("assignee_id", userId)
+				.in("status", ["todo", "in_progress", "pending_approval"])
+				.order("priority", { ascending: false })
+				.limit(50),
+			adminClient
+				.from("events")
+				.select(
+					"id, name, date, door_time, end_time, status, venue_id, venues(name)",
+				)
+				.gte("date", today)
+				.eq("status", "published")
+				.order("date", { ascending: true })
+				.limit(10),
+			// Single rental query instead of two separate count:exact queries
+			adminClient
+				.from("rentals")
+				.select("status", { count: "exact", head: true })
+				.in("status", ["active", "overdue"]),
+		]);
 
 	const userRoles = (roleResult.data?.map(
 		(r: { role: string }) => r.role as AppRole,
 	) || []) as AppRole[];
 	const staffRecord = staffResult.data || null;
 
-	// Normalize tasks
+	// ── Derive counts from data we already fetched ────────────────
+	// Was 5 separate count:exact queries. Now 0 — all derived from task/rental data.
 	const rawTasks = (tasksResult.data as unknown as Array<NormalizedRow>) || [];
-	const normalizedTasks = rawTasks.map(normalizeTask);
-	const overdueTasks = normalizedTasks.filter(
+	const taskList = rawTasks.map(normalizeTask);
+
+	const blockedCount = taskList.filter((t) => t.blocked).length;
+	const pendingApprovalCount = taskList.filter(
+		(t) => t.status === "pending_approval",
+	).length;
+	const dueThisWeek = taskList.filter(
+		(t) => t.due_date && t.due_date >= today && t.due_date <= weekEndStr,
+	).length;
+
+	const overdueTasks = taskList.filter(
 		(t) =>
 			t.due_date &&
 			t.due_date < today &&
 			!["done", "cancelled"].includes(t.status),
 	);
+
+	// Derive rental counts from single query
+	const rawRentals = (rentalsResult.data as { status: string }[]) || [];
+	const activeRentalsCount = rawRentals.filter(
+		(r) => r.status === "active",
+	).length;
+	const overdueRentalsCount = rawRentals.filter(
+		(r) => r.status === "overdue",
+	).length;
 
 	// Normalize events
 	const rawWeekEvents =
@@ -131,17 +122,20 @@ export default async function DashboardPage() {
 	const todaysEvent =
 		normalizedWeekEvents.find((e) => e.date === today) || null;
 
-	// Shifts & colleagues
+	// ── Phase 2: Shifts + Colleagues ──────────────────────────────
+	// Sequential (colleagues depends on shift eventIds), but capped at 20.
 	let shifts: Array<NormalizedRow> = [];
 	let colleagues: Array<NormalizedRow> = [];
+	const nowISO = now.toISOString();
 
 	if (staffRecord) {
 		const { data: rawShifts } = await adminClient
 			.from("shifts")
 			.select("*, events(id, name, date, door_time, end_time, status)")
 			.eq("staff_id", staffRecord.id)
-			.gte("end_time", new Date().toISOString())
-			.order("start_time");
+			.gte("end_time", nowISO)
+			.order("start_time")
+			.limit(20);
 
 		shifts = normalizeShifts(
 			(rawShifts as unknown as Array<NormalizedRow>) || [],
@@ -167,17 +161,17 @@ export default async function DashboardPage() {
 		profile: profile as DashboardData["profile"],
 		userRoles,
 		staffRecord: staffRecord as DashboardData["staffRecord"],
-		tasks: normalizedTasks as DashboardData["tasks"],
+		tasks: taskList as DashboardData["tasks"],
 		overdueTasks: overdueTasks as DashboardData["overdueTasks"],
 		events: normalizedWeekEvents as DashboardData["events"],
 		todaysEvent: todaysEvent as DashboardData["todaysEvent"],
 		shifts: shifts as unknown as DashboardData["shifts"],
 		colleagues: colleagues as unknown as DashboardData["colleagues"],
-		blockedCount: blockedResult.count || 0,
-		pendingApprovalCount: pendingApprovalResult.count || 0,
-		activeRentalsCount: activeRentalsResult.count || 0,
-		dueThisWeek: dueThisWeekResult.count || 0,
-		overdueRentalsCount: overdueRentalsResult.count || 0,
+		blockedCount,
+		pendingApprovalCount,
+		activeRentalsCount,
+		dueThisWeek,
+		overdueRentalsCount,
 	};
 
 	return (
