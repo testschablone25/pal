@@ -1,10 +1,28 @@
 import type { Metadata } from "next";
-import "@fontsource-variable/montserrat";
+import localFont from "next/font/local";
 import "./globals.css";
 import { NavBar } from "@/components/nav-bar";
 import { I18nProvider } from "@/lib/i18n";
 import { UserProvider } from "@/lib/user-context";
 import { Toaster } from "@/components/ui/toaster";
+
+// Self-host Montserrat variable font (latin subset only, saves ~300KB)
+const montserrat = localFont({
+	src: [
+		{
+			path: "../../node_modules/@fontsource-variable/montserrat/files/montserrat-latin-wght-normal.woff2",
+			weight: "125 900",
+			style: "normal",
+		},
+		{
+			path: "../../node_modules/@fontsource-variable/montserrat/files/montserrat-latin-wght-italic.woff2",
+			weight: "125 900",
+			style: "italic",
+		},
+	],
+	variable: "--font-montserrat",
+	display: "swap",
+});
 
 export const metadata: Metadata = {
 	title: "PAL - Nightclub Booking System",
@@ -18,7 +36,7 @@ export default function RootLayout({
 }>) {
 	return (
 		<html lang="de">
-			<body className="font-[family-name:var(--font-montserrat)] antialiased bg-zinc-950 text-white min-h-screen">
+			<body className={`${montserrat.variable} font-[family-name:var(--font-montserrat)] antialiased bg-zinc-950 text-white min-h-screen`}>
 				<I18nProvider>
 					<UserProvider>
 						{/* Gradient ambient background */}

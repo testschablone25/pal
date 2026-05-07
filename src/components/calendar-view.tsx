@@ -252,11 +252,11 @@ export function CalendarView({
 						{days.map((day) => (
 							<div key={day.toISOString()} className="space-y-0">
 								{hours.map((hour) => (
-								<div
-									key={hour}
-									className="h-12 border-t border-zinc-800 hover:bg-zinc-900/50"
-								/>
-							))}
+									<div
+										key={hour}
+										className="h-12 border-t border-zinc-800 hover:bg-zinc-900/50"
+									/>
+								))}
 							</div>
 						))}
 					</div>

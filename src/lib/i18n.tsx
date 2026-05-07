@@ -5,7 +5,8 @@ import {
 	useContext,
 	useState,
 	useCallback,
-	ReactNode,
+	useMemo,
+	type ReactNode,
 } from "react";
 
 // ============================================
@@ -481,7 +482,8 @@ export function I18nProvider({ children }: { children: ReactNode }) {
 
 	const t = useCallback(
 		(key: string, params?: Record<string, string | number>): string => {
-			let value = dict[locale]?.[key] ?? dict.en?.[key] ?? key;
+			const active = dict[locale];
+			let value = active?.[key] ?? dict.en?.[key] ?? key;
 			if (params) {
 				for (const [k, v] of Object.entries(params)) {
 					value = value.replace(`{${k}}`, String(v));
@@ -492,10 +494,13 @@ export function I18nProvider({ children }: { children: ReactNode }) {
 		[locale],
 	);
 
+	const ctx = useMemo(
+		() => ({ locale, setLocale, toggleLocale, t }),
+		[locale, toggleLocale, t],
+	);
+
 	return (
-		<I18nContext.Provider value={{ locale, setLocale, toggleLocale, t }}>
-			{children}
-		</I18nContext.Provider>
+		<I18nContext.Provider value={ctx}>{children}</I18nContext.Provider>
 	);
 }
 
