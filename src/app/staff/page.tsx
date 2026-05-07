@@ -76,6 +76,16 @@ const STAFF_ROLES = [
 	"Lighting",
 	"VIP Host",
 	"Runner",
+	"Tech Lead",
+	"Backoffice",
+	"Booking",
+	"Gastro",
+	"Night Management",
+	"Trainee",
+	"Awareness",
+	"Social Media",
+	"Label",
+	"Staff",
 ];
 
 const CONTRACT_TYPES = [
@@ -147,7 +157,10 @@ export default function StaffPage() {
 			});
 
 			if (!response.ok) {
-				throw new Error("Failed to delete staff member");
+				const errData = await response.json().catch(() => ({}));
+				throw new Error(
+					errData.error || `Failed to delete (${response.status})`,
+				);
 			}
 
 			setDeleteDialogOpen(false);
@@ -320,7 +333,7 @@ export default function StaffPage() {
 								</div>
 							))}
 						</div>
-					) : staff.length === 0 ? (
+					) : staff.filter((s) => s.profiles?.full_name).length === 0 ? (
 						<EmptyState
 							icon={Users}
 							title="Keine Mitarbeiter gefunden"
@@ -343,57 +356,59 @@ export default function StaffPage() {
 								</TableRow>
 							</TableHeader>
 							<TableBody>
-								{staff.map((member) => (
-									<TableRow key={member.id} className="border-zinc-700">
-										<TableCell>
-											<div>
-												<p className="font-medium text-white">
-													{member.profiles?.full_name || "No name"}
-												</p>
-												<p className="text-sm text-zinc-400">
-													{member.profiles?.email || "No email"}
-												</p>
-											</div>
-										</TableCell>
-										<TableCell>{getRoleBadge(member.role)}</TableCell>
-										<TableCell>
-											{getContractTypeBadge(member.contract_type)}
-										</TableCell>
-										<TableCell>
-											{member.is_minor ? (
-												<Badge
-													variant="outline"
-													className="border-zinc-700 text-zinc-400"
-												>
-													Yes
-												</Badge>
-											) : (
-												<span className="text-zinc-500">No</span>
-											)}
-										</TableCell>
-										<TableCell className="text-right">
-											<div className="flex justify-end gap-2">
-												<Link href={`/staff/${member.id}/edit`}>
+								{staff
+									.filter((s) => s.profiles?.full_name)
+									.map((member) => (
+										<TableRow key={member.id} className="border-zinc-700">
+											<TableCell>
+												<div>
+													<p className="font-medium text-white">
+														{member.profiles?.full_name || "No name"}
+													</p>
+													<p className="text-sm text-zinc-400">
+														{member.profiles?.email || "No email"}
+													</p>
+												</div>
+											</TableCell>
+											<TableCell>{getRoleBadge(member.role)}</TableCell>
+											<TableCell>
+												{getContractTypeBadge(member.contract_type)}
+											</TableCell>
+											<TableCell>
+												{member.is_minor ? (
+													<Badge
+														variant="outline"
+														className="border-zinc-700 text-zinc-400"
+													>
+														Yes
+													</Badge>
+												) : (
+													<span className="text-zinc-500">No</span>
+												)}
+											</TableCell>
+											<TableCell className="text-right">
+												<div className="flex justify-end gap-2">
+													<Link href={`/staff/${member.id}/edit`}>
+														<Button
+															variant="ghost"
+															size="icon"
+															className="h-8 w-8"
+														>
+															<Edit className="h-4 w-4" />
+														</Button>
+													</Link>
 													<Button
 														variant="ghost"
 														size="icon"
-														className="h-8 w-8"
+														className="h-8 w-8 text-red-400 hover:text-red-300 hover:bg-red-600/10"
+														onClick={() => handleDeleteClick(member)}
 													>
-														<Edit className="h-4 w-4" />
+														<Trash2 className="h-4 w-4" />
 													</Button>
-												</Link>
-												<Button
-													variant="ghost"
-													size="icon"
-													className="h-8 w-8 text-red-400 hover:text-red-300 hover:bg-red-600/10"
-													onClick={() => handleDeleteClick(member)}
-												>
-													<Trash2 className="h-4 w-4" />
-												</Button>
-											</div>
-										</TableCell>
-									</TableRow>
-								))}
+												</div>
+											</TableCell>
+										</TableRow>
+									))}
 							</TableBody>
 						</Table>
 					)}

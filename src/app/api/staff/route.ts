@@ -5,6 +5,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import { supabaseConfig } from "@/lib/supabase/config";
 import { requireAuth } from "@/lib/api-auth";
+import { cacheHeaders } from "@/lib/api-cache";
 
 const supabase = createClient(supabaseConfig.url, supabaseConfig.serviceKey);
 
@@ -40,7 +41,21 @@ export async function GET(request: NextRequest) {
 
 		// Apply filters
 		if (name) {
-			query = query.ilike("profiles.full_name", `%${name}%`);
+			const { data: matchingProfiles } = await supabase
+				.from("profiles")
+				.select("id")
+				.ilike("full_name", `%${name}%`);
+			const profileIds = matchingProfiles?.map((p) => p.id) || [];
+			if (profileIds.length > 0) {
+				query = query.in("profile_id", profileIds);
+			} else {
+				return NextResponse.json({
+					staff: [],
+					total: 0,
+					limit: parseInt(limit),
+					offset: parseInt(offset),
+				});
+			}
 		}
 		if (role) {
 			query = query.eq("role", role);
@@ -55,12 +70,15 @@ export async function GET(request: NextRequest) {
 			return NextResponse.json({ error: error.message }, { status: 500 });
 		}
 
-		return NextResponse.json({
-			staff: data,
-			total: count || 0,
-			limit: parseInt(limit),
-			offset: parseInt(offset),
-		});
+		return NextResponse.json(
+			{
+				staff: data,
+				total: count || 0,
+				limit: parseInt(limit),
+				offset: parseInt(offset),
+			},
+			{ headers: cacheHeaders(30) },
+		);
 	} catch (error) {
 		console.error("Error fetching staff:", error);
 		return NextResponse.json(
@@ -81,6 +99,13 @@ export async function POST(request: NextRequest) {
 		const { profile_id, role, contract_type, is_minor } = body;
 
 		// Validate required fields
+		if (!profile_id) {
+			return NextResponse.json(
+				{ error: "Profile ID is required" },
+				{ status: 400 },
+			);
+		}
+
 		if (!role) {
 			return NextResponse.json({ error: "Role is required" }, { status: 400 });
 		}

@@ -1,6 +1,6 @@
 {
   "statistics": {
-    "detectionDate": "2026-05-05T20:11:55.184Z",
+    "detectionDate": "2026-05-07T11:48:06.508Z",
     "formats": {
       "typescript": {
         "sources": {
@@ -29,14 +29,14 @@
             "newClones": 0
           },
           "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/app/api/tasks/[id]/status/route.ts": {
-            "lines": 92,
-            "tokens": 726,
+            "lines": 105,
+            "tokens": 749,
             "sources": 1,
             "clones": 1,
-            "duplicatedLines": 10,
-            "duplicatedTokens": 118,
-            "percentage": 10.87,
-            "percentageTokens": 16.25,
+            "duplicatedLines": 11,
+            "duplicatedTokens": 120,
+            "percentage": 10.48,
+            "percentageTokens": 16.02,
             "newDuplicatedLines": 0,
             "newClones": 0
           },
@@ -45,10 +45,10 @@
             "tokens": 719,
             "sources": 1,
             "clones": 7,
-            "duplicatedLines": 84,
-            "duplicatedTokens": 865,
-            "percentage": 107.69,
-            "percentageTokens": 120.31,
+            "duplicatedLines": 80,
+            "duplicatedTokens": 822,
+            "percentage": 102.56,
+            "percentageTokens": 114.33,
             "newDuplicatedLines": 0,
             "newClones": 0
           },
@@ -56,11 +56,11 @@
             "lines": 43,
             "tokens": 369,
             "sources": 1,
-            "clones": 6,
-            "duplicatedLines": 67,
-            "duplicatedTokens": 761,
-            "percentage": 155.81,
-            "percentageTokens": 206.23,
+            "clones": 8,
+            "duplicatedLines": 88,
+            "duplicatedTokens": 1015,
+            "percentage": 204.65,
+            "percentageTokens": 275.07,
             "newDuplicatedLines": 0,
             "newClones": 0
           },
@@ -80,11 +80,11 @@
             "lines": 101,
             "tokens": 761,
             "sources": 1,
-            "clones": 4,
-            "duplicatedLines": 40,
-            "duplicatedTokens": 435,
-            "percentage": 39.6,
-            "percentageTokens": 57.16,
+            "clones": 5,
+            "duplicatedLines": 50,
+            "duplicatedTokens": 554,
+            "percentage": 49.5,
+            "percentageTokens": 72.8,
             "newDuplicatedLines": 0,
             "newClones": 0
           },
@@ -92,11 +92,11 @@
             "lines": 76,
             "tokens": 735,
             "sources": 1,
-            "clones": 3,
-            "duplicatedLines": 43,
-            "duplicatedTokens": 420,
-            "percentage": 56.58,
-            "percentageTokens": 57.14,
+            "clones": 4,
+            "duplicatedLines": 48,
+            "duplicatedTokens": 487,
+            "percentage": 63.16,
+            "percentageTokens": 66.26,
             "newDuplicatedLines": 0,
             "newClones": 0
           },
@@ -104,11 +104,11 @@
             "lines": 61,
             "tokens": 629,
             "sources": 1,
-            "clones": 2,
-            "duplicatedLines": 19,
-            "duplicatedTokens": 207,
-            "percentage": 31.15,
-            "percentageTokens": 32.91,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
             "newDuplicatedLines": 0,
             "newClones": 0
           },
@@ -137,14 +137,14 @@
             "newClones": 0
           },
           "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/app/api/rentals/[id]/return/route.ts": {
-            "lines": 96,
-            "tokens": 821,
+            "lines": 90,
+            "tokens": 818,
             "sources": 1,
-            "clones": 4,
-            "duplicatedLines": 40,
-            "duplicatedTokens": 401,
-            "percentage": 41.67,
-            "percentageTokens": 48.84,
+            "clones": 3,
+            "duplicatedLines": 33,
+            "duplicatedTokens": 363,
+            "percentage": 36.67,
+            "percentageTokens": 44.38,
             "newDuplicatedLines": 0,
             "newClones": 0
           },
@@ -189,22 +189,22 @@
             "tokens": 1280,
             "sources": 1,
             "clones": 11,
-            "duplicatedLines": 120,
-            "duplicatedTokens": 1146,
-            "percentage": 78.95,
-            "percentageTokens": 89.53,
+            "duplicatedLines": 116,
+            "duplicatedTokens": 1142,
+            "percentage": 76.32,
+            "percentageTokens": 89.22,
             "newDuplicatedLines": 0,
             "newClones": 0
           },
           "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/app/api/guest-lists/[listId]/entries/route.ts": {
             "lines": 214,
-            "tokens": 1775,
+            "tokens": 1807,
             "sources": 1,
-            "clones": 2,
-            "duplicatedLines": 19,
-            "duplicatedTokens": 185,
-            "percentage": 8.88,
-            "percentageTokens": 10.42,
+            "clones": 4,
+            "duplicatedLines": 41,
+            "duplicatedTokens": 417,
+            "percentage": 19.16,
+            "percentageTokens": 23.08,
             "newDuplicatedLines": 0,
             "newClones": 0
           },
@@ -221,14 +221,14 @@
             "newClones": 0
           },
           "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/app/api/venues/[id]/route.ts": {
-            "lines": 277,
-            "tokens": 2631,
+            "lines": 278,
+            "tokens": 2635,
             "sources": 1,
-            "clones": 12,
-            "duplicatedLines": 109,
-            "duplicatedTokens": 1112,
-            "percentage": 39.35,
-            "percentageTokens": 42.27,
+            "clones": 13,
+            "duplicatedLines": 117,
+            "duplicatedTokens": 1205,
+            "percentage": 42.09,
+            "percentageTokens": 45.73,
             "newDuplicatedLines": 0,
             "newClones": 0
           },
@@ -245,14 +245,14 @@
             "newClones": 0
           },
           "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/app/api/staff/[id]/route.ts": {
-            "lines": 120,
-            "tokens": 1011,
+            "lines": 128,
+            "tokens": 1098,
             "sources": 1,
-            "clones": 6,
-            "duplicatedLines": 63,
-            "duplicatedTokens": 593,
-            "percentage": 52.5,
-            "percentageTokens": 58.65,
+            "clones": 7,
+            "duplicatedLines": 72,
+            "duplicatedTokens": 671,
+            "percentage": 56.25,
+            "percentageTokens": 61.11,
             "newDuplicatedLines": 0,
             "newClones": 0
           },
@@ -281,14 +281,14 @@
             "newClones": 0
           },
           "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/app/api/rentals/[id]/route.ts": {
-            "lines": 133,
-            "tokens": 1132,
+            "lines": 128,
+            "tokens": 1135,
             "sources": 1,
-            "clones": 10,
-            "duplicatedLines": 112,
-            "duplicatedTokens": 989,
-            "percentage": 84.21,
-            "percentageTokens": 87.37,
+            "clones": 9,
+            "duplicatedLines": 96,
+            "duplicatedTokens": 954,
+            "percentage": 75,
+            "percentageTokens": 84.05,
             "newDuplicatedLines": 0,
             "newClones": 0
           },
@@ -296,11 +296,11 @@
             "lines": 176,
             "tokens": 1336,
             "sources": 1,
-            "clones": 9,
-            "duplicatedLines": 108,
-            "duplicatedTokens": 980,
-            "percentage": 61.36,
-            "percentageTokens": 73.35,
+            "clones": 11,
+            "duplicatedLines": 132,
+            "duplicatedTokens": 1171,
+            "percentage": 75,
+            "percentageTokens": 87.65,
             "newDuplicatedLines": 0,
             "newClones": 0
           },
@@ -332,11 +332,11 @@
             "lines": 130,
             "tokens": 1214,
             "sources": 1,
-            "clones": 6,
-            "duplicatedLines": 64,
-            "duplicatedTokens": 700,
-            "percentage": 49.23,
-            "percentageTokens": 57.66,
+            "clones": 8,
+            "duplicatedLines": 90,
+            "duplicatedTokens": 926,
+            "percentage": 69.23,
+            "percentageTokens": 76.28,
             "newDuplicatedLines": 0,
             "newClones": 0
           },
@@ -413,62 +413,62 @@
             "newClones": 0
           },
           "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/app/api/venues/route.ts": {
-            "lines": 272,
-            "tokens": 2604,
+            "lines": 280,
+            "tokens": 2668,
             "sources": 1,
-            "clones": 1,
-            "duplicatedLines": 10,
-            "duplicatedTokens": 96,
-            "percentage": 3.68,
-            "percentageTokens": 3.69,
+            "clones": 5,
+            "duplicatedLines": 42,
+            "duplicatedTokens": 452,
+            "percentage": 15,
+            "percentageTokens": 16.94,
             "newDuplicatedLines": 0,
             "newClones": 0
           },
           "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/app/api/tasks/route.ts": {
-            "lines": 293,
-            "tokens": 2394,
+            "lines": 297,
+            "tokens": 2426,
             "sources": 1,
-            "clones": 0,
-            "duplicatedLines": 0,
-            "duplicatedTokens": 0,
-            "percentage": 0,
-            "percentageTokens": 0,
+            "clones": 1,
+            "duplicatedLines": 8,
+            "duplicatedTokens": 89,
+            "percentage": 2.69,
+            "percentageTokens": 3.67,
             "newDuplicatedLines": 0,
             "newClones": 0
           },
           "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/app/api/staff/route.ts": {
-            "lines": 117,
-            "tokens": 985,
+            "lines": 142,
+            "tokens": 1211,
             "sources": 1,
-            "clones": 1,
-            "duplicatedLines": 11,
-            "duplicatedTokens": 100,
-            "percentage": 9.4,
-            "percentageTokens": 10.15,
+            "clones": 3,
+            "duplicatedLines": 29,
+            "duplicatedTokens": 281,
+            "percentage": 20.42,
+            "percentageTokens": 23.2,
             "newDuplicatedLines": 0,
             "newClones": 0
           },
           "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/app/api/shifts/route.ts": {
-            "lines": 212,
-            "tokens": 1644,
+            "lines": 216,
+            "tokens": 1676,
             "sources": 1,
-            "clones": 1,
-            "duplicatedLines": 11,
-            "duplicatedTokens": 100,
-            "percentage": 5.19,
-            "percentageTokens": 6.08,
+            "clones": 2,
+            "duplicatedLines": 21,
+            "duplicatedTokens": 192,
+            "percentage": 9.72,
+            "percentageTokens": 11.46,
             "newDuplicatedLines": 0,
             "newClones": 0
           },
           "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/app/api/rentals/route.ts": {
-            "lines": 154,
-            "tokens": 1136,
+            "lines": 148,
+            "tokens": 1138,
             "sources": 1,
             "clones": 1,
             "duplicatedLines": 7,
             "duplicatedTokens": 88,
-            "percentage": 4.55,
-            "percentageTokens": 7.75,
+            "percentage": 4.73,
+            "percentageTokens": 7.73,
             "newDuplicatedLines": 0,
             "newClones": 0
           },
@@ -501,22 +501,22 @@
             "tokens": 1287,
             "sources": 1,
             "clones": 2,
-            "duplicatedLines": 16,
-            "duplicatedTokens": 178,
-            "percentage": 11.68,
-            "percentageTokens": 13.83,
+            "duplicatedLines": 18,
+            "duplicatedTokens": 201,
+            "percentage": 13.14,
+            "percentageTokens": 15.62,
             "newDuplicatedLines": 0,
             "newClones": 0
           },
           "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/app/api/guest-lists/route.ts": {
             "lines": 77,
-            "tokens": 709,
+            "tokens": 707,
             "sources": 1,
-            "clones": 2,
-            "duplicatedLines": 18,
-            "duplicatedTokens": 207,
-            "percentage": 23.38,
-            "percentageTokens": 29.2,
+            "clones": 1,
+            "duplicatedLines": 11,
+            "duplicatedTokens": 104,
+            "percentage": 14.29,
+            "percentageTokens": 14.71,
             "newDuplicatedLines": 0,
             "newClones": 0
           },
@@ -533,20 +533,32 @@
             "newClones": 0
           },
           "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/app/api/events/route.ts": {
-            "lines": 136,
-            "tokens": 1057,
+            "lines": 124,
+            "tokens": 1071,
             "sources": 1,
-            "clones": 1,
-            "duplicatedLines": 13,
-            "duplicatedTokens": 102,
-            "percentage": 9.56,
-            "percentageTokens": 9.65,
+            "clones": 2,
+            "duplicatedLines": 19,
+            "duplicatedTokens": 189,
+            "percentage": 15.32,
+            "percentageTokens": 17.65,
             "newDuplicatedLines": 0,
             "newClones": 0
           },
           "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/app/api/dashboard/route.ts": {
-            "lines": 264,
-            "tokens": 2697,
+            "lines": 274,
+            "tokens": 2736,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/app/api/contacts/route.ts": {
+            "lines": 173,
+            "tokens": 1485,
             "sources": 1,
             "clones": 0,
             "duplicatedLines": 0,
@@ -560,35 +572,35 @@
             "lines": 129,
             "tokens": 1005,
             "sources": 1,
-            "clones": 3,
-            "duplicatedLines": 31,
-            "duplicatedTokens": 297,
-            "percentage": 24.03,
-            "percentageTokens": 29.55,
+            "clones": 2,
+            "duplicatedLines": 24,
+            "duplicatedTokens": 194,
+            "percentage": 18.6,
+            "percentageTokens": 19.3,
             "newDuplicatedLines": 0,
             "newClones": 0
           },
           "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/app/api/availability/route.ts": {
-            "lines": 149,
-            "tokens": 1179,
+            "lines": 161,
+            "tokens": 1227,
             "sources": 1,
             "clones": 1,
             "duplicatedLines": 11,
             "duplicatedTokens": 100,
-            "percentage": 7.38,
-            "percentageTokens": 8.48,
+            "percentage": 6.83,
+            "percentageTokens": 8.15,
             "newDuplicatedLines": 0,
             "newClones": 0
           },
           "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/app/api/artists/route.ts": {
-            "lines": 122,
-            "tokens": 992,
+            "lines": 117,
+            "tokens": 1013,
             "sources": 1,
-            "clones": 1,
-            "duplicatedLines": 13,
-            "duplicatedTokens": 102,
-            "percentage": 10.66,
-            "percentageTokens": 10.28,
+            "clones": 2,
+            "duplicatedLines": 19,
+            "duplicatedTokens": 189,
+            "percentage": 16.24,
+            "percentageTokens": 18.66,
             "newDuplicatedLines": 0,
             "newClones": 0
           },
@@ -665,8 +677,8 @@
             "newClones": 0
           },
           "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/lib/staff-shifts/types.ts": {
-            "lines": 92,
-            "tokens": 594,
+            "lines": 112,
+            "tokens": 704,
             "sources": 1,
             "clones": 0,
             "duplicatedLines": 0,
@@ -751,6 +763,18 @@
           "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/lib/dates.ts": {
             "lines": 90,
             "tokens": 819,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/lib/api-cache.ts": {
+            "lines": 27,
+            "tokens": 116,
             "sources": 1,
             "clones": 0,
             "duplicatedLines": 0,
@@ -865,6 +889,18 @@
             "duplicatedTokens": 200,
             "percentage": 5.38,
             "percentageTokens": 4.59,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "/Users/oliverjeschke/Desktop/glibber/repos/pal/scripts/run-migration-20260506.ts": {
+            "lines": 45,
+            "tokens": 296,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
             "newDuplicatedLines": 0,
             "newClones": 0
           },
@@ -1026,14 +1062,14 @@
           }
         },
         "total": {
-          "lines": 10955,
-          "tokens": 94718,
-          "sources": 85,
-          "clones": 88,
-          "duplicatedLines": 947,
-          "duplicatedTokens": 9507,
-          "percentage": 8.64,
-          "percentageTokens": 10.04,
+          "lines": 11271,
+          "tokens": 97347,
+          "sources": 88,
+          "clones": 96,
+          "duplicatedLines": 1019,
+          "duplicatedTokens": 10329,
+          "percentage": 9.04,
+          "percentageTokens": 10.61,
           "newDuplicatedLines": 0,
           "newClones": 0
         }
@@ -1425,8 +1461,8 @@
             "newClones": 0
           },
           "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/app/staff/page.tsx": {
-            "lines": 111,
-            "tokens": 864,
+            "lines": 116,
+            "tokens": 901,
             "sources": 1,
             "clones": 0,
             "duplicatedLines": 0,
@@ -1628,6 +1664,30 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
+          "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/app/contacts/page.tsx": {
+            "lines": 311,
+            "tokens": 2233,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/app/contacts/loading.tsx": {
+            "lines": 0,
+            "tokens": 3,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
           "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/app/artists/loading.tsx": {
             "lines": 0,
             "tokens": 3,
@@ -1655,6 +1715,18 @@
           "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/app/admin/page.tsx": {
             "lines": 216,
             "tokens": 1752,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/lib/user-context.tsx": {
+            "lines": 0,
+            "tokens": 13,
             "sources": 1,
             "clones": 0,
             "duplicatedLines": 0,
@@ -1701,8 +1773,8 @@
             "newClones": 0
           },
           "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/components/staff-form.tsx": {
-            "lines": 96,
-            "tokens": 672,
+            "lines": 136,
+            "tokens": 950,
             "sources": 1,
             "clones": 0,
             "duplicatedLines": 0,
@@ -1796,18 +1868,6 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/components/performance-form.tsx": {
-            "lines": 99,
-            "tokens": 628,
-            "sources": 1,
-            "clones": 2,
-            "duplicatedLines": 36,
-            "duplicatedTokens": 168,
-            "percentage": 36.36,
-            "percentageTokens": 26.75,
-            "newDuplicatedLines": 0,
-            "newClones": 0
-          },
           "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/components/pagination-controls.tsx": {
             "lines": 55,
             "tokens": 368,
@@ -1833,8 +1893,8 @@
             "newClones": 0
           },
           "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/components/nav-bar.tsx": {
-            "lines": 172,
-            "tokens": 1270,
+            "lines": 145,
+            "tokens": 1006,
             "sources": 1,
             "clones": 0,
             "duplicatedLines": 0,
@@ -2012,6 +2072,18 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
+          "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/app/page.tsx": {
+            "lines": 1,
+            "tokens": 17,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
           "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/app/loading.tsx": {
             "lines": 0,
             "tokens": 3,
@@ -2062,14 +2134,14 @@
           }
         },
         "total": {
-          "lines": 6605,
-          "tokens": 52854,
-          "sources": 85,
-          "clones": 16,
-          "duplicatedLines": 274,
-          "duplicatedTokens": 1454,
-          "percentage": 4.15,
-          "percentageTokens": 2.75,
+          "lines": 6836,
+          "tokens": 54543,
+          "sources": 88,
+          "clones": 15,
+          "duplicatedLines": 256,
+          "duplicatedTokens": 1370,
+          "percentage": 3.74,
+          "percentageTokens": 2.51,
           "newDuplicatedLines": 0,
           "newClones": 0
         }
@@ -2077,14 +2149,14 @@
       "tsx": {
         "sources": {
           "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/app/staff/[id]/edit/page.tsx": {
-            "lines": 84,
-            "tokens": 759,
+            "lines": 85,
+            "tokens": 770,
             "sources": 1,
             "clones": 1,
             "duplicatedLines": 22,
             "duplicatedTokens": 175,
-            "percentage": 26.19,
-            "percentageTokens": 23.06,
+            "percentage": 25.88,
+            "percentageTokens": 22.73,
             "newDuplicatedLines": 0,
             "newClones": 0
           },
@@ -2125,8 +2197,8 @@
             "newClones": 0
           },
           "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/app/staff/availability/page.tsx": {
-            "lines": 106,
-            "tokens": 897,
+            "lines": 117,
+            "tokens": 1021,
             "sources": 1,
             "clones": 0,
             "duplicatedLines": 0,
@@ -2509,14 +2581,14 @@
             "newClones": 0
           },
           "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/app/staff/page.tsx": {
-            "lines": 417,
-            "tokens": 3252,
+            "lines": 452,
+            "tokens": 3499,
             "sources": 1,
-            "clones": 0,
-            "duplicatedLines": 0,
-            "duplicatedTokens": 0,
-            "percentage": 0,
-            "percentageTokens": 0,
+            "clones": 2,
+            "duplicatedLines": 12,
+            "duplicatedTokens": 126,
+            "percentage": 2.65,
+            "percentageTokens": 3.6,
             "newDuplicatedLines": 0,
             "newClones": 0
           },
@@ -2748,6 +2820,30 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
+          "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/app/contacts/page.tsx": {
+            "lines": 452,
+            "tokens": 3430,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/app/contacts/loading.tsx": {
+            "lines": 8,
+            "tokens": 63,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
           "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/app/artists/page.tsx": {
             "lines": 14,
             "tokens": 119,
@@ -2787,6 +2883,18 @@
           "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/app/admin/page.tsx": {
             "lines": 447,
             "tokens": 3863,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/lib/user-context.tsx": {
+            "lines": 74,
+            "tokens": 644,
             "sources": 1,
             "clones": 0,
             "duplicatedLines": 0,
@@ -2845,14 +2953,14 @@
             "newClones": 0
           },
           "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/components/staff-form.tsx": {
-            "lines": 217,
-            "tokens": 1636,
+            "lines": 291,
+            "tokens": 2215,
             "sources": 1,
             "clones": 6,
-            "duplicatedLines": 69,
-            "duplicatedTokens": 562,
-            "percentage": 31.8,
-            "percentageTokens": 34.35,
+            "duplicatedLines": 71,
+            "duplicatedTokens": 575,
+            "percentage": 24.4,
+            "percentageTokens": 25.96,
             "newDuplicatedLines": 0,
             "newClones": 0
           },
@@ -2940,18 +3048,6 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/components/performance-form.tsx": {
-            "lines": 221,
-            "tokens": 1719,
-            "sources": 1,
-            "clones": 0,
-            "duplicatedLines": 0,
-            "duplicatedTokens": 0,
-            "percentage": 0,
-            "percentageTokens": 0,
-            "newDuplicatedLines": 0,
-            "newClones": 0
-          },
           "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/components/pagination-controls.tsx": {
             "lines": 128,
             "tokens": 869,
@@ -2977,14 +3073,14 @@
             "newClones": 0
           },
           "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/components/nav-bar.tsx": {
-            "lines": 237,
-            "tokens": 1826,
+            "lines": 204,
+            "tokens": 1511,
             "sources": 1,
             "clones": 2,
             "duplicatedLines": 28,
             "duplicatedTokens": 232,
-            "percentage": 11.81,
-            "percentageTokens": 12.71,
+            "percentage": 13.73,
+            "percentageTokens": 15.35,
             "newDuplicatedLines": 0,
             "newClones": 0
           },
@@ -3077,10 +3173,10 @@
             "tokens": 2446,
             "sources": 1,
             "clones": 7,
-            "duplicatedLines": 87,
-            "duplicatedTokens": 640,
-            "percentage": 26.52,
-            "percentageTokens": 26.17,
+            "duplicatedLines": 89,
+            "duplicatedTokens": 653,
+            "percentage": 27.13,
+            "percentageTokens": 26.7,
             "newDuplicatedLines": 0,
             "newClones": 0
           },
@@ -3121,8 +3217,8 @@
             "newClones": 0
           },
           "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/components/calendar-view.tsx": {
-            "lines": 370,
-            "tokens": 3068,
+            "lines": 376,
+            "tokens": 3123,
             "sources": 1,
             "clones": 0,
             "duplicatedLines": 0,
@@ -3156,6 +3252,18 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
+          "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/app/page.tsx": {
+            "lines": 275,
+            "tokens": 2738,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
           "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/app/loading.tsx": {
             "lines": 8,
             "tokens": 63,
@@ -3169,8 +3277,8 @@
             "newClones": 0
           },
           "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/app/layout.tsx": {
-            "lines": 35,
-            "tokens": 261,
+            "lines": 38,
+            "tokens": 284,
             "sources": 1,
             "clones": 0,
             "duplicatedLines": 0,
@@ -3194,28 +3302,28 @@
           }
         },
         "total": {
-          "lines": 14684,
-          "tokens": 121687,
-          "sources": 93,
-          "clones": 40,
-          "duplicatedLines": 445,
-          "duplicatedTokens": 4280,
-          "percentage": 3.03,
-          "percentageTokens": 3.52,
+          "lines": 15369,
+          "tokens": 127567,
+          "sources": 96,
+          "clones": 41,
+          "duplicatedLines": 453,
+          "duplicatedTokens": 4356,
+          "percentage": 2.95,
+          "percentageTokens": 3.41,
           "newDuplicatedLines": 0,
           "newClones": 0
         }
       }
     },
     "total": {
-      "lines": 32244,
-      "tokens": 269259,
-      "sources": 263,
-      "clones": 144,
-      "duplicatedLines": 1666,
-      "duplicatedTokens": 15241,
-      "percentage": 5.17,
-      "percentageTokens": 5.66,
+      "lines": 33476,
+      "tokens": 279457,
+      "sources": 272,
+      "clones": 152,
+      "duplicatedLines": 1728,
+      "duplicatedTokens": 16055,
+      "percentage": 5.16,
+      "percentageTokens": 5.75,
       "newDuplicatedLines": 0,
       "newClones": 0
     }
@@ -3368,7 +3476,7 @@
     {
       "format": "typescript",
       "lines": 12,
-      "fragment": "export async function POST(\n\trequest: NextRequest,\n\t{ params }: { params: Promise<{ id: string }> },\n) {\n\ttry {\n\t\tconst auth = await requireAuth(request, \"TASKS_WRITE\");\n\t\tif (!auth.authorized) return auth.response;\n\n\t\tconst { id } = await params;\n\t\tconst body = await request.json();\n\n\t\tconst { content",
+      "fragment": "(\n\trequest: NextRequest,\n\t{ params }: { params: Promise<{ id: string }> },\n) {\n\ttry {\n\t\tconst auth = await requireAuth(request, \"TASKS_UPDATE\");\n\t\tif (!auth.authorized) return auth.response;\n\n\t\tconst { id } = await params;\n\t\tconst body = await request.json();\n\n\t\tconst { content",
       "tokens": 0,
       "firstFile": {
         "name": "src/app/api/tasks/[id]/comments/route.ts",
@@ -3376,8 +3484,8 @@
         "end": 62,
         "startLoc": {
           "line": 51,
-          "column": 1,
-          "position": 381
+          "column": 5,
+          "position": 388
         },
         "endLoc": {
           "line": 62,
@@ -3386,7 +3494,64 @@
         }
       },
       "secondFile": {
+        "name": "src/app/api/tasks/[id]/status/route.ts",
+        "start": 8,
+        "end": 19,
+        "startLoc": {
+          "line": 8,
+          "column": 4,
+          "position": 83
+        },
+        "endLoc": {
+          "line": 19,
+          "column": 7,
+          "position": 203
+        }
+      }
+    },
+    {
+      "format": "typescript",
+      "lines": 13,
+      "fragment": "import { NextRequest, NextResponse } from \"next/server\";\nimport { createClient } from \"@supabase/supabase-js\";\nimport { supabaseConfig } from \"@/lib/supabase/config\";\nimport { requireAuth } from \"@/lib/api-auth\";\n\nconst supabase = createClient(supabaseConfig.url, supabaseConfig.serviceKey);\n\nexport async function POST(\n\trequest: NextRequest,\n\t{ params }: { params: Promise<{ id: string }> },\n) {\n\ttry {\n\t\tconst auth = await requireAuth(request, \"TASKS_UPDATE\"",
+      "tokens": 0,
+      "firstFile": {
+        "name": "src/app/api/tasks/[id]/block/route.ts",
+        "start": 1,
+        "end": 13,
+        "startLoc": {
+          "line": 1,
+          "column": 1,
+          "position": 0
+        },
+        "endLoc": {
+          "line": 13,
+          "column": 15,
+          "position": 143
+        }
+      },
+      "secondFile": {
         "name": "src/app/api/tasks/[id]/reject/route.ts",
+        "start": 1,
+        "end": 13,
+        "startLoc": {
+          "line": 1,
+          "column": 1,
+          "position": 0
+        },
+        "endLoc": {
+          "line": 13,
+          "column": 14,
+          "position": 143
+        }
+      }
+    },
+    {
+      "format": "typescript",
+      "lines": 11,
+      "fragment": "export async function POST(\n\trequest: NextRequest,\n\t{ params }: { params: Promise<{ id: string }> },\n) {\n\ttry {\n\t\tconst auth = await requireAuth(request, \"TASKS_UPDATE\");\n\t\tif (!auth.authorized) return auth.response;\n\n\t\tconst { id } = await params;\n\t\tconst body = await request.json();\n\t\tconst { blocked",
+      "tokens": 0,
+      "firstFile": {
+        "name": "src/app/api/tasks/[id]/block/route.ts",
         "start": 8,
         "end": 18,
         "startLoc": {
@@ -3396,44 +3561,23 @@
         },
         "endLoc": {
           "line": 18,
-          "column": 12,
-          "position": 202
-        }
-      }
-    },
-    {
-      "format": "typescript",
-      "lines": 18,
-      "fragment": "import { NextRequest, NextResponse } from \"next/server\";\nimport { createClient } from \"@supabase/supabase-js\";\nimport { supabaseConfig } from \"@/lib/supabase/config\";\nimport { requireAuth } from \"@/lib/api-auth\";\n\nconst supabase = createClient(supabaseConfig.url, supabaseConfig.serviceKey);\n\nexport async function POST(\n\trequest: NextRequest,\n\t{ params }: { params: Promise<{ id: string }> },\n) {\n\ttry {\n\t\tconst auth = await requireAuth(request, \"TASKS_WRITE\");\n\t\tif (!auth.authorized) return auth.response;\n\n\t\tconst { id } = await params;\n\t\tconst body = await request.json();\n\t\tconst { blocked",
-      "tokens": 0,
-      "firstFile": {
-        "name": "src/app/api/tasks/[id]/block/route.ts",
-        "start": 1,
-        "end": 18,
-        "startLoc": {
-          "line": 1,
-          "column": 1,
-          "position": 0
-        },
-        "endLoc": {
-          "line": 18,
           "column": 8,
           "position": 202
         }
       },
       "secondFile": {
-        "name": "src/app/api/tasks/[id]/reject/route.ts",
-        "start": 1,
-        "end": 18,
+        "name": "src/app/api/tasks/[id]/comments/route.ts",
+        "start": 51,
+        "end": 19,
         "startLoc": {
-          "line": 1,
+          "line": 51,
           "column": 1,
-          "position": 0
+          "position": 381
         },
         "endLoc": {
-          "line": 18,
-          "column": 12,
-          "position": 202
+          "line": 19,
+          "column": 7,
+          "position": 203
         }
       }
     },
@@ -3511,42 +3655,6 @@
     },
     {
       "format": "typescript",
-      "lines": 11,
-      "fragment": "(\n  request: NextRequest,\n  { params }: { params: Promise<{ id: string }> }\n) {\n  try {\n    const auth = await requireAuth(request, 'TASKS_WRITE');\n    if (!auth.authorized) return auth.response;\n\n    const { id } = await params;\n    const body = await request.json();\n    const { approved_by",
-      "tokens": 0,
-      "firstFile": {
-        "name": "src/app/api/tasks/[id]/approve/route.ts",
-        "start": 8,
-        "end": 18,
-        "startLoc": {
-          "line": 8,
-          "column": 5,
-          "position": 83
-        },
-        "endLoc": {
-          "line": 18,
-          "column": 12,
-          "position": 201
-        }
-      },
-      "secondFile": {
-        "name": "src/app/api/tasks/[id]/status/route.ts",
-        "start": 8,
-        "end": 19,
-        "startLoc": {
-          "line": 8,
-          "column": 4,
-          "position": 83
-        },
-        "endLoc": {
-          "line": 19,
-          "column": 7,
-          "position": 202
-        }
-      }
-    },
-    {
-      "format": "typescript",
       "lines": 15,
       "fragment": "export async function POST(\n\trequest: NextRequest,\n\t{ params }: { params: Promise<{ id: string }> },\n) {\n\ttry {\n\t\tconst auth = await requireAuth(request, \"SHIFTS_WRITE\");\n\t\tif (!auth.authorized) return auth.response;\n\n\t\tconst { id } = await params;\n\t\tconst now = new Date().toISOString();\n\n\t\tconst { data, error } = await supabase\n\t\t\t.from(\"shifts\")\n\t\t\t.update({\n\t\t\t\tstatus: \"confirmed\"",
       "tokens": 0,
@@ -3619,37 +3727,37 @@
     },
     {
       "format": "typescript",
-      "lines": 10,
-      "fragment": "} from '@/lib/api-auth';\n\nconst supabase = createClient(supabaseConfig.url, supabaseConfig.serviceKey);\n\nexport async function POST(\n  request: NextRequest,\n  { params }: { params: Promise<{ id: string }> }\n) {\n  try {\n    const auth = await authenticate",
+      "lines": 13,
+      "fragment": "import { NextRequest, NextResponse } from \"next/server\";\nimport { createClient } from \"@supabase/supabase-js\";\nimport { supabaseConfig } from \"@/lib/supabase/config\";\nimport { requireAuth } from \"@/lib/api-auth\";\n\nconst supabase = createClient(supabaseConfig.url, supabaseConfig.serviceKey);\n\nexport async function POST(\n\trequest: NextRequest,\n\t{ params }: { params: Promise<{ id: string }> },\n) {\n\ttry {\n\t\tconst auth = await requireAuth(request, \"RENTALS_WRITE\"",
       "tokens": 0,
       "firstFile": {
         "name": "src/app/api/rentals/[id]/return/route.ts",
-        "start": 4,
+        "start": 1,
         "end": 13,
         "startLoc": {
-          "line": 4,
-          "column": 2,
-          "position": 48
+          "line": 1,
+          "column": 1,
+          "position": 0
         },
         "endLoc": {
           "line": 13,
-          "column": 13,
-          "position": 137
+          "column": 16,
+          "position": 143
         }
       },
       "secondFile": {
-        "name": "src/app/api/tasks/[id]/approve/route.ts",
-        "start": 4,
+        "name": "src/app/api/tasks/[id]/reject/route.ts",
+        "start": 1,
         "end": 13,
         "startLoc": {
-          "line": 4,
-          "column": 2,
-          "position": 48
+          "line": 1,
+          "column": 1,
+          "position": 0
         },
         "endLoc": {
           "line": 13,
-          "column": 12,
-          "position": 137
+          "column": 14,
+          "position": 143
         }
       }
     },
@@ -4159,6 +4267,42 @@
     },
     {
       "format": "typescript",
+      "lines": 12,
+      "fragment": "(\n\trequest: NextRequest,\n\t{ params }: { params: Promise<{ listId: string }> },\n) {\n\ttry {\n\t\tconst auth = await requireAuth(request, \"GUEST_LISTS_WRITE\");\n\t\tif (!auth.authorized) return auth.response;\n\n\t\tconst { listId } = await params;\n\t\tconst supabase = await createClient();\n\n\t\tconst {",
+      "tokens": 0,
+      "firstFile": {
+        "name": "src/app/api/guest-lists/[listId]/entries/route.ts",
+        "start": 152,
+        "end": 163,
+        "startLoc": {
+          "line": 152,
+          "column": 7,
+          "position": 1237
+        },
+        "endLoc": {
+          "line": 163,
+          "column": 2,
+          "position": 1353
+        }
+      },
+      "secondFile": {
+        "name": "src/app/api/guest-lists/[listId]/entries/route.ts",
+        "start": 52,
+        "end": 63,
+        "startLoc": {
+          "line": 52,
+          "column": 5,
+          "position": 415
+        },
+        "endLoc": {
+          "line": 63,
+          "column": 5,
+          "position": 531
+        }
+      }
+    },
+    {
+      "format": "typescript",
       "lines": 9,
       "fragment": ");\n\n\t\tif (error) {\n\t\t\treturn NextResponse.json({ error: error.message }, { status: 400 });\n\t\t}\n\n\t\treturn NextResponse.json({ success: true });\n\t} catch (error) {\n\t\tconsole.error(\"Error deleting guest entry:\"",
       "tokens": 0,
@@ -4169,12 +4313,12 @@
         "startLoc": {
           "line": 201,
           "column": 8,
-          "position": 1650
+          "position": 1682
         },
         "endLoc": {
           "line": 209,
           "column": 30,
-          "position": 1731
+          "position": 1763
         }
       },
       "secondFile": {
@@ -4215,17 +4359,17 @@
       },
       "secondFile": {
         "name": "src/app/staff/[id]/edit/page.tsx",
-        "start": 42,
-        "end": 64,
+        "start": 43,
+        "end": 65,
         "startLoc": {
-          "line": 42,
+          "line": 43,
           "column": 11,
-          "position": 398
+          "position": 409
         },
         "endLoc": {
-          "line": 64,
+          "line": 65,
           "column": 6,
-          "position": 573
+          "position": 584
         }
       }
     },
@@ -4308,17 +4452,17 @@
       "tokens": 0,
       "firstFile": {
         "name": "src/app/api/venues/[id]/route.ts",
-        "start": 254,
-        "end": 264,
+        "start": 255,
+        "end": 265,
         "startLoc": {
-          "line": 254,
+          "line": 255,
           "column": 7,
-          "position": 2377
+          "position": 2381
         },
         "endLoc": {
-          "line": 264,
+          "line": 265,
           "column": 2,
-          "position": 2479
+          "position": 2483
         }
       },
       "secondFile": {
@@ -4344,17 +4488,17 @@
       "tokens": 0,
       "firstFile": {
         "name": "src/app/api/venues/[id]/route.ts",
-        "start": 264,
-        "end": 272,
+        "start": 265,
+        "end": 273,
         "startLoc": {
-          "line": 264,
+          "line": 265,
           "column": 3,
-          "position": 2506
+          "position": 2510
         },
         "endLoc": {
-          "line": 272,
+          "line": 273,
           "column": 24,
-          "position": 2587
+          "position": 2591
         }
       },
       "secondFile": {
@@ -4503,12 +4647,12 @@
       },
       "secondFile": {
         "name": "src/app/api/venues/[id]/route.ts",
-        "start": 264,
+        "start": 265,
         "end": 91,
         "startLoc": {
-          "line": 264,
+          "line": 265,
           "column": 9,
-          "position": 2494
+          "position": 2498
         },
         "endLoc": {
           "line": 91,
@@ -4539,24 +4683,24 @@
       },
       "secondFile": {
         "name": "src/app/api/venues/[id]/route.ts",
-        "start": 234,
-        "end": 245,
+        "start": 235,
+        "end": 246,
         "startLoc": {
-          "line": 234,
+          "line": 235,
           "column": 14,
-          "position": 2225
+          "position": 2229
         },
         "endLoc": {
-          "line": 245,
+          "line": 246,
           "column": 24,
-          "position": 2321
+          "position": 2325
         }
       }
     },
     {
       "format": "typescript",
       "lines": 11,
-      "fragment": "(\n\trequest: NextRequest,\n\t{ params }: { params: Promise<{ id: string }> },\n) {\n\ttry {\n\t\tconst auth = await requireAuth(request, \"STAFF_WRITE\");\n\t\tif (!auth.authorized) return auth.response;\n\n\t\tconst { id } = await params;\n\n\t\tconst {",
+      "fragment": "(\n\trequest: NextRequest,\n\t{ params }: { params: Promise<{ id: string }> },\n) {\n\ttry {\n\t\tconst auth = await requireAuth(request, \"STAFF_WRITE\");\n\t\tif (!auth.authorized) return auth.response;\n\n\t\tconst { id } = await params;\n\n\t\t// Cascade-delete related records first",
       "tokens": 0,
       "firstFile": {
         "name": "src/app/api/staff/[id]/route.ts",
@@ -4569,8 +4713,8 @@
         },
         "endLoc": {
           "line": 107,
-          "column": 2,
-          "position": 859
+          "column": 40,
+          "position": 857
         }
       },
       "secondFile": {
@@ -4584,8 +4728,8 @@
         },
         "endLoc": {
           "line": 66,
-          "column": 5,
-          "position": 518
+          "column": 6,
+          "position": 516
         }
       }
     },
@@ -4596,27 +4740,27 @@
       "tokens": 0,
       "firstFile": {
         "name": "src/app/api/staff/[id]/route.ts",
-        "start": 107,
-        "end": 115,
+        "start": 115,
+        "end": 123,
         "startLoc": {
-          "line": 107,
+          "line": 115,
           "column": 8,
-          "position": 874
+          "position": 961
         },
         "endLoc": {
-          "line": 115,
+          "line": 123,
           "column": 31,
-          "position": 967
+          "position": 1054
         }
       },
       "secondFile": {
         "name": "src/app/api/venues/[id]/route.ts",
-        "start": 264,
+        "start": 265,
         "end": 91,
         "startLoc": {
-          "line": 264,
+          "line": 265,
           "column": 9,
-          "position": 2494
+          "position": 2498
         },
         "endLoc": {
           "line": 91,
@@ -4720,16 +4864,16 @@
       "secondFile": {
         "name": "src/app/api/staff/[id]/route.ts",
         "start": 76,
-        "end": 245,
+        "end": 246,
         "startLoc": {
           "line": 76,
           "column": 9,
           "position": 601
         },
         "endLoc": {
-          "line": 245,
+          "line": 246,
           "column": 24,
-          "position": 2321
+          "position": 2325
         }
       }
     },
@@ -4791,12 +4935,12 @@
       },
       "secondFile": {
         "name": "src/app/api/venues/[id]/route.ts",
-        "start": 264,
+        "start": 265,
         "end": 91,
         "startLoc": {
-          "line": 264,
+          "line": 265,
           "column": 9,
-          "position": 2494
+          "position": 2498
         },
         "endLoc": {
           "line": 91,
@@ -4807,58 +4951,94 @@
     },
     {
       "format": "typescript",
-      "lines": 11,
-      "fragment": "(\n  request: NextRequest,\n  { params }: { params: Promise<{ id: string }> }\n) {\n  try {\n    const auth = await authenticate(request);\n    if (!auth.authorized) return auth.response;\n\n    const { id } = await params;\n\n    const {",
+      "lines": 13,
+      "fragment": "import { NextRequest, NextResponse } from \"next/server\";\nimport { createClient } from \"@supabase/supabase-js\";\nimport { supabaseConfig } from \"@/lib/supabase/config\";\nimport { requireAuth } from \"@/lib/api-auth\";\n\nconst supabase = createClient(supabaseConfig.url, supabaseConfig.serviceKey);\n\nexport async function GET(\n\trequest: NextRequest,\n\t{ params }: { params: Promise<{ id: string }> },\n) {\n\ttry {\n\t\tconst auth = await requireAuth(request, \"RENTALS_READ\"",
       "tokens": 0,
       "firstFile": {
         "name": "src/app/api/rentals/[id]/route.ts",
-        "start": 8,
-        "end": 18,
+        "start": 1,
+        "end": 13,
         "startLoc": {
-          "line": 8,
-          "column": 4,
-          "position": 83
+          "line": 1,
+          "column": 1,
+          "position": 0
         },
         "endLoc": {
-          "line": 18,
-          "column": 2,
-          "position": 181
+          "line": 13,
+          "column": 15,
+          "position": 143
         }
       },
       "secondFile": {
-        "name": "src/app/api/rentals/[id]/return/route.ts",
-        "start": 8,
-        "end": 17,
+        "name": "src/app/api/tasks/[id]/history/route.ts",
+        "start": 1,
+        "end": 13,
         "startLoc": {
-          "line": 8,
-          "column": 5,
-          "position": 83
+          "line": 1,
+          "column": 1,
+          "position": 0
         },
         "endLoc": {
-          "line": 17,
-          "column": 5,
-          "position": 180
+          "line": 13,
+          "column": 13,
+          "position": 143
+        }
+      }
+    },
+    {
+      "format": "typescript",
+      "lines": 10,
+      "fragment": "},\n\t\t\t\t\t{ status: 404 },\n\t\t\t\t);\n\t\t\t}\n\t\t\treturn NextResponse.json({ error: error.message }, { status: 500 });\n\t\t}\n\n\t\treturn NextResponse.json(data);\n\t} catch (error) {\n\t\tconsole.error(\"Error fetching rental:\"",
+      "tokens": 0,
+      "firstFile": {
+        "name": "src/app/api/rentals/[id]/route.ts",
+        "start": 30,
+        "end": 39,
+        "startLoc": {
+          "line": 30,
+          "column": 2,
+          "position": 272
+        },
+        "endLoc": {
+          "line": 39,
+          "column": 25,
+          "position": 354
+        }
+      },
+      "secondFile": {
+        "name": "src/app/api/staff/[id]/route.ts",
+        "start": 39,
+        "end": 48,
+        "startLoc": {
+          "line": 39,
+          "column": 2,
+          "position": 279
+        },
+        "endLoc": {
+          "line": 48,
+          "column": 31,
+          "position": 361
         }
       }
     },
     {
       "format": "typescript",
       "lines": 12,
-      "fragment": "(\n  request: NextRequest,\n  { params }: { params: Promise<{ id: string }> }\n) {\n  try {\n    const auth = await authenticate(request);\n    if (!auth.authorized) return auth.response;\n\n    const { id } = await params;\n    const body = await request.json();\n\n    const updatePayload",
+      "fragment": "(\n\trequest: NextRequest,\n\t{ params }: { params: Promise<{ id: string }> },\n) {\n\ttry {\n\t\tconst auth = await requireAuth(request, \"RENTALS_WRITE\");\n\t\tif (!auth.authorized) return auth.response;\n\n\t\tconst { id } = await params;\n\t\tconst body = await request.json();\n\n\t\tconst updatePayload",
       "tokens": 0,
       "firstFile": {
         "name": "src/app/api/rentals/[id]/route.ts",
-        "start": 50,
-        "end": 61,
+        "start": 47,
+        "end": 58,
         "startLoc": {
-          "line": 50,
+          "line": 47,
           "column": 4,
-          "position": 407
+          "position": 408
         },
         "endLoc": {
-          "line": 61,
+          "line": 58,
           "column": 14,
-          "position": 521
+          "position": 526
         }
       },
       "secondFile": {
@@ -4873,110 +5053,110 @@
         "endLoc": {
           "line": 19,
           "column": 15,
-          "position": 197
-        }
-      }
-    },
-    {
-      "format": "typescript",
-      "lines": 13,
-      "fragment": ")\n      .single();\n\n    if (error) {\n      if (error.code === 'PGRST116') {\n        return NextResponse.json(\n          { error: 'Rental not found' },\n          { status: 404 }\n        );\n      }\n      return NextResponse.json(\n        { error: error.message },\n        { status: 400",
-      "tokens": 0,
-      "firstFile": {
-        "name": "src/app/api/rentals/[id]/route.ts",
-        "start": 78,
-        "end": 90,
-        "startLoc": {
-          "line": 78,
-          "column": 2,
-          "position": 683
-        },
-        "endLoc": {
-          "line": 90,
-          "column": 4,
-          "position": 780
-        }
-      },
-      "secondFile": {
-        "name": "src/app/api/rentals/[id]/route.ts",
-        "start": 24,
-        "end": 36,
-        "startLoc": {
-          "line": 24,
-          "column": 3,
-          "position": 218
-        },
-        "endLoc": {
-          "line": 36,
-          "column": 4,
-          "position": 315
+          "position": 201
         }
       }
     },
     {
       "format": "typescript",
       "lines": 11,
-      "fragment": "(\n  request: NextRequest,\n  { params }: { params: Promise<{ id: string }> }\n) {\n  try {\n    const auth = await authenticate(request);\n    if (!auth.authorized) return auth.response;\n\n    const { id } = await params;\n\n    const { error",
+      "fragment": ")\n\t\t\t.single();\n\n\t\tif (error) {\n\t\t\tif (error.code === \"PGRST116\") {\n\t\t\t\treturn NextResponse.json(\n\t\t\t\t\t{ error: \"Rental not found\" },\n\t\t\t\t\t{ status: 404 },\n\t\t\t\t);\n\t\t\t}\n\t\t\treturn NextResponse.json({ error: error.message }, { status: 400",
       "tokens": 0,
       "firstFile": {
         "name": "src/app/api/rentals/[id]/route.ts",
-        "start": 104,
-        "end": 114,
+        "start": 82,
+        "end": 92,
         "startLoc": {
-          "line": 104,
-          "column": 7,
-          "position": 872
+          "line": 82,
+          "column": 2,
+          "position": 695
         },
         "endLoc": {
-          "line": 114,
-          "column": 6,
-          "position": 972
+          "line": 92,
+          "column": 4,
+          "position": 790
+        }
+      },
+      "secondFile": {
+        "name": "src/app/api/rentals/[id]/route.ts",
+        "start": 24,
+        "end": 34,
+        "startLoc": {
+          "line": 24,
+          "column": 3,
+          "position": 222
+        },
+        "endLoc": {
+          "line": 34,
+          "column": 4,
+          "position": 317
+        }
+      }
+    },
+    {
+      "format": "typescript",
+      "lines": 11,
+      "fragment": "(\n\trequest: NextRequest,\n\t{ params }: { params: Promise<{ id: string }> },\n) {\n\ttry {\n\t\tconst auth = await requireAuth(request, \"RENTALS_WRITE\");\n\t\tif (!auth.authorized) return auth.response;\n\n\t\tconst { id } = await params;\n\n\t\tconst {",
+      "tokens": 0,
+      "firstFile": {
+        "name": "src/app/api/rentals/[id]/route.ts",
+        "start": 105,
+        "end": 115,
+        "startLoc": {
+          "line": 105,
+          "column": 7,
+          "position": 881
+        },
+        "endLoc": {
+          "line": 115,
+          "column": 2,
+          "position": 983
         }
       },
       "secondFile": {
         "name": "src/app/api/rentals/[id]/return/route.ts",
         "start": 8,
-        "end": 18,
+        "end": 17,
         "startLoc": {
           "line": 8,
           "column": 5,
           "position": 83
         },
         "endLoc": {
-          "line": 18,
+          "line": 17,
           "column": 5,
-          "position": 183
+          "position": 184
         }
       }
     },
     {
       "format": "typescript",
-      "lines": 12,
-      "fragment": ", id);\n\n    if (error) {\n      return NextResponse.json(\n        { error: error.message },\n        { status: 400 }\n      );\n    }\n\n    return NextResponse.json({ success: true });\n  } catch (error) {\n    console.error('Error deleting rental:'",
+      "lines": 9,
+      "fragment": ").delete().eq(\"id\", id);\n\n\t\tif (error) {\n\t\t\treturn NextResponse.json({ error: error.message }, { status: 400 });\n\t\t}\n\n\t\treturn NextResponse.json({ success: true });\n\t} catch (error) {\n\t\tconsole.error(\"Error deleting rental:\"",
       "tokens": 0,
       "firstFile": {
         "name": "src/app/api/rentals/[id]/route.ts",
-        "start": 117,
-        "end": 128,
+        "start": 115,
+        "end": 123,
         "startLoc": {
-          "line": 117,
-          "column": 5,
-          "position": 1000
+          "line": 115,
+          "column": 10,
+          "position": 998
         },
         "endLoc": {
-          "line": 128,
+          "line": 123,
           "column": 25,
-          "position": 1089
+          "position": 1091
         }
       },
       "secondFile": {
         "name": "src/app/api/venues/[id]/route.ts",
-        "start": 264,
+        "start": 265,
         "end": 91,
         "startLoc": {
-          "line": 264,
-          "column": 5,
-          "position": 2503
+          "line": 265,
+          "column": 9,
+          "position": 2498
         },
         "endLoc": {
           "line": 91,
@@ -5007,17 +5187,17 @@
       },
       "secondFile": {
         "name": "src/app/api/venues/[id]/route.ts",
-        "start": 235,
-        "end": 245,
+        "start": 236,
+        "end": 246,
         "startLoc": {
-          "line": 235,
+          "line": 236,
           "column": 5,
-          "position": 2232
+          "position": 2236
         },
         "endLoc": {
-          "line": 245,
+          "line": 246,
           "column": 24,
-          "position": 2321
+          "position": 2325
         }
       }
     },
@@ -5059,17 +5239,17 @@
     },
     {
       "format": "typescript",
-      "lines": 14,
-      "fragment": ")\n      .delete()\n      .eq('id', id);\n\n    if (error) {\n      return NextResponse.json(\n        { error: error.message },\n        { status: 400 }\n      );\n    }\n\n    return NextResponse.json({ success: true });\n  } catch (error) {\n    console.error('Error deleting performance:'",
+      "lines": 12,
+      "fragment": ", id);\n\n    if (error) {\n      return NextResponse.json(\n        { error: error.message },\n        { status: 400 }\n      );\n    }\n\n    return NextResponse.json({ success: true });\n  } catch (error) {\n    console.error('Error deleting performance:'",
       "tokens": 0,
       "firstFile": {
         "name": "src/app/api/performances/[id]/route.ts",
-        "start": 158,
+        "start": 160,
         "end": 171,
         "startLoc": {
-          "line": 158,
-          "column": 15,
-          "position": 1191
+          "line": 160,
+          "column": 5,
+          "position": 1204
         },
         "endLoc": {
           "line": 171,
@@ -5078,13 +5258,13 @@
         }
       },
       "secondFile": {
-        "name": "src/app/api/rentals/[id]/route.ts",
-        "start": 115,
+        "name": "src/app/api/venues/[id]/route.ts",
+        "start": 265,
         "end": 91,
         "startLoc": {
-          "line": 115,
-          "column": 10,
-          "position": 987
+          "line": 265,
+          "column": 5,
+          "position": 2507
         },
         "endLoc": {
           "line": 91,
@@ -5167,6 +5347,42 @@
     },
     {
       "format": "typescript",
+      "lines": 14,
+      "fragment": ", error);\n\t\treturn NextResponse.json(\n\t\t\t{ error: \"Internal server error\" },\n\t\t\t{ status: 500 },\n\t\t);\n\t}\n}\n\nexport async function PUT(\n\trequest: NextRequest,\n\t{ params }: { params: Promise<{ id: string }> },\n) {\n\ttry {\n\t\tconst auth = await requireAuth(request, \"INVENTORY_WRITE\"",
+      "tokens": 0,
+      "firstFile": {
+        "name": "src/app/api/items/[id]/route.ts",
+        "start": 43,
+        "end": 56,
+        "startLoc": {
+          "line": 43,
+          "column": 23,
+          "position": 436
+        },
+        "endLoc": {
+          "line": 56,
+          "column": 18,
+          "position": 549
+        }
+      },
+      "secondFile": {
+        "name": "src/app/api/rentals/[id]/route.ts",
+        "start": 39,
+        "end": 52,
+        "startLoc": {
+          "line": 39,
+          "column": 25,
+          "position": 355
+        },
+        "endLoc": {
+          "line": 52,
+          "column": 16,
+          "position": 468
+        }
+      }
+    },
+    {
+      "format": "typescript",
       "lines": 12,
       "fragment": "(\n\trequest: NextRequest,\n\t{ params }: { params: Promise<{ id: string }> },\n) {\n\ttry {\n\t\tconst auth = await requireAuth(request, \"INVENTORY_WRITE\");\n\t\tif (!auth.authorized) return auth.response;\n\n\t\tconst { id } = await params;\n\t\tconst body = await request.json();\n\n\t\tconst updatePayload",
       "tokens": 0,
@@ -5239,6 +5455,42 @@
     },
     {
       "format": "typescript",
+      "lines": 14,
+      "fragment": ", error);\n\t\treturn NextResponse.json(\n\t\t\t{ error: \"Internal server error\" },\n\t\t\t{ status: 500 },\n\t\t);\n\t}\n}\n\nexport async function DELETE(\n\trequest: NextRequest,\n\t{ params }: { params: Promise<{ id: string }> },\n) {\n\ttry {\n\t\tconst auth = await requireAuth(request, \"INVENTORY_WRITE\"",
+      "tokens": 0,
+      "firstFile": {
+        "name": "src/app/api/items/[id]/route.ts",
+        "start": 99,
+        "end": 112,
+        "startLoc": {
+          "line": 99,
+          "column": 23,
+          "position": 907
+        },
+        "endLoc": {
+          "line": 112,
+          "column": 18,
+          "position": 1020
+        }
+      },
+      "secondFile": {
+        "name": "src/app/api/rentals/[id]/route.ts",
+        "start": 97,
+        "end": 110,
+        "startLoc": {
+          "line": 97,
+          "column": 25,
+          "position": 828
+        },
+        "endLoc": {
+          "line": 110,
+          "column": 16,
+          "position": 941
+        }
+      }
+    },
+    {
+      "format": "typescript",
       "lines": 11,
       "fragment": "(\n\trequest: NextRequest,\n\t{ params }: { params: Promise<{ id: string }> },\n) {\n\ttry {\n\t\tconst auth = await requireAuth(request, \"INVENTORY_WRITE\");\n\t\tif (!auth.authorized) return auth.response;\n\n\t\tconst { id } = await params;\n\n\t\tconst {",
       "tokens": 0,
@@ -5295,12 +5547,12 @@
       },
       "secondFile": {
         "name": "src/app/api/venues/[id]/route.ts",
-        "start": 264,
+        "start": 265,
         "end": 91,
         "startLoc": {
-          "line": 264,
+          "line": 265,
           "column": 9,
-          "position": 2494
+          "position": 2498
         },
         "endLoc": {
           "line": 91,
@@ -5404,16 +5656,16 @@
       "secondFile": {
         "name": "src/app/api/performances/[id]/route.ts",
         "start": 124,
-        "end": 245,
+        "end": 246,
         "startLoc": {
           "line": 124,
           "column": 7,
           "position": 916
         },
         "endLoc": {
-          "line": 245,
+          "line": 246,
           "column": 24,
-          "position": 2321
+          "position": 2325
         }
       }
     },
@@ -5474,13 +5726,13 @@
         }
       },
       "secondFile": {
-        "name": "src/app/api/rentals/[id]/route.ts",
-        "start": 115,
+        "name": "src/app/api/performances/[id]/route.ts",
+        "start": 158,
         "end": 91,
         "startLoc": {
-          "line": 115,
-          "column": 10,
-          "position": 987
+          "line": 158,
+          "column": 15,
+          "position": 1191
         },
         "endLoc": {
           "line": 91,
@@ -5512,16 +5764,16 @@
       "secondFile": {
         "name": "src/app/api/staff/[id]/route.ts",
         "start": 76,
-        "end": 245,
+        "end": 246,
         "startLoc": {
           "line": 76,
           "column": 9,
           "position": 601
         },
         "endLoc": {
-          "line": 245,
+          "line": 246,
           "column": 24,
-          "position": 2321
+          "position": 2325
         }
       }
     },
@@ -5583,12 +5835,12 @@
       },
       "secondFile": {
         "name": "src/app/api/venues/[id]/route.ts",
-        "start": 264,
+        "start": 265,
         "end": 91,
         "startLoc": {
-          "line": 264,
+          "line": 265,
           "column": 9,
-          "position": 2494
+          "position": 2498
         },
         "endLoc": {
           "line": 91,
@@ -5656,16 +5908,16 @@
       "secondFile": {
         "name": "src/app/api/performances/[id]/route.ts",
         "start": 124,
-        "end": 245,
+        "end": 246,
         "startLoc": {
           "line": 124,
           "column": 7,
           "position": 916
         },
         "endLoc": {
-          "line": 245,
+          "line": 246,
           "column": 24,
-          "position": 2321
+          "position": 2325
         }
       }
     },
@@ -5726,13 +5978,13 @@
         }
       },
       "secondFile": {
-        "name": "src/app/api/rentals/[id]/route.ts",
-        "start": 115,
+        "name": "src/app/api/performances/[id]/route.ts",
+        "start": 158,
         "end": 91,
         "startLoc": {
-          "line": 115,
-          "column": 10,
-          "position": 987
+          "line": 158,
+          "column": 15,
+          "position": 1191
         },
         "endLoc": {
           "line": 91,
@@ -5820,17 +6072,17 @@
       "tokens": 0,
       "firstFile": {
         "name": "src/app/api/venues/route.ts",
-        "start": 257,
-        "end": 267,
+        "start": 265,
+        "end": 275,
         "startLoc": {
-          "line": 257,
+          "line": 265,
           "column": 14,
-          "position": 2464
+          "position": 2528
         },
         "endLoc": {
-          "line": 267,
+          "line": 275,
           "column": 24,
-          "position": 2560
+          "position": 2624
         }
       },
       "secondFile": {
@@ -5851,22 +6103,94 @@
     },
     {
       "format": "typescript",
+      "lines": 9,
+      "fragment": "import { NextRequest, NextResponse } from \"next/server\";\nimport { createClient } from \"@supabase/supabase-js\";\nimport { supabaseConfig } from \"@/lib/supabase/config\";\nimport { requireAuth } from \"@/lib/api-auth\";\nimport { cacheHeaders } from \"@/lib/api-cache\";\n\nconst supabase = createClient(supabaseConfig.url, supabaseConfig.serviceKey);\n\n// GET /api/tasks - List all tasks with optional filtering",
+      "tokens": 0,
+      "firstFile": {
+        "name": "src/app/api/tasks/route.ts",
+        "start": 4,
+        "end": 12,
+        "startLoc": {
+          "line": 4,
+          "column": 1,
+          "position": 5
+        },
+        "endLoc": {
+          "line": 12,
+          "column": 59,
+          "position": 94
+        }
+      },
+      "secondFile": {
+        "name": "src/app/api/venues/route.ts",
+        "start": 4,
+        "end": 12,
+        "startLoc": {
+          "line": 4,
+          "column": 1,
+          "position": 5
+        },
+        "endLoc": {
+          "line": 12,
+          "column": 59,
+          "position": 94
+        }
+      }
+    },
+    {
+      "format": "typescript",
+      "lines": 9,
+      "fragment": "import { NextRequest, NextResponse } from \"next/server\";\nimport { createClient } from \"@supabase/supabase-js\";\nimport { supabaseConfig } from \"@/lib/supabase/config\";\nimport { requireAuth } from \"@/lib/api-auth\";\nimport { cacheHeaders } from \"@/lib/api-cache\";\n\nconst supabase = createClient(supabaseConfig.url, supabaseConfig.serviceKey);\n\n// GET /api/staff - List all staff with optional filtering",
+      "tokens": 0,
+      "firstFile": {
+        "name": "src/app/api/staff/route.ts",
+        "start": 4,
+        "end": 12,
+        "startLoc": {
+          "line": 4,
+          "column": 1,
+          "position": 5
+        },
+        "endLoc": {
+          "line": 12,
+          "column": 59,
+          "position": 94
+        }
+      },
+      "secondFile": {
+        "name": "src/app/api/venues/route.ts",
+        "start": 4,
+        "end": 12,
+        "startLoc": {
+          "line": 4,
+          "column": 1,
+          "position": 5
+        },
+        "endLoc": {
+          "line": 12,
+          "column": 59,
+          "position": 94
+        }
+      }
+    },
+    {
+      "format": "typescript",
       "lines": 12,
       "fragment": ",\n\t\t\t})\n\t\t\t.select()\n\t\t\t.single();\n\n\t\tif (error) {\n\t\t\treturn NextResponse.json({ error: error.message }, { status: 400 });\n\t\t}\n\n\t\treturn NextResponse.json(data, { status: 201 });\n\t} catch (error) {\n\t\tconsole.error(\"Error creating staff:\"",
       "tokens": 0,
       "firstFile": {
         "name": "src/app/api/staff/route.ts",
-        "start": 101,
-        "end": 112,
+        "start": 126,
+        "end": 137,
         "startLoc": {
-          "line": 101,
+          "line": 126,
           "column": 6,
-          "position": 841
+          "position": 1067
         },
         "endLoc": {
-          "line": 112,
+          "line": 137,
           "column": 24,
-          "position": 941
+          "position": 1167
         }
       },
       "secondFile": {
@@ -5887,22 +6211,58 @@
     },
     {
       "format": "typescript",
+      "lines": 11,
+      "fragment": "// Phase 3 - Nightclub Booking System\n\nimport { NextRequest, NextResponse } from \"next/server\";\nimport { createClient } from \"@supabase/supabase-js\";\nimport { supabaseConfig } from \"@/lib/supabase/config\";\nimport { requireAuth } from \"@/lib/api-auth\";\nimport { cacheHeaders } from \"@/lib/api-cache\";\n\nconst supabase = createClient(supabaseConfig.url, supabaseConfig.serviceKey);\n\n// GET /api/shifts - List all shifts with optional filtering",
+      "tokens": 0,
+      "firstFile": {
+        "name": "src/app/api/shifts/route.ts",
+        "start": 2,
+        "end": 12,
+        "startLoc": {
+          "line": 2,
+          "column": 1,
+          "position": 2
+        },
+        "endLoc": {
+          "line": 12,
+          "column": 61,
+          "position": 94
+        }
+      },
+      "secondFile": {
+        "name": "src/app/api/staff/route.ts",
+        "start": 2,
+        "end": 12,
+        "startLoc": {
+          "line": 2,
+          "column": 1,
+          "position": 2
+        },
+        "endLoc": {
+          "line": 12,
+          "column": 59,
+          "position": 94
+        }
+      }
+    },
+    {
+      "format": "typescript",
       "lines": 12,
       "fragment": ",\n\t\t\t})\n\t\t\t.select()\n\t\t\t.single();\n\n\t\tif (error) {\n\t\t\treturn NextResponse.json({ error: error.message }, { status: 400 });\n\t\t}\n\n\t\treturn NextResponse.json(data, { status: 201 });\n\t} catch (error) {\n\t\tconsole.error(\"Error creating shift:\"",
       "tokens": 0,
       "firstFile": {
         "name": "src/app/api/shifts/route.ts",
-        "start": 196,
-        "end": 207,
+        "start": 200,
+        "end": 211,
         "startLoc": {
-          "line": 196,
+          "line": 200,
           "column": 12,
-          "position": 1500
+          "position": 1532
         },
         "endLoc": {
-          "line": 207,
+          "line": 211,
           "column": 24,
-          "position": 1600
+          "position": 1632
         }
       },
       "secondFile": {
@@ -5924,7 +6284,7 @@
     {
       "format": "typescript",
       "lines": 8,
-      "fragment": "import { NextRequest, NextResponse } from 'next/server';\nimport { createClient } from '@supabase/supabase-js';\nimport { supabaseConfig } from '@/lib/supabase/config';\nimport { authenticate } from '@/lib/api-auth';\n\nconst supabase = createClient(supabaseConfig.url, supabaseConfig.serviceKey);\n\nexport async function GET(request: NextRequest)",
+      "fragment": "import { NextRequest, NextResponse } from \"next/server\";\nimport { createClient } from \"@supabase/supabase-js\";\nimport { supabaseConfig } from \"@/lib/supabase/config\";\nimport { requireAuth } from \"@/lib/api-auth\";\n\nconst supabase = createClient(supabaseConfig.url, supabaseConfig.serviceKey);\n\nexport async function GET(request: NextRequest)",
       "tokens": 0,
       "firstFile": {
         "name": "src/app/api/rentals/route.ts",
@@ -5942,7 +6302,7 @@
         }
       },
       "secondFile": {
-        "name": "src/app/api/rentals/[id]/route.ts",
+        "name": "src/app/api/tasks/[id]/history/route.ts",
         "start": 1,
         "end": 9,
         "startLoc": {
@@ -5995,37 +6355,37 @@
     },
     {
       "format": "typescript",
-      "lines": 8,
-      "fragment": "import { NextRequest, NextResponse } from \"next/server\";\nimport { createClient } from \"@supabase/supabase-js\";\nimport { supabaseConfig } from \"@/lib/supabase/config\";\nimport { requireAuth } from \"@/lib/api-auth\";\n\nconst supabase = createClient(supabaseConfig.url, supabaseConfig.serviceKey);\n\nexport async function GET(request: NextRequest)",
+      "lines": 10,
+      "fragment": "import { NextRequest, NextResponse } from \"next/server\";\nimport { createClient } from \"@supabase/supabase-js\";\nimport { supabaseConfig } from \"@/lib/supabase/config\";\nimport { requireAuth } from \"@/lib/api-auth\";\n\nconst supabase = createClient(supabaseConfig.url, supabaseConfig.serviceKey);\n\nexport async function GET(request: NextRequest) {\n\ttry {\n\t\tconst auth = await requireAuth(request, \"INVENTORY_READ\"",
       "tokens": 0,
       "firstFile": {
         "name": "src/app/api/items/route.ts",
         "start": 1,
-        "end": 8,
+        "end": 10,
         "startLoc": {
           "line": 1,
           "column": 1,
           "position": 0
         },
         "endLoc": {
-          "line": 8,
-          "column": 2,
-          "position": 88
+          "line": 10,
+          "column": 17,
+          "position": 111
         }
       },
       "secondFile": {
         "name": "src/app/api/tasks/[id]/history/route.ts",
         "start": 1,
-        "end": 9,
+        "end": 10,
         "startLoc": {
           "line": 1,
           "column": 1,
           "position": 0
         },
         "endLoc": {
-          "line": 9,
-          "column": 2,
-          "position": 90
+          "line": 10,
+          "column": 15,
+          "position": 111
         }
       }
     },
@@ -6076,100 +6436,100 @@
         "end": 75,
         "startLoc": {
           "line": 64,
-          "column": 3,
-          "position": 567
+          "column": 7,
+          "position": 565
         },
         "endLoc": {
           "line": 75,
           "column": 29,
-          "position": 671
+          "position": 669
         }
       },
       "secondFile": {
         "name": "src/app/api/guest-lists/[listId]/entries/route.ts",
-        "start": 135,
-        "end": 146,
+        "start": 132,
+        "end": 143,
         "startLoc": {
-          "line": 135,
+          "line": 132,
           "column": 10,
-          "position": 1081
+          "position": 1077
         },
         "endLoc": {
-          "line": 146,
+          "line": 143,
           "column": 28,
-          "position": 1185
+          "position": 1181
         }
       }
     },
     {
       "format": "typescript",
-      "lines": 14,
-      "fragment": "})\n      .select()\n      .single();\n\n    if (error) {\n      return NextResponse.json(\n        { error: error.message },\n        { status: 400 }\n      );\n    }\n\n    return NextResponse.json(data, { status: 201 });\n  } catch (error) {\n    console.error('Error creating event:'",
+      "lines": 9,
+      "fragment": "import { NextRequest, NextResponse } from \"next/server\";\nimport { createClient } from \"@supabase/supabase-js\";\nimport { supabaseConfig } from \"@/lib/supabase/config\";\nimport { requireAuth } from \"@/lib/api-auth\";\nimport { cacheHeaders } from \"@/lib/api-cache\";\n\nconst supabase = createClient(supabaseConfig.url, supabaseConfig.serviceKey);\n\n// GET /api/events - List all events with optional filtering",
       "tokens": 0,
       "firstFile": {
         "name": "src/app/api/events/route.ts",
-        "start": 118,
-        "end": 131,
+        "start": 4,
+        "end": 12,
         "startLoc": {
-          "line": 118,
-          "column": 7,
-          "position": 912
+          "line": 4,
+          "column": 1,
+          "position": 5
         },
         "endLoc": {
-          "line": 131,
+          "line": 12,
+          "column": 61,
+          "position": 94
+        }
+      },
+      "secondFile": {
+        "name": "src/app/api/venues/route.ts",
+        "start": 4,
+        "end": 12,
+        "startLoc": {
+          "line": 4,
+          "column": 1,
+          "position": 5
+        },
+        "endLoc": {
+          "line": 12,
+          "column": 59,
+          "position": 94
+        }
+      }
+    },
+    {
+      "format": "typescript",
+      "lines": 12,
+      "fragment": ",\n\t\t\t})\n\t\t\t.select()\n\t\t\t.single();\n\n\t\tif (error) {\n\t\t\treturn NextResponse.json({ error: error.message }, { status: 400 });\n\t\t}\n\n\t\treturn NextResponse.json(data, { status: 201 });\n\t} catch (error) {\n\t\tconsole.error(\"Error creating event:\"",
+      "tokens": 0,
+      "firstFile": {
+        "name": "src/app/api/events/route.ts",
+        "start": 108,
+        "end": 119,
+        "startLoc": {
+          "line": 108,
+          "column": 13,
+          "position": 927
+        },
+        "endLoc": {
+          "line": 119,
           "column": 24,
-          "position": 1014
+          "position": 1027
         }
       },
       "secondFile": {
         "name": "src/app/api/items/[id]/location-history/route.ts",
-        "start": 137,
+        "start": 136,
         "end": 96,
         "startLoc": {
-          "line": 137,
-          "column": 4,
-          "position": 1139
+          "line": 136,
+          "column": 9,
+          "position": 1136
         },
         "endLoc": {
           "line": 96,
           "column": 26,
           "position": 717
-        }
-      }
-    },
-    {
-      "format": "typescript",
-      "lines": 8,
-      "fragment": "const { data: { user }, error: authError } = await supabase.auth.getUser();\n    \n    if (authError || !user) {\n      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });\n    }\n\n    const body = await request.json();\n    const { qr_token",
-      "tokens": 0,
-      "firstFile": {
-        "name": "src/app/api/checkin/route.ts",
-        "start": 14,
-        "end": 21,
-        "startLoc": {
-          "line": 14,
-          "column": 5,
-          "position": 121
-        },
-        "endLoc": {
-          "line": 21,
-          "column": 9,
-          "position": 224
-        }
-      },
-      "secondFile": {
-        "name": "src/app/api/guest-lists/route.ts",
-        "start": 43,
-        "end": 50,
-        "startLoc": {
-          "line": 43,
-          "column": 5,
-          "position": 353
-        },
-        "endLoc": {
-          "line": 50,
-          "column": 9,
-          "position": 456
         }
       }
     },
@@ -6216,17 +6576,17 @@
       "tokens": 0,
       "firstFile": {
         "name": "src/app/api/availability/route.ts",
-        "start": 133,
-        "end": 144,
+        "start": 145,
+        "end": 156,
         "startLoc": {
-          "line": 133,
+          "line": 145,
           "column": 16,
-          "position": 1035
+          "position": 1083
         },
         "endLoc": {
-          "line": 144,
+          "line": 156,
           "column": 40,
-          "position": 1135
+          "position": 1183
         }
       },
       "secondFile": {
@@ -6247,32 +6607,68 @@
     },
     {
       "format": "typescript",
-      "lines": 14,
-      "fragment": "})\n      .select()\n      .single();\n\n    if (error) {\n      return NextResponse.json(\n        { error: error.message },\n        { status: 400 }\n      );\n    }\n\n    return NextResponse.json(data, { status: 201 });\n  } catch (error) {\n    console.error('Error creating artist:'",
+      "lines": 9,
+      "fragment": "import { NextRequest, NextResponse } from \"next/server\";\nimport { createClient } from \"@supabase/supabase-js\";\nimport { supabaseConfig } from \"@/lib/supabase/config\";\nimport { requireAuth } from \"@/lib/api-auth\";\nimport { cacheHeaders } from \"@/lib/api-cache\";\n\nconst supabase = createClient(supabaseConfig.url, supabaseConfig.serviceKey);\n\n// GET /api/artists - List all artists with optional filtering",
       "tokens": 0,
       "firstFile": {
         "name": "src/app/api/artists/route.ts",
-        "start": 104,
-        "end": 117,
+        "start": 4,
+        "end": 12,
         "startLoc": {
-          "line": 104,
-          "column": 7,
-          "position": 847
+          "line": 4,
+          "column": 1,
+          "position": 5
         },
         "endLoc": {
-          "line": 117,
+          "line": 12,
+          "column": 63,
+          "position": 94
+        }
+      },
+      "secondFile": {
+        "name": "src/app/api/venues/route.ts",
+        "start": 4,
+        "end": 12,
+        "startLoc": {
+          "line": 4,
+          "column": 1,
+          "position": 5
+        },
+        "endLoc": {
+          "line": 12,
+          "column": 59,
+          "position": 94
+        }
+      }
+    },
+    {
+      "format": "typescript",
+      "lines": 12,
+      "fragment": ",\n\t\t\t})\n\t\t\t.select()\n\t\t\t.single();\n\n\t\tif (error) {\n\t\t\treturn NextResponse.json({ error: error.message }, { status: 400 });\n\t\t}\n\n\t\treturn NextResponse.json(data, { status: 201 });\n\t} catch (error) {\n\t\tconsole.error(\"Error creating artist:\"",
+      "tokens": 0,
+      "firstFile": {
+        "name": "src/app/api/artists/route.ts",
+        "start": 101,
+        "end": 112,
+        "startLoc": {
+          "line": 101,
+          "column": 2,
+          "position": 869
+        },
+        "endLoc": {
+          "line": 112,
           "column": 25,
-          "position": 949
+          "position": 969
         }
       },
       "secondFile": {
         "name": "src/app/api/items/[id]/location-history/route.ts",
-        "start": 137,
+        "start": 136,
         "end": 96,
         "startLoc": {
-          "line": 137,
-          "column": 4,
-          "position": 1139
+          "line": 136,
+          "column": 9,
+          "position": 1136
         },
         "endLoc": {
           "line": 96,
@@ -6638,6 +7034,42 @@
           "line": 24,
           "column": 24,
           "position": 213
+        }
+      }
+    },
+    {
+      "format": "tsx",
+      "lines": 7,
+      "fragment": "\">\n\t\t\t\t\t<Card className=\"bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/70 hover:border-zinc-700 transition-all cursor-pointer\">\n\t\t\t\t\t\t<CardContent className=\"pt-6\">\n\t\t\t\t\t\t\t<div className=\"flex items-center gap-4\">\n\t\t\t\t\t\t\t\t<Users className=\"h-5 w-5 text-zinc-400\" />\n\t\t\t\t\t\t\t\t<div>\n\t\t\t\t\t\t\t\t\t<h3 className=\"font-semibold text-white\">{",
+      "tokens": 0,
+      "firstFile": {
+        "name": "src/app/staff/page.tsx",
+        "start": 264,
+        "end": 270,
+        "startLoc": {
+          "line": 264,
+          "column": 20,
+          "position": 2053
+        },
+        "endLoc": {
+          "line": 270,
+          "column": 2,
+          "position": 2116
+        }
+      },
+      "secondFile": {
+        "name": "src/app/staff/page.tsx",
+        "start": 218,
+        "end": 224,
+        "startLoc": {
+          "line": 218,
+          "column": 11,
+          "position": 1672
+        },
+        "endLoc": {
+          "line": 224,
+          "column": 4,
+          "position": 1735
         }
       }
     },
@@ -7254,74 +7686,38 @@
       }
     },
     {
-      "format": "javascript",
-      "lines": 19,
-      "fragment": "</FormLabel>\n                <FormControl>\n                  <Input\n                    type=\"time\"\n                    {...field}\n                    className=\"bg-zinc-900 border-zinc-700\"\n                  />\n                </FormControl>\n                <FormMessage />\n              </FormItem>\n            )}\n          />\n        </div>\n\n        <FormField\n          control={form.control}\n          name=\"stage\"\n          render={({ field }) => (\n            ",
-      "tokens": 0,
-      "firstFile": {
-        "name": "src/components/performance-form.tsx",
-        "start": 164,
-        "end": 182,
-        "startLoc": {
-          "line": 164,
-          "column": 9,
-          "position": 1377
-        },
-        "endLoc": {
-          "line": 182,
-          "column": 13,
-          "position": 1461
-        }
-      },
-      "secondFile": {
-        "name": "src/components/performance-form.tsx",
-        "start": 146,
-        "end": 163,
-        "startLoc": {
-          "line": 146,
-          "column": 11,
-          "position": 1289
-        },
-        "endLoc": {
-          "line": 163,
-          "column": 15,
-          "position": 1368
-        }
-      }
-    },
-    {
       "format": "tsx",
       "lines": 15,
       "fragment": "({\n\thref,\n\tlabel,\n\ticon: Icon,\n}: {\n\thref: string;\n\tlabel: string;\n\ticon: React.ComponentType<{ className?: string }>;\n}) {\n\tconst pathname = usePathname();\n\tconst isActive =\n\t\tpathname === href || (href !== \"/\" && pathname.startsWith(href));\n\n\treturn (\n\t\t<SheetClose",
       "tokens": 0,
       "firstFile": {
         "name": "src/components/nav-bar.tsx",
-        "start": 74,
-        "end": 88,
+        "start": 68,
+        "end": 82,
         "startLoc": {
-          "line": 74,
+          "line": 68,
           "column": 14,
-          "position": 607
+          "position": 556
         },
         "endLoc": {
-          "line": 88,
+          "line": 82,
           "column": 11,
-          "position": 723
+          "position": 672
         }
       },
       "secondFile": {
         "name": "src/components/nav-bar.tsx",
-        "start": 45,
-        "end": 59,
+        "start": 39,
+        "end": 53,
         "startLoc": {
-          "line": 45,
+          "line": 39,
           "column": 8,
-          "position": 416
+          "position": 365
         },
         "endLoc": {
-          "line": 59,
+          "line": 53,
           "column": 5,
-          "position": 532
+          "position": 481
         }
       }
     },
@@ -7491,17 +7887,17 @@
       },
       "secondFile": {
         "name": "src/components/staff-form.tsx",
-        "start": 94,
-        "end": 106,
+        "start": 128,
+        "end": 140,
         "startLoc": {
-          "line": 94,
+          "line": 128,
           "column": 2,
-          "position": 781
+          "position": 1082
         },
         "endLoc": {
-          "line": 106,
+          "line": 140,
           "column": 23,
-          "position": 880
+          "position": 1181
         }
       }
     },
@@ -7527,17 +7923,17 @@
       },
       "secondFile": {
         "name": "src/components/staff-form.tsx",
-        "start": 191,
-        "end": 202,
+        "start": 265,
+        "end": 276,
         "startLoc": {
-          "line": 191,
+          "line": 265,
           "column": 7,
-          "position": 1457
+          "position": 2036
         },
         "endLoc": {
-          "line": 202,
+          "line": 276,
           "column": 22,
-          "position": 1549
+          "position": 2128
         }
       }
     },
@@ -7615,17 +8011,17 @@
     },
     {
       "format": "tsx",
-      "lines": 9,
-      "fragment": "} from \"react\";\nimport { useForm } from \"react-hook-form\";\nimport { zodResolver } from \"@hookform/resolvers/zod\";\nimport { z } from \"zod\";\nimport { Button } from \"@/components/ui/button\";\nimport { Input } from \"@/components/ui/input\";\nimport { Card, CardContent, CardHeader, CardTitle } from \"@/components/ui/card\";\nimport {\n\tSelect",
+      "lines": 11,
+      "fragment": "\"use client\";\n\nimport { useState, useEffect } from \"react\";\nimport { useForm } from \"react-hook-form\";\nimport { zodResolver } from \"@hookform/resolvers/zod\";\nimport { z } from \"zod\";\nimport { Button } from \"@/components/ui/button\";\nimport { Input } from \"@/components/ui/input\";\nimport { Card, CardContent, CardHeader, CardTitle } from \"@/components/ui/card\";\nimport {\n\tSelect",
       "tokens": 0,
       "firstFile": {
         "name": "src/components/event-form.tsx",
-        "start": 3,
+        "start": 1,
         "end": 11,
         "startLoc": {
-          "line": 3,
-          "column": 2,
-          "position": 13
+          "line": 1,
+          "column": 1,
+          "position": 0
         },
         "endLoc": {
           "line": 11,
@@ -7635,17 +8031,17 @@
       },
       "secondFile": {
         "name": "src/components/staff-form.tsx",
-        "start": 3,
+        "start": 1,
         "end": 10,
         "startLoc": {
-          "line": 3,
-          "column": 2,
-          "position": 10
+          "line": 1,
+          "column": 1,
+          "position": 0
         },
         "endLoc": {
           "line": 10,
           "column": 9,
-          "position": 108
+          "position": 111
         }
       }
     },
@@ -7707,17 +8103,17 @@
       },
       "secondFile": {
         "name": "src/components/staff-form.tsx",
-        "start": 95,
-        "end": 106,
+        "start": 129,
+        "end": 140,
         "startLoc": {
-          "line": 95,
+          "line": 129,
           "column": 3,
-          "position": 785
+          "position": 1086
         },
         "endLoc": {
-          "line": 106,
+          "line": 140,
           "column": 23,
-          "position": 880
+          "position": 1181
         }
       }
     },
@@ -7779,17 +8175,17 @@
       },
       "secondFile": {
         "name": "src/components/staff-form.tsx",
-        "start": 191,
-        "end": 202,
+        "start": 265,
+        "end": 276,
         "startLoc": {
-          "line": 191,
+          "line": 265,
           "column": 7,
-          "position": 1457
+          "position": 2036
         },
         "endLoc": {
-          "line": 202,
+          "line": 276,
           "column": 22,
-          "position": 1549
+          "position": 2128
         }
       }
     },
@@ -7815,17 +8211,17 @@
       },
       "secondFile": {
         "name": "src/components/staff-form.tsx",
-        "start": 202,
-        "end": 218,
+        "start": 276,
+        "end": 292,
         "startLoc": {
-          "line": 202,
+          "line": 276,
           "column": 2,
-          "position": 1551
+          "position": 2130
         },
         "endLoc": {
-          "line": 218,
+          "line": 292,
           "column": 2,
-          "position": 1636
+          "position": 2215
         }
       }
     },

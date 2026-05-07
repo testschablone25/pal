@@ -10,7 +10,7 @@ export async function POST(
 	{ params }: { params: Promise<{ id: string }> },
 ) {
 	try {
-		const auth = await requireAuth(request, "TASKS_WRITE");
+		const auth = await requireAuth(request, "TASKS_UPDATE");
 		if (!auth.authorized) return auth.response;
 
 		const { id } = await params;

@@ -69,6 +69,7 @@ interface Venue {
 	contact_phone: string | null;
 	contact_email: string | null;
 	created_at: string;
+	is_pal_location: boolean;
 	sub_locations?: SubLocation[];
 	open_task_count: number;
 	urgent_task_count: number;
@@ -107,6 +108,9 @@ export default function VenuesPage() {
 	// Sub-location dialog
 	const [subLocationVenue, setSubLocationVenue] = useState<Venue | null>(null);
 	const [showSubLocationDialog, setShowSubLocationDialog] = useState(false);
+
+	// PAL / External filter
+	const [palFilter, setPalFilter] = useState<"all" | "pal" | "external">("all");
 
 	const [formData, setFormData] = useState<VenueFormData>(
 		defaultVenueFormData(),
@@ -448,123 +452,179 @@ export default function VenuesPage() {
 				</Button>
 			</div>
 
-			{/* Venues Grid */}
-			{venues.length === 0 ? (
-				<EmptyState
-					icon={Building2}
-					title="Keine Veranstaltungsorte"
-					description="Erstelle deinen ersten Veranstaltungsort"
-					actionLabel="Veranstaltungsort hinzufuegen"
-					onClick={() => setShowCreateDialog(true)}
-				/>
-			) : (
-				<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-					{venues.map((venue) => {
-						const isExpanded = expandedVenueId === venue.id;
-						const hasUrgent = venue.urgent_task_count > 0;
+			{/* PAL / External Filter */}
+			<div className="flex items-center gap-2 mb-6">
+				<button
+					onClick={() => setPalFilter("all")}
+					className={cn(
+						"px-4 py-1.5 rounded-lg text-sm font-medium transition-colors",
+						palFilter === "all"
+							? "bg-violet-600 text-white"
+							: "bg-zinc-800/50 text-zinc-400 hover:text-white hover:bg-zinc-700 border border-zinc-700/50",
+					)}
+				>
+					All
+				</button>
+				<button
+					onClick={() => setPalFilter("pal")}
+					className={cn(
+						"px-4 py-1.5 rounded-lg text-sm font-medium transition-colors",
+						palFilter === "pal"
+							? "bg-violet-600 text-white"
+							: "bg-zinc-800/50 text-zinc-400 hover:text-white hover:bg-zinc-700 border border-zinc-700/50",
+					)}
+				>
+					PAL Locations
+				</button>
+				<button
+					onClick={() => setPalFilter("external")}
+					className={cn(
+						"px-4 py-1.5 rounded-lg text-sm font-medium transition-colors",
+						palFilter === "external"
+							? "bg-violet-600 text-white"
+							: "bg-zinc-800/50 text-zinc-400 hover:text-white hover:bg-zinc-700 border border-zinc-700/50",
+					)}
+				>
+					External
+				</button>
+			</div>
 
-						return (
-							<div key={venue.id}>
-								{/* Venue Card */}
-								<Card
-									className={cn(
-										"bg-zinc-900 transition-all cursor-pointer",
-										hasUrgent
-											? "border-l-4 border-l-red-500 border-t-zinc-800 border-r-zinc-800 border-b-zinc-800 hover:border-l-red-400"
-											: "border-zinc-800 hover:border-violet-600/50",
-										isExpanded && "ring-1 ring-violet-600/30",
-									)}
-									onClick={() => toggleExpansion(venue.id)}
-								>
-									<CardContent className="pt-6 pb-4">
-										<div className="space-y-3">
-											{/* Top row: name, type, actions */}
-											<div className="flex items-start justify-between">
-												<div className="flex items-center gap-2 flex-wrap">
-													{hasUrgent && (
-														<AlertTriangle className="h-4 w-4 text-red-400 shrink-0" />
-													)}
-													<h3 className="text-lg font-semibold text-white">
-														{venue.name}
-													</h3>
-													{venue.venue_type && (
-														<Badge
-															variant="outline"
-															className="border-zinc-600 text-zinc-300"
-														>
-															{venue.venue_type}
-														</Badge>
-													)}
-													<div className="flex items-center gap-1">
-														{isExpanded ? (
-															<ChevronDown className="h-4 w-4 text-zinc-500" />
-														) : (
-															<ChevronRight className="h-4 w-4 text-zinc-500" />
+			{/* Venues Grid */}
+			{(() => {
+				const filteredVenues =
+					palFilter === "all"
+						? venues
+						: venues.filter((v) =>
+								palFilter === "pal"
+									? v.is_pal_location === true
+									: v.is_pal_location === false,
+							);
+
+				if (filteredVenues.length === 0) {
+					return (
+						<EmptyState
+							icon={Building2}
+							title="Keine Veranstaltungsorte"
+							description={
+								palFilter !== "all"
+									? "Keine Veranstaltungsorte in dieser Kategorie"
+									: "Erstelle deinen ersten Veranstaltungsort"
+							}
+							actionLabel="Veranstaltungsort hinzufuegen"
+							onClick={() => setShowCreateDialog(true)}
+						/>
+					);
+				}
+
+				return (
+					<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+						{filteredVenues.map((venue) => {
+							const isExpanded = expandedVenueId === venue.id;
+							const hasUrgent = venue.urgent_task_count > 0;
+
+							return (
+								<div key={venue.id}>
+									{/* Venue Card */}
+									<Card
+										className={cn(
+											"bg-zinc-900 transition-all cursor-pointer",
+											hasUrgent
+												? "border-l-4 border-l-red-500 border-t-zinc-800 border-r-zinc-800 border-b-zinc-800 hover:border-l-red-400"
+												: "border-zinc-800 hover:border-violet-600/50",
+											isExpanded && "ring-1 ring-violet-600/30",
+										)}
+										onClick={() => toggleExpansion(venue.id)}
+									>
+										<CardContent className="pt-6 pb-4">
+											<div className="space-y-3">
+												{/* Top row: name, type, actions */}
+												<div className="flex items-start justify-between">
+													<div className="flex items-center gap-2 flex-wrap">
+														{hasUrgent && (
+															<AlertTriangle className="h-4 w-4 text-red-400 shrink-0" />
 														)}
+														<h3 className="text-lg font-semibold text-white">
+															{venue.name}
+														</h3>
+														{venue.venue_type && (
+															<Badge
+																variant="outline"
+																className="border-zinc-600 text-zinc-300"
+															>
+																{venue.venue_type}
+															</Badge>
+														)}
+														<div className="flex items-center gap-1">
+															{isExpanded ? (
+																<ChevronDown className="h-4 w-4 text-zinc-500" />
+															) : (
+																<ChevronRight className="h-4 w-4 text-zinc-500" />
+															)}
+														</div>
+													</div>
+													<div
+														className="flex gap-1"
+														onClick={(e) => e.stopPropagation()}
+													>
+														<Button
+															variant="ghost"
+															size="icon"
+															className="h-8 w-8 text-zinc-400 hover:text-white hover:bg-zinc-800"
+															onClick={() => openEditDialog(venue)}
+														>
+															<Pencil className="h-4 w-4" />
+														</Button>
+														<Button
+															variant="ghost"
+															size="icon"
+															className="h-8 w-8 text-zinc-400 hover:text-red-400 hover:bg-red-600/10"
+															onClick={() => openDeleteDialog(venue)}
+														>
+															<Trash2 className="h-4 w-4" />
+														</Button>
 													</div>
 												</div>
-												<div
-													className="flex gap-1"
-													onClick={(e) => e.stopPropagation()}
-												>
-													<Button
-														variant="ghost"
-														size="icon"
-														className="h-8 w-8 text-zinc-400 hover:text-white hover:bg-zinc-800"
-														onClick={() => openEditDialog(venue)}
-													>
-														<Pencil className="h-4 w-4" />
-													</Button>
-													<Button
-														variant="ghost"
-														size="icon"
-														className="h-8 w-8 text-zinc-400 hover:text-red-400 hover:bg-red-600/10"
-														onClick={() => openDeleteDialog(venue)}
-													>
-														<Trash2 className="h-4 w-4" />
-													</Button>
-												</div>
-											</div>
 
-											{/* Stats, Capacity, Sub-Locations */}
-											<VenueStats
-												venueId={venue.id}
-												name={venue.name}
-												venueType={venue.venue_type}
-												capacity={venue.capacity}
-												address={venue.address}
-												openTaskCount={venue.open_task_count}
-												urgentTaskCount={venue.urgent_task_count}
-												staffCount={venue.staff_count}
-												upcomingEventsCount={venue.upcoming_events_count}
-												inventoryCount={venue.inventory_count}
-												subLocations={venue.sub_locations || []}
-												onCapacityChange={fetchVenues}
-												onAddSubLocation={() => openSubLocationDialog(venue)}
-												onDeleteSubLocation={(subLocationId) => {
-													fetch(
-														`/api/venues/${venue.id}/sublocations/${subLocationId}`,
-														{ method: "DELETE" },
-													)
-														.then(() => fetchVenues())
-														.catch(() =>
-															toast({
-																variant: "destructive",
-																title: "Fehler",
-																description:
-																	"Fehler beim Löschen des Unterbereichs.",
-															}),
-														);
-												}}
-											/>
-										</div>
-									</CardContent>
-								</Card>
-							</div>
-						);
-					})}
-				</div>
-			)}
+												{/* Stats, Capacity, Sub-Locations */}
+												<VenueStats
+													venueId={venue.id}
+													name={venue.name}
+													venueType={venue.venue_type}
+													capacity={venue.capacity}
+													address={venue.address}
+													openTaskCount={venue.open_task_count}
+													urgentTaskCount={venue.urgent_task_count}
+													staffCount={venue.staff_count}
+													upcomingEventsCount={venue.upcoming_events_count}
+													inventoryCount={venue.inventory_count}
+													subLocations={venue.sub_locations || []}
+													onCapacityChange={fetchVenues}
+													onAddSubLocation={() => openSubLocationDialog(venue)}
+													onDeleteSubLocation={(subLocationId) => {
+														fetch(
+															`/api/venues/${venue.id}/sublocations/${subLocationId}`,
+															{ method: "DELETE" },
+														)
+															.then(() => fetchVenues())
+															.catch(() =>
+																toast({
+																	variant: "destructive",
+																	title: "Fehler",
+																	description:
+																		"Fehler beim Löschen des Unterbereichs.",
+																}),
+															);
+													}}
+												/>
+											</div>
+										</CardContent>
+									</Card>
+								</div>
+							);
+						})}
+					</div>
+				);
+			})()}
 
 			{/* Slide-Over Panel */}
 			{expandedVenueId && (

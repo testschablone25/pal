@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -28,6 +28,7 @@ import { useRouter } from "next/navigation";
 import { Loader2 } from "lucide-react";
 
 const staffSchema = z.object({
+	profile_id: z.string().uuid("Please select a user"),
 	role: z.string().min(1, "Role is required"),
 	contract_type: z.enum(["permanent", "freelance", "minor"]),
 	is_minor: z.boolean(),
@@ -35,9 +36,16 @@ const staffSchema = z.object({
 
 type StaffFormValues = z.infer<typeof staffSchema>;
 
+interface ProfileOption {
+	id: string;
+	full_name: string | null;
+	email: string | null;
+}
+
 interface StaffFormProps {
 	staff?: {
 		id: string;
+		profile_id: string | null;
 		role: string;
 		contract_type: "permanent" | "freelance" | "minor";
 		is_minor: boolean;
@@ -56,16 +64,37 @@ const STAFF_ROLES = [
 	"Lighting",
 	"VIP Host",
 	"Runner",
+	"Tech Lead",
+	"Backoffice",
+	"Booking",
+	"Gastro",
+	"Night Management",
+	"Trainee",
+	"Awareness",
+	"Social Media",
+	"Label",
+	"Staff",
 ];
 
 export function StaffForm({ staff, mode = "create" }: StaffFormProps) {
 	const router = useRouter();
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState<string | null>(null);
+	const [profiles, setProfiles] = useState<ProfileOption[]>([]);
+	const [profilesLoading, setProfilesLoading] = useState(true);
+
+	useEffect(() => {
+		fetch("/api/profiles")
+			.then((res) => res.json())
+			.then((data) => setProfiles(data.profiles || []))
+			.catch(() => setProfiles([]))
+			.finally(() => setProfilesLoading(false));
+	}, []);
 
 	const form = useForm<StaffFormValues>({
 		resolver: zodResolver(staffSchema),
 		defaultValues: {
+			profile_id: staff?.profile_id || "",
 			role: staff?.role || "",
 			contract_type: staff?.contract_type || "permanent",
 			is_minor: staff?.is_minor || false,
@@ -82,7 +111,12 @@ export function StaffForm({ staff, mode = "create" }: StaffFormProps) {
 			const response = await fetch(url, {
 				method: mode === "create" ? "POST" : "PUT",
 				headers: { "Content-Type": "application/json" },
-				body: JSON.stringify(values),
+				body: JSON.stringify({
+					profile_id: values.profile_id,
+					role: values.role,
+					contract_type: values.contract_type,
+					is_minor: values.is_minor,
+				}),
 			});
 
 			if (!response.ok) {
@@ -110,6 +144,46 @@ export function StaffForm({ staff, mode = "create" }: StaffFormProps) {
 				<Form {...form}>
 					<form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
 						<div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+							<FormField
+								control={form.control}
+								name="profile_id"
+								render={({ field }) => (
+									<FormItem className="md:col-span-2">
+										<FormLabel>User *</FormLabel>
+										<Select
+											onValueChange={field.onChange}
+											defaultValue={field.value}
+											disabled={profilesLoading}
+										>
+											<FormControl>
+												<SelectTrigger className="bg-zinc-950 border-zinc-800">
+													<SelectValue
+														placeholder={
+															profilesLoading
+																? "Loading users..."
+																: "Select a user"
+														}
+													/>
+												</SelectTrigger>
+											</FormControl>
+											<SelectContent className="bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/70 rounded-lg">
+												{profiles.map((profile) => (
+													<SelectItem key={profile.id} value={profile.id}>
+														{profile.full_name ||
+															profile.email ||
+															profile.id.substring(0, 8)}
+													</SelectItem>
+												))}
+											</SelectContent>
+										</Select>
+										<FormDescription className="text-zinc-400">
+											Link this staff record to a user account
+										</FormDescription>
+										<FormMessage />
+									</FormItem>
+								)}
+							/>
+
 							<FormField
 								control={form.control}
 								name="role"

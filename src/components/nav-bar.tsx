@@ -1,27 +1,22 @@
 "use client";
 
-import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
 	Home,
 	Calendar,
 	Users,
-	DoorOpen,
 	ClipboardList,
 	Music,
 	Building,
 	Package,
-	ArrowLeftRight,
+	Phone,
 	Menu,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useI18n } from "@/lib/i18n";
-import { createClient } from "@/lib/supabase/browser";
-import {
-	canAccessRoute,
-	type AppRole,
-} from "@/lib/permissions";
+import { useUser } from "@/lib/user-context";
+import { canAccessRoute } from "@/lib/permissions";
 import {
 	Sheet,
 	SheetContent,
@@ -34,12 +29,11 @@ const navItems = [
 	{ href: "/", label: "Dashboard", icon: Home },
 	{ href: "/events", label: "Events", icon: Calendar },
 	{ href: "/artists", label: "Künstler", icon: Music },
-	{ href: "/door", label: "Tür", icon: DoorOpen },
 	{ href: "/staff", label: "Staff", icon: Users },
 	{ href: "/workflow", label: "Aufgaben", icon: ClipboardList },
 	{ href: "/inventory", label: "Inventar", icon: Package },
-	{ href: "/rentals", label: "Verleih", icon: ArrowLeftRight },
 	{ href: "/venues", label: "Venues", icon: Building },
+	{ href: "/contacts", label: "Contacts", icon: Phone },
 ];
 
 function NavLink({
@@ -103,34 +97,7 @@ function MobileNavLink({
 }
 
 export function NavBar() {
-	const [userRoles, setUserRoles] = useState<AppRole[]>([]);
-
-	useEffect(() => {
-		const fetchRoles = async () => {
-			try {
-				const supabase = createClient();
-				const {
-					data: { user },
-				} = await supabase.auth.getUser();
-				if (!user) {
-					setUserRoles([]);
-					return;
-				}
-				const { data } = await supabase
-					.from("user_roles")
-					.select("role")
-					.eq("user_id", user.id);
-				const roles: AppRole[] = data
-					? data.map((r: { role: string }) => r.role as AppRole)
-					: [];
-				setUserRoles(roles);
-			} catch (err) {
-				console.error("Failed to fetch user roles:", err);
-				setUserRoles([]);
-			}
-		};
-		fetchRoles();
-	}, []);
+	const { userRoles } = useUser();
 
 	const filteredNavItems =
 		userRoles.length === 0

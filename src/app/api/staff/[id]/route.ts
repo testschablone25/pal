@@ -93,7 +93,7 @@ export async function PUT(
 	}
 }
 
-// DELETE /api/staff/[id] - Delete staff member
+// DELETE /api/staff/[id] - Delete staff member (cascades shifts + availability)
 export async function DELETE(
 	request: NextRequest,
 	{ params }: { params: Promise<{ id: string }> },
@@ -103,6 +103,14 @@ export async function DELETE(
 		if (!auth.authorized) return auth.response;
 
 		const { id } = await params;
+
+		// Cascade-delete related records first
+		await supabase.from("availability").delete().eq("staff_id", id);
+		await supabase
+			.from("availability")
+			.update({ set_by: null })
+			.eq("set_by", id);
+		await supabase.from("shifts").delete().eq("staff_id", id);
 
 		const { error } = await supabase.from("staff").delete().eq("id", id);
 

@@ -27,7 +27,13 @@ import {
 	DialogHeader,
 	DialogTitle,
 } from "@/components/ui/dialog";
-import { EventForm } from "@/components/event-form";
+import dynamic from "next/dynamic";
+
+const EventForm = dynamic(
+	() =>
+		import("@/components/event-form").then((m) => ({ default: m.EventForm })),
+	{ ssr: false },
+);
 
 interface Event {
 	id: string;

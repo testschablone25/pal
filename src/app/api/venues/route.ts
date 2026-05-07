@@ -5,6 +5,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import { supabaseConfig } from "@/lib/supabase/config";
 import { requireAuth } from "@/lib/api-auth";
+import { cacheHeaders } from "@/lib/api-cache";
 
 const supabase = createClient(supabaseConfig.url, supabaseConfig.serviceKey);
 
@@ -203,7 +204,10 @@ export async function GET(request: NextRequest) {
 			inventory_count: inventoryCountByVenue[venue.id] || 0,
 		}));
 
-		return NextResponse.json({ venues: venuesWithStats });
+		return NextResponse.json(
+			{ venues: venuesWithStats },
+			{ headers: cacheHeaders(60) },
+		);
 	} catch (error) {
 		console.error("Error fetching venues:", error);
 		return NextResponse.json(
@@ -230,6 +234,7 @@ export async function POST(request: NextRequest) {
 			contact_phone,
 			contact_email,
 			notes,
+			is_pal_location,
 		} = body;
 
 		if (!name || !capacity) {
@@ -248,6 +253,9 @@ export async function POST(request: NextRequest) {
 			contact_email: contact_email || null,
 			notes: notes || null,
 		};
+		if (typeof is_pal_location === "boolean") {
+			insertPayload.is_pal_location = is_pal_location;
+		}
 		if (venue_type) {
 			insertPayload.venue_type = venue_type;
 		}

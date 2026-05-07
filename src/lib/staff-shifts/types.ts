@@ -77,6 +77,16 @@ export const STAFF_ROLES = [
 	"Lighting",
 	"VIP Host",
 	"Runner",
+	"Tech Lead",
+	"Backoffice",
+	"Booking",
+	"Gastro",
+	"Night Management",
+	"Trainee",
+	"Awareness",
+	"Social Media",
+	"Label",
+	"Staff",
 ];
 
 export const ROLE_COLORS: Record<string, string> = {
@@ -90,4 +100,14 @@ export const ROLE_COLORS: Record<string, string> = {
 	Lighting: "bg-indigo-600",
 	"VIP Host": "bg-rose-600",
 	Runner: "bg-teal-600",
+	"Tech Lead": "bg-purple-600",
+	Backoffice: "bg-teal-600",
+	Booking: "bg-amber-600",
+	Gastro: "bg-orange-600",
+	"Night Management": "bg-indigo-600",
+	Trainee: "bg-zinc-600",
+	Awareness: "bg-emerald-600",
+	"Social Media": "bg-pink-600",
+	Label: "bg-violet-600",
+	Staff: "bg-cyan-600",
 };

@@ -204,6 +204,7 @@ export async function PUT(
 			"contact_name",
 			"contact_phone",
 			"contact_email",
+			"is_pal_location",
 		];
 		for (const field of updatableFields) {
 			if (field in body) {

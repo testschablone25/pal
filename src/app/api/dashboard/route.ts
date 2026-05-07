@@ -2,6 +2,7 @@ import { createClient } from "@supabase/supabase-js";
 import { NextRequest, NextResponse } from "next/server";
 import { supabaseConfig } from "@/lib/supabase/config";
 import { authenticate } from "@/lib/api-auth";
+import { cacheHeaders } from "@/lib/api-cache";
 
 export async function GET(request: NextRequest) {
 	const auth = await authenticate(request);
@@ -13,18 +14,22 @@ export async function GET(request: NextRequest) {
 
 	const url = new URL(request.url);
 	const userId = url.searchParams.get("user_id");
+	const today = new Date().toISOString().split("T")[0];
 
 	if (!userId) {
-		return NextResponse.json({
-			error: "Missing user_id",
-			tasks: [],
-			shifts: [],
-			colleagues: [],
-			events: [],
-		});
+		return NextResponse.json(
+			{
+				error: "Missing user_id",
+				tasks: [],
+				shifts: [],
+				colleagues: [],
+				events: [],
+			},
+			{ headers: cacheHeaders(60) },
+		);
 	}
 
-	// Get profile
+	// ── Phase 1: Profile (must succeed before continuing) ──────────────
 	const { data: profile } = await supabase
 		.from("profiles")
 		.select("*")
@@ -32,113 +37,98 @@ export async function GET(request: NextRequest) {
 		.single();
 
 	if (!profile) {
-		return NextResponse.json({
-			error: "User not found",
-			tasks: [],
-			shifts: [],
-			colleagues: [],
-			events: [],
-		});
+		return NextResponse.json(
+			{
+				error: "User not found",
+				tasks: [],
+				shifts: [],
+				colleagues: [],
+				events: [],
+			},
+			{ headers: cacheHeaders(60) },
+		);
 	}
 
-	// Get ALL user roles
-	const { data: roleData } = await supabase
-		.from("user_roles")
-		.select("role")
-		.eq("user_id", userId);
+	// ── Phase 2: Fan out independent queries ───────────────────────────
+	const weekEnd = new Date();
+	weekEnd.setDate(weekEnd.getDate() + 7);
+	const weekEndStr = weekEnd.toISOString().split("T")[0];
 
-	const userRoles = roleData?.map((r) => r.role) || [];
+	const [
+		roleResult,
+		staffResult,
+		tasksResult,
+		eventsResult,
+		blockedResult,
+		pendingApprovalResult,
+		activeRentalsResult,
+		dueThisWeekResult,
+	] = await Promise.all([
+		supabase.from("user_roles").select("role").eq("user_id", userId),
+		supabase.from("staff").select("*").eq("profile_id", userId).single(),
+		supabase
+			.from("tasks")
+			.select(
+				"id, title, status, priority, due_date, scheduled_date, blocked, events(id, name, date, venue_id, venues(name))",
+			)
+			.eq("assignee_id", userId)
+			.in("status", ["todo", "in_progress", "pending_approval"])
+			.order("priority", { ascending: false })
+			.limit(50),
+		supabase
+			.from("events")
+			.select(
+				"id, name, date, door_time, end_time, status, venue_id, venues(name)",
+			)
+			.gte("date", today)
+			.eq("status", "published")
+			.order("date", { ascending: true })
+			.limit(10),
+		supabase
+			.from("tasks")
+			.select("*", { count: "exact", head: true })
+			.eq("blocked", true)
+			.eq("assignee_id", userId),
+		supabase
+			.from("tasks")
+			.select("*", { count: "exact", head: true })
+			.eq("status", "pending_approval"),
+		supabase
+			.from("rentals")
+			.select("*", { count: "exact", head: true })
+			.in("status", ["active", "overdue"]),
+		supabase
+			.from("tasks")
+			.select("*", { count: "exact", head: true })
+			.gte("due_date", today)
+			.lte("due_date", weekEndStr)
+			.eq("assignee_id", userId),
+	]);
 
-	// Get staff record
-	const { data: staffRecord } = await supabase
-		.from("staff")
-		.select("*")
-		.eq("profile_id", userId)
-		.single();
+	const userRoles = roleResult.data?.map((r) => r.role) || [];
+	const staffRecord = staffResult.data || null;
 
-	// Get tasks with event + venue info
-	const { data: rawTasks } = await supabase
-		.from("tasks")
-		.select(
-			"id, title, status, priority, due_date, scheduled_date, blocked, events(id, name, date, venue_id, venues(name))",
-		)
-		.eq("assignee_id", userId)
-		.in("status", ["todo", "in_progress", "pending_approval"])
-		.order("priority", { ascending: false })
-		.limit(50);
+	// Normalize tasks
+	const rawTasks =
+		(tasksResult.data as unknown as Array<Record<string, unknown>>) || [];
+	const normalizedTasks = rawTasks.map(normalizeTask);
 
-	// Normalize tasks — unwrap Supabase nested arrays
-	const normalizedTasks = (
-		(rawTasks as unknown as Array<Record<string, unknown>>) || []
-	).map((t) => {
-		const rawEvent = t.events as Record<string, unknown> | null;
-		const eventObj = rawEvent ? normalizeFirst(rawEvent) : null;
-		const venueObj = eventObj?.venues
-			? normalizeFirst(eventObj.venues as Record<string, unknown>)
-			: null;
-		return {
-			id: t.id as string,
-			title: t.title as string,
-			status: t.status as string,
-			priority: t.priority as string,
-			due_date: t.due_date as string | null,
-			scheduled_date: t.scheduled_date as string | null,
-			blocked: t.blocked as boolean,
-			event_id: (eventObj?.id as string) || null,
-			event: eventObj
-				? {
-						id: eventObj.id as string,
-						name: eventObj.name as string,
-						date: eventObj.date as string,
-						venue_id: eventObj.venue_id as string | null,
-						venue_name: (venueObj?.name as string) || null,
-					}
-				: null,
-		};
-	});
-
-	// Compute overdue tasks (due_date passed and not done)
-	const today = new Date().toISOString().split("T")[0];
+	// Overdue filter (in-memory)
 	const overdueTasks = normalizedTasks.filter(
 		(t) =>
 			t.due_date &&
 			t.due_date < today &&
-			!["done", "cancelled"].includes(t.status as string),
+			!["done", "cancelled"].includes(t.status),
 	);
 
-	// Get upcoming published events
-	const { data: rawWeekEvents } = await supabase
-		.from("events")
-		.select(
-			"id, name, date, door_time, end_time, status, venue_id, venues(name)",
-		)
-		.gte("date", today)
-		.eq("status", "published")
-		.order("date", { ascending: true })
-		.limit(10);
-
-	const normalizedWeekEvents = (
-		(rawWeekEvents as unknown as Array<Record<string, unknown>>) || []
-	).map((e) => {
-		const venueObj = e.venues
-			? normalizeFirst(e.venues as Record<string, unknown>)
-			: null;
-		return {
-			id: e.id as string,
-			name: e.name as string,
-			date: e.date as string,
-			door_time: e.door_time as string | null,
-			end_time: e.end_time as string | null,
-			status: e.status as string,
-			venue_id: e.venue_id as string | null,
-			venue_name: (venueObj?.name as string) || null,
-		};
-	});
-
+	// Normalize events
+	const rawWeekEvents =
+		(eventsResult.data as unknown as Array<Record<string, unknown>>) || [];
+	const normalizedWeekEvents = rawWeekEvents.map(normalizeEvent);
 	const todaysEvent =
 		normalizedWeekEvents.find((e) => e.date === today) || null;
 
-	// Get shifts and colleagues if staff
+	// ── Phase 3: Shifts & colleagues (depends on staffRecord) ─────────
 	let shifts: Array<Record<string, unknown>> = [];
 	let colleagues: Array<Record<string, unknown>> = [];
 
@@ -170,58 +160,78 @@ export async function GET(request: NextRequest) {
 		}
 	}
 
-	// Counts
-	const { count: blockedCount } = await supabase
-		.from("tasks")
-		.select("*", { count: "exact", head: true })
-		.eq("blocked", true)
-		.eq("assignee_id", userId);
-
-	const { count: pendingApprovalCount } = await supabase
-		.from("tasks")
-		.select("*", { count: "exact", head: true })
-		.eq("status", "pending_approval");
-
-	const { count: activeRentalsCount } = await supabase
-		.from("rentals")
-		.select("*", { count: "exact", head: true })
-		.in("status", ["active", "overdue"]);
-
-	const weekEnd = new Date();
-	weekEnd.setDate(weekEnd.getDate() + 7);
-	const weekEndStr = weekEnd.toISOString().split("T")[0];
-
-	const { count: dueThisWeek } = await supabase
-		.from("tasks")
-		.select("*", { count: "exact", head: true })
-		.gte("due_date", today)
-		.lte("due_date", weekEndStr)
-		.eq("assignee_id", userId);
-
-	return NextResponse.json({
-		profile,
-		userRoles,
-		staffRecord,
-		tasks: normalizedTasks,
-		overdueTasks,
-		events: normalizedWeekEvents,
-		todaysEvent,
-		shifts,
-		colleagues,
-		blockedCount: blockedCount || 0,
-		pendingApprovalCount: pendingApprovalCount || 0,
-		activeRentalsCount: activeRentalsCount || 0,
-		dueThisWeek: dueThisWeek || 0,
-	});
+	return NextResponse.json(
+		{
+			profile,
+			userRoles,
+			staffRecord,
+			tasks: normalizedTasks,
+			overdueTasks,
+			events: normalizedWeekEvents,
+			todaysEvent,
+			shifts,
+			colleagues,
+			blockedCount: blockedResult.count || 0,
+			pendingApprovalCount: pendingApprovalResult.count || 0,
+			activeRentalsCount: activeRentalsResult.count || 0,
+			dueThisWeek: dueThisWeekResult.count || 0,
+		},
+		{
+			headers: cacheHeaders(30), // 30s stale-while-revalidate
+		},
+	);
 }
 
-// ===== Normalizers =====
+// ── Normalizers ───────────────────────────────────────────────────────
 
 function normalizeFirst(val: unknown): Record<string, unknown> | null {
 	if (!val) return null;
 	return Array.isArray(val)
 		? (val[0] as Record<string, unknown>) || null
 		: (val as Record<string, unknown>);
+}
+
+function normalizeTask(t: Record<string, unknown>) {
+	const rawEvent = t.events as Record<string, unknown> | null;
+	const eventObj = rawEvent ? normalizeFirst(rawEvent) : null;
+	const venueObj = eventObj?.venues
+		? normalizeFirst(eventObj.venues as Record<string, unknown>)
+		: null;
+	return {
+		id: t.id as string,
+		title: t.title as string,
+		status: t.status as string,
+		priority: t.priority as string,
+		due_date: t.due_date as string | null,
+		scheduled_date: t.scheduled_date as string | null,
+		blocked: t.blocked as boolean,
+		event_id: (eventObj?.id as string) || null,
+		event: eventObj
+			? {
+					id: eventObj.id as string,
+					name: eventObj.name as string,
+					date: eventObj.date as string,
+					venue_id: eventObj.venue_id as string | null,
+					venue_name: (venueObj?.name as string) || null,
+				}
+			: null,
+	};
+}
+
+function normalizeEvent(e: Record<string, unknown>) {
+	const venueObj = e.venues
+		? normalizeFirst(e.venues as Record<string, unknown>)
+		: null;
+	return {
+		id: e.id as string,
+		name: e.name as string,
+		date: e.date as string,
+		door_time: e.door_time as string | null,
+		end_time: e.end_time as string | null,
+		status: e.status as string,
+		venue_id: e.venue_id as string | null,
+		venue_name: (venueObj?.name as string) || null,
+	};
 }
 
 function normalizeShifts(

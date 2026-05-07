@@ -165,6 +165,7 @@ export function AvailabilityCalendar({
 	const [availability, setAvailability] = useState<AvailabilityEntry[]>([]);
 	const [loading, setLoading] = useState(true);
 	const [saving, setSaving] = useState(false);
+	const [staffError, setStaffError] = useState<string | null>(null);
 
 	// Dialog (manager mode)
 	const [dialogOpen, setDialogOpen] = useState(false);
@@ -210,16 +211,30 @@ export function AvailabilityCalendar({
 
 	const fetchStaff = useCallback(async () => {
 		try {
+			setStaffError(null);
 			const response = await fetch("/api/staff");
+			if (!response.ok) {
+				const errData = await response.json().catch(() => ({}));
+				throw new Error(errData.error || `Server error (${response.status})`);
+			}
 			const data = await response.json();
 			setStaff(data.staff || []);
-			if (data.staff?.length > 0 && !selectedStaffId && viewMode === "all") {
-				setSelectedStaffId(data.staff[0].id);
-			}
 		} catch (error) {
-			console.error("Failed to fetch staff:", error);
+			const msg =
+				error instanceof Error ? error.message : "Failed to fetch staff";
+			console.error("Failed to fetch staff:", msg);
+			setStaffError(msg);
+		} finally {
+			setLoading(false);
 		}
-	}, [selectedStaffId, viewMode]);
+	}, []);
+
+	// Auto-select first staff member when staff list loads in "all" mode
+	useEffect(() => {
+		if (viewMode === "all" && staff.length > 0 && !selectedStaffId) {
+			setSelectedStaffId(staff[0].id);
+		}
+	}, [viewMode, staff, selectedStaffId]);
 
 	const fetchAvailability = useCallback(async () => {
 		const staffId = viewMode === "self" ? staffMemberId : selectedStaffId;
@@ -301,6 +316,8 @@ export function AvailabilityCalendar({
 		if (viewMode === "all") {
 			fetchStaff();
 		} else {
+			// Reset selectedStaffId when switching away from "all"
+			setSelectedStaffId("");
 			setLoading(false);
 		}
 	}, [viewMode, fetchStaff]);
@@ -335,7 +352,7 @@ export function AvailabilityCalendar({
 
 	const targetStaffId = viewMode === "self" ? staffMemberId : selectedStaffId;
 	const { daysInMonth, startingDay } = getMonthBounds(currentDate);
-	const monthName = currentDate.toLocaleString("default", {
+	const monthName = currentDate.toLocaleString("de-DE", {
 		month: "long",
 		year: "numeric",
 	});
@@ -892,12 +909,26 @@ export function AvailabilityCalendar({
 										<SelectValue placeholder="Choose staff member" />
 									</SelectTrigger>
 									<SelectContent className="bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/70">
-										{staff.map((member) => (
-											<SelectItem key={member.id} value={member.id}>
-												{member.profiles?.full_name || "Unknown"} -{" "}
-												{member.role}
-											</SelectItem>
-										))}
+										{staffError ? (
+											<div className="px-2 py-3 text-sm text-red-400">
+												Error: {staffError}
+											</div>
+										) : staff.length === 0 && !loading ? (
+											<div className="px-2 py-3 text-sm text-zinc-500">
+												No staff members found
+											</div>
+										) : (
+											staff
+												.filter((m) => m.profiles?.full_name)
+												.map((member) => {
+													const label = `${member.profiles!.full_name} - ${member.role}`;
+													return (
+														<SelectItem key={member.id} value={member.id}>
+															{label}
+														</SelectItem>
+													);
+												})
+										)}
 									</SelectContent>
 								</Select>
 							</div>
@@ -1027,8 +1058,10 @@ export function AvailabilityCalendar({
 												day: "numeric",
 											})}
 										</p>
-										{colleaguesStaff
-											.filter((s) => s.id !== staffMemberId)
+										{[...colleaguesStaff]
+											.filter(
+												(s) => s.id !== staffMemberId && s.profiles?.full_name,
+											)
 											.map((s) => {
 												const entry = colleaguesAvailability.find(
 													(a) => a.staff_id === s.id,
@@ -1050,7 +1083,7 @@ export function AvailabilityCalendar({
 															/>
 															<div className="min-w-0">
 																<p className="text-sm text-zinc-200 truncate">
-																	{s.profiles?.full_name || "Unknown"}
+																	{s.profiles!.full_name}
 																</p>
 																<p className="text-[10px] text-zinc-500">
 																	{s.role}
@@ -1067,8 +1100,9 @@ export function AvailabilityCalendar({
 													</div>
 												);
 											})}
-										{colleaguesStaff.filter((s) => s.id !== staffMemberId)
-											.length === 0 && (
+										{[...colleaguesStaff].filter(
+											(s) => s.id !== staffMemberId && s.profiles?.full_name,
+										).length === 0 && (
 											<EmptyState
 												icon={Users}
 												title="Keine Kollegen gefunden"

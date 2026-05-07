@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { v4 as uuidv4 } from "uuid";
+import { requireAuth } from "@/lib/api-auth";
 
 // PROMOTER LIMITS — DEPRECATED / INCOMPLETE
 // This feature was never finished:
@@ -21,6 +22,9 @@ export async function GET(
 	{ params }: { params: Promise<{ listId: string }> },
 ) {
 	try {
+		const auth = await requireAuth(request, "GUEST_LISTS_READ");
+		if (!auth.authorized) return auth.response;
+
 		const { listId } = await params;
 		const supabase = await createClient();
 
@@ -50,18 +54,11 @@ export async function POST(
 	{ params }: { params: Promise<{ listId: string }> },
 ) {
 	try {
+		const auth = await requireAuth(request, "GUEST_LISTS_WRITE");
+		if (!auth.authorized) return auth.response;
+
 		const { listId } = await params;
 		const supabase = await createClient();
-
-		// Get current user for checking promoter limits
-		const {
-			data: { user },
-			error: authError,
-		} = await supabase.auth.getUser();
-
-		if (authError || !user) {
-			return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-		}
 
 		const body = await request.json();
 		const {
@@ -157,6 +154,9 @@ export async function DELETE(
 	{ params }: { params: Promise<{ listId: string }> },
 ) {
 	try {
+		const auth = await requireAuth(request, "GUEST_LISTS_WRITE");
+		if (!auth.authorized) return auth.response;
+
 		const { listId } = await params;
 		const supabase = await createClient();
 

@@ -48,6 +48,7 @@ export const ROUTE_GROUPS = {
 	VENUES: "/venues",
 	INVENTORY: "/inventory",
 	RENTALS: "/rentals",
+	CONTACTS: "/contacts",
 	ADMIN: "/admin",
 } as const;
 
@@ -95,6 +96,7 @@ export const ROLE_ROUTE_ACCESS: Record<string, AppRole[]> = {
 		"backoffice",
 	],
 	[ROUTE_GROUPS.RENTALS]: ["admin", "manager", "tech", "tech-lead", "booking"],
+	[ROUTE_GROUPS.CONTACTS]: ["admin", "manager", "backoffice", "booking"],
 	[ROUTE_GROUPS.ADMIN]: ["admin", "backoffice"], // Admin panel for role management
 } as const;
 
@@ -209,8 +211,6 @@ export const FEATURE_PERMISSIONS = {
 		"night-management",
 		"backoffice",
 	],
-	EVENTS_DELETE: ["admin", "manager"],
-
 	// Guest lists
 	GUEST_LISTS_READ: ["admin", "manager", "booking", "social-media"],
 	GUEST_LISTS_WRITE: ["admin", "manager", "booking", "social-media"],
@@ -221,17 +221,23 @@ export const FEATURE_PERMISSIONS = {
 	// Tasks
 	TASKS_READ: ["admin", "manager", "staff", "booking", "backoffice"],
 	TASKS_WRITE: ["admin", "manager", "backoffice"],
-	TASKS_ASSIGN: ["admin", "manager", "backoffice"],
-
+	TASKS_UPDATE: ["admin", "manager", "staff", "booking", "backoffice"],
 	// Staff management
-	STAFF_READ: ["admin", "manager", "backoffice"],
+	STAFF_READ: ["admin", "manager", "backoffice", "staff"],
 	STAFF_WRITE: ["admin", "manager", "backoffice"],
 
 	// Shifts and availability
 	SHIFTS_READ: ["admin", "manager", "staff", "backoffice"],
-	SHIFTS_WRITE: ["admin", "manager", "backoffice"],
-	AVAILABILITY_READ: ["admin", "manager", "backoffice"],
+	SHIFTS_WRITE: ["admin", "manager", "backoffice", "staff"],
+	AVAILABILITY_READ: ["admin", "manager", "backoffice", "staff"],
 	AVAILABILITY_WRITE: ["admin", "manager", "staff", "backoffice"],
+
+	// Contacts / Telephone book
+	CONTACTS_READ: ["admin", "manager", "backoffice", "booking"],
+
+	// Rentals
+	RENTALS_READ: ["admin", "manager", "tech", "tech-lead", "booking"],
+	RENTALS_WRITE: ["admin", "manager", "tech", "tech-lead", "booking"],
 
 	// Role management (who can assign roles)
 	ROLES_MANAGE: ["admin", "backoffice"],
@@ -239,10 +245,6 @@ export const FEATURE_PERMISSIONS = {
 	// Venues
 	VENUES_READ: ["admin", "manager"],
 	VENUES_WRITE: ["admin", "manager"],
-
-	// Venue sub-locations
-	VENUE_SUBLOCATIONS_READ: ["admin", "manager", "tech", "tech-lead", "staff"],
-	VENUE_SUBLOCATIONS_WRITE: ["admin", "manager"],
 
 	// Inventory / Items
 	INVENTORY_READ: [
@@ -255,14 +257,6 @@ export const FEATURE_PERMISSIONS = {
 		"backoffice",
 	],
 	INVENTORY_WRITE: ["admin", "manager", "tech", "tech-lead"],
-	INVENTORY_CHECKIN: [
-		"admin",
-		"manager",
-		"tech",
-		"tech-lead",
-		"staff",
-		"night-management",
-	],
 } as const;
 
 // Type for feature permission keys

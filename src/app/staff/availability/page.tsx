@@ -3,6 +3,7 @@
 import { useSearchParams, useRouter } from "next/navigation";
 import { Suspense, useState, useEffect, useRef } from "react";
 import { AvailabilityCalendar } from "@/components/availability-calendar";
+import { createClient } from "@/lib/supabase/browser";
 
 function AvailabilityPageInner() {
 	const searchParams = useSearchParams();
@@ -24,12 +25,22 @@ function AvailabilityPageInner() {
 			fetchedRef.current = true;
 			fetch("/api/staff")
 				.then((res) => res.json())
-				.then((data) => {
+				.then(async (data) => {
 					const staffList = data.staff || [];
 					if (staffList.length > 0) {
-						// For demo purposes, use the first staff member
-						// In a real app, this would match the logged-in user's profile_id
-						setStaffMemberId(staffList[0].id);
+						// Match the logged-in user's profile_id to find their staff record
+						const supabase = createClient();
+						const {
+							data: { user },
+						} = await supabase.auth.getUser();
+						if (user) {
+							const myStaffRecord = staffList.find(
+								(s: Record<string, unknown>) => s.profile_id === user.id,
+							);
+							if (myStaffRecord) {
+								setStaffMemberId(myStaffRecord.id as string);
+							}
+						}
 					}
 					setLoadingStaff(false);
 				})
