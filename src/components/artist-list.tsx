@@ -16,14 +16,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { PageSkeleton } from "@/components/page-skeleton";
 import { PaginationControls } from "@/components/pagination-controls";
-import {
-	Plus,
-	MapPin,
-	Music,
-	Pencil,
-	Trash2,
-	Loader2,
-} from "lucide-react";
+import { Plus, MapPin, Music, Pencil, Trash2, Loader2 } from "lucide-react";
 import { SearchFilterBar } from "@/components/search-filter-bar";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -62,6 +55,7 @@ const GENRES = [
 ];
 
 export function ArtistList() {
+	const router = useRouter();
 	const { toast } = useToast();
 	const [artists, setArtists] = useState<Artist[]>([]);
 	const [loading, setLoading] = useState(true);
@@ -124,7 +118,8 @@ export function ArtistList() {
 				throw new Error(body.error || "Failed to delete artist");
 			}
 
-			// Remove from local state immediately
+			// Remove from local state immediately — no re-fetch needed
+			// since the server delete succeeded.
 			setArtists((prev) => prev.filter((a) => a.id !== deletingArtist.id));
 			setTotal((prev) => Math.max(0, prev - 1));
 
@@ -135,9 +130,6 @@ export function ArtistList() {
 				title: "Artist deleted",
 				description: `${deletedName} has been removed.`,
 			});
-
-			// Re-fetch in background to sync with server
-			fetchArtists();
 		} catch (err) {
 			toast({
 				variant: "destructive",
