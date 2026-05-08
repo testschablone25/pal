@@ -5,7 +5,6 @@ import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import { supabaseConfig } from "@/lib/supabase/config";
 import { requireAuth } from "@/lib/api-auth";
-import { cacheHeaders } from "@/lib/api-cache";
 
 const supabase = createClient(supabaseConfig.url, supabaseConfig.serviceKey);
 
@@ -41,8 +40,7 @@ export async function GET(request: NextRequest) {
 						limit: parseInt(limit),
 						offset: parseInt(offset),
 					},
-					{ headers: cacheHeaders(30) },
-				);
+					);
 			}
 		}
 
@@ -93,15 +91,12 @@ export async function GET(request: NextRequest) {
 			};
 		});
 
-		return NextResponse.json(
-			{
-				artists,
-				total: count || 0,
-				limit: parseInt(limit),
-				offset: parseInt(offset),
-			},
-			{ headers: cacheHeaders(30) },
-		);
+		return NextResponse.json({
+			artists,
+			total: count || 0,
+			limit: parseInt(limit),
+			offset: parseInt(offset),
+		});
 	} catch (error) {
 		console.error("Error fetching artists:", error);
 		return NextResponse.json(
