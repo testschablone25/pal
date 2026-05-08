@@ -422,7 +422,9 @@ export function AvailabilityCalendar({
 			}
 		} catch (error) {
 			console.error("Error saving availability:", error);
-			setQuickError("Failed to save availability. Please try again.");
+			const msg =
+				error instanceof Error ? error.message : "Unknown error";
+			setQuickError(msg);
 		} finally {
 			setSaving(false);
 		}
