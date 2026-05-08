@@ -178,10 +178,7 @@ export function AvailabilityCalendar({
 	// Quick popover (self mode)
 	const [popoverOpen, setPopoverOpen] = useState(false);
 	const [quickDate, setQuickDate] = useState<string | null>(null);
-	const [quickReason, setQuickReason] = useState("");
 	const [quickNotes, setQuickNotes] = useState("");
-	const [quickAvailableFrom, setQuickAvailableFrom] = useState("");
-	const [quickAvailableUntil, setQuickAvailableUntil] = useState("");
 	const [quickError, setQuickError] = useState<string | null>(null);
 
 	// Multi-select mode (self mode)
@@ -384,7 +381,6 @@ export function AvailabilityCalendar({
 
 		if (viewMode === "self") {
 			setQuickDate(date);
-			setQuickReason(existing?.reason || "");
 			setPopoverOpen(true);
 			// Also fetch colleagues for this date
 			fetchColleaguesAvailability(date);
@@ -398,15 +394,18 @@ export function AvailabilityCalendar({
 
 		setSaving(true);
 		try {
+			const body: Record<string, unknown> = {
+				staff_id: targetStaffId,
+				date: quickDate,
+				available,
+				reason: available ? null : null,
+			};
+			if (quickNotes) body.notes = quickNotes;
+
 			const response = await fetch("/api/availability", {
 				method: "POST",
 				headers: { "Content-Type": "application/json" },
-				body: JSON.stringify({
-					staff_id: targetStaffId,
-					date: quickDate,
-					available,
-					reason: available ? null : quickReason,
-				}),
+				body: JSON.stringify(body),
 			});
 
 			if (!response.ok) {
@@ -414,16 +413,15 @@ export function AvailabilityCalendar({
 			}
 
 			setPopoverOpen(false);
-			setQuickReason("");
 			setQuickNotes("");
-			setQuickAvailableFrom("");
-			setQuickAvailableUntil("");
+			setQuickError(null);
 			fetchAvailability();
 			if (colleaguesDate === quickDate) {
 				fetchColleaguesAvailability(quickDate);
 			}
 		} catch (error) {
 			console.error("Error saving availability:", error);
+			setQuickError("Failed to save availability. Please try again.");
 		} finally {
 			setSaving(false);
 		}
@@ -452,10 +450,7 @@ export function AvailabilityCalendar({
 			}
 
 			setPopoverOpen(false);
-			setQuickReason("");
 			setQuickNotes("");
-			setQuickAvailableFrom("");
-			setQuickAvailableUntil("");
 			fetchAvailability();
 			if (colleaguesDate === quickDate) {
 				fetchColleaguesAvailability(quickDate);
@@ -1244,54 +1239,13 @@ export function AvailabilityCalendar({
 							</div>
 						)}
 
-						{/* Time constraint inputs */}
-						<div className="grid grid-cols-2 gap-2">
-							<div className="space-y-1">
-								<label className="text-xs text-zinc-400 block">
-									Available from
-								</label>
-								<Input
-									type="time"
-									value={quickAvailableFrom}
-									onChange={(e) => setQuickAvailableFrom(e.target.value)}
-									className="bg-zinc-950 border-zinc-800 text-xs h-8"
-								/>
-							</div>
-							<div className="space-y-1">
-								<label className="text-xs text-zinc-400 block">
-									Available until
-								</label>
-								<Input
-									type="time"
-									value={quickAvailableUntil}
-									onChange={(e) => setQuickAvailableUntil(e.target.value)}
-									className="bg-zinc-950 border-zinc-800 text-xs h-8"
-								/>
-							</div>
-						</div>
-
-						{/* Reason textarea */}
+						{/* Comment */}
 						<div className="space-y-1">
-							<label className="text-xs text-zinc-400 block">Reason</label>
-							<Input
-								type="text"
-								value={quickReason}
-								onChange={(e) => setQuickReason(e.target.value)}
-								placeholder="e.g., Vacation, Sick leave..."
-								className="bg-zinc-950 border-zinc-800 text-xs h-8"
-							/>
-						</div>
-
-						{/* Notes textarea */}
-						<div className="space-y-1">
-							<label className="text-xs text-zinc-400 block">
-								Notes (e.g. &quot;only available until 2pm&quot;, &quot;coming
-								in at 12 after appointment&quot;)
-							</label>
+							<label className="text-xs text-zinc-400 block">Comment</label>
 							<Textarea
 								value={quickNotes}
 								onChange={(e) => setQuickNotes(e.target.value)}
-								placeholder="e.g., Have a doctor's appointment, will come in at 12:00"
+								placeholder="e.g., Vacation, Sick leave..."
 								className="bg-zinc-950 border-zinc-800 text-xs h-16"
 							/>
 						</div>

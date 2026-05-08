@@ -3,7 +3,9 @@
 import { useSearchParams, useRouter } from "next/navigation";
 import { Suspense, useState, useEffect, useRef } from "react";
 import { AvailabilityCalendar } from "@/components/availability-calendar";
+import { AlertTriangle } from "lucide-react";
 import { createClient } from "@/lib/supabase/browser";
+import { StaffSubNav } from "@/components/staff/staff-sub-nav";
 
 function AvailabilityPageInner() {
 	const searchParams = useSearchParams();
@@ -13,6 +15,7 @@ function AvailabilityPageInner() {
 		undefined,
 	);
 	const [loadingStaff, setLoadingStaff] = useState(viewParam === "me");
+	const [staffError, setStaffError] = useState<string | null>(null);
 	const fetchedRef = useRef(false);
 
 	// Determine initial view mode from URL
@@ -39,13 +42,23 @@ function AvailabilityPageInner() {
 							);
 							if (myStaffRecord) {
 								setStaffMemberId(myStaffRecord.id as string);
+								setStaffError(null);
+							} else {
+								setStaffError(
+									"No staff record found for your profile. Contact an admin to set up your staff profile.",
+								);
 							}
+						} else {
+							setStaffError("You must be logged in to set availability.");
 						}
+					} else {
+						setStaffError("No staff records found. Contact an admin.");
 					}
 					setLoadingStaff(false);
 				})
 				.catch((err) => {
 					console.error("Failed to fetch staff:", err);
+					setStaffError("Failed to load staff data. Please try again.");
 					setLoadingStaff(false);
 				});
 		} else if (viewMode === "all") {
@@ -78,9 +91,26 @@ function AvailabilityPageInner() {
 					Manage staff availability and time-off requests
 				</p>
 			</div>
+
+			<StaffSubNav />
 			{loadingStaff ? (
 				<div className="flex items-center justify-center py-12">
 					<div className="text-zinc-400">Loading...</div>
+				</div>
+			) : staffError ? (
+				<div className="rounded-lg bg-amber-950/20 backdrop-blur-sm border border-amber-800/30 p-6">
+					<div className="flex items-start gap-3">
+						<AlertTriangle className="h-5 w-5 text-amber-400 shrink-0 mt-0.5" />
+						<div>
+							<p className="text-sm font-semibold text-amber-300">
+								{staffError}
+							</p>
+							<p className="text-xs text-zinc-500 mt-2">
+								After setting up your staff profile, refresh this page to manage
+								your availability.
+							</p>
+						</div>
+					</div>
 				</div>
 			) : (
 				<AvailabilityCalendar

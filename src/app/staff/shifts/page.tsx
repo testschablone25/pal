@@ -52,17 +52,32 @@ import {
 import { ShiftTimeline } from "@/components/staff-shifts/shift-timeline";
 import { ShiftForm } from "@/components/staff-shifts/shift-form";
 import type { ShiftFormValues } from "@/lib/staff-shifts/form-schema";
-import { ShiftClockActions, ShiftInfoRow } from "@/components/staff-shifts/shift-clock-actions";
+import {
+	ShiftClockActions,
+	ShiftInfoRow,
+} from "@/components/staff-shifts/shift-clock-actions";
 import { ShiftBulkCreate } from "@/components/staff-shifts/shift-bulk-create";
 import { ShiftTemplateApplyDialog } from "@/components/shift-template-apply-dialog";
 import { statusBadgeClass } from "@/lib/utils";
-import { formatTime, getLocalTimezoneOffset, getTimeInputValue } from "@/lib/staff-shifts/utils";
+import {
+	formatTime,
+	getLocalTimezoneOffset,
+	getTimeInputValue,
+} from "@/lib/staff-shifts/utils";
 import { snapTo15Minutes } from "@/lib/staff-shifts/utils";
 import type { Shift } from "@/lib/staff-shifts/types";
-import type { Event, StaffMember, Availability, ConflictingShift, SwapRequest, BulkShiftInput } from "@/lib/staff-shifts/types";
+import type {
+	Event,
+	StaffMember,
+	Availability,
+	ConflictingShift,
+	SwapRequest,
+	BulkShiftInput,
+} from "@/lib/staff-shifts/types";
 import { jsPDF } from "jspdf";
 import { EmptyState } from "@/components/empty-state";
 import { useToast } from "@/hooks/use-toast";
+import { StaffSubNav } from "@/components/staff/staff-sub-nav";
 
 export default function ShiftsPage() {
 	const { toast } = useToast();
@@ -181,7 +196,10 @@ export default function ShiftsPage() {
 		startTime: string,
 		endTime: string,
 		excludeShiftId?: string,
-	): Promise<{ hasConflict: boolean; conflictingShifts: ConflictingShift[] }> => {
+	): Promise<{
+		hasConflict: boolean;
+		conflictingShifts: ConflictingShift[];
+	}> => {
 		try {
 			const params = new URLSearchParams({
 				check_conflict: "true",
@@ -214,7 +232,9 @@ export default function ShiftsPage() {
 	};
 
 	const getAvailabilityReason = (staffId: string) => {
-		const avail = availability.find((a) => a.staff_id === staffId && !a.available);
+		const avail = availability.find(
+			(a) => a.staff_id === staffId && !a.available,
+		);
 		return avail?.reason;
 	};
 
@@ -233,7 +253,11 @@ export default function ShiftsPage() {
 		}
 
 		const conflictResult = await checkForConflicts(
-			values.staff_id, selectedEventId, startDateTime, endDateTime, editingShift?.id,
+			values.staff_id,
+			selectedEventId,
+			startDateTime,
+			endDateTime,
+			editingShift?.id,
 		);
 
 		if (conflictResult.hasConflict) {
@@ -253,11 +277,17 @@ export default function ShiftsPage() {
 		await performSubmit(values, startDateTime, endDateTime);
 	};
 
-	const performSubmit = async (values: ShiftFormValues, startDateTime: string, endDateTime: string) => {
+	const performSubmit = async (
+		values: ShiftFormValues,
+		startDateTime: string,
+		endDateTime: string,
+	) => {
 		if (!selectedEventId) return;
 		setSaving(true);
 		try {
-			const url = editingShift ? `/api/shifts/${editingShift.id}` : "/api/shifts";
+			const url = editingShift
+				? `/api/shifts/${editingShift.id}`
+				: "/api/shifts";
 			const method = editingShift ? "PUT" : "POST";
 			const response = await fetch(url, {
 				method,
@@ -290,7 +320,10 @@ export default function ShiftsPage() {
 			toast({
 				variant: "destructive",
 				title: "Fehler",
-				description: error instanceof Error ? error.message : "Fehler beim Speichern der Schicht.",
+				description:
+					error instanceof Error
+						? error.message
+						: "Fehler beim Speichern der Schicht.",
 			});
 		} finally {
 			setSaving(false);
@@ -302,65 +335,88 @@ export default function ShiftsPage() {
 	// Filter shifts
 	const filteredShifts = shifts.filter((s) => {
 		const matchesRole = roleFilter === "all" || s.role === roleFilter;
-		const matchesSearch = !shiftSearch ||
-			(s.staff?.profiles?.full_name || "").toLowerCase().includes(shiftSearch.toLowerCase());
+		const matchesSearch =
+			!shiftSearch ||
+			(s.staff?.profiles?.full_name || "")
+				.toLowerCase()
+				.includes(shiftSearch.toLowerCase());
 		return matchesRole && matchesSearch;
 	});
 
 	// Drag handlers
-	const handleDragEnd = useCallback(async (event: { active: { data: { current?: Record<string, unknown> } }; delta: { x: number } }) => {
-		const { active, delta } = event;
-		setActiveDragShift(null);
-		setDragDelta(0);
+	const handleDragEnd = useCallback(
+		async (event: {
+			active: { data: { current?: Record<string, unknown> } };
+			delta: { x: number };
+		}) => {
+			const { active, delta } = event;
+			setActiveDragShift(null);
+			setDragDelta(0);
 
-		const shiftId = active.data.current?.shiftId as string;
-		const originalStartTime = active.data.current?.startTime as string;
-		const originalEndTime = active.data.current?.endTime as string;
-		if (!shiftId || !originalStartTime || !originalEndTime) return;
+			const shiftId = active.data.current?.shiftId as string;
+			const originalStartTime = active.data.current?.startTime as string;
+			const originalEndTime = active.data.current?.endTime as string;
+			if (!shiftId || !originalStartTime || !originalEndTime) return;
 
-		const containerEl = document.querySelector("[data-timeline-container]");
-		if (!containerEl) return;
-		const containerWidth = containerEl.clientWidth;
-		if (containerWidth === 0) return;
+			const containerEl = document.querySelector("[data-timeline-container]");
+			if (!containerEl) return;
+			const containerWidth = containerEl.clientWidth;
+			if (containerWidth === 0) return;
 
-		const deltaMinutes = (delta.x / containerWidth) * (12 * 60);
-		if (Math.abs(deltaMinutes) < 1) return;
+			const deltaMinutes = (delta.x / containerWidth) * (12 * 60);
+			if (Math.abs(deltaMinutes) < 1) return;
 
-		const snappedDelta = Math.round(deltaMinutes / 15) * 15;
-		const newStartTime = snapTo15Minutes(originalStartTime, snappedDelta);
-		const newEndTime = snapTo15Minutes(originalEndTime, snappedDelta);
-		if (newStartTime === originalStartTime && newEndTime === originalEndTime) return;
+			const snappedDelta = Math.round(deltaMinutes / 15) * 15;
+			const newStartTime = snapTo15Minutes(originalStartTime, snappedDelta);
+			const newEndTime = snapTo15Minutes(originalEndTime, snappedDelta);
+			if (newStartTime === originalStartTime && newEndTime === originalEndTime)
+				return;
 
-		setSavingIndicator(shiftId);
-		try {
-			const response = await fetch(`/api/shifts/${shiftId}`, {
-				method: "PUT",
-				headers: { "Content-Type": "application/json" },
-				body: JSON.stringify({ start_time: newStartTime, end_time: newEndTime }),
-			});
-			if (!response.ok) throw new Error("Failed to update shift");
-			fetchShifts();
-			toast({ title: "Schicht verschoben", description: "Die Schicht wurde erfolgreich verschoben." });
-		} catch (error) {
-			console.error("Error updating shift time:", error);
-			toast({ variant: "destructive", title: "Fehler", description: "Fehler beim Verschieben der Schicht." });
-		} finally {
-			setSavingIndicator(null);
-		}
-	}, [fetchShifts]);
+			setSavingIndicator(shiftId);
+			try {
+				const response = await fetch(`/api/shifts/${shiftId}`, {
+					method: "PUT",
+					headers: { "Content-Type": "application/json" },
+					body: JSON.stringify({
+						start_time: newStartTime,
+						end_time: newEndTime,
+					}),
+				});
+				if (!response.ok) throw new Error("Failed to update shift");
+				fetchShifts();
+				toast({
+					title: "Schicht verschoben",
+					description: "Die Schicht wurde erfolgreich verschoben.",
+				});
+			} catch (error) {
+				console.error("Error updating shift time:", error);
+				toast({
+					variant: "destructive",
+					title: "Fehler",
+					description: "Fehler beim Verschieben der Schicht.",
+				});
+			} finally {
+				setSavingIndicator(null);
+			}
+		},
+		[fetchShifts],
+	);
 
 	const handleDragMove = useCallback((event: { delta: { x: number } }) => {
 		setDragDelta(event.delta.x);
 	}, []);
 
-	const handleDragStart = useCallback((event: { active: { data: { current?: Record<string, unknown> } } }) => {
-		const shiftId = event.active.data.current?.shiftId as string;
-		const shift = shifts.find((s) => s.id === shiftId);
-		if (shift) {
-			setActiveDragShift(shift);
-			setDragDelta(0);
-		}
-	}, [shifts]);
+	const handleDragStart = useCallback(
+		(event: { active: { data: { current?: Record<string, unknown> } } }) => {
+			const shiftId = event.active.data.current?.shiftId as string;
+			const shift = shifts.find((s) => s.id === shiftId);
+			if (shift) {
+				setActiveDragShift(shift);
+				setDragDelta(0);
+			}
+		},
+		[shifts],
+	);
 
 	// Delete handler
 	const handleDeleteClick = (shift: Shift) => {
@@ -372,15 +428,24 @@ export default function ShiftsPage() {
 		if (!shiftToDelete) return;
 		setDeleting(true);
 		try {
-			const response = await fetch(`/api/shifts/${shiftToDelete.id}`, { method: "DELETE" });
+			const response = await fetch(`/api/shifts/${shiftToDelete.id}`, {
+				method: "DELETE",
+			});
 			if (!response.ok) throw new Error("Failed to delete shift");
 			setDeleteDialogOpen(false);
 			setShiftToDelete(null);
 			fetchShifts();
-			toast({ title: "Schicht gelöscht", description: "Die Schicht wurde erfolgreich gelöscht." });
+			toast({
+				title: "Schicht gelöscht",
+				description: "Die Schicht wurde erfolgreich gelöscht.",
+			});
 		} catch (error) {
 			console.error("Error deleting shift:", error);
-			toast({ variant: "destructive", title: "Fehler", description: "Fehler beim Löschen der Schicht." });
+			toast({
+				variant: "destructive",
+				title: "Fehler",
+				description: "Fehler beim Löschen der Schicht.",
+			});
 		} finally {
 			setDeleting(false);
 		}
@@ -442,13 +507,22 @@ export default function ShiftsPage() {
 	const handleClockIn = async (shiftId: string) => {
 		setClockingIn(shiftId);
 		try {
-			const response = await fetch(`/api/shifts/${shiftId}/clock-in`, { method: "POST" });
+			const response = await fetch(`/api/shifts/${shiftId}/clock-in`, {
+				method: "POST",
+			});
 			if (!response.ok) throw new Error("Failed to clock in");
 			await fetchShifts();
-			toast({ title: "Eingestempelt", description: "Der Mitarbeiter wurde erfolgreich eingestempelt." });
+			toast({
+				title: "Eingestempelt",
+				description: "Der Mitarbeiter wurde erfolgreich eingestempelt.",
+			});
 		} catch (error) {
 			console.error("Error clocking in:", error);
-			toast({ variant: "destructive", title: "Fehler", description: "Fehler beim Einstempeln." });
+			toast({
+				variant: "destructive",
+				title: "Fehler",
+				description: "Fehler beim Einstempeln.",
+			});
 		} finally {
 			setClockingIn(null);
 		}
@@ -457,13 +531,22 @@ export default function ShiftsPage() {
 	const handleClockOut = async (shiftId: string) => {
 		setClockingOut(shiftId);
 		try {
-			const response = await fetch(`/api/shifts/${shiftId}/clock-out`, { method: "POST" });
+			const response = await fetch(`/api/shifts/${shiftId}/clock-out`, {
+				method: "POST",
+			});
 			if (!response.ok) throw new Error("Failed to clock out");
 			await fetchShifts();
-			toast({ title: "Ausgestempelt", description: "Der Mitarbeiter wurde erfolgreich ausgestempelt." });
+			toast({
+				title: "Ausgestempelt",
+				description: "Der Mitarbeiter wurde erfolgreich ausgestempelt.",
+			});
 		} catch (error) {
 			console.error("Error clocking out:", error);
-			toast({ variant: "destructive", title: "Fehler", description: "Fehler beim Ausstempeln." });
+			toast({
+				variant: "destructive",
+				title: "Fehler",
+				description: "Fehler beim Ausstempeln.",
+			});
 		} finally {
 			setClockingOut(null);
 		}
@@ -479,7 +562,9 @@ export default function ShiftsPage() {
 
 	const handleSubmitSwapRequest = () => {
 		if (!swapTargetShift || !swapSelectedStaff) return;
-		const requestingStaffMember = staff.find((s) => s.id === swapTargetShift.staff_id);
+		const requestingStaffMember = staff.find(
+			(s) => s.id === swapTargetShift.staff_id,
+		);
 		const newSwapRequest: SwapRequest = {
 			id: `swap-${Date.now()}`,
 			shiftId: swapTargetShift.id,
@@ -496,13 +581,17 @@ export default function ShiftsPage() {
 
 	const handleAcceptSwap = (swapId: string) => {
 		setSwapRequests((prev) =>
-			prev.map((sr) => (sr.id === swapId ? { ...sr, status: "accepted" as const } : sr)),
+			prev.map((sr) =>
+				sr.id === swapId ? { ...sr, status: "accepted" as const } : sr,
+			),
 		);
 	};
 
 	const handleDeclineSwap = (swapId: string) => {
 		setSwapRequests((prev) =>
-			prev.map((sr) => (sr.id === swapId ? { ...sr, status: "declined" as const } : sr)),
+			prev.map((sr) =>
+				sr.id === swapId ? { ...sr, status: "declined" as const } : sr,
+			),
 		);
 	};
 
@@ -511,24 +600,39 @@ export default function ShiftsPage() {
 		if (!swap) return;
 		setShifts((prev) =>
 			prev.map((s) => {
-				if (s.id === swap.shiftId) return { ...s, staff_id: swap.requestedToStaffId };
-				if (s.staff_id === swap.requestedToStaffId) return { ...s, staff_id: swap.requestedByStaffId };
+				if (s.id === swap.shiftId)
+					return { ...s, staff_id: swap.requestedToStaffId };
+				if (s.staff_id === swap.requestedToStaffId)
+					return { ...s, staff_id: swap.requestedByStaffId };
 				return s;
 			}),
 		);
 		setSwapRequests((prev) =>
-			prev.map((sr) => (sr.id === swapId ? { ...sr, status: "approved" as const } : sr)),
+			prev.map((sr) =>
+				sr.id === swapId ? { ...sr, status: "approved" as const } : sr,
+			),
 		);
 	};
 
 	// Export handlers
 	const handleExportCSV = () => {
 		if (!selectedEvent) return;
-		const headers = ["Staff Name", "Role", "Start Time", "End Time", "Duration (h)", "Break (min)", "Status"];
+		const headers = [
+			"Staff Name",
+			"Role",
+			"Start Time",
+			"End Time",
+			"Duration (h)",
+			"Break (min)",
+			"Status",
+		];
 		const rows = filteredShifts.map((shift) => {
 			const start = new Date(shift.start_time);
 			const end = new Date(shift.end_time);
-			const durationHours = ((end.getTime() - start.getTime()) / (1000 * 60 * 60)).toFixed(1);
+			const durationHours = (
+				(end.getTime() - start.getTime()) /
+				(1000 * 60 * 60)
+			).toFixed(1);
 			return [
 				shift.staff?.profiles?.full_name || "Unknown",
 				shift.role,
@@ -539,7 +643,10 @@ export default function ShiftsPage() {
 				shift.status,
 			];
 		});
-		const csvContent = [headers.join(","), ...rows.map((row) => row.join(","))].join("\n");
+		const csvContent = [
+			headers.join(","),
+			...rows.map((row) => row.join(",")),
+		].join("\n");
 		const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
 		const url = URL.createObjectURL(blob);
 		const link = document.createElement("a");
@@ -554,40 +661,70 @@ export default function ShiftsPage() {
 		const doc = new jsPDF();
 		const pageWidth = doc.internal.pageSize.getWidth();
 		doc.setFontSize(16);
-		doc.text(`Shift Schedule - ${selectedEvent.name} - ${selectedEvent.date}`, pageWidth / 2, 20, { align: "center" });
+		doc.text(
+			`Shift Schedule - ${selectedEvent.name} - ${selectedEvent.date}`,
+			pageWidth / 2,
+			20,
+			{ align: "center" },
+		);
 		doc.setFontSize(10);
 		const tableHeaders = ["Name", "Role", "Start", "End", "Status"];
 		const columnWidths = [50, 40, 30, 30, 30];
 		let yPos = 35;
 		doc.setFont("helvetica", "bold");
 		let xPos = 10;
-		tableHeaders.forEach((header, i) => { doc.text(header, xPos, yPos); xPos += columnWidths[i]; });
+		tableHeaders.forEach((header, i) => {
+			doc.text(header, xPos, yPos);
+			xPos += columnWidths[i];
+		});
 		yPos += 8;
 		doc.setFont("helvetica", "normal");
 		filteredShifts.forEach((shift) => {
-			if (yPos > 270) { doc.addPage(); yPos = 20; }
+			if (yPos > 270) {
+				doc.addPage();
+				yPos = 20;
+			}
 			xPos = 10;
-			[shift.staff?.profiles?.full_name || "Unknown", shift.role, formatTime(shift.start_time), formatTime(shift.end_time), shift.status]
-				.forEach((cell, i) => { doc.text(cell, xPos, yPos); xPos += columnWidths[i]; });
+			[
+				shift.staff?.profiles?.full_name || "Unknown",
+				shift.role,
+				formatTime(shift.start_time),
+				formatTime(shift.end_time),
+				shift.status,
+			].forEach((cell, i) => {
+				doc.text(cell, xPos, yPos);
+				xPos += columnWidths[i];
+			});
 			yPos += 7;
 		});
-		doc.save(`shift-schedule-${selectedEvent.name.replace(/\s+/g, "-")}-${selectedEvent.date}.pdf`);
+		doc.save(
+			`shift-schedule-${selectedEvent.name.replace(/\s+/g, "-")}-${selectedEvent.date}.pdf`,
+		);
 	};
 
 	return (
 		<div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8">
 			<div className="mb-8">
 				<h1 className="text-3xl font-bold text-white">Shift Scheduling</h1>
-				<p className="text-zinc-400 mt-2">Plan and assign staff shifts for events</p>
+				<p className="text-zinc-400 mt-2">
+					Plan and assign staff shifts for events
+				</p>
 			</div>
+
+			<StaffSubNav />
 
 			{/* Event Selector */}
 			<Card className="bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/70 mb-6">
 				<CardContent className="pt-6">
 					<div className="flex flex-col md:flex-row gap-4 items-start md:items-center justify-between">
 						<div className="flex-1 w-full md:w-auto">
-							<label className="text-sm text-zinc-400 mb-2 block">Select Event</label>
-							<Select value={selectedEventId} onValueChange={setSelectedEventId}>
+							<label className="text-sm text-zinc-400 mb-2 block">
+								Select Event
+							</label>
+							<Select
+								value={selectedEventId}
+								onValueChange={setSelectedEventId}
+							>
 								<SelectTrigger className="bg-zinc-950 border-zinc-800 w-full md:w-[300px]">
 									<SelectValue placeholder="Choose an event" />
 								</SelectTrigger>
@@ -601,26 +738,54 @@ export default function ShiftsPage() {
 							</Select>
 						</div>
 						<div className="flex gap-2">
-							<Button onClick={() => setBulkDialogOpen(true)} disabled={!selectedEventId} variant="outline" className="border-zinc-800">
-								<Users className="h-4 w-4 mr-2" />Bulk Assign
+							<Button
+								onClick={() => setBulkDialogOpen(true)}
+								disabled={!selectedEventId}
+								variant="outline"
+								className="border-zinc-800"
+							>
+								<Users className="h-4 w-4 mr-2" />
+								Bulk Assign
 							</Button>
-							<Button onClick={() => setTemplateDialogOpen(true)} disabled={!selectedEventId} variant="outline" className="border-zinc-800">
-								<Puzzle className="h-4 w-4 mr-2" />Apply Template
+							<Button
+								onClick={() => setTemplateDialogOpen(true)}
+								disabled={!selectedEventId}
+								variant="outline"
+								className="border-zinc-800"
+							>
+								<Puzzle className="h-4 w-4 mr-2" />
+								Apply Template
 							</Button>
-							<Button onClick={openCreateDialog} disabled={!selectedEventId} className="bg-violet-600 hover:bg-violet-700">
-								<Plus className="h-4 w-4 mr-2" />Add Shift
+							<Button
+								onClick={openCreateDialog}
+								disabled={!selectedEventId}
+								className="bg-violet-600 hover:bg-violet-700"
+							>
+								<Plus className="h-4 w-4 mr-2" />
+								Add Shift
 							</Button>
 							<DropdownMenu>
 								<DropdownMenuTrigger asChild>
-									<Button disabled={!selectedEventId} variant="outline" className="border-zinc-800">
-										<Download className="h-4 w-4 mr-2" />Export
+									<Button
+										disabled={!selectedEventId}
+										variant="outline"
+										className="border-zinc-800"
+									>
+										<Download className="h-4 w-4 mr-2" />
+										Export
 									</Button>
 								</DropdownMenuTrigger>
 								<DropdownMenuContent className="bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/70">
-									<DropdownMenuItem onClick={handleExportCSV} className="text-zinc-300 hover:text-white hover:bg-zinc-800 cursor-pointer">
+									<DropdownMenuItem
+										onClick={handleExportCSV}
+										className="text-zinc-300 hover:text-white hover:bg-zinc-800 cursor-pointer"
+									>
 										Export as CSV
 									</DropdownMenuItem>
-									<DropdownMenuItem onClick={handleExportPDF} className="text-zinc-300 hover:text-white hover:bg-zinc-800 cursor-pointer">
+									<DropdownMenuItem
+										onClick={handleExportPDF}
+										className="text-zinc-300 hover:text-white hover:bg-zinc-800 cursor-pointer"
+									>
 										Export as PDF
 									</DropdownMenuItem>
 								</DropdownMenuContent>
@@ -633,14 +798,18 @@ export default function ShiftsPage() {
 			{loading ? (
 				<Card className="bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/70">
 					<CardContent className="pt-6 space-y-4">
-						{[...Array(5)].map((_, i) => <Skeleton key={i} className="h-16 w-full bg-zinc-800" />)}
+						{[...Array(5)].map((_, i) => (
+							<Skeleton key={i} className="h-16 w-full bg-zinc-800" />
+						))}
 					</CardContent>
 				</Card>
 			) : !selectedEventId ? (
 				<Card className="bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/70">
 					<CardContent className="py-12 text-center">
 						<Calendar className="h-12 w-12 mx-auto text-zinc-600 mb-4" />
-						<p className="text-zinc-400">Select an event to view and manage shifts</p>
+						<p className="text-zinc-400">
+							Select an event to view and manage shifts
+						</p>
 					</CardContent>
 				</Card>
 			) : (
@@ -652,26 +821,38 @@ export default function ShiftsPage() {
 								<div className="flex flex-wrap gap-6">
 									<div>
 										<p className="text-sm text-zinc-400">Event</p>
-										<p className="text-white font-medium">{selectedEvent.name}</p>
+										<p className="text-white font-medium">
+											{selectedEvent.name}
+										</p>
 									</div>
 									<div>
 										<p className="text-sm text-zinc-400">Date</p>
 										<p className="text-white font-medium">
-											{new Date(selectedEvent.date).toLocaleDateString("en-US", {
-												weekday: "long", year: "numeric", month: "long", day: "numeric",
-											})}
+											{new Date(selectedEvent.date).toLocaleDateString(
+												"en-US",
+												{
+													weekday: "long",
+													year: "numeric",
+													month: "long",
+													day: "numeric",
+												},
+											)}
 										</p>
 									</div>
 									{selectedEvent.door_time && (
 										<div>
 											<p className="text-sm text-zinc-400">Door Time</p>
-											<p className="text-white font-medium">{selectedEvent.door_time}</p>
+											<p className="text-white font-medium">
+												{selectedEvent.door_time}
+											</p>
 										</div>
 									)}
 									{selectedEvent.end_time && (
 										<div>
 											<p className="text-sm text-zinc-400">End Time</p>
-											<p className="text-white font-medium">{selectedEvent.end_time}</p>
+											<p className="text-white font-medium">
+												{selectedEvent.end_time}
+											</p>
 										</div>
 									)}
 									<div>
@@ -708,7 +889,16 @@ export default function ShiftsPage() {
 						</CardHeader>
 						<CardContent>
 							{filteredShifts.length === 0 ? (
-								<EmptyState icon={Clock} title={roleFilter !== "all" ? `Keine Schichten mit Rolle "${roleFilter}"` : "Keine Schichten geplant"} description="Füge eine Schicht hinzu" className="py-8" />
+								<EmptyState
+									icon={Clock}
+									title={
+										roleFilter !== "all"
+											? `Keine Schichten mit Rolle "${roleFilter}"`
+											: "Keine Schichten geplant"
+									}
+									description="Füge eine Schicht hinzu"
+									className="py-8"
+								/>
 							) : (
 								<div className="space-y-3">
 									{filteredShifts.map((shift) => {
@@ -721,28 +911,45 @@ export default function ShiftsPage() {
 												onClick={() => openEditDialog(shift)}
 											>
 												<div className="flex items-center gap-4">
-													<div className={`w-2 h-12 rounded ${"bg-zinc-600"}`} />
+													<div
+														className={`w-2 h-12 rounded ${"bg-zinc-600"}`}
+													/>
 													<div>
 														<div className="flex items-center gap-2">
-															<p className="font-medium text-white">{shift.staff?.profiles?.full_name || "Unknown Staff"}</p>
+															<p className="font-medium text-white">
+																{shift.staff?.profiles?.full_name ||
+																	"Unknown Staff"}
+															</p>
 															{isUnavailable && (
-																<Badge className={statusBadgeClass("unavailable")}>
-																	<AlertTriangle className="h-3 w-3 mr-1" />Unavailable
+																<Badge
+																	className={statusBadgeClass("unavailable")}
+																>
+																	<AlertTriangle className="h-3 w-3 mr-1" />
+																	Unavailable
 																</Badge>
 															)}
 														</div>
 														<p className="text-sm text-zinc-400">
-															{shift.role} • {formatTime(shift.start_time)} - {formatTime(shift.end_time)}
-															{shift.break_minutes > 0 && ` • ${shift.break_minutes}min break`}
+															{shift.role} • {formatTime(shift.start_time)} -{" "}
+															{formatTime(shift.end_time)}
+															{shift.break_minutes > 0 &&
+																` • ${shift.break_minutes}min break`}
 														</p>
-														<ShiftInfoRow clockedInAt={shift.clocked_in_at} clockedOutAt={shift.clocked_out_at} />
+														<ShiftInfoRow
+															clockedInAt={shift.clocked_in_at}
+															clockedOutAt={shift.clocked_out_at}
+														/>
 														{isUnavailable && unavailReason && (
-															<p className="text-xs text-amber-400 mt-1">Reason: {unavailReason}</p>
+															<p className="text-xs text-amber-400 mt-1">
+																Reason: {unavailReason}
+															</p>
 														)}
 													</div>
 												</div>
 												<div className="flex items-center gap-2">
-													<Badge className={statusBadgeClass(shift.status)}>{shift.status}</Badge>
+													<Badge className={statusBadgeClass(shift.status)}>
+														{shift.status}
+													</Badge>
 													<ShiftClockActions
 														shift={shift}
 														clockingIn={clockingIn}
@@ -766,42 +973,76 @@ export default function ShiftsPage() {
 						<Card className="bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/70 mt-6">
 							<CardHeader>
 								<CardTitle className="text-white flex items-center gap-2">
-									<ArrowUpDown className="h-5 w-5" />Pending Swap Requests
+									<ArrowUpDown className="h-5 w-5" />
+									Pending Swap Requests
 								</CardTitle>
 							</CardHeader>
 							<CardContent className="space-y-3">
 								{swapRequests.map((sr) => {
 									const relatedShift = shifts.find((s) => s.id === sr.shiftId);
-									const targetStaff = staff.find((s) => s.id === sr.requestedToStaffId);
-									const requestingStaff = staff.find((s) => s.id === sr.requestedByStaffId);
+									const targetStaff = staff.find(
+										(s) => s.id === sr.requestedToStaffId,
+									);
+									const requestingStaff = staff.find(
+										(s) => s.id === sr.requestedByStaffId,
+									);
 									return (
-										<div key={sr.id} className="p-4 bg-zinc-950 border border-zinc-800 rounded">
+										<div
+											key={sr.id}
+											className="p-4 bg-zinc-950 border border-zinc-800 rounded"
+										>
 											<div className="flex items-center justify-between">
 												<div>
 													<p className="text-sm text-white font-medium">
-														{sr.requestedByName || requestingStaff?.profiles?.full_name || "Someone"} wants to swap with{" "}
+														{sr.requestedByName ||
+															requestingStaff?.profiles?.full_name ||
+															"Someone"}{" "}
+														wants to swap with{" "}
 														{targetStaff?.profiles?.full_name || "Unknown"}
 													</p>
 													<p className="text-xs text-zinc-400 mt-1">
-														Shift: {relatedShift ? `${formatTime(relatedShift.start_time)} - ${formatTime(relatedShift.end_time)}` : "Unknown"}
+														Shift:{" "}
+														{relatedShift
+															? `${formatTime(relatedShift.start_time)} - ${formatTime(relatedShift.end_time)}`
+															: "Unknown"}
 														{sr.reason && <> • Reason: {sr.reason}</>}
 													</p>
 												</div>
 												<div className="flex items-center gap-2">
-													<Badge className={statusBadgeClass(sr.status)}>{sr.status}</Badge>
+													<Badge className={statusBadgeClass(sr.status)}>
+														{sr.status}
+													</Badge>
 													{sr.status === "pending" && (
 														<>
-															<Button variant="ghost" size="sm" className="h-7 text-xs text-emerald-400 hover:text-emerald-300 hover:bg-emerald-600/10" onClick={() => handleAcceptSwap(sr.id)}>
-																<Check className="h-3 w-3 mr-1" />Accept
+															<Button
+																variant="ghost"
+																size="sm"
+																className="h-7 text-xs text-emerald-400 hover:text-emerald-300 hover:bg-emerald-600/10"
+																onClick={() => handleAcceptSwap(sr.id)}
+															>
+																<Check className="h-3 w-3 mr-1" />
+																Accept
 															</Button>
-															<Button variant="ghost" size="sm" className="h-7 text-xs text-red-400 hover:text-red-300 hover:bg-red-600/10" onClick={() => handleDeclineSwap(sr.id)}>
-																<X className="h-3 w-3 mr-1" />Decline
+															<Button
+																variant="ghost"
+																size="sm"
+																className="h-7 text-xs text-red-400 hover:text-red-300 hover:bg-red-600/10"
+																onClick={() => handleDeclineSwap(sr.id)}
+															>
+																<X className="h-3 w-3 mr-1" />
+																Decline
 															</Button>
 														</>
 													)}
 													{sr.status === "accepted" && (
-														<Button variant="ghost" size="sm" className="h-7 text-xs text-violet-400 hover:text-violet-300 hover:bg-violet-600/10" onClick={() => handleApproveSwap(sr.id)}>
-															<Send className="h-3 w-3 mr-1" />Approve
+														<Button
+															variant="ghost"
+															size="sm"
+															className="h-7 text-xs text-violet-400 hover:text-violet-300 hover:bg-violet-600/10"
+															onClick={() => handleApproveSwap(sr.id)}
+														>
+															<Send className="h-3 w-3 mr-1" />
+															Approve
 														</Button>
 													)}
 												</div>
@@ -836,12 +1077,23 @@ export default function ShiftsPage() {
 					<DialogHeader>
 						<DialogTitle className="text-white">Delete Shift</DialogTitle>
 						<DialogDescription className="text-zinc-400">
-							Are you sure you want to delete this shift? This action cannot be undone.
+							Are you sure you want to delete this shift? This action cannot be
+							undone.
 						</DialogDescription>
 					</DialogHeader>
 					<DialogFooter>
-						<Button variant="outline" onClick={() => setDeleteDialogOpen(false)} className="border-zinc-800">Cancel</Button>
-						<Button onClick={handleDeleteConfirm} disabled={deleting} className="bg-red-600 hover:bg-red-700">
+						<Button
+							variant="outline"
+							onClick={() => setDeleteDialogOpen(false)}
+							className="border-zinc-800"
+						>
+							Cancel
+						</Button>
+						<Button
+							onClick={handleDeleteConfirm}
+							disabled={deleting}
+							className="bg-red-600 hover:bg-red-700"
+						>
 							{deleting ? "Deleting..." : "Delete"}
 						</Button>
 					</DialogFooter>
@@ -849,25 +1101,41 @@ export default function ShiftsPage() {
 			</Dialog>
 
 			{/* Conflict Warning */}
-			<AlertDialog open={conflictDialogOpen} onOpenChange={setConflictDialogOpen}>
+			<AlertDialog
+				open={conflictDialogOpen}
+				onOpenChange={setConflictDialogOpen}
+			>
 				<AlertDialogContent className="bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/70">
 					<AlertDialogHeader>
 						<AlertDialogTitle className="text-white flex items-center gap-2">
-							<AlertTriangle className="h-5 w-5 text-amber-400" />Shift Conflict Detected
+							<AlertTriangle className="h-5 w-5 text-amber-400" />
+							Shift Conflict Detected
 						</AlertDialogTitle>
 						<AlertDialogDescription className="text-zinc-400">
 							This staff member has an overlapping shift
 							{conflictData?.conflictingShifts?.[0] && (
-								<> on <span className="text-zinc-300">
-									{formatTime(conflictData.conflictingShifts[0].start_time)} - {formatTime(conflictData.conflictingShifts[0].end_time)}
-									{conflictData.conflictingShifts[0].role && ` (${conflictData.conflictingShifts[0].role})`}
-								</span></>
-							)}. Do you want to save anyway?
+								<>
+									{" "}
+									on{" "}
+									<span className="text-zinc-300">
+										{formatTime(conflictData.conflictingShifts[0].start_time)} -{" "}
+										{formatTime(conflictData.conflictingShifts[0].end_time)}
+										{conflictData.conflictingShifts[0].role &&
+											` (${conflictData.conflictingShifts[0].role})`}
+									</span>
+								</>
+							)}
+							. Do you want to save anyway?
 						</AlertDialogDescription>
 					</AlertDialogHeader>
 					<AlertDialogFooter>
-						<AlertDialogCancel className="border-zinc-800 text-zinc-400 hover:text-white">Cancel</AlertDialogCancel>
-						<AlertDialogAction onClick={() => conflictData?.pendingSubmit()} className="bg-amber-600 hover:bg-amber-700 text-white">
+						<AlertDialogCancel className="border-zinc-800 text-zinc-400 hover:text-white">
+							Cancel
+						</AlertDialogCancel>
+						<AlertDialogAction
+							onClick={() => conflictData?.pendingSubmit()}
+							className="bg-amber-600 hover:bg-amber-700 text-white"
+						>
 							Save Anyway
 						</AlertDialogAction>
 					</AlertDialogFooter>
@@ -890,19 +1158,35 @@ export default function ShiftsPage() {
 						<DialogTitle className="text-white">Request Shift Swap</DialogTitle>
 						<DialogDescription className="text-zinc-400">
 							Select a colleague to swap shifts with
-							{swapTargetShift && <> for {formatTime(swapTargetShift.start_time)} - {formatTime(swapTargetShift.end_time)}</>}
+							{swapTargetShift && (
+								<>
+									{" "}
+									for {formatTime(swapTargetShift.start_time)} -{" "}
+									{formatTime(swapTargetShift.end_time)}
+								</>
+							)}
 						</DialogDescription>
 					</DialogHeader>
 					<div className="space-y-4">
 						<div className="space-y-2">
-							<label className="text-sm text-zinc-400">Select Colleague *</label>
-							<Select value={swapSelectedStaff} onValueChange={setSwapSelectedStaff}>
+							<label className="text-sm text-zinc-400">
+								Select Colleague *
+							</label>
+							<Select
+								value={swapSelectedStaff}
+								onValueChange={setSwapSelectedStaff}
+							>
 								<SelectTrigger className="bg-zinc-950 border-zinc-800">
 									<SelectValue placeholder="Choose a staff member" />
 								</SelectTrigger>
 								<SelectContent className="bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/70">
 									{staff
-										.filter((s) => swapTargetShift && s.role === swapTargetShift.role && s.id !== swapTargetShift.staff_id)
+										.filter(
+											(s) =>
+												swapTargetShift &&
+												s.role === swapTargetShift.role &&
+												s.id !== swapTargetShift.staff_id,
+										)
 										.map((member) => (
 											<SelectItem key={member.id} value={member.id}>
 												{member.profiles?.full_name || "Unknown"}
@@ -923,9 +1207,20 @@ export default function ShiftsPage() {
 						</div>
 					</div>
 					<DialogFooter>
-						<Button variant="outline" onClick={() => setSwapDialogOpen(false)} className="border-zinc-800">Cancel</Button>
-						<Button onClick={handleSubmitSwapRequest} disabled={!swapSelectedStaff} className="bg-violet-600 hover:bg-violet-700">
-							<Send className="h-4 w-4 mr-2" />Send Request
+						<Button
+							variant="outline"
+							onClick={() => setSwapDialogOpen(false)}
+							className="border-zinc-800"
+						>
+							Cancel
+						</Button>
+						<Button
+							onClick={handleSubmitSwapRequest}
+							disabled={!swapSelectedStaff}
+							className="bg-violet-600 hover:bg-violet-700"
+						>
+							<Send className="h-4 w-4 mr-2" />
+							Send Request
 						</Button>
 					</DialogFooter>
 				</DialogContent>

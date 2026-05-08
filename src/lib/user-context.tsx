@@ -27,9 +27,15 @@ const UserContext = createContext<UserContextType>({
 	refresh: async () => {},
 });
 
-export function UserProvider({ children }: { children: ReactNode }) {
+export function UserProvider({
+	children,
+	initialRoles,
+}: {
+	children: ReactNode;
+	initialRoles?: AppRole[];
+}) {
 	const [userId, setUserId] = useState<string | null>(null);
-	const [userRoles, setUserRoles] = useState<AppRole[]>([]);
+	const [userRoles, setUserRoles] = useState<AppRole[]>(initialRoles || []);
 	const [loading, setLoading] = useState(true);
 	const didFetch = useRef(false);
 
@@ -41,7 +47,8 @@ export function UserProvider({ children }: { children: ReactNode }) {
 			} = await supabase.auth.getUser();
 			if (!user) {
 				setUserId(null);
-				setUserRoles([]);
+				// Don't wipe server-provided roles if browser session isn't hydrated yet
+				// Only clear if we have no initial roles to fall back on
 				return;
 			}
 			setUserId(user.id);
@@ -60,6 +67,46 @@ export function UserProvider({ children }: { children: ReactNode }) {
 		didFetch.current = true;
 		doFetch().finally(() => setLoading(false));
 	}, [doFetch]);
+
+	// Listen for auth state changes to react to login/logout
+	useEffect(() => {
+		const supabase = createBrowserClient();
+		const {
+			data: { subscription },
+		} = supabase.auth.onAuthStateChange(async (event, session) => {
+			if (event === "SIGNED_OUT") {
+				setUserId(null);
+				setUserRoles([]);
+				return;
+			}
+			// INITIAL_SESSION fires when Supabase loads the existing session from
+			// cookies on mount; SIGNED_IN fires after an actual sign-in action.
+			if (
+				(event === "SIGNED_IN" || event === "INITIAL_SESSION") &&
+				session?.user
+			) {
+				setLoading(true);
+				try {
+					setUserId(session.user.id);
+					const { data } = await supabase
+						.from("user_roles")
+						.select("role")
+						.eq("user_id", session.user.id);
+					setUserRoles(
+						data?.map((r: { role: string }) => r.role as AppRole) ?? [],
+					);
+				} catch (err) {
+					console.error(
+						"UserProvider: failed to fetch roles on auth event",
+						err,
+					);
+				} finally {
+					setLoading(false);
+				}
+			}
+		});
+		return () => subscription.unsubscribe();
+	}, []);
 
 	return (
 		<UserContext.Provider

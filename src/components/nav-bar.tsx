@@ -108,10 +108,12 @@ function MobileNavLink({
 }
 
 export function NavBar() {
-	const { userRoles } = useUser();
+	const { userRoles, loading } = useUser();
 
-	const filteredNavItems =
-		userRoles.length === 0
+	// While loading, show all nav items to avoid flash of Dashboard-only nav
+	const filteredNavItems = loading
+		? navItems
+		: userRoles.length === 0
 			? navItems.filter((item) => item.href === "/")
 			: navItems.filter((item) => canAccessRoute(userRoles, item.href));
 
@@ -210,10 +212,14 @@ function UserMenu() {
 
 	async function handleSignOut() {
 		setOpen(false);
-		const supabase = createBrowserClient();
-		await supabase.auth.signOut();
-		router.push("/login");
-		router.refresh();
+		try {
+			const supabase = createBrowserClient();
+			await supabase.auth.signOut();
+		} catch (err) {
+			console.error("Sign out failed:", err);
+		}
+		// Force full page reload so middleware sees the cleared session cookie
+		window.location.href = "/login";
 	}
 
 	if (!userId) return null;

@@ -2,7 +2,7 @@
 
 import { useState, useMemo } from "react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import {
 	Table,
 	TableBody,
@@ -20,19 +20,13 @@ import {
 	DialogHeader,
 	DialogTitle,
 } from "@/components/ui/dialog";
-import { Search, Plus, Edit, Trash2, Users, Clock } from "lucide-react";
-import { Input } from "@/components/ui/input";
-import {
-	Select,
-	SelectContent,
-	SelectItem,
-	SelectTrigger,
-	SelectValue,
-} from "@/components/ui/select";
+import { Plus, Edit, Trash2, Users } from "lucide-react";
 import { SearchFilterBar } from "@/components/search-filter-bar";
+
 import Link from "next/link";
 import { useToast } from "@/hooks/use-toast";
 import { EmptyState } from "@/components/empty-state";
+import { StaffSubNav } from "@/components/staff/staff-sub-nav";
 
 // ── Types ─────────────────────────────────────────────────────────────
 
@@ -134,6 +128,9 @@ export function StaffClient({
 					</Button>
 				</Link>
 			</div>
+
+			{/* Sub-navigation tabs */}
+			<StaffSubNav />
 
 			{/* Search & Filters */}
 			<Card className="bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/70 mb-6">
