@@ -22,7 +22,6 @@ import {
 	DialogTitle,
 } from "@/components/ui/dialog";
 
-
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import {
@@ -1213,7 +1212,7 @@ export function AvailabilityCalendar({
 
 			{/* ── Self Availability Dialog (self mode) ── */}
 			<Dialog open={selfDialogOpen} onOpenChange={setSelfDialogOpen}>
-				<DialogContent className="bg-zinc-900 border border-zinc-800/70 w-80">
+				<DialogContent className="bg-zinc-900 border border-zinc-800/70 max-w-sm">
 					<DialogHeader>
 						<DialogTitle className="text-white text-base">
 							Set Availability
