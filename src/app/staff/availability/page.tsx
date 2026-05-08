@@ -4,7 +4,6 @@ import { useSearchParams, useRouter } from "next/navigation";
 import { Suspense, useState, useEffect } from "react";
 import { AvailabilityCalendar } from "@/components/availability-calendar";
 import { AlertTriangle } from "lucide-react";
-import { createClient } from "@/lib/supabase/browser";
 import { StaffSubNav } from "@/components/staff/staff-sub-nav";
 
 function AvailabilityPageInner() {
@@ -21,69 +20,45 @@ function AvailabilityPageInner() {
 	const initialMode = viewParam === "me" ? "self" : "all";
 	const [viewMode, setViewMode] = useState<"self" | "all">(initialMode);
 
-	// When in "self" mode, fetch staff to find current user's staff record.
-	// IMPORTANT: No `fetchedRef` guard here — React 19 Strict Mode preserves
-	// useRef values across the unmount/remount cycle, so a guard would skip the
-	// fetch on the second mount and leave loadingStaff=true forever.
+	// When in "self" mode, fetch the current user's staff record.
+	// Uses the dedicated /api/staff/me endpoint which does the matching
+	// server-side (avoids fragile client-side getUser + profile_id matching).
+	// No `fetchedRef` guard here — React 19 Strict Mode preserves useRef
+	// values across unmount/remount, which would skip the second mount.
 	useEffect(() => {
 		if (viewMode !== "self") return;
 
 		const controller = new AbortController();
 		const timeoutId = setTimeout(() => controller.abort(), 10000);
 
-		fetch("/api/staff", { signal: controller.signal })
+		fetch("/api/staff/me", { signal: controller.signal })
 			.then((res) => {
+				if (res.status === 404) {
+					throw new Error(
+						"No staff record found for your profile. Contact an admin to set up your staff profile.",
+					);
+				}
 				if (!res.ok) {
 					throw new Error(
 						`Server responded with ${res.status}: ${res.statusText}`,
 					);
 				}
-				return res.json() as Promise<{
-					staff?: Array<Record<string, unknown>>;
-				}>;
+				return res.json() as Promise<{ id: string }>;
 			})
-			.then(async (data) => {
-				const staffList = data.staff || [];
-				if (staffList.length > 0) {
-					// Match the logged-in user's profile_id to find their staff record
-					const supabase = createClient();
-					const {
-						data: { user },
-					} = await supabase.auth.getUser();
-					if (user) {
-						const myStaffRecord = staffList.find(
-							(s: Record<string, unknown>) => s.profile_id === user.id,
-						);
-						if (myStaffRecord) {
-							setStaffMemberId(myStaffRecord.id as string);
-							setStaffError(null);
-						} else {
-							setStaffError(
-								"No staff record found for your profile. Contact an admin to set up your staff profile.",
-							);
-						}
-					} else {
-						setStaffError("You must be logged in to set availability.");
-					}
-				} else {
-					setStaffError("No staff records found. Contact an admin.");
-				}
+			.then((data) => {
+				setStaffMemberId(data.id);
+				setStaffError(null);
 				setLoadingStaff(false);
 			})
 			.catch((err) => {
-				console.error("Failed to fetch staff:", err);
-				if (err instanceof DOMException && err.name === "AbortError") {
-					setStaffError(
-						"Request timed out. Please check your connection and try again.",
-					);
-				} else {
-					setStaffError("Failed to load staff data. Please try again.");
-				}
+				console.error("Failed to fetch staff/me:", err);
+				const msg =
+					err instanceof Error ? err.message : "Failed to load staff data.";
+				setStaffError(msg);
 				setLoadingStaff(false);
 			})
 			.finally(() => clearTimeout(timeoutId));
 
-		// Cleanup: abort in-flight request when viewMode changes or component unmounts
 		return () => {
 			controller.abort();
 			clearTimeout(timeoutId);
