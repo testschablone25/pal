@@ -90,12 +90,6 @@ interface LinkedTaskEntry {
 			name: string;
 			date: string;
 		} | null;
-		subtasks: {
-			id: string;
-			title: string;
-			status: string;
-			priority: string;
-		}[];
 	};
 	goal_sub_location: {
 		id: string;
@@ -130,6 +124,7 @@ export function InventoryDetail({ itemId }: InventoryDetailProps) {
 	const [history, setHistory] = useState<LocationHistoryEntry[]>([]);
 	const [linkedTasks, setLinkedTasks] = useState<LinkedTaskEntry[]>([]);
 	const [loadingTasks, setLoadingTasks] = useState(false);
+	const [tasksError, setTasksError] = useState<string | null>(null);
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);
 	const [showCheckinModal, setShowCheckinModal] = useState(false);
@@ -174,14 +169,19 @@ export function InventoryDetail({ itemId }: InventoryDetailProps) {
 
 	const fetchLinkedTasks = async () => {
 		setLoadingTasks(true);
+		setTasksError(null);
 		try {
 			const response = await fetch(`/api/items/${itemId}/tasks`);
 			if (response.ok) {
 				const data = await response.json();
 				setLinkedTasks(data.task_entries || []);
+			} else {
+				const errData = await response.json().catch(() => ({}));
+				setTasksError(errData.error || `Server error (${response.status})`);
 			}
 		} catch (err) {
 			console.error("Failed to fetch linked tasks:", err);
+			setTasksError(err instanceof Error ? err.message : "Failed to fetch");
 		} finally {
 			setLoadingTasks(false);
 		}
@@ -497,6 +497,10 @@ export function InventoryDetail({ itemId }: InventoryDetailProps) {
 						<div className="flex items-center justify-center py-6">
 							<Loader2 className="h-5 w-5 animate-spin text-zinc-500" />
 						</div>
+					) : tasksError ? (
+						<p className="text-red-400 text-center py-6 text-sm">
+							{tasksError}
+						</p>
 					) : linkedTasks.length === 0 ? (
 						<p className="text-zinc-500 text-center py-6">
 							No tasks linked to this item
@@ -505,9 +509,6 @@ export function InventoryDetail({ itemId }: InventoryDetailProps) {
 						<div className="space-y-3">
 							{linkedTasks.map((entry) => {
 								const task = entry.task;
-								const subtasksDone =
-									task.subtasks?.filter((s) => s.status === "done").length || 0;
-								const subtasksTotal = task.subtasks?.length || 0;
 
 								return (
 									<div
@@ -554,31 +555,6 @@ export function InventoryDetail({ itemId }: InventoryDetailProps) {
 													<span className="text-emerald-400">Delivered</span>
 												)}
 											</div>
-
-											{/* Subtasks progress */}
-											{subtasksTotal > 0 && (
-												<div className="flex items-center gap-2 mt-1">
-													<div className="flex gap-1">
-														{task.subtasks.slice(0, 4).map((sub) => (
-															<div
-																key={sub.id}
-																className={cn(
-																	"w-1.5 h-1.5 rounded-full",
-																	sub.status === "done"
-																		? "bg-green-500"
-																		: sub.status === "in_progress"
-																			? "bg-blue-500"
-																			: "bg-zinc-600",
-																)}
-																title={sub.title}
-															/>
-														))}
-													</div>
-													<span className="text-[10px] text-zinc-600">
-														{subtasksDone}/{subtasksTotal} sub-tasks
-													</span>
-												</div>
-											)}
 										</div>
 									</div>
 								);

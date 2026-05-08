@@ -19,7 +19,10 @@ import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
 import { useI18n } from "@/lib/i18n";
 import { useUser } from "@/lib/user-context";
-import { createClient as createBrowserClient } from "@/lib/supabase/browser";
+import {
+	createClient as createBrowserClient,
+	resetClient,
+} from "@/lib/supabase/browser";
 import { canAccessRoute } from "@/lib/permissions";
 import {
 	Sheet,
@@ -213,13 +216,18 @@ function UserMenu() {
 	async function handleSignOut() {
 		setOpen(false);
 		try {
-			const supabase = createBrowserClient();
-			await supabase.auth.signOut();
+			// Use the server-side endpoint to properly clear HTTP-only session cookies
+			const res = await fetch("/api/auth/signout", { method: "POST" });
+			if (!res.ok) {
+				console.error("Server sign-out failed:", await res.text());
+			}
 		} catch (err) {
 			console.error("Sign out failed:", err);
+		} finally {
+			// Reset the singleton so next client gets a fresh instance
+			resetClient();
+			window.location.href = "/login";
 		}
-		// Force full page reload so middleware sees the cleared session cookie
-		window.location.href = "/login";
 	}
 
 	if (!userId) return null;

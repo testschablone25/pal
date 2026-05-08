@@ -1,9 +1,12 @@
 // API Route Auth & Permission Helpers
 // Provides a consistent way to authenticate users and check permissions
 // in all API routes across the application.
+//
+// Uses a read-only Supabase client created from the NextRequest cookies
+// so auth works correctly in Next.js 16 API route handlers.
 
 import { NextRequest, NextResponse } from "next/server";
-import { createClient } from "@/lib/supabase/server";
+import { createServerClient } from "@supabase/ssr";
 import { createClient as createAdminClient } from "@supabase/supabase-js";
 import { supabaseConfig } from "@/lib/supabase/config";
 import {
@@ -12,6 +15,36 @@ import {
 	type AppRole,
 	type FeaturePermission,
 } from "@/lib/permissions";
+
+/** Singleton admin (service-role) client — cached across the lifetime of the
+ *  server process for API-route DB operations that bypass RLS. */
+let adminClient: ReturnType<typeof createAdminClient> | null = null;
+
+function getAdminClientSingleton(): ReturnType<typeof createAdminClient> {
+	if (adminClient) return adminClient;
+	adminClient = createAdminClient(
+		supabaseConfig.url,
+		supabaseConfig.serviceKey,
+	);
+	return adminClient;
+}
+
+/**
+ * Create a Supabase client that reads auth cookies from the NextRequest.
+ * Token-refresh writes are no-ops — the client-side handles that.
+ */
+function createRequestClient(request: NextRequest) {
+	return createServerClient(supabaseConfig.url, supabaseConfig.publishableKey, {
+		cookies: {
+			getAll() {
+				return request.cookies.getAll();
+			},
+			setAll() {
+				// Read-only — token refresh is handled by the browser client
+			},
+		},
+	});
+}
 
 /**
  * Result of an auth check.
@@ -28,30 +61,31 @@ export interface AuthCheckResult {
  * Internal: get the authenticated user and their roles.
  * Returns null on auth failure.
  */
-async function getAuthenticatedUser(): Promise<{
+async function getAuthenticatedUser(request: NextRequest): Promise<{
 	userId: string;
 	userRoles: AppRole[];
 } | null> {
 	try {
-		const supabase = await createClient();
-		const { data: userData, error: authError } = await supabase.auth.getUser();
+		const supabase = createRequestClient(request);
+		const {
+			data: { user },
+			error: authError,
+		} = await supabase.auth.getUser();
 
-		if (authError || !userData?.user) return null;
+		if (authError || !user) return null;
 
-		const adminClient = createAdminClient(
-			supabaseConfig.url,
-			supabaseConfig.serviceKey,
-		);
-		const { data } = await adminClient
+		// Use admin client to fetch roles (bypasses RLS)
+		const admin = getAdminClientSingleton();
+		const { data } = await admin
 			.from("user_roles")
 			.select("role")
-			.eq("user_id", userData.user.id);
+			.eq("user_id", user.id);
 
 		const userRoles: AppRole[] = (
 			data?.map((r: { role: string }) => r.role as AppRole) ?? []
 		).filter(isValidRole);
 
-		return { userId: userData.user.id, userRoles };
+		return { userId: user.id, userRoles };
 	} catch {
 		return null;
 	}
@@ -99,7 +133,7 @@ function serverErrorResponse(): AuthCheckResult {
 /**
  * Authenticate the request and check if the user has a specific feature permission.
  *
- * @param _request - The incoming NextRequest
+ * @param request - The incoming NextRequest
  * @param requiredPermission - The feature permission to check
  * @returns AuthCheckResult with user info if authorized, or an error response
  *
@@ -108,11 +142,11 @@ function serverErrorResponse(): AuthCheckResult {
  *   if (!auth.authorized) return auth.response;
  */
 export async function requireAuth(
-	_request: NextRequest,
+	request: NextRequest,
 	requiredPermission: FeaturePermission,
 ): Promise<AuthCheckResult> {
 	try {
-		const user = await getAuthenticatedUser();
+		const user = await getAuthenticatedUser(request);
 		if (!user) return unauthorizedResponse();
 		if (!hasPermission(user.userRoles, requiredPermission)) {
 			return forbiddenResponse(user.userId, user.userRoles);
@@ -128,10 +162,10 @@ export async function requireAuth(
  * Useful for routes where access is allowed to any authenticated user.
  */
 export async function authenticate(
-	_request: NextRequest,
+	request: NextRequest,
 ): Promise<AuthCheckResult> {
 	try {
-		const user = await getAuthenticatedUser();
+		const user = await getAuthenticatedUser(request);
 		if (!user) return unauthorizedResponse();
 		return { authorized: true, userId: user.userId, userRoles: user.userRoles };
 	} catch {
@@ -140,8 +174,8 @@ export async function authenticate(
 }
 
 /**
- * Get the Supabase admin client (service_role) for API route DB operations.
+ * Get a Supabase admin client (service_role) for API route DB operations.
  */
 export function getAdminClient() {
-	return createAdminClient(supabaseConfig.url, supabaseConfig.serviceKey);
+	return getAdminClientSingleton();
 }

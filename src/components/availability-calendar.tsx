@@ -398,7 +398,7 @@ export function AvailabilityCalendar({
 				staff_id: targetStaffId,
 				date: quickDate,
 				available,
-				reason: available ? null : null,
+				reason: available ? null : quickNotes || null,
 			};
 			if (quickNotes) body.notes = quickNotes;
 
@@ -409,7 +409,8 @@ export function AvailabilityCalendar({
 			});
 
 			if (!response.ok) {
-				throw new Error("Failed to save availability");
+				const errBody = await response.text();
+				throw new Error(`Server error (${response.status}): ${errBody}`);
 			}
 
 			setPopoverOpen(false);
@@ -555,7 +556,8 @@ export function AvailabilityCalendar({
 			});
 
 			if (!response.ok) {
-				throw new Error("Failed to save availability");
+				const errBody = await response.text();
+				throw new Error(`Server error (${response.status}): ${errBody}`);
 			}
 
 			setDialogOpen(false);
@@ -563,6 +565,14 @@ export function AvailabilityCalendar({
 			fetchAvailability();
 		} catch (error) {
 			console.error("Error saving availability:", error);
+			toast({
+				variant: "destructive",
+				title: "Error",
+				description:
+					error instanceof Error
+						? error.message
+						: "Failed to save availability",
+			});
 		} finally {
 			setSaving(false);
 		}

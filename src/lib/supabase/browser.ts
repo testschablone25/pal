@@ -14,3 +14,8 @@ export function createClient() {
 
 	return clientInstance;
 }
+
+/** Reset the singleton — call after sign-out to avoid stale auth state. */
+export function resetClient() {
+	clientInstance = null;
+}

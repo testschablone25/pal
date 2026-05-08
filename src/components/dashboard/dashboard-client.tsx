@@ -191,6 +191,13 @@ export function DashboardClient({ data }: { data: DashboardData }) {
 			!overdueTaskIds.has(t.id),
 	);
 	const unassignedTasks = tasks.filter((t) => !t.event?.date && !t.due_date);
+	const otherTasks = tasks.filter(
+		(t) =>
+			!overdueTaskIds.has(t.id) &&
+			!todayTasks.includes(t) &&
+			!weekTasks.includes(t) &&
+			!unassignedTasks.includes(t),
+	);
 
 	const todayShifts = shifts.filter((s) => s.event?.date === today);
 	const upcomingShifts = shifts.filter(
@@ -351,6 +358,25 @@ export function DashboardClient({ data }: { data: DashboardData }) {
 								</h3>
 								<div className="space-y-1.5">
 									{unassignedTasks.slice(0, 4).map((task) => (
+										<DashboardTaskRow
+											key={task.id}
+											task={task}
+											onClick={() => handleTaskClick(task)}
+											muted
+										/>
+									))}
+								</div>
+							</div>
+						)}
+
+						{/* Other tasks with due date but no event */}
+						{otherTasks.length > 0 && (
+							<div className="rounded-lg bg-zinc-900/50 backdrop-blur-sm border border-zinc-800/50 p-4">
+								<h3 className="text-sm font-medium text-zinc-500 mb-3">
+									Fällig ({otherTasks.length})
+								</h3>
+								<div className="space-y-1.5">
+									{otherTasks.map((task) => (
 										<DashboardTaskRow
 											key={task.id}
 											task={task}

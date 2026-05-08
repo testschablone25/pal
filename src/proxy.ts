@@ -17,9 +17,6 @@ const PROTECTED_ROUTES = [
 	"/settings",
 ];
 
-// Routes that are always accessible (public routes)
-const PUBLIC_ROUTES = ["/", "/login", "/signup", "/auth"];
-
 export async function proxy(request: NextRequest) {
 	const { pathname } = request.nextUrl;
 

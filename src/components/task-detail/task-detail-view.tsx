@@ -7,7 +7,13 @@ import { Separator } from "@/components/ui/separator";
 import { TaskHistoryTimeline } from "@/components/task-history-timeline";
 import { cn, statusBadgeClass } from "@/lib/utils";
 import { formatDateShort } from "@/lib/dates";
-import { Calendar, User, CornerDownRight, History, MessageSquare } from "lucide-react";
+import {
+	Calendar,
+	User,
+	CornerDownRight,
+	History,
+	MessageSquare,
+} from "lucide-react";
 import { useI18n } from "@/lib/i18n";
 import { TaskDetailItems } from "./task-detail-items";
 import { TaskDetailActions } from "./task-detail-actions";
@@ -25,8 +31,16 @@ const PRIORITIES = [
 
 const STATUSES = [
 	{ value: "todo" as const, labelEn: "To Do", labelDe: "To Do" },
-	{ value: "in_progress" as const, labelEn: "In Progress", labelDe: "In Bearbeitung" },
-	{ value: "pending_approval" as const, labelEn: "Pending Approval", labelDe: "Freigabe ausstehend" },
+	{
+		value: "in_progress" as const,
+		labelEn: "In Progress",
+		labelDe: "In Bearbeitung",
+	},
+	{
+		value: "pending_approval" as const,
+		labelEn: "Pending Approval",
+		labelDe: "Freigabe ausstehend",
+	},
 	{ value: "done" as const, labelEn: "Done", labelDe: "Erledigt" },
 	{ value: "cancelled" as const, labelEn: "Cancelled", labelDe: "Abgebrochen" },
 ];
@@ -93,17 +107,24 @@ export function TaskDetailView({
 	return (
 		<div className="space-y-6">
 			{/* Parent breadcrumb */}
-			{(fullTask?.parent_task || task.parent_task || (task.parent_task_id && parentTaskTitle)) && (
+			{(fullTask?.parent_task ||
+				task.parent_task ||
+				(task.parent_task_id && parentTaskTitle)) && (
 				<button
 					onClick={() => onNavigateToTask(task.parent_task_id!)}
 					className="flex items-center gap-1.5 text-sm text-zinc-500 hover:text-violet-400 transition-colors mb-2 group"
 				>
 					<CornerDownRight className="h-3.5 w-3.5 rotate-180 group-hover:-translate-x-0.5 transition-transform" />
 					<span className="truncate">
-						{fullTask?.parent_task?.title || task.parent_task?.title || parentTaskTitle}
+						{fullTask?.parent_task?.title ||
+							task.parent_task?.title ||
+							parentTaskTitle}
 					</span>
 					{(fullTask?.parent_task?.status || task.parent_task?.status) && (
-						<Badge variant="outline" className="bg-zinc-800 text-zinc-500 border-zinc-700 text-[10px]">
+						<Badge
+							variant="outline"
+							className="bg-zinc-800 text-zinc-500 border-zinc-700 text-[10px]"
+						>
 							{fullTask?.parent_task?.status || task.parent_task?.status}
 						</Badge>
 					)}
@@ -121,7 +142,10 @@ export function TaskDetailView({
 						{PRIORITIES.find((p) => p.value === task.priority)?.labelEn}
 					</Badge>
 					{task.event && (
-						<Badge variant="outline" className="bg-violet-600/20 text-violet-400 border-violet-600/50">
+						<Badge
+							variant="outline"
+							className="bg-violet-600/20 text-violet-400 border-violet-600/50"
+						>
 							{task.event.name}
 						</Badge>
 					)}
@@ -131,7 +155,10 @@ export function TaskDetailView({
 						</Badge>
 					)}
 					{task.needs_approval && task.status !== "pending_approval" && (
-						<Badge variant="outline" className={statusBadgeClass("pending_approval")}>
+						<Badge
+							variant="outline"
+							className={statusBadgeClass("pending_approval")}
+						>
 							{t("action.needs_approval")}
 						</Badge>
 					)}
@@ -155,11 +182,17 @@ export function TaskDetailView({
 
 			{/* Description */}
 			<div>
-				<h4 className="text-sm font-medium text-zinc-400 mb-2">{t("detail.description")}</h4>
+				<h4 className="text-sm font-medium text-zinc-400 mb-2">
+					{t("detail.description")}
+				</h4>
 				{task.description ? (
-					<p className="text-zinc-300 whitespace-pre-wrap text-sm">{task.description}</p>
+					<p className="text-zinc-300 whitespace-pre-wrap text-sm">
+						{task.description}
+					</p>
 				) : (
-					<p className="text-zinc-500 text-sm italic">{t("detail.no_description")}</p>
+					<p className="text-zinc-500 text-sm italic">
+						{t("detail.no_description")}
+					</p>
 				)}
 			</div>
 
@@ -168,7 +201,7 @@ export function TaskDetailView({
 
 			{/* Meta info (assignee, events, dates) */}
 			<TaskDetailMeta
-				task={task}
+				task={fullTask || task}
 				profiles={profiles}
 				onFieldSave={onFieldSave}
 			/>

@@ -122,21 +122,19 @@ export async function POST(request: NextRequest) {
 			);
 		}
 
-		// Build upsert payload
+		// Build upsert payload — only include fields that were actually sent
 		const payload: Record<string, unknown> = {
 			staff_id,
 			date,
 			available,
-			reason: reason || null,
-			notes: notes || null,
-			available_from: available_from || null,
-			available_until: available_until || null,
 		};
-
-		// Track who set this (manager override)
-		if (set_by) {
-			payload.set_by = set_by;
-		}
+		if ("reason" in body) payload.reason = reason || null;
+		if ("notes" in body) payload.notes = notes || null;
+		if ("available_from" in body)
+			payload.available_from = available_from || null;
+		if ("available_until" in body)
+			payload.available_until = available_until || null;
+		if (set_by) payload.set_by = set_by;
 
 		// Upsert: insert or update if exists
 		const { data, error } = await supabase

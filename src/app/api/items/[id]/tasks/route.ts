@@ -45,13 +45,7 @@ export async function GET(
             name,
             date
           ),
-          parent_task_id,
-          subtasks:tasks!tasks_parent_task_id_fkey (
-            id,
-            title,
-            status,
-            priority
-          )
+          parent_task_id
         ),
         goal_sub_location:goal_sub_location_id (
           id,
@@ -63,8 +57,7 @@ export async function GET(
         )
       `,
 			)
-			.eq("item_id", id)
-			.order("task_id", { ascending: false });
+			.eq("item_id", id);
 
 		if (error) {
 			return NextResponse.json({ error: error.message }, { status: 500 });
