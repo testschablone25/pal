@@ -21,11 +21,7 @@ import {
 	DialogHeader,
 	DialogTitle,
 } from "@/components/ui/dialog";
-import {
-	Popover,
-	PopoverContent,
-	PopoverTrigger,
-} from "@/components/ui/popover";
+
 
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
@@ -175,8 +171,8 @@ export function AvailabilityCalendar({
 	const [availableFrom, setAvailableFrom] = useState("");
 	const [availableUntil, setAvailableUntil] = useState("");
 
-	// Quick popover (self mode)
-	const [popoverOpen, setPopoverOpen] = useState(false);
+	// Self availability dialog (self mode)
+	const [selfDialogOpen, setSelfDialogOpen] = useState(false);
 	const [quickDate, setQuickDate] = useState<string | null>(null);
 	const [quickNotes, setQuickNotes] = useState("");
 	const [quickError, setQuickError] = useState<string | null>(null);
@@ -381,7 +377,7 @@ export function AvailabilityCalendar({
 
 		if (viewMode === "self") {
 			setQuickDate(date);
-			setPopoverOpen(true);
+			setSelfDialogOpen(true);
 			// Also fetch colleagues for this date
 			fetchColleaguesAvailability(date);
 		} else {
@@ -419,7 +415,7 @@ export function AvailabilityCalendar({
 				throw new Error(`Server error (${response.status}): ${errBody}`);
 			}
 
-			setPopoverOpen(false);
+			setSelfDialogOpen(false);
 			setQuickNotes("");
 			setQuickError(null);
 			fetchAvailability();
@@ -443,7 +439,7 @@ export function AvailabilityCalendar({
 		);
 
 		if (!existing) {
-			setPopoverOpen(false);
+			setSelfDialogOpen(false);
 			return;
 		}
 
@@ -457,7 +453,7 @@ export function AvailabilityCalendar({
 				throw new Error("Failed to clear availability");
 			}
 
-			setPopoverOpen(false);
+			setSelfDialogOpen(false);
 			setQuickNotes("");
 			fetchAvailability();
 			if (colleaguesDate === quickDate) {
@@ -1215,37 +1211,25 @@ export function AvailabilityCalendar({
 				</div>
 			)}
 
-			{/* ── Quick Popover (self mode) ── */}
-			<Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
-				<PopoverTrigger asChild>
-					{/* Hidden trigger - controlled via state */}
-					<span />
-				</PopoverTrigger>
-				<PopoverContent
-					className="bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/70 w-72"
-					align="start"
-					side="bottom"
-					onOpenAutoFocus={(e) => e.preventDefault()}
-				>
-					<div className="space-y-4">
-						<div>
-							<h4 className="text-white font-medium text-sm">
-								Set Availability
-							</h4>
-							<p className="text-zinc-400 text-xs mt-1">
-								{quickDate &&
-									new Date(quickDate + "T12:00:00").toLocaleDateString(
-										"en-US",
-										{
-											weekday: "long",
-											year: "numeric",
-											month: "long",
-											day: "numeric",
-										},
-									)}
-							</p>
-						</div>
+			{/* ── Self Availability Dialog (self mode) ── */}
+			<Dialog open={selfDialogOpen} onOpenChange={setSelfDialogOpen}>
+				<DialogContent className="bg-zinc-900 border border-zinc-800/70 w-80">
+					<DialogHeader>
+						<DialogTitle className="text-white text-base">
+							Set Availability
+						</DialogTitle>
+						<DialogDescription className="text-zinc-400 text-sm">
+							{quickDate &&
+								new Date(quickDate + "T12:00:00").toLocaleDateString("en-US", {
+									weekday: "long",
+									year: "numeric",
+									month: "long",
+									day: "numeric",
+								})}
+						</DialogDescription>
+					</DialogHeader>
 
+					<div className="space-y-4">
 						{/* Conflict warning */}
 						{quickDate && getConflictsForDate(quickDate).length > 0 && (
 							<div className="p-3 rounded-lg bg-amber-600/10 border border-amber-600/30">
@@ -1257,31 +1241,35 @@ export function AvailabilityCalendar({
 						)}
 
 						{/* Comment */}
-						<div className="space-y-1">
-							<label className="text-xs text-zinc-400 block">Comment</label>
+						<div className="space-y-1.5">
+							<label className="text-xs text-zinc-400 block font-medium">
+								Comment
+							</label>
 							<Textarea
 								value={quickNotes}
 								onChange={(e) => setQuickNotes(e.target.value)}
 								placeholder="e.g., Vacation, Sick leave..."
-								className="bg-zinc-950 border-zinc-800 text-xs h-16"
+								className="bg-zinc-950 border-zinc-800 text-xs h-16 resize-none"
 							/>
 						</div>
 
 						{/* Error message */}
 						{quickError && (
-							<p className="text-xs text-red-400 flex items-center gap-1">
-								<AlertTriangle className="h-3 w-3" />
-								{quickError}
-							</p>
+							<div className="p-2 rounded bg-red-600/10 border border-red-600/30">
+								<p className="text-xs text-red-400 flex items-center gap-1.5">
+									<AlertTriangle className="h-3.5 w-3.5 shrink-0" />
+									{quickError}
+								</p>
+							</div>
 						)}
 
 						{/* Quick action buttons */}
-						<div className="flex gap-2">
+						<div className="flex gap-2 pt-1">
 							<Button
 								size="sm"
 								onClick={() => handleSelfQuickSet(true)}
 								disabled={saving}
-								className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-xs"
+								className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-xs h-9"
 							>
 								{saving ? (
 									<Loader2 className="h-3.5 w-3.5 mr-1 animate-spin" />
@@ -1294,7 +1282,7 @@ export function AvailabilityCalendar({
 								size="sm"
 								onClick={() => handleSelfQuickSet(false)}
 								disabled={saving}
-								className="flex-1 bg-red-600 hover:bg-red-700 text-xs"
+								className="flex-1 bg-red-600 hover:bg-red-700 text-xs h-9"
 							>
 								{saving ? (
 									<Loader2 className="h-3.5 w-3.5 mr-1 animate-spin" />
@@ -1308,14 +1296,14 @@ export function AvailabilityCalendar({
 								variant="outline"
 								onClick={handleSelfQuickClear}
 								disabled={saving}
-								className="flex-1 border-zinc-700 text-zinc-400 text-xs"
+								className="flex-1 border-zinc-700 text-zinc-400 hover:text-zinc-200 text-xs h-9"
 							>
 								<Trash2 className="h-3.5 w-3.5 mr-1" />
 								Clear
 							</Button>
 						</div>
 
-						{/* Manager override info in self mode */}
+						{/* Manager override info */}
 						{quickDate &&
 							(() => {
 								const entry = availability.find(
@@ -1323,8 +1311,8 @@ export function AvailabilityCalendar({
 								);
 								if (entry?.set_by_staff) {
 									return (
-										<div className="pt-2 border-t border-zinc-800">
-											<p className="text-[10px] text-zinc-500 flex items-center gap-1">
+										<div className="pt-3 border-t border-zinc-800">
+											<p className="text-xs text-zinc-500 flex items-center gap-1.5">
 												<Shield className="h-3 w-3" />
 												Set by{" "}
 												{entry.set_by_staff.profiles?.full_name || "Manager"}
@@ -1335,8 +1323,8 @@ export function AvailabilityCalendar({
 								return null;
 							})()}
 					</div>
-				</PopoverContent>
-			</Popover>
+				</DialogContent>
+			</Dialog>
 
 			{/* ── Full Dialog (all/manager mode) ── */}
 			<Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
