@@ -42,9 +42,7 @@ export interface AuthCheckResult {
  * Authenticate request via middleware client + admin role lookup.
  * Returns null on auth failure.
  */
-async function getAuthenticatedUser(
-	request: NextRequest,
-): Promise<{
+async function getAuthenticatedUser(request: NextRequest): Promise<{
 	userId: string;
 	userRoles: AppRole[];
 } | null> {

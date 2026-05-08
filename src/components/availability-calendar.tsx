@@ -392,7 +392,9 @@ export function AvailabilityCalendar({
 	const handleSelfQuickSet = async (available: boolean) => {
 		if (!quickDate) return;
 		if (!targetStaffId) {
-			setQuickError("No staff profile found. Contact an admin to set up your staff account.");
+			setQuickError(
+				"No staff profile found. Contact an admin to set up your staff account.",
+			);
 			return;
 		}
 
