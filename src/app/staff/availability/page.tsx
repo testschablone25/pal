@@ -17,7 +17,6 @@ function AvailabilityPageInner() {
 	const [loadingStaff, setLoadingStaff] = useState(viewParam === "me");
 	const [staffError, setStaffError] = useState<string | null>(null);
 
-
 	// Determine initial view mode from URL
 	const initialMode = viewParam === "me" ? "self" : "all";
 	const [viewMode, setViewMode] = useState<"self" | "all">(initialMode);
