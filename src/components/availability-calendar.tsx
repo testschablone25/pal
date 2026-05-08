@@ -390,7 +390,11 @@ export function AvailabilityCalendar({
 	};
 
 	const handleSelfQuickSet = async (available: boolean) => {
-		if (!targetStaffId || !quickDate) return;
+		if (!quickDate) return;
+		if (!targetStaffId) {
+			setQuickError("No staff profile found. Contact an admin to set up your staff account.");
+			return;
+		}
 
 		setSaving(true);
 		try {
@@ -422,8 +426,7 @@ export function AvailabilityCalendar({
 			}
 		} catch (error) {
 			console.error("Error saving availability:", error);
-			const msg =
-				error instanceof Error ? error.message : "Unknown error";
+			const msg = error instanceof Error ? error.message : "Unknown error";
 			setQuickError(msg);
 		} finally {
 			setSaving(false);
