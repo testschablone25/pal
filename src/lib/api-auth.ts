@@ -1,12 +1,10 @@
 // API Route Auth & Permission Helpers
-// Provides a consistent way to authenticate users and check permissions
-// in all API routes across the application.
-//
-// Uses a read-only Supabase client created from the NextRequest cookies
-// so auth works correctly in Next.js 16 API route handlers.
+// Uses the middleware client (same pattern as proxy.ts) to read auth cookies
+// from the NextRequest. The placeholder response carries any cookie changes
+// (token refresh) that Supabase SSR needs.
 
 import { NextRequest, NextResponse } from "next/server";
-import { createServerClient } from "@supabase/ssr";
+import { createMiddlewareClient } from "@/lib/supabase/middleware";
 import { createClient as createAdminClient } from "@supabase/supabase-js";
 import { supabaseConfig } from "@/lib/supabase/config";
 import {
@@ -16,34 +14,17 @@ import {
 	type FeaturePermission,
 } from "@/lib/permissions";
 
-/** Singleton admin (service-role) client — cached across the lifetime of the
- *  server process for API-route DB operations that bypass RLS. */
+/** Singleton admin (service-role) client cached for the server process lifetime. */
 let adminClient: ReturnType<typeof createAdminClient> | null = null;
 
-function getAdminClientSingleton(): ReturnType<typeof createAdminClient> {
-	if (adminClient) return adminClient;
-	adminClient = createAdminClient(
-		supabaseConfig.url,
-		supabaseConfig.serviceKey,
-	);
+function getAdmin(): ReturnType<typeof createAdminClient> {
+	if (!adminClient) {
+		adminClient = createAdminClient(
+			supabaseConfig.url,
+			supabaseConfig.serviceKey,
+		);
+	}
 	return adminClient;
-}
-
-/**
- * Create a Supabase client that reads auth cookies from the NextRequest.
- * Token-refresh writes are no-ops — the client-side handles that.
- */
-function createRequestClient(request: NextRequest) {
-	return createServerClient(supabaseConfig.url, supabaseConfig.publishableKey, {
-		cookies: {
-			getAll() {
-				return request.cookies.getAll();
-			},
-			setAll() {
-				// Read-only — token refresh is handled by the browser client
-			},
-		},
-	});
 }
 
 /**
@@ -58,35 +39,41 @@ export interface AuthCheckResult {
 }
 
 /**
- * Internal: get the authenticated user and their roles.
+ * Authenticate request via middleware client + admin role lookup.
  * Returns null on auth failure.
  */
-async function getAuthenticatedUser(request: NextRequest): Promise<{
+async function getAuthenticatedUser(
+	request: NextRequest,
+): Promise<{
 	userId: string;
 	userRoles: AppRole[];
 } | null> {
 	try {
-		const supabase = createRequestClient(request);
+		// Use the middleware client with a placeholder response.
+		// This is the same pattern as proxy.ts — it reads cookies from the
+		// NextRequest and can handle token refresh if needed.
+		const placeholderResponse = NextResponse.next();
+		const supabase = createMiddlewareClient(request, placeholderResponse);
 		const {
-			data: { user },
-			error: authError,
-		} = await supabase.auth.getUser();
+			data: { session },
+			error: sessionError,
+		} = await supabase.auth.getSession();
 
-		if (authError || !user) return null;
+		if (sessionError || !session?.user) return null;
 
-		// Use admin client to fetch roles (bypasses RLS)
-		const admin = getAdminClientSingleton();
+		const admin = getAdmin();
 		const { data } = await admin
 			.from("user_roles")
 			.select("role")
-			.eq("user_id", user.id);
+			.eq("user_id", session.user.id);
 
 		const userRoles: AppRole[] = (
 			data?.map((r: { role: string }) => r.role as AppRole) ?? []
 		).filter(isValidRole);
 
-		return { userId: user.id, userRoles };
-	} catch {
+		return { userId: session.user.id, userRoles };
+	} catch (e) {
+		console.error("api-auth getAuthenticatedUser error:", e);
 		return null;
 	}
 }
@@ -133,10 +120,6 @@ function serverErrorResponse(): AuthCheckResult {
 /**
  * Authenticate the request and check if the user has a specific feature permission.
  *
- * @param request - The incoming NextRequest
- * @param requiredPermission - The feature permission to check
- * @returns AuthCheckResult with user info if authorized, or an error response
- *
  * Usage:
  *   const auth = await requireAuth(request, "STAFF_WRITE");
  *   if (!auth.authorized) return auth.response;
@@ -177,5 +160,5 @@ export async function authenticate(
  * Get a Supabase admin client (service_role) for API route DB operations.
  */
 export function getAdminClient() {
-	return getAdminClientSingleton();
+	return getAdmin();
 }
