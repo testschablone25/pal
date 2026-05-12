@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -12,6 +12,16 @@ import {
 	DialogHeader,
 	DialogTitle,
 } from "@/components/ui/dialog";
+import {
+	AlertDialog,
+	AlertDialogAction,
+	AlertDialogCancel,
+	AlertDialogContent,
+	AlertDialogDescription,
+	AlertDialogFooter,
+	AlertDialogHeader,
+	AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { cn } from "@/lib/utils";
 import {
 	Phone,
@@ -20,7 +30,14 @@ import {
 	Users,
 	Search,
 	ChevronRight,
+	Plus,
+	Pencil,
+	Trash2,
+	Loader2,
+	Building,
 } from "lucide-react";
+import { ContactForm } from "@/components/contact-form";
+
 // ── Types ───────────────────────────────────────────────────────────────
 
 interface VenueAssociation {
@@ -36,6 +53,8 @@ interface ContactEntry {
 	role: string | null;
 	staff_roles: string[];
 	venues: VenueAssociation[];
+	is_standalone?: boolean;
+	company?: string | null;
 }
 
 // ── Contacts Client ───────────────────────────────────────────────────
@@ -45,7 +64,10 @@ export function ContactsClient({
 }: {
 	initialContacts?: ContactEntry[];
 }) {
-	const [contacts] = useState<ContactEntry[]>(initialContacts || []);
+	const [contacts, setContacts] = useState<ContactEntry[]>(
+		initialContacts || [],
+	);
+	const [loading, setLoading] = useState(false);
 	const [searchQuery, setSearchQuery] = useState("");
 	const [sourceFilter, setSourceFilter] = useState<string>("");
 
@@ -55,16 +77,42 @@ export function ContactsClient({
 	);
 	const [detailOpen, setDetailOpen] = useState(false);
 
-	const openDetail = (contact: ContactEntry) => {
-		setSelectedContact(contact);
-		setDetailOpen(true);
-	};
+	// Create / Edit dialog
+	const [showCreateDialog, setShowCreateDialog] = useState(false);
+	const [editingContact, setEditingContact] = useState<ContactEntry | null>(
+		null,
+	);
+
+	// Delete confirmation
+	const [deletingContact, setDeletingContact] = useState<ContactEntry | null>(
+		null,
+	);
+	const [isDeleting, setIsDeleting] = useState(false);
+
+	// ── Data Fetching ─────────────────────────────────────────────────
+	const fetchContacts = useCallback(async () => {
+		setLoading(true);
+		try {
+			const response = await fetch("/api/contacts");
+			const data = await response.json();
+			setContacts(data.contacts || []);
+		} catch (err) {
+			console.error("Failed to fetch contacts:", err);
+		} finally {
+			setLoading(false);
+		}
+	}, []);
+
+	useEffect(() => {
+		fetchContacts();
+	}, [fetchContacts]);
 
 	// ── Filtering ─────────────────────────────────────────────────────
 	const filtered = contacts.filter((c) => {
 		if (sourceFilter && sourceFilter !== "all") {
 			if (sourceFilter === "Staff" && c.staff_roles.length === 0) return false;
 			if (sourceFilter === "Venue" && c.venues.length === 0) return false;
+			if (sourceFilter === "Contact" && !c.is_standalone) return false;
 		}
 		if (!searchQuery) return true;
 		const q = searchQuery.toLowerCase();
@@ -73,10 +121,59 @@ export function ContactsClient({
 			(c.phone?.toLowerCase() || "").includes(q) ||
 			(c.email?.toLowerCase() || "").includes(q) ||
 			(c.role?.toLowerCase() || "").includes(q) ||
-			c.venues.some((v) => v.name.toLowerCase().includes(q))
+			c.venues.some((v) => v.name.toLowerCase().includes(q)) ||
+			(c.company?.toLowerCase() || "").includes(q)
 		);
 	});
 
+	// ── Handlers ──────────────────────────────────────────────────────
+	const openDetail = (contact: ContactEntry) => {
+		setSelectedContact(contact);
+		setDetailOpen(true);
+	};
+
+	const handleCreateSuccess = () => {
+		setShowCreateDialog(false);
+		fetchContacts();
+	};
+
+	const handleEditStart = () => {
+		setEditingContact(selectedContact);
+		setDetailOpen(false);
+	};
+
+	const handleEditSuccess = () => {
+		setEditingContact(null);
+		fetchContacts();
+	};
+
+	const handleDeleteStart = () => {
+		setDeletingContact(selectedContact);
+		setDetailOpen(false);
+	};
+
+	const handleDeleteConfirm = async () => {
+		if (!deletingContact) return;
+		setIsDeleting(true);
+		try {
+			const response = await fetch(`/api/contacts/${deletingContact.id}`, {
+				method: "DELETE",
+			});
+			if (!response.ok) {
+				const data = await response.json();
+				throw new Error(data.error || "Failed to delete contact");
+			}
+			setDeletingContact(null);
+			setSelectedContact(null);
+			fetchContacts();
+		} catch (err) {
+			console.error("Error deleting contact:", err);
+		} finally {
+			setIsDeleting(false);
+		}
+	};
+
+	// ── Badges ────────────────────────────────────────────────────────
 	const getSourceBadges = (contact: ContactEntry) => {
 		const badges: { label: string; active: boolean; color: string }[] = [];
 		if (contact.staff_roles.length > 0) {
@@ -91,6 +188,13 @@ export function ContactsClient({
 				label: "Venue",
 				active: true,
 				color: "border-amber-600/50 text-amber-400",
+			});
+		}
+		if (contact.is_standalone) {
+			badges.push({
+				label: "Contact",
+				active: true,
+				color: "border-emerald-600/50 text-emerald-400",
 			});
 		}
 		return badges;
@@ -120,20 +224,35 @@ export function ContactsClient({
 									{ value: "all", label: "All" },
 									{ value: "Staff", label: "Staff" },
 									{ value: "Venue", label: "Venue" },
+									{ value: "Contact", label: "Contact" },
 								],
 								value: sourceFilter,
 								onChange: setSourceFilter,
 							},
 						]}
 					/>
+					<div className="mt-4 flex items-center justify-between">
+						<p className="text-sm text-zinc-500">
+							{filtered.length} of {contacts.length} contacts
+						</p>
+						<Button
+							variant="outline"
+							size="sm"
+							onClick={() => setShowCreateDialog(true)}
+							className="border-zinc-700 text-zinc-300 hover:text-white hover:bg-violet-600/20 hover:border-violet-600/50"
+						>
+							<Plus className="h-4 w-4 mr-1.5" />
+							Add Contact
+						</Button>
+					</div>
 				</CardContent>
 			</Card>
 
-			<p className="text-sm text-zinc-500 mb-4">
-				{filtered.length} of {contacts.length} contacts
-			</p>
-
-			{filtered.length === 0 ? (
+			{loading ? (
+				<div className="flex justify-center py-12">
+					<Loader2 className="h-8 w-8 animate-spin text-violet-400" />
+				</div>
+			) : filtered.length === 0 ? (
 				<EmptyState
 					icon={Search}
 					title="No contacts found"
@@ -181,14 +300,23 @@ export function ContactsClient({
 													>
 														{badge.label === "Staff" ? (
 															<Users className="h-2.5 w-2.5 mr-0.5 inline" />
-														) : (
+														) : badge.label === "Venue" ? (
 															<Building2 className="h-2.5 w-2.5 mr-0.5 inline" />
+														) : (
+															<Building className="h-2.5 w-2.5 mr-0.5 inline" />
 														)}
 														{badge.label}
 													</Badge>
 												))}
 											</div>
 										</div>
+
+										{contact.company && (
+											<div className="flex items-center gap-1.5 text-sm text-zinc-400">
+												<Building className="h-3.5 w-3.5 text-zinc-500" />
+												<span>{contact.company}</span>
+											</div>
+										)}
 
 										{contact.venues.length > 0 && (
 											<div className="flex flex-wrap gap-1.5">
@@ -286,6 +414,35 @@ export function ContactsClient({
 
 					{selectedContact && (
 						<div className="space-y-5">
+							{/* Source badges */}
+							<div className="flex items-center gap-2">
+								{getSourceBadges(selectedContact).map((badge) => (
+									<Badge
+										key={badge.label}
+										variant="outline"
+										className={cn(badge.color, "text-xs")}
+									>
+										{badge.label}
+									</Badge>
+								))}
+							</div>
+
+							{/* Company for standalone contacts */}
+							{selectedContact.company && (
+								<div className="flex items-center gap-3 p-3 bg-zinc-800/50 rounded-lg">
+									<div className="h-9 w-9 rounded-full bg-emerald-600/20 flex items-center justify-center shrink-0">
+										<Building className="h-4 w-4 text-emerald-400" />
+									</div>
+									<div>
+										<p className="text-sm text-zinc-400">Company</p>
+										<p className="text-white font-medium">
+											{selectedContact.company}
+										</p>
+									</div>
+								</div>
+							)}
+
+							{/* Phone & Email */}
 							<div className="space-y-2">
 								{selectedContact.phone && (
 									<a
@@ -321,6 +478,7 @@ export function ContactsClient({
 								)}
 							</div>
 
+							{/* Staff Roles */}
 							{selectedContact.staff_roles.length > 0 && (
 								<div>
 									<h4 className="text-sm font-medium text-zinc-400 mb-2 flex items-center gap-2">
@@ -341,6 +499,7 @@ export function ContactsClient({
 								</div>
 							)}
 
+							{/* Venues */}
 							{selectedContact.venues.length > 0 && (
 								<div>
 									<h4 className="text-sm font-medium text-zinc-400 mb-2 flex items-center gap-2">
@@ -365,6 +524,7 @@ export function ContactsClient({
 								</div>
 							)}
 
+							{/* Call button */}
 							{selectedContact.phone && (
 								<Button
 									className="w-full bg-violet-600 hover:bg-violet-700"
@@ -376,10 +536,110 @@ export function ContactsClient({
 									Call {selectedContact.name}
 								</Button>
 							)}
+
+							{/* Edit / Delete for standalone contacts */}
+							{selectedContact.is_standalone && (
+								<div className="flex gap-3 pt-2 border-t border-zinc-800/70">
+									<Button
+										variant="outline"
+										className="flex-1 border-zinc-700 text-zinc-300 hover:text-white hover:bg-violet-600/20 hover:border-violet-600/50"
+										onClick={handleEditStart}
+									>
+										<Pencil className="h-4 w-4 mr-2" />
+										Edit
+									</Button>
+									<Button
+										variant="outline"
+										className="flex-1 border-red-900/50 text-red-400 hover:text-red-300 hover:bg-red-950/30 hover:border-red-700/50"
+										onClick={handleDeleteStart}
+									>
+										<Trash2 className="h-4 w-4 mr-2" />
+										Delete
+									</Button>
+								</div>
+							)}
 						</div>
 					)}
 				</DialogContent>
 			</Dialog>
+
+			{/* Create Contact Dialog */}
+			<Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
+				<DialogContent className="bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/70 rounded-lg max-w-md">
+					<DialogHeader>
+						<DialogTitle className="text-white text-xl">
+							Add New Contact
+						</DialogTitle>
+					</DialogHeader>
+					<ContactForm
+						mode="create"
+						onSuccess={handleCreateSuccess}
+						onCancel={() => setShowCreateDialog(false)}
+					/>
+				</DialogContent>
+			</Dialog>
+
+			{/* Edit Contact Dialog */}
+			<Dialog
+				open={editingContact !== null}
+				onOpenChange={(open) => !open && setEditingContact(null)}
+			>
+				<DialogContent className="bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/70 rounded-lg max-w-md">
+					<DialogHeader>
+						<DialogTitle className="text-white text-xl">
+							Edit Contact
+						</DialogTitle>
+					</DialogHeader>
+					{editingContact && (
+						<ContactForm
+							mode="edit"
+							initialData={{
+								id: editingContact.id,
+								name: editingContact.name,
+								phone: editingContact.phone || "",
+								email: editingContact.email || "",
+								role: editingContact.role || "",
+								company: editingContact.company || "",
+								notes: "",
+							}}
+							onSuccess={handleEditSuccess}
+							onCancel={() => setEditingContact(null)}
+						/>
+					)}
+				</DialogContent>
+			</Dialog>
+
+			{/* Delete Confirmation Dialog */}
+			<AlertDialog
+				open={deletingContact !== null}
+				onOpenChange={(open) => !open && setDeletingContact(null)}
+			>
+				<AlertDialogContent className="bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/70 rounded-lg">
+					<AlertDialogHeader>
+						<AlertDialogTitle className="text-white">
+							Delete Contact
+						</AlertDialogTitle>
+						<AlertDialogDescription className="text-zinc-400">
+							Are you sure you want to delete{" "}
+							<strong className="text-white">{deletingContact?.name}</strong>?
+							This action cannot be undone.
+						</AlertDialogDescription>
+					</AlertDialogHeader>
+					<AlertDialogFooter>
+						<AlertDialogCancel className="border-zinc-700 text-zinc-300 hover:bg-zinc-800">
+							Cancel
+						</AlertDialogCancel>
+						<AlertDialogAction
+							onClick={handleDeleteConfirm}
+							disabled={isDeleting}
+							className="bg-red-600 hover:bg-red-700 text-white"
+						>
+							{isDeleting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+							Delete
+						</AlertDialogAction>
+					</AlertDialogFooter>
+				</AlertDialogContent>
+			</AlertDialog>
 		</div>
 	);
 }

@@ -58,6 +58,7 @@ const taskSchema = z.object({
 	]),
 	priority: z.enum(["low", "medium", "high", "urgent"]),
 	assignee_id: z.string().optional(),
+	assignee_ids: z.array(z.string()).default([]),
 	event_id: z.string().optional(),
 	due_date: z.string().optional(),
 	needs_approval: z.boolean().default(false),
@@ -65,6 +66,7 @@ const taskSchema = z.object({
 	created_by: z.string().optional(),
 	parent_task_id: z.string().nullable().optional(),
 	task_type: z.string().nullable().optional(),
+	attachments: z.array(z.any()).default([]),
 });
 
 type TaskFormValues = z.infer<typeof taskSchema>;
@@ -101,6 +103,12 @@ interface TaskFormProps {
 		status: string;
 		priority: string;
 		assignee_id: string | null;
+		assignees?: Array<{
+			id: string;
+			full_name: string | null;
+			email: string | null;
+			avatar_url: string | null;
+		}> | null;
 		event_id: string | null;
 		due_date: string | null;
 		needs_approval: boolean;
@@ -117,6 +125,7 @@ interface TaskFormProps {
 	};
 	onSubmit: (values: TaskFormValues) => Promise<void>;
 	onCancel?: () => void;
+	onCreateWithFiles?: (values: TaskFormValues, files: File[]) => Promise<void>;
 }
 
 export function TaskForm({
@@ -125,8 +134,11 @@ export function TaskForm({
 	parentTask,
 	onSubmit,
 	onCancel,
+	onCreateWithFiles,
 }: TaskFormProps) {
 	const [loading, setLoading] = useState(false);
+	const [uploading, setUploading] = useState(false);
+	const [pendingFiles, setPendingFiles] = useState<File[]>([]);
 	const [error, setError] = useState<string | null>(null);
 	const [profiles, setProfiles] = useState<Profile[]>([]);
 	const [events, setEvents] = useState<Event[]>([]);
@@ -181,6 +193,9 @@ export function TaskForm({
 		(parentTask?.priority as TaskFormValues["priority"]) ||
 		"medium";
 	const defaultAssigneeId = task?.assignee_id || parentTask?.assignee_id || "";
+	const defaultAssigneeIds =
+		task?.assignees?.map((a) => a.id) ||
+		(task?.assignee_id ? [task.assignee_id] : []);
 
 	const form = useForm<TaskFormValues>({
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -191,6 +206,7 @@ export function TaskForm({
 			status: (task?.status as TaskFormValues["status"]) || "todo",
 			priority: defaultPriority,
 			assignee_id: defaultAssigneeId || "",
+			assignee_ids: defaultAssigneeIds,
 			event_id: defaultEventId || "",
 			due_date: task?.due_date || "",
 			needs_approval: task?.needs_approval || false,
@@ -337,7 +353,12 @@ export function TaskForm({
 		setError(null);
 
 		try {
-			await onSubmit(values);
+			if (isCreate && pendingFiles.length > 0 && onCreateWithFiles) {
+				await onCreateWithFiles(values, pendingFiles);
+				setPendingFiles([]);
+			} else {
+				await onSubmit(values);
+			}
 		} catch (err) {
 			setError(err instanceof Error ? err.message : "An error occurred");
 		} finally {
@@ -361,6 +382,11 @@ export function TaskForm({
 					form={form as never}
 					profiles={profiles}
 					events={events}
+					taskId={task?.id || ""}
+					uploading={uploading}
+					onUploadingChange={setUploading}
+					pendingFiles={pendingFiles}
+					onPendingFilesChange={setPendingFiles}
 				/>
 
 				{/* Task Type */}

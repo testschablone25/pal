@@ -22,10 +22,21 @@ export interface TaskItemEntry {
 	goal_sub_location: SubLocation | null;
 }
 
+export interface Attachment {
+	id: string;
+	name: string;
+	type: "image" | "video" | "file";
+	url: string;
+	size: number;
+	uploaded_at: string;
+	mime_type?: string;
+}
+
 export interface Task {
 	id: string;
 	title: string;
 	description: string | null;
+	attachments?: Attachment[] | null;
 	status: "todo" | "in_progress" | "pending_approval" | "done" | "cancelled";
 	priority: "low" | "medium" | "high" | "urgent";
 	assignee_id: string | null;
@@ -49,6 +60,12 @@ export interface Task {
 		email: string | null;
 		avatar_url: string | null;
 	} | null;
+	assignees?: Array<{
+		id: string;
+		full_name: string | null;
+		email: string | null;
+		avatar_url: string | null;
+	}> | null;
 	event?: {
 		id: string;
 		name: string;

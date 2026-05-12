@@ -31,7 +31,17 @@ import {
 	AlertDialogCancel,
 	AlertDialogAction,
 } from "@/components/ui/alert-dialog";
-import { GripVertical, Clock, Plus, Trash2, Edit } from "lucide-react";
+import {
+	GripVertical,
+	Clock,
+	Plus,
+	Trash2,
+	Edit,
+	Music,
+	ArrowUpDown,
+} from "lucide-react";
+import { QuickArtistCreate } from "@/components/quick-artist-create";
+import { sortPerformancesByTime } from "@/lib/itinerary";
 
 interface Performance {
 	id: string;
@@ -52,7 +62,7 @@ interface Performance {
 interface RunningOrderProps {
 	eventId: string;
 	onReorder?: (performances: Performance[]) => void;
-	onAddPerformance?: () => void;
+	onAddPerformance?: (preselectedArtistId?: string) => void;
 	onEditPerformance?: (performance: Performance) => void;
 	onDeletePerformance?: (performance: Performance) => void;
 }
@@ -163,6 +173,8 @@ export function RunningOrder({
 	const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 	const [deletingPerformance, setDeletingPerformance] =
 		useState<Performance | null>(null);
+	const [showQuickArtistCreate, setShowQuickArtistCreate] = useState(false);
+	const [sorting, setSorting] = useState(false);
 
 	const sensors = useSensors(
 		useSensor(PointerSensor),
@@ -233,6 +245,20 @@ export function RunningOrder({
 		}
 	};
 
+	const handleSortByTime = async () => {
+		setSorting(true);
+		try {
+			const sorted = sortPerformancesByTime(performances);
+			const updated = sorted.map((item, index) => ({
+				...item,
+				order_index: index,
+			}));
+			await saveOrder(updated);
+		} finally {
+			setSorting(false);
+		}
+	};
+
 	const handleDelete = async () => {
 		if (!deletingPerformance) return;
 
@@ -282,13 +308,34 @@ export function RunningOrder({
 							</Badge>
 						)}
 					</CardTitle>
-					<Button
-						className="bg-violet-600 hover:bg-violet-700"
-						onClick={onAddPerformance}
-					>
-						<Plus className="h-4 w-4 mr-2" />
-						Add Performance
-					</Button>
+					<div className="flex items-center gap-2">
+						<Button
+							variant="outline"
+							size="sm"
+							onClick={handleSortByTime}
+							disabled={sorting}
+							className="border-zinc-700"
+						>
+							<ArrowUpDown className="h-4 w-4 mr-2" />
+							{sorting ? "Sorting..." : "Sort by Time"}
+						</Button>
+						<Button
+							variant="outline"
+							size="sm"
+							onClick={() => setShowQuickArtistCreate(true)}
+							className="border-zinc-700"
+						>
+							<Music className="h-4 w-4 mr-2" />
+							New Artist
+						</Button>
+						<Button
+							className="bg-violet-600 hover:bg-violet-700"
+							onClick={() => onAddPerformance?.()}
+						>
+							<Plus className="h-4 w-4 mr-2" />
+							Add Performance
+						</Button>
+					</div>
 				</CardHeader>
 				<CardContent>
 					{performances.length === 0 ? (
@@ -297,10 +344,20 @@ export function RunningOrder({
 							<Button
 								variant="outline"
 								className="mt-4 border-zinc-700"
-								onClick={onAddPerformance}
+								onClick={() => onAddPerformance?.()}
 							>
 								Add your first performance
 							</Button>
+							<div className="flex flex-col items-center gap-2 mt-4">
+								<Button
+									variant="outline"
+									className="border-zinc-700"
+									onClick={() => setShowQuickArtistCreate(true)}
+								>
+									<Music className="h-4 w-4 mr-2" />
+									Create new artist first
+								</Button>
+							</div>
 						</div>
 					) : (
 						<DndContext
@@ -353,6 +410,14 @@ export function RunningOrder({
 					</AlertDialogFooter>
 				</AlertDialogContent>
 			</AlertDialog>
+
+			<QuickArtistCreate
+				open={showQuickArtistCreate}
+				onOpenChange={setShowQuickArtistCreate}
+				onArtistCreated={(artist) => {
+					onAddPerformance?.(artist.id);
+				}}
+			/>
 		</>
 	);
 }

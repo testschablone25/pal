@@ -64,6 +64,32 @@ export function TaskDetailMeta({
 							</button>
 						)}
 					</div>
+				) : task.assignees && task.assignees.length > 0 ? (
+					<button
+						onClick={() => setEditingAssignee(true)}
+						className="flex items-center gap-1.5 hover:bg-zinc-800/60 rounded px-1 -mx-1 transition-colors group"
+					>
+						<div className="flex items-center -space-x-1.5">
+							{task.assignees.slice(0, 3).map((a) => (
+								<Avatar
+									key={a.id}
+									className="h-5 w-5 border-2 border-zinc-900"
+									title={a.full_name || a.email || ""}
+								>
+									<AvatarImage src={a.avatar_url || undefined} />
+									<AvatarFallback className="bg-zinc-800 text-zinc-300 text-[9px]">
+										{getInitials(a.full_name)}
+									</AvatarFallback>
+								</Avatar>
+							))}
+							{task.assignees.length > 3 && (
+								<span className="text-xs text-zinc-500 ml-1.5">
+									+{task.assignees.length - 3}
+								</span>
+							)}
+						</div>
+						<Pencil className="h-3 w-3 text-zinc-600 opacity-0 group-hover:opacity-100 transition-opacity" />
+					</button>
 				) : task.assignee ? (
 					<button
 						onClick={() => setEditingAssignee(true)}

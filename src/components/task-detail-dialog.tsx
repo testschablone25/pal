@@ -138,7 +138,8 @@ export function TaskDetailDialog({
 			toast({
 				variant: "destructive",
 				title: "Error",
-				description: error instanceof Error ? error.message : "Failed to update field.",
+				description:
+					error instanceof Error ? error.message : "Failed to update field.",
 			});
 		}
 	};
@@ -155,13 +156,17 @@ export function TaskDetailDialog({
 			if (!response.ok) throw new Error("Failed to approve");
 			const updatedTask = await response.json();
 			onTaskUpdated({ ...updatedTask, task_items: task.task_items });
-			toast({ title: "Task approved", description: "The task has been approved." });
+			toast({
+				title: "Task approved",
+				description: "The task has been approved.",
+			});
 		} catch (error) {
 			console.error("Error approving task:", error);
 			toast({
 				variant: "destructive",
 				title: "Error",
-				description: error instanceof Error ? error.message : "Failed to approve.",
+				description:
+					error instanceof Error ? error.message : "Failed to approve.",
 			});
 		} finally {
 			setApproving(false);
@@ -180,13 +185,17 @@ export function TaskDetailDialog({
 			if (!response.ok) throw new Error("Failed to reject");
 			const updatedTask = await response.json();
 			onTaskUpdated({ ...updatedTask, task_items: task.task_items });
-			toast({ title: "Task rejected", description: "The task has been rejected." });
+			toast({
+				title: "Task rejected",
+				description: "The task has been rejected.",
+			});
 		} catch (error) {
 			console.error("Error rejecting task:", error);
 			toast({
 				variant: "destructive",
 				title: "Error",
-				description: error instanceof Error ? error.message : "Failed to reject.",
+				description:
+					error instanceof Error ? error.message : "Failed to reject.",
 			});
 		} finally {
 			setRejecting(false);
@@ -218,7 +227,10 @@ export function TaskDetailDialog({
 			toast({
 				variant: "destructive",
 				title: "Error",
-				description: error instanceof Error ? error.message : "Failed to update block status.",
+				description:
+					error instanceof Error
+						? error.message
+						: "Failed to update block status.",
 			});
 		} finally {
 			setBlocking(false);
@@ -229,7 +241,9 @@ export function TaskDetailDialog({
 		if (!task) return;
 		setDeleting(true);
 		try {
-			const response = await fetch(`/api/tasks/${task.id}`, { method: "DELETE" });
+			const response = await fetch(`/api/tasks/${task.id}`, {
+				method: "DELETE",
+			});
 			if (!response.ok) throw new Error("Failed to delete task");
 			onTaskDeleted(task.id);
 			onOpenChange(false);
@@ -239,10 +253,53 @@ export function TaskDetailDialog({
 			toast({
 				variant: "destructive",
 				title: "Error",
-				description: error instanceof Error ? error.message : "Failed to delete.",
+				description:
+					error instanceof Error ? error.message : "Failed to delete.",
 			});
 		} finally {
 			setDeleting(false);
+		}
+	};
+
+	const handleAddItems = async (itemIds: string[]) => {
+		if (!task || !currentUserId) return;
+		const existingItems = (fullTask || task).task_items || [];
+		const newItems = [
+			...existingItems.map((ti) => ({
+				item_id: ti.item_id,
+				goal_sub_location_id: ti.goal_sub_location_id,
+			})),
+			...itemIds.map((id) => ({ item_id: id, goal_sub_location_id: null })),
+		];
+
+		try {
+			const response = await fetch(`/api/tasks/${task.id}`, {
+				method: "PUT",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify({
+					items: newItems,
+					changed_by: currentUserId,
+				}),
+			});
+			if (!response.ok) {
+				const errBody = await response.json().catch(() => ({}));
+				throw new Error(errBody.error || "Failed to add items");
+			}
+			const updatedTask = await response.json();
+			onTaskUpdated(updatedTask);
+			toast({
+				title: "Item added",
+				description: "Item has been linked to this task.",
+			});
+		} catch (error) {
+			console.error("Error adding items:", error);
+			toast({
+				variant: "destructive",
+				title: "Error",
+				description:
+					error instanceof Error ? error.message : "Failed to add items.",
+			});
+			throw error;
 		}
 	};
 
@@ -256,7 +313,9 @@ export function TaskDetailDialog({
 			});
 			if (!response.ok) {
 				const errBody = await response.json().catch(() => ({}));
-				throw new Error(errBody.error || `Failed to update (${response.status})`);
+				throw new Error(
+					errBody.error || `Failed to update (${response.status})`,
+				);
 			}
 			const updatedTask = await response.json();
 			onTaskUpdated(updatedTask);
@@ -267,7 +326,8 @@ export function TaskDetailDialog({
 			toast({
 				variant: "destructive",
 				title: "Error",
-				description: error instanceof Error ? error.message : "Failed to update task.",
+				description:
+					error instanceof Error ? error.message : "Failed to update task.",
 			});
 			throw error;
 		}
@@ -275,6 +335,11 @@ export function TaskDetailDialog({
 
 	const handleCreateSubtask = async (title: string) => {
 		if (!task || !currentUserId) return;
+		const subtaskAssigneeIds = task.assignees
+			? task.assignees.map((a) => a.id)
+			: task.assignee_id
+				? [task.assignee_id]
+				: [];
 		const response = await fetch("/api/tasks", {
 			method: "POST",
 			headers: { "Content-Type": "application/json" },
@@ -282,6 +347,7 @@ export function TaskDetailDialog({
 				title,
 				status: "todo",
 				assignee_id: task.assignee_id,
+				assignee_ids: subtaskAssigneeIds,
 				event_id: task.event_id,
 				priority: task.priority,
 				parent_task_id: task.id,
@@ -355,6 +421,7 @@ export function TaskDetailDialog({
 						onReject={handleReject}
 						onToggleBlock={handleToggleBlock}
 						onDelete={handleDelete}
+						onAddItems={handleAddItems}
 						deleting={deleting}
 						approving={approving}
 						rejecting={rejecting}

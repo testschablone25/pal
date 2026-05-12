@@ -1,6 +1,7 @@
 // Contacts API — Telephone Book
 // Aggregates staff profiles + venue contacts into one searchable directory
 // Deduplicates by matching name+email, and groups all associations per person
+// Also fetches standalone contacts from the contacts table
 
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
@@ -25,6 +26,51 @@ interface ContactEntry {
 	staff_roles: string[];
 	/** All venues this person manages/is contact for */
 	venues: VenueAssociation[];
+	/** Whether this is a standalone manually-created contact */
+	is_standalone?: boolean;
+	/** Company name for standalone contacts */
+	company?: string | null;
+}
+
+// POST /api/contacts — Create a new standalone contact
+export async function POST(request: NextRequest) {
+	try {
+		const auth = await requireAuth(request, "CONTACTS_WRITE");
+		if (!auth.authorized) return auth.response;
+
+		const body = await request.json();
+		const { name, phone, email, role, company, notes } = body;
+
+		if (!name) {
+			return NextResponse.json({ error: "Name is required" }, { status: 400 });
+		}
+
+		const { data, error } = await supabase
+			.from("contacts")
+			.insert({
+				name,
+				phone: phone || null,
+				email: email || null,
+				role: role || null,
+				company: company || null,
+				notes: notes || null,
+				created_by: auth.userId,
+			})
+			.select()
+			.single();
+
+		if (error) {
+			return NextResponse.json({ error: error.message }, { status: 400 });
+		}
+
+		return NextResponse.json(data, { status: 201 });
+	} catch (error) {
+		console.error("Error creating contact:", error);
+		return NextResponse.json(
+			{ error: "Internal server error" },
+			{ status: 500 },
+		);
+	}
 }
 
 // GET /api/contacts — List all contacts with optional search
@@ -68,7 +114,20 @@ export async function GET(request: NextRequest) {
 			console.error("Error fetching venue contacts:", venueError.message);
 		}
 
-		// 3. Build deduplicated contact map — keyed by normalized name+email
+		// 3. Fetch standalone contacts from contacts table
+		const { data: standaloneData, error: standaloneError } = await supabase
+			.from("contacts")
+			.select("*")
+			.order("created_at", { ascending: false });
+
+		if (standaloneError) {
+			console.error(
+				"Error fetching standalone contacts:",
+				standaloneError.message,
+			);
+		}
+
+		// 4. Build deduplicated contact map — keyed by normalized name+email
 		//    (so "Oliver Jeschke" + "oliver@pal.com" appears once)
 		const contactMap = new Map<string, ContactEntry>();
 
@@ -142,10 +201,42 @@ export async function GET(request: NextRequest) {
 			}
 		}
 
-		// 4. Convert map to array
+		// Add standalone contacts
+		if (standaloneData) {
+			for (const c of standaloneData) {
+				const name = c.name?.trim();
+				if (!name) continue;
+
+				const key = `${name}|${c.email || ""}`;
+
+				if (contactMap.has(key)) {
+					// Don't overwrite existing staff/venue entry,
+					// but mark as standalone if it wasn't already
+					const existing = contactMap.get(key)!;
+					if (!existing.is_standalone) {
+						existing.is_standalone = true;
+						existing.company = c.company || existing.company;
+					}
+				} else {
+					contactMap.set(key, {
+						id: c.id,
+						name,
+						phone: c.phone || null,
+						email: c.email || null,
+						role: c.role || "Contact",
+						staff_roles: [],
+						venues: [],
+						is_standalone: true,
+						company: c.company || null,
+					});
+				}
+			}
+		}
+
+		// 5. Convert map to array
 		let contacts = Array.from(contactMap.values());
 
-		// 5. Filter by search query
+		// 6. Filter by search query
 		if (query) {
 			contacts = contacts.filter(
 				(c) =>
@@ -157,7 +248,7 @@ export async function GET(request: NextRequest) {
 			);
 		}
 
-		// 6. Sort alphabetically by name
+		// 7. Sort alphabetically by name
 		contacts.sort((a, b) => a.name.localeCompare(b.name));
 
 		return NextResponse.json({

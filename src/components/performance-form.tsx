@@ -53,6 +53,7 @@ interface PerformanceFormProps {
 	onError?: (error: string) => void;
 	initialData?: Partial<PerformanceFormValues>;
 	performanceId?: string;
+	preselectedArtistId?: string;
 }
 
 export function PerformanceForm({
@@ -61,6 +62,7 @@ export function PerformanceForm({
 	onError,
 	initialData,
 	performanceId,
+	preselectedArtistId,
 }: PerformanceFormProps) {
 	const [loading, setLoading] = useState(false);
 
@@ -91,8 +93,24 @@ export function PerformanceForm({
 		},
 	});
 
-	// If editing, resolve the initial artist name
+	// If a preselected artist ID was provided (e.g. from QuickArtistCreate), resolve and select it
 	useEffect(() => {
+		if (preselectedArtistId && !selectedArtistName) {
+			fetch(`/api/artists/${preselectedArtistId}`)
+				.then((r) => r.json())
+				.then((data) => {
+					if (data?.name) {
+						form.setValue("artist_id", preselectedArtistId);
+						setSelectedArtistName(data.name);
+						setSearchQuery(data.name);
+						// Clear input to also show available artists
+					}
+				})
+				.catch(() => {});
+			return;
+		}
+
+		// If editing, resolve the initial artist name
 		if (initialData?.artist_id && !selectedArtistName) {
 			fetch(`/api/artists/${initialData.artist_id}`)
 				.then((r) => r.json())
@@ -233,117 +251,145 @@ export function PerformanceForm({
 						<FormItem>
 							<FormLabel>Artist</FormLabel>
 							<FormControl>
-								<div className="relative">
-									<Input
-										ref={searchInputRef}
-										value={searchQuery}
-										onChange={(e) => {
-											setSearchQuery(e.target.value);
-											// Clear selection when typing
-											if (
-												selectedArtistName &&
-												e.target.value !== selectedArtistName
-											) {
-												field.onChange("");
-												setSelectedArtistName("");
-											}
-										}}
-										onFocus={() => {
-											if (suggestions.length > 0) setDropdownOpen(true);
-										}}
-										onKeyDown={(e) => {
-											if (e.key === "Escape") setDropdownOpen(false);
-											if (
-												e.key === "ArrowDown" &&
-												!dropdownOpen &&
-												suggestions.length > 0
-											) {
-												e.preventDefault();
-												setDropdownOpen(true);
-											}
-										}}
-										placeholder="Type artist name..."
-										className="bg-zinc-900 border-zinc-700"
-									/>
-									{searching && (
-										<Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 animate-spin text-zinc-500" />
-									)}
-									{selectedArtistName && !searching && (
-										<Check className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-emerald-400" />
-									)}
+								<div className="flex gap-2">
+									<div className="relative flex-1">
+										<Input
+											ref={searchInputRef}
+											value={searchQuery}
+											onChange={(e) => {
+												setSearchQuery(e.target.value);
+												// Clear selection when typing
+												if (
+													selectedArtistName &&
+													e.target.value !== selectedArtistName
+												) {
+													field.onChange("");
+													setSelectedArtistName("");
+												}
+											}}
+											onFocus={() => {
+												if (suggestions.length > 0) setDropdownOpen(true);
+											}}
+											onKeyDown={(e) => {
+												if (e.key === "Escape") setDropdownOpen(false);
+												if (
+													e.key === "ArrowDown" &&
+													!dropdownOpen &&
+													suggestions.length > 0
+												) {
+													e.preventDefault();
+													setDropdownOpen(true);
+												}
+											}}
+											placeholder="Type artist name..."
+											className="bg-zinc-900 border-zinc-700 pr-9"
+										/>
+										{searching && (
+											<Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 animate-spin text-zinc-500" />
+										)}
+										{selectedArtistName && !searching && (
+											<Check className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-emerald-400" />
+										)}
 
-									{/* Dropdown suggestions */}
-									{dropdownOpen && suggestions.length > 0 && (
-										<div
-											ref={dropdownRef}
-											className="absolute left-0 top-full mt-1 z-50 w-full rounded-md border border-zinc-700 bg-zinc-900 shadow-lg"
-										>
-											<Command>
-												<CommandList>
-													<CommandGroup heading="Existing Artists">
-														{suggestions.map((artist) => (
-															<CommandItem
-																key={artist.id}
-																value={artist.name}
-																onSelect={() => selectArtist(artist)}
-																className="cursor-pointer"
-															>
-																<div className="flex items-center gap-2 w-full">
-																	<Music className="h-4 w-4 text-violet-400 shrink-0" />
-																	<div className="min-w-0 flex-1">
-																		<span className="text-white text-sm font-medium">
-																			{artist.name}
-																		</span>
-																		<div className="flex items-center gap-2 mt-0.5">
-																			{artist.genre && (
-																				<Badge
-																					variant="outline"
-																					className="border-zinc-700 text-zinc-400 text-[10px] py-0"
-																				>
-																					{artist.genre}
-																				</Badge>
-																			)}
-																			{artist.city && (
-																				<span className="text-[11px] text-zinc-500">
-																					{artist.city}
-																				</span>
-																			)}
+										{/* Dropdown suggestions */}
+										{dropdownOpen && suggestions.length > 0 && (
+											<div
+												ref={dropdownRef}
+												className="absolute left-0 top-full mt-1 z-50 w-full rounded-md border border-zinc-700 bg-zinc-900 shadow-lg"
+											>
+												<Command>
+													<CommandList>
+														<CommandGroup heading="Existing Artists">
+															{suggestions.map((artist) => (
+																<CommandItem
+																	key={artist.id}
+																	value={artist.name}
+																	onSelect={() => selectArtist(artist)}
+																	className="cursor-pointer"
+																>
+																	<div className="flex items-center gap-2 w-full">
+																		<Music className="h-4 w-4 text-violet-400 shrink-0" />
+																		<div className="min-w-0 flex-1">
+																			<span className="text-white text-sm font-medium">
+																				{artist.name}
+																			</span>
+																			<div className="flex items-center gap-2 mt-0.5">
+																				{artist.genre && (
+																					<Badge
+																						variant="outline"
+																						className="border-zinc-700 text-zinc-400 text-[10px] py-0"
+																					>
+																						{artist.genre}
+																					</Badge>
+																				)}
+																				{artist.city && (
+																					<span className="text-[11px] text-zinc-500">
+																						{artist.city}
+																					</span>
+																				)}
+																			</div>
 																		</div>
+																		{form.watch("artist_id") === artist.id && (
+																			<Check className="h-4 w-4 text-emerald-400 shrink-0" />
+																		)}
 																	</div>
-																	{form.watch("artist_id") === artist.id && (
-																		<Check className="h-4 w-4 text-emerald-400 shrink-0" />
-																	)}
-																</div>
-															</CommandItem>
-														))}
-													</CommandGroup>
-													<CommandSeparator className="bg-zinc-800" />
-													<CommandItem
-														onSelect={() => {
-															setDropdownOpen(false);
-															setShowCreateForm(true);
-															setNewArtistName(searchQuery);
-															setTimeout(() => {
-																document
-																	.getElementById("new-artist-name")
-																	?.focus();
-															}, 100);
-														}}
-														className="cursor-pointer text-violet-400"
-													>
-														<Plus className="h-4 w-4 mr-2" />
-														<span>
-															Create new artist{" "}
-															{searchQuery.trim() && (
-																<span className="text-zinc-400">
-																	&quot;{searchQuery.trim()}&quot;
-																</span>
-															)}
-														</span>
-													</CommandItem>
-												</CommandList>
-											</Command>
-										</div>
+																</CommandItem>
+															))}
+														</CommandGroup>
+														<CommandSeparator className="bg-zinc-800" />
+														<CommandItem
+															onSelect={() => {
+																setDropdownOpen(false);
+																setShowCreateForm(true);
+																setNewArtistName(searchQuery);
+																setTimeout(() => {
+																	document
+																		.getElementById("new-artist-name")
+																		?.focus();
+																}, 100);
+															}}
+															className="cursor-pointer text-violet-400"
+														>
+															<Plus className="h-4 w-4 mr-2" />
+															<span>
+																Create new artist{" "}
+																{searchQuery.trim() && (
+																	<span className="text-zinc-400">
+																		&quot;{searchQuery.trim()}&quot;
+																	</span>
+																)}
+															</span>
+														</CommandItem>
+													</CommandList>
+												</Command>
+											</div>
+										)}
+									</div>
+
+									{/* Quick-create button — always visible unless artist is already selected */}
+									{!selectedArtistName && (
+										<Button
+											type="button"
+											variant="outline"
+											size="icon"
+											aria-label="Create new artist"
+											title="Create new artist"
+											onClick={() => {
+												if (showCreateForm) {
+													setShowCreateForm(false);
+													return;
+												}
+												setDropdownOpen(false);
+												setShowCreateForm(true);
+												setNewArtistName(searchQuery);
+												setTimeout(() => {
+													document.getElementById("new-artist-name")?.focus();
+												}, 100);
+											}}
+											className="shrink-0 border-zinc-700 hover:bg-violet-600/20 hover:border-violet-600/50 hover:text-violet-400"
+										>
+											<Plus className="h-4 w-4" />
+										</Button>
 									)}
 								</div>
 							</FormControl>

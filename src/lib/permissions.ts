@@ -234,6 +234,7 @@ export const FEATURE_PERMISSIONS = {
 
 	// Contacts / Telephone book
 	CONTACTS_READ: ["admin", "manager", "backoffice", "booking"],
+	CONTACTS_WRITE: ["admin", "manager", "backoffice"],
 
 	// Rentals
 	RENTALS_READ: ["admin", "manager", "tech", "tech-lead", "booking"],

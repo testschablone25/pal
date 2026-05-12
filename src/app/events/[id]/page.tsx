@@ -72,6 +72,9 @@ export default function EventDetailPage() {
 	const [event, setEvent] = useState<Event | null>(null);
 	const [loading, setLoading] = useState(true);
 	const [addPerformanceOpen, setAddPerformanceOpen] = useState(false);
+	const [preselectedArtistId, setPreselectedArtistId] = useState<string | null>(
+		null,
+	);
 	const [refreshKey, setRefreshKey] = useState(0);
 	const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
@@ -172,12 +175,14 @@ export default function EventDetailPage() {
 		}
 	};
 
-	const handleAddPerformance = () => {
+	const handleAddPerformance = (artistId?: string) => {
+		setPreselectedArtistId(artistId || null);
 		setAddPerformanceOpen(true);
 	};
 
 	const handlePerformanceSuccess = (_performance: Record<string, unknown>) => {
 		setAddPerformanceOpen(false);
+		setPreselectedArtistId(null);
 		setRefreshKey((prev) => prev + 1);
 		toast({
 			title: "Performance added",
@@ -254,6 +259,54 @@ export default function EventDetailPage() {
 		toast({
 			title: "Task created",
 			description: "The task has been added to this event.",
+		});
+	};
+
+	const handleCreateTaskWithFiles = async (
+		values: Record<string, unknown>,
+		files: File[],
+	) => {
+		const supabase = createClient();
+		const {
+			data: { user },
+		} = await supabase.auth.getUser();
+
+		const response = await fetch("/api/tasks", {
+			method: "POST",
+			headers: { "Content-Type": "application/json" },
+			body: JSON.stringify({
+				...values,
+				event_id: eventId,
+				created_by: user?.id || (values.created_by as string) || "",
+			}),
+		});
+
+		if (!response.ok) {
+			const err = await response.json();
+			throw new Error(err.error || "Failed to create task");
+		}
+
+		const newTask = await response.json();
+
+		// Upload each pending file
+		for (const file of files) {
+			const formData = new FormData();
+			formData.append("file", file);
+			const upRes = await fetch(`/api/tasks/${newTask.id}/attachments`, {
+				method: "POST",
+				body: formData,
+			});
+			if (!upRes.ok) {
+				const errData = await upRes.json().catch(() => ({}));
+				console.error("Failed to upload attachment:", errData.error);
+			}
+		}
+
+		setEventTasks((prev) => [newTask, ...prev]);
+		setCreateTaskOpen(false);
+		toast({
+			title: "Task created",
+			description: `Task created with ${files.length} attachment(s).`,
 		});
 	};
 
@@ -532,13 +585,20 @@ export default function EventDetailPage() {
 			</Card>
 
 			{/* Add Performance Modal */}
-			<Dialog open={addPerformanceOpen} onOpenChange={setAddPerformanceOpen}>
+			<Dialog
+				open={addPerformanceOpen}
+				onOpenChange={(open) => {
+					setAddPerformanceOpen(open);
+					if (!open) setPreselectedArtistId(null);
+				}}
+			>
 				<DialogContent className="bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/70 rounded-lg max-w-lg">
 					<DialogHeader>
 						<DialogTitle>Add Performance</DialogTitle>
 					</DialogHeader>
 					<PerformanceForm
 						eventId={eventId}
+						preselectedArtistId={preselectedArtistId || undefined}
 						onSuccess={handlePerformanceSuccess}
 						onError={handlePerformanceError}
 					/>
@@ -555,6 +615,7 @@ export default function EventDetailPage() {
 						mode="create"
 						parentTask={{ event_id: eventId }}
 						onSubmit={handleCreateTask}
+						onCreateWithFiles={handleCreateTaskWithFiles}
 						onCancel={() => setCreateTaskOpen(false)}
 					/>
 				</DialogContent>

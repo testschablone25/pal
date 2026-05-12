@@ -104,8 +104,17 @@ export async function POST(request: NextRequest) {
 			.select("*")
 			.eq("event_id", event_id);
 
-		if (existingPerformances && existingPerformances.length > 0) {
-			const hasOverlap = existingPerformances.some((p: any) => {
+		type PerfRow = {
+			id: string;
+			start_time: string;
+			end_time: string;
+			order_index: number;
+		};
+
+		const perfRows = (existingPerformances ?? []) as PerfRow[];
+
+		if (perfRows.length > 0) {
+			const hasOverlap = perfRows.some((p) => {
 				return timesOverlap(start_time, end_time, p.start_time, p.end_time);
 			});
 
@@ -117,13 +126,40 @@ export async function POST(request: NextRequest) {
 			}
 		}
 
-		// Get max order_index for this event
+		// Calculate order_index based on start_time position
 		let nextOrderIndex = 0;
-		if (existingPerformances && existingPerformances.length > 0) {
-			const maxOrder = Math.max(
-				...existingPerformances.map((p: any) => p.order_index || 0),
+		if (perfRows.length > 0) {
+			// Sort existing performances by start_time
+			const sorted = [...perfRows].sort((a, b) =>
+				a.start_time.localeCompare(b.start_time),
 			);
-			nextOrderIndex = maxOrder + 1;
+
+			// Find first performance that starts after the new one
+			const insertIndex = sorted.findIndex(
+				(p) => p.start_time > start_time,
+			);
+
+			if (insertIndex === -1) {
+				// Append at end
+				const maxOrder = Math.max(
+					...sorted.map((p) => p.order_index || 0),
+				);
+				nextOrderIndex = maxOrder + 1;
+			} else {
+				// Insert at position, shift subsequent performances down
+				const subsequent = sorted.slice(insertIndex);
+				for (const perf of subsequent) {
+					const { error: shiftError } = await supabase
+						.from("performances")
+						.update({ order_index: (perf.order_index || 0) + 1 })
+						.eq("id", perf.id);
+
+					if (shiftError) {
+						console.error("Failed to shift performance order:", shiftError);
+					}
+				}
+				nextOrderIndex = insertIndex;
+			}
 		}
 
 		const { data, error } = await supabase

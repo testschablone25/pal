@@ -67,9 +67,43 @@ export async function GET(request: NextRequest) {
 			query = query.eq("priority", priority);
 		}
 		if (myTasks === "true" && userId) {
-			query = query.eq("assignee_id", userId);
+			// Check both assignee_id AND task_assignees for multi-assignee support
+			let assignedViaJunction: string[] = [];
+			try {
+				const { data: taIds } = await supabase
+					.from("task_assignees")
+					.select("task_id")
+					.eq("profile_id", userId);
+				assignedViaJunction = taIds?.map((t) => t.task_id) || [];
+			} catch {
+				// task_assignees table doesn't exist yet
+			}
+			if (assignedViaJunction.length > 0) {
+				query = query.or(
+					`assignee_id.eq.${userId},id.in.(${assignedViaJunction.join(",")})`,
+				);
+			} else {
+				query = query.eq("assignee_id", userId);
+			}
 		} else if (assigneeId) {
-			query = query.eq("assignee_id", assigneeId);
+			// Check both assignee_id AND task_assignees
+			let assignedViaJunction: string[] = [];
+			try {
+				const { data: taIds } = await supabase
+					.from("task_assignees")
+					.select("task_id")
+					.eq("profile_id", assigneeId);
+				assignedViaJunction = taIds?.map((t) => t.task_id) || [];
+			} catch {
+				// task_assignees table doesn't exist yet
+			}
+			if (assignedViaJunction.length > 0) {
+				query = query.or(
+					`assignee_id.eq.${assigneeId},id.in.(${assignedViaJunction.join(",")})`,
+				);
+			} else {
+				query = query.eq("assignee_id", assigneeId);
+			}
 		}
 		if (eventId) {
 			query = query.eq("event_id", eventId);
@@ -121,10 +155,34 @@ export async function GET(request: NextRequest) {
 			return NextResponse.json({ error: error.message }, { status: 500 });
 		}
 
+		// Fetch task_assignees separately (table may not exist yet in dev)
+		const assigneeMap: Record<string, Array<Record<string, unknown>>> = {};
+		try {
+			const taskIds = (data || [])
+				.map((t: Record<string, unknown>) => t.id)
+				.filter(Boolean);
+			if (taskIds.length > 0) {
+				const { data: taData } = await supabase
+					.from("task_assignees")
+					.select("task_id, profile_id(id, full_name, email, avatar_url)")
+					.in("task_id", taskIds);
+				for (const ta of taData || []) {
+					if (!assigneeMap[ta.task_id]) assigneeMap[ta.task_id] = [];
+					assigneeMap[ta.task_id].push(
+						ta.profile_id as unknown as Record<string, unknown>,
+					);
+				}
+			}
+		} catch {
+			// task_assignees table doesn't exist yet — continue without assignee data
+		}
+
 		const tasksWithCommentCount =
-			data?.map((task) => ({
+			(data || []).map((task: Record<string, unknown>) => ({
 				...task,
-				comment_count: task.comments?.[0]?.count || 0,
+				assignees: assigneeMap[task.id as string] || null,
+				comment_count:
+					(task.comments as Array<{ count: number }>)?.[0]?.count || 0,
 				comments: undefined,
 			})) || [];
 
@@ -160,6 +218,7 @@ export async function POST(request: NextRequest) {
 			status,
 			priority,
 			assignee_id,
+			assignee_ids,
 			event_id,
 			venue_id,
 			due_date,
@@ -228,6 +287,14 @@ export async function POST(request: NextRequest) {
           email,
           avatar_url
         ),
+        assignees:task_assignees(
+          profile_id (
+            id,
+            full_name,
+            email,
+            avatar_url
+          )
+        ),
         event:event_id (
           id,
           name,
@@ -265,6 +332,24 @@ export async function POST(request: NextRequest) {
 			}
 		}
 
+		// Handle assignees: support both assignee_ids[] and legacy assignee_id
+		const resolvedAssigneeIds =
+			assignee_ids || (assignee_id ? [assignee_id] : []);
+
+		if (resolvedAssigneeIds.length > 0 && taskData) {
+			const { error: assigneeError } = await supabase
+				.from("task_assignees")
+				.insert(
+					resolvedAssigneeIds.map((pid: string) => ({
+						task_id: taskData.id,
+						profile_id: pid,
+					})),
+				);
+			if (assigneeError) {
+				console.error("Failed to link assignees:", assigneeError);
+			}
+		}
+
 		const { error: historyError } = await supabase.from("task_history").insert({
 			task_id: taskData.id,
 			changed_by: created_by,
@@ -280,6 +365,10 @@ export async function POST(request: NextRequest) {
 		return NextResponse.json(
 			{
 				...taskData,
+				assignees:
+					(
+						taskData.assignees as Array<{ profile_id: Record<string, unknown> }>
+					)?.map((ta) => ta.profile_id) || null,
 				comment_count: 0,
 				item_ids: (itemsToLink || []).map(
 					(i: { item_id: string }) => i.item_id,

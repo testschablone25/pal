@@ -61,6 +61,14 @@ const taskSelect = `
     email,
     avatar_url
   ),
+  assignees:task_assignees(
+    profile_id (
+      id,
+      full_name,
+      email,
+      avatar_url
+    )
+  ),
   event:event_id (
     id,
     name,
@@ -113,12 +121,36 @@ export async function GET(
 
 		const { id } = await params;
 
-		// Fetch the main task
-		const { data, error } = await supabase
-			.from("tasks")
-			.select(taskSelect)
-			.eq("id", id)
-			.single();
+		// Fetch the main task — gracefully handle missing task_assignees table
+		let data: Record<string, unknown> | null = null;
+		let error: { code?: string; message: string } | null = null;
+
+		try {
+			const result = await supabase
+				.from("tasks")
+				.select(taskSelect)
+				.eq("id", id)
+				.single();
+			data = result.data as unknown as Record<string, unknown>;
+			error = result.error as { code?: string; message: string } | null;
+		} catch {
+			// task_assignees table may not exist — fall back to simpler select
+			const result = await supabase
+				.from("tasks")
+				.select(`
+          *,
+          assignee:assignee_id (id, full_name, email, avatar_url),
+          event:event_id (id, name, date),
+          comments:task_comments(count),
+          creator:created_by (id, full_name, email, avatar_url),
+          parent_task:parent_task_id (id, title, status),
+          task_items (item_id, goal_sub_location_id, delivered_at)
+        `)
+				.eq("id", id)
+				.single();
+			data = result.data as unknown as Record<string, unknown>;
+			error = result.error as { code?: string; message: string } | null;
+		}
 
 		if (error) {
 			if (error.code === "PGRST116") {
@@ -134,11 +166,19 @@ export async function GET(
 			.eq("parent_task_id", id)
 			.order("created_at", { ascending: true });
 
-		const transformedItems = transformTaskItems(data.task_items || []);
+		const transformedItems = transformTaskItems(
+			(data?.task_items as unknown as TaskItemRow[]) || [],
+		);
+
+		const assigneesRaw = data?.assignees as
+			| Array<{ profile_id: Record<string, unknown> }>
+			| undefined;
 
 		return NextResponse.json({
 			...data,
-			comment_count: data.comments?.[0]?.count || 0,
+			assignees: assigneesRaw?.map((ta) => ta.profile_id) || null,
+			comment_count:
+				(data?.comments as Array<{ count: number }>)?.[0]?.count || 0,
 			comments: undefined,
 			task_items: transformedItems,
 			subtasks: subtasks || [],
@@ -170,6 +210,7 @@ export async function PUT(
 			status,
 			priority,
 			assignee_id,
+			assignee_ids,
 			event_id,
 			due_date,
 			scheduled_date,
@@ -310,23 +351,91 @@ export async function PUT(
 			}
 		}
 
-		// Re-fetch task with fresh data
-		const { data: freshData } = await supabase
-			.from("tasks")
-			.select(taskSelect)
-			.eq("id", id)
-			.single();
+		// Handle assignees: sync task_assignees junction table
+		const resolvedAssigneeIds =
+			assignee_ids !== undefined
+				? assignee_ids
+				: assignee_id !== undefined
+					? assignee_id
+						? [assignee_id]
+						: []
+					: undefined;
 
-		const responseData = freshData || data;
+		if (resolvedAssigneeIds !== undefined) {
+			// Delete existing
+			const { error: delAssigneeError } = await supabase
+				.from("task_assignees")
+				.delete()
+				.eq("task_id", id);
 
-		const transformedItems = transformTaskItems(responseData.task_items || []);
+			if (delAssigneeError) {
+				console.error("Failed to clear task assignees:", delAssigneeError);
+			}
+
+			// Insert new
+			if (resolvedAssigneeIds.length > 0) {
+				const { error: insAssigneeError } = await supabase
+					.from("task_assignees")
+					.insert(
+						resolvedAssigneeIds.map((pid: string) => ({
+							task_id: id,
+							profile_id: pid,
+						})),
+					);
+
+				if (insAssigneeError) {
+					console.error("Failed to insert task assignees:", insAssigneeError);
+				}
+			}
+		}
+
+		// Re-fetch task with fresh data — gracefully handle missing task_assignees table
+		let freshData: Record<string, unknown> | null = null;
+		try {
+			const { data: fd } = await supabase
+				.from("tasks")
+				.select(taskSelect)
+				.eq("id", id)
+				.single();
+			freshData = fd as unknown as Record<string, unknown>;
+		} catch {
+			// task_assignees table may not exist — fall back to simpler select
+			const { data: fd } = await supabase
+				.from("tasks")
+				.select(`
+          *,
+          assignee:assignee_id (id, full_name, email, avatar_url),
+          event:event_id (id, name, date)
+        `)
+				.eq("id", id)
+				.single();
+			freshData = fd as unknown as Record<string, unknown>;
+		}
+
+		const responseData = (freshData || data) as Record<string, unknown>;
+
+		const transformedItems = transformTaskItems(
+			(responseData.task_items as unknown as TaskItemRow[]) || [],
+		);
+
+		const assigneesRaw = responseData.assignees as
+			| Array<{ profile_id: Record<string, unknown> }>
+			| undefined;
 
 		return NextResponse.json({
 			...responseData,
-			comment_count: responseData.comments?.[0]?.count || 0,
+			// Explicitly include description from the request to ensure it's always in the response
+			description:
+				description !== undefined ? description : responseData.description,
+			assignees:
+				assigneesRaw?.map(
+					(ta: { profile_id: Record<string, unknown> }) => ta.profile_id,
+				) || null,
+			comment_count:
+				(responseData.comments as Array<{ count: number }>)?.[0]?.count || 0,
 			comments: undefined,
 			task_items: transformedItems,
-			subtasks: responseData.subtasks || [],
+			subtasks: (responseData.subtasks as Array<Record<string, unknown>>) || [],
 		});
 	} catch (error) {
 		console.error("Error updating task:", error);

@@ -1,12 +1,11 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { PageSkeleton } from "@/components/page-skeleton";
-import { PaginationControls } from "@/components/pagination-controls";
 import {
 	Table,
 	TableBody,
@@ -15,7 +14,7 @@ import {
 	TableHeader,
 	TableRow,
 } from "@/components/ui/table";
-import { Plus, Package, QrCode } from "lucide-react";
+import { Plus, Package, QrCode, Loader2 } from "lucide-react";
 import { SearchFilterBar } from "@/components/search-filter-bar";
 import { EmptyState } from "@/components/empty-state";
 import { useToast } from "@/hooks/use-toast";
@@ -84,10 +83,12 @@ export function InventoryList() {
 	const [search, setSearch] = useState("");
 	const [debouncedSearch, setDebouncedSearch] = useState("");
 	const [category, setCategory] = useState("");
-	const [total, setTotal] = useState(0);
-	const [currentPage, setCurrentPage] = useState(1);
+	const [loadingMore, setLoadingMore] = useState(false);
+	const [hasMore, setHasMore] = useState(true);
 	const pageSize = 25;
-	const totalPages = Math.ceil(total / pageSize);
+	const offsetRef = useRef(0);
+	const loadingMoreRef = useRef(false);
+	const sentinelRef = useRef<HTMLDivElement>(null);
 	const [showCreateDialog, setShowCreateDialog] = useState(false);
 	const [qrDialogItem, setQrDialogItem] = useState<{
 		id: string;
@@ -101,29 +102,61 @@ export function InventoryList() {
 		return () => clearTimeout(timer);
 	}, [search]);
 
-	const fetchItems = useCallback(async () => {
-		setLoading(true);
+	const fetchItems = useCallback(async (append = false) => {
+		if (append) {
+			setLoadingMore(true);
+			loadingMoreRef.current = true;
+		} else {
+			setLoading(true);
+		}
 		try {
 			const params = new URLSearchParams();
 			if (debouncedSearch) params.append("search", debouncedSearch);
 			if (category) params.append("category", category);
 			params.append("limit", String(pageSize));
-			params.append("offset", String((currentPage - 1) * pageSize));
+			params.append("offset", String(append ? offsetRef.current : 0));
 
 			const response = await fetch(`/api/items?${params.toString()}`);
 			const data: ItemsResponse = await response.json();
-			setItems(data.items || []);
-			setTotal(data.total);
+			const fetchedItems = data.items || [];
+
+			if (append) {
+				setItems((prev) => [...prev, ...fetchedItems]);
+				offsetRef.current += pageSize;
+			} else {
+				setItems(fetchedItems);
+				offsetRef.current = 0;
+			}
+			setHasMore(fetchedItems.length === pageSize);
 		} catch (error) {
 			console.error("Failed to fetch items:", error);
 		} finally {
 			setLoading(false);
+			setLoadingMore(false);
+			loadingMoreRef.current = false;
 		}
-	}, [debouncedSearch, category, currentPage]);
+	}, [debouncedSearch, category]);
 
 	useEffect(() => {
 		fetchItems();
 	}, [fetchItems]);
+
+	// IntersectionObserver for infinite scroll
+	useEffect(() => {
+		const el = sentinelRef.current;
+		if (!el || !hasMore || loadingMoreRef.current) return;
+
+		const observer = new IntersectionObserver(
+			([entry]) => {
+				if (entry.isIntersecting && hasMore && !loadingMoreRef.current) {
+					fetchItems(true);
+				}
+			},
+			{ threshold: 0.1 },
+		);
+		observer.observe(el);
+		return () => observer.disconnect();
+	}, [hasMore, fetchItems]);
 
 	const handleCreate = async (values: ItemFormValues) => {
 		const response = await fetch("/api/items", {
@@ -184,20 +217,9 @@ export function InventoryList() {
 			{/* Results count */}
 			<div className="flex justify-between items-center">
 				<p className="text-sm text-zinc-400">
-					{loading ? "Loading..." : `${total} items found`}
+					{loading ? "Loading..." : `${items.length} items found`}
 				</p>
 			</div>
-
-			<PaginationControls
-				currentPage={currentPage}
-				totalPages={totalPages}
-				totalItems={total}
-				onPageChange={(page) => {
-					setCurrentPage(page);
-					window.scrollTo({ top: 0, behavior: "smooth" });
-				}}
-				className="mb-2"
-			/>
 
 			{/* Items table */}
 			{loading ? (
@@ -283,6 +305,12 @@ export function InventoryList() {
 								))}
 							</TableBody>
 						</Table>
+						{loadingMore && (
+							<div className="flex justify-center py-4">
+								<Loader2 className="h-6 w-6 animate-spin text-violet-400" />
+							</div>
+						)}
+						<div ref={sentinelRef} className="h-4" />
 					</CardContent>
 				</Card>
 			)}

@@ -9,6 +9,7 @@ import {
 	MessageSquare,
 	ShieldAlert,
 	CornerDownRight,
+	Paperclip,
 } from "lucide-react";
 import { isPast, isToday, parseISO } from "date-fns";
 import { formatDateShort } from "@/lib/dates";
@@ -24,12 +25,27 @@ export interface Task {
 	event_id: string | null;
 	created_at: string;
 	updated_at: string;
+	attachments?: Array<{
+		id: string;
+		name: string;
+		type: "image" | "video" | "file";
+		url: string;
+		size: number;
+		uploaded_at: string;
+		mime_type?: string;
+	}> | null;
 	assignee?: {
 		id: string;
 		full_name: string | null;
 		email: string | null;
 		avatar_url: string | null;
 	} | null;
+	assignees?: Array<{
+		id: string;
+		full_name: string | null;
+		email: string | null;
+		avatar_url: string | null;
+	}> | null;
 	event?: {
 		id: string;
 		name: string;
@@ -204,18 +220,44 @@ export function TaskCard({ task, onClick }: TaskCardProps) {
 
 						{/* Bottom Row: Assignee + Comment Count */}
 						<div className="flex items-center justify-between">
-							{/* Assignee Avatar */}
-							{task.assignee ? (
+							{/* Assignee Avatars — multi-assignee with overflow */}
+							{task.assignees && task.assignees.length > 0 ? (
+								<div className="flex items-center">
+									{task.assignees.slice(0, 3).map((a) => (
+										<Avatar
+											key={a.id}
+											className="h-6 w-6 -ml-1 first:ml-0 border-2 border-zinc-900"
+											title={a.full_name || a.email || ""}
+										>
+											<AvatarImage
+												src={
+													a.avatar_url ||
+													`https://api.dicebear.com/7.x/avataaars/svg?seed=${a.full_name}`
+												}
+												className="object-cover"
+											/>
+											<AvatarFallback className="bg-zinc-800 text-zinc-300 text-[9px]">
+												{a.full_name?.charAt(0) || "?"}
+											</AvatarFallback>
+										</Avatar>
+									))}
+									{task.assignees.length > 3 && (
+										<span className="text-xs text-zinc-500 ml-1.5">
+											+{task.assignees.length - 3}
+										</span>
+									)}
+								</div>
+							) : task.assignee ? (
 								<div className="flex items-center gap-2">
-									<Avatar className="h-6 w-6 ">
+									<Avatar className="h-6 w-6">
 										<AvatarImage
 											src={
 												task.assignee.avatar_url ||
 												`https://api.dicebear.com/7.x/avataaars/svg?seed=${task.assignee.full_name}`
 											}
-											className=" object-cover"
+											className="object-cover"
 										/>
-										<AvatarFallback className="bg-zinc-800 text-zinc-300 ">
+										<AvatarFallback className="bg-zinc-800 text-zinc-300">
 											<User className="h-3 w-3" />
 										</AvatarFallback>
 									</Avatar>
@@ -227,13 +269,21 @@ export function TaskCard({ task, onClick }: TaskCardProps) {
 								<div className="h-6" />
 							)}
 
-							{/* Comment Count */}
-							{task.comment_count !== undefined && task.comment_count > 0 && (
-								<div className="flex items-center gap-1 text-zinc-500">
-									<MessageSquare className="h-3 w-3" />
-									<span className="text-xs">{task.comment_count}</span>
-								</div>
-							)}
+							{/* Comment Count + Attachments */}
+							<div className="flex items-center gap-2">
+								{task.comment_count !== undefined && task.comment_count > 0 && (
+									<div className="flex items-center gap-1 text-zinc-500">
+										<MessageSquare className="h-3 w-3" />
+										<span className="text-xs">{task.comment_count}</span>
+									</div>
+								)}
+								{task.attachments && task.attachments.length > 0 && (
+									<div className="flex items-center gap-1 text-zinc-500">
+										<Paperclip className="h-3 w-3" />
+										<span className="text-xs">{task.attachments.length}</span>
+									</div>
+								)}
+							</div>
 						</div>
 					</div>
 				</div>

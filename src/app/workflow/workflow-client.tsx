@@ -126,6 +126,10 @@ export function WorkflowClient({
 			let url = "/api/tasks";
 			if (showMyTasksOnly) url += `?my_tasks=true&user_id=${currentUserId}`;
 			const response = await fetch(url);
+			if (!response.ok) {
+				console.error("Failed to fetch tasks:", await response.text());
+				return;
+			}
 			const data = await response.json();
 			setTasks(data.tasks || []);
 		} catch (error) {
@@ -145,8 +149,12 @@ export function WorkflowClient({
 		return tasks.filter((task) => {
 			if (filterPriority !== "all" && task.priority !== filterPriority)
 				return false;
-			if (filterAssignee !== "all" && task.assignee_id !== filterAssignee)
-				return false;
+			if (filterAssignee !== "all") {
+				const isAssignee =
+					task.assignee_id === filterAssignee ||
+					task.assignees?.some((a) => a.id === filterAssignee);
+				if (!isAssignee) return false;
+			}
 			if (filterEvent !== "all" && task.event_id !== filterEvent) return false;
 			if (filterVenue !== "all") {
 				const event = events.find((e) => e.id === task.event_id);
@@ -264,6 +272,54 @@ export function WorkflowClient({
 			});
 		} catch (error) {
 			console.error("Error creating task:", error);
+			toast({
+				variant: "destructive",
+				title: "Fehler",
+				description:
+					error instanceof Error
+						? error.message
+						: "Fehler beim Erstellen der Aufgabe.",
+			});
+			throw error;
+		}
+	};
+
+	const handleCreateTaskWithFiles = async (
+		values: Record<string, unknown>,
+		files: File[],
+	) => {
+		try {
+			const response = await fetch("/api/tasks", {
+				method: "POST",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify(values),
+			});
+			if (!response.ok) {
+				const errData = await response.json().catch(() => ({}));
+				throw new Error(errData.error || "Failed to create task");
+			}
+			const newTask = await response.json();
+			// Upload each pending file
+			for (const file of files) {
+				const formData = new FormData();
+				formData.append("file", file);
+				const upRes = await fetch(`/api/tasks/${newTask.id}/attachments`, {
+					method: "POST",
+					body: formData,
+				});
+				if (!upRes.ok) {
+					const errData = await upRes.json().catch(() => ({}));
+					console.error("Failed to upload attachment:", errData.error);
+				}
+			}
+			setTasks((prev) => [newTask, ...prev]);
+			setIsCreateOpen(false);
+			toast({
+				title: "Aufgabe erstellt",
+				description: `${values.title || "Aufgabe"} mit ${files.length} Anhang/Anhängen erstellt.`,
+			});
+		} catch (error) {
+			console.error("Error creating task with files:", error);
 			toast({
 				variant: "destructive",
 				title: "Fehler",
@@ -651,6 +707,7 @@ export function WorkflowClient({
 					<TaskForm
 						mode="create"
 						onSubmit={handleCreateTask}
+						onCreateWithFiles={handleCreateTaskWithFiles}
 						onCancel={() => setIsCreateOpen(false)}
 					/>
 				</DialogContent>

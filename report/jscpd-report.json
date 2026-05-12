@@ -1,6 +1,6 @@
 {
   "statistics": {
-    "detectionDate": "2026-05-07T13:09:04.590Z",
+    "detectionDate": "2026-05-12T11:53:59.112Z",
     "formats": {
       "typescript": {
         "sources": {
@@ -44,11 +44,11 @@
             "lines": 78,
             "tokens": 719,
             "sources": 1,
-            "clones": 7,
-            "duplicatedLines": 80,
-            "duplicatedTokens": 822,
-            "percentage": 102.56,
-            "percentageTokens": 114.33,
+            "clones": 8,
+            "duplicatedLines": 89,
+            "duplicatedTokens": 934,
+            "percentage": 114.1,
+            "percentageTokens": 129.9,
             "newDuplicatedLines": 0,
             "newClones": 0
           },
@@ -56,11 +56,11 @@
             "lines": 43,
             "tokens": 369,
             "sources": 1,
-            "clones": 8,
-            "duplicatedLines": 88,
-            "duplicatedTokens": 1015,
-            "percentage": 204.65,
-            "percentageTokens": 275.07,
+            "clones": 9,
+            "duplicatedLines": 97,
+            "duplicatedTokens": 1126,
+            "percentage": 225.58,
+            "percentageTokens": 305.15,
             "newDuplicatedLines": 0,
             "newClones": 0
           },
@@ -97,6 +97,18 @@
             "duplicatedTokens": 487,
             "percentage": 63.16,
             "percentageTokens": 66.26,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/app/api/tasks/[id]/attachments/route.ts": {
+            "lines": 229,
+            "tokens": 1987,
+            "sources": 1,
+            "clones": 3,
+            "duplicatedLines": 29,
+            "duplicatedTokens": 323,
+            "percentage": 12.66,
+            "percentageTokens": 16.26,
             "newDuplicatedLines": 0,
             "newClones": 0
           },
@@ -149,14 +161,14 @@
             "newClones": 0
           },
           "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/app/api/items/[id]/tasks/route.ts": {
-            "lines": 83,
-            "tokens": 399,
+            "lines": 76,
+            "tokens": 382,
             "sources": 1,
             "clones": 1,
             "duplicatedLines": 10,
             "duplicatedTokens": 107,
-            "percentage": 12.05,
-            "percentageTokens": 26.82,
+            "percentage": 13.16,
+            "percentageTokens": 28.01,
             "newDuplicatedLines": 0,
             "newClones": 0
           },
@@ -188,11 +200,11 @@
             "lines": 152,
             "tokens": 1280,
             "sources": 1,
-            "clones": 11,
-            "duplicatedLines": 116,
-            "duplicatedTokens": 1142,
-            "percentage": 76.32,
-            "percentageTokens": 89.22,
+            "clones": 13,
+            "duplicatedLines": 137,
+            "duplicatedTokens": 1339,
+            "percentage": 90.13,
+            "percentageTokens": 104.61,
             "newDuplicatedLines": 0,
             "newClones": 0
           },
@@ -212,11 +224,11 @@
             "lines": 79,
             "tokens": 632,
             "sources": 1,
-            "clones": 2,
-            "duplicatedLines": 19,
-            "duplicatedTokens": 206,
-            "percentage": 24.05,
-            "percentageTokens": 32.59,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
             "newDuplicatedLines": 0,
             "newClones": 0
           },
@@ -224,23 +236,35 @@
             "lines": 278,
             "tokens": 2635,
             "sources": 1,
-            "clones": 13,
-            "duplicatedLines": 117,
-            "duplicatedTokens": 1205,
-            "percentage": 42.09,
-            "percentageTokens": 45.73,
+            "clones": 14,
+            "duplicatedLines": 125,
+            "duplicatedTokens": 1298,
+            "percentage": 44.96,
+            "percentageTokens": 49.26,
             "newDuplicatedLines": 0,
             "newClones": 0
           },
           "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/app/api/tasks/[id]/route.ts": {
-            "lines": 364,
-            "tokens": 2778,
+            "lines": 422,
+            "tokens": 3159,
             "sources": 1,
             "clones": 4,
             "duplicatedLines": 40,
-            "duplicatedTokens": 423,
-            "percentage": 10.99,
-            "percentageTokens": 15.23,
+            "duplicatedTokens": 430,
+            "percentage": 9.48,
+            "percentageTokens": 13.61,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/app/api/staff/me/route.ts": {
+            "lines": 49,
+            "tokens": 361,
+            "sources": 1,
+            "clones": 5,
+            "duplicatedLines": 43,
+            "duplicatedTokens": 416,
+            "percentage": 87.76,
+            "percentageTokens": 115.24,
             "newDuplicatedLines": 0,
             "newClones": 0
           },
@@ -248,11 +272,11 @@
             "lines": 128,
             "tokens": 1098,
             "sources": 1,
-            "clones": 7,
-            "duplicatedLines": 72,
-            "duplicatedTokens": 671,
-            "percentage": 56.25,
-            "percentageTokens": 61.11,
+            "clones": 8,
+            "duplicatedLines": 84,
+            "duplicatedTokens": 771,
+            "percentage": 65.63,
+            "percentageTokens": 70.22,
             "newDuplicatedLines": 0,
             "newClones": 0
           },
@@ -284,11 +308,11 @@
             "lines": 128,
             "tokens": 1135,
             "sources": 1,
-            "clones": 9,
-            "duplicatedLines": 96,
-            "duplicatedTokens": 954,
-            "percentage": 75,
-            "percentageTokens": 84.05,
+            "clones": 10,
+            "duplicatedLines": 105,
+            "duplicatedTokens": 1036,
+            "percentage": 82.03,
+            "percentageTokens": 91.28,
             "newDuplicatedLines": 0,
             "newClones": 0
           },
@@ -296,11 +320,11 @@
             "lines": 176,
             "tokens": 1336,
             "sources": 1,
-            "clones": 11,
-            "duplicatedLines": 132,
-            "duplicatedTokens": 1171,
-            "percentage": 75,
-            "percentageTokens": 87.65,
+            "clones": 9,
+            "duplicatedLines": 105,
+            "duplicatedTokens": 967,
+            "percentage": 59.66,
+            "percentageTokens": 72.38,
             "newDuplicatedLines": 0,
             "newClones": 0
           },
@@ -352,6 +376,18 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
+          "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/app/api/contacts/[id]/route.ts": {
+            "lines": 127,
+            "tokens": 1263,
+            "sources": 1,
+            "clones": 8,
+            "duplicatedLines": 82,
+            "duplicatedTokens": 770,
+            "percentage": 64.57,
+            "percentageTokens": 60.97,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
           "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/app/api/availability/[id]/route.ts": {
             "lines": 73,
             "tokens": 681,
@@ -361,6 +397,18 @@
             "duplicatedTokens": 397,
             "percentage": 54.79,
             "percentageTokens": 58.3,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/app/api/auth/signout/route.ts": {
+            "lines": 16,
+            "tokens": 174,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
             "newDuplicatedLines": 0,
             "newClones": 0
           },
@@ -378,13 +426,13 @@
           },
           "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/app/api/artists/[id]/route.ts": {
             "lines": 143,
-            "tokens": 1085,
+            "tokens": 1150,
             "sources": 1,
-            "clones": 4,
-            "duplicatedLines": 46,
-            "duplicatedTokens": 410,
-            "percentage": 32.17,
-            "percentageTokens": 37.79,
+            "clones": 5,
+            "duplicatedLines": 49,
+            "duplicatedTokens": 475,
+            "percentage": 34.27,
+            "percentageTokens": 41.3,
             "newDuplicatedLines": 0,
             "newClones": 0
           },
@@ -425,14 +473,14 @@
             "newClones": 0
           },
           "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/app/api/tasks/route.ts": {
-            "lines": 297,
-            "tokens": 2426,
+            "lines": 362,
+            "tokens": 2975,
             "sources": 1,
             "clones": 1,
             "duplicatedLines": 8,
             "duplicatedTokens": 89,
-            "percentage": 2.69,
-            "percentageTokens": 3.67,
+            "percentage": 2.21,
+            "percentageTokens": 2.99,
             "newDuplicatedLines": 0,
             "newClones": 0
           },
@@ -465,10 +513,10 @@
             "tokens": 1138,
             "sources": 1,
             "clones": 1,
-            "duplicatedLines": 7,
-            "duplicatedTokens": 88,
-            "percentage": 4.73,
-            "percentageTokens": 7.73,
+            "duplicatedLines": 9,
+            "duplicatedTokens": 111,
+            "percentage": 6.08,
+            "percentageTokens": 9.75,
             "newDuplicatedLines": 0,
             "newClones": 0
           },
@@ -485,14 +533,26 @@
             "newClones": 0
           },
           "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/app/api/performances/route.ts": {
-            "lines": 153,
-            "tokens": 1295,
+            "lines": 189,
+            "tokens": 1588,
             "sources": 1,
             "clones": 1,
             "duplicatedLines": 11,
             "duplicatedTokens": 100,
-            "percentage": 7.19,
-            "percentageTokens": 7.72,
+            "percentage": 5.82,
+            "percentageTokens": 6.3,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/app/api/labels/route.ts": {
+            "lines": 73,
+            "tokens": 680,
+            "sources": 1,
+            "clones": 2,
+            "duplicatedLines": 18,
+            "duplicatedTokens": 186,
+            "percentage": 24.66,
+            "percentageTokens": 27.35,
             "newDuplicatedLines": 0,
             "newClones": 0
           },
@@ -557,14 +617,14 @@
             "newClones": 0
           },
           "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/app/api/contacts/route.ts": {
-            "lines": 173,
-            "tokens": 1485,
+            "lines": 264,
+            "tokens": 2276,
             "sources": 1,
-            "clones": 0,
-            "duplicatedLines": 0,
-            "duplicatedTokens": 0,
-            "percentage": 0,
-            "percentageTokens": 0,
+            "clones": 1,
+            "duplicatedLines": 11,
+            "duplicatedTokens": 100,
+            "percentage": 4.17,
+            "percentageTokens": 4.39,
             "newDuplicatedLines": 0,
             "newClones": 0
           },
@@ -581,26 +641,26 @@
             "newClones": 0
           },
           "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/app/api/availability/route.ts": {
-            "lines": 161,
-            "tokens": 1227,
+            "lines": 159,
+            "tokens": 1271,
             "sources": 1,
             "clones": 1,
             "duplicatedLines": 11,
             "duplicatedTokens": 100,
-            "percentage": 6.83,
-            "percentageTokens": 8.15,
+            "percentage": 6.92,
+            "percentageTokens": 7.87,
             "newDuplicatedLines": 0,
             "newClones": 0
           },
           "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/app/api/artists/route.ts": {
-            "lines": 117,
-            "tokens": 1013,
+            "lines": 159,
+            "tokens": 1452,
             "sources": 1,
-            "clones": 2,
-            "duplicatedLines": 19,
-            "duplicatedTokens": 189,
-            "percentage": 16.24,
-            "percentageTokens": 18.66,
+            "clones": 1,
+            "duplicatedLines": 11,
+            "duplicatedTokens": 100,
+            "percentage": 6.92,
+            "percentageTokens": 6.89,
             "newDuplicatedLines": 0,
             "newClones": 0
           },
@@ -641,8 +701,8 @@
             "newClones": 0
           },
           "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/lib/supabase/config.ts": {
-            "lines": 16,
-            "tokens": 136,
+            "lines": 35,
+            "tokens": 195,
             "sources": 1,
             "clones": 0,
             "duplicatedLines": 0,
@@ -653,8 +713,8 @@
             "newClones": 0
           },
           "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/lib/supabase/browser.ts": {
-            "lines": 15,
-            "tokens": 113,
+            "lines": 20,
+            "tokens": 136,
             "sources": 1,
             "clones": 0,
             "duplicatedLines": 0,
@@ -713,8 +773,8 @@
             "newClones": 0
           },
           "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/components/task-detail/types.ts": {
-            "lines": 126,
-            "tokens": 1014,
+            "lines": 143,
+            "tokens": 1155,
             "sources": 1,
             "clones": 0,
             "duplicatedLines": 0,
@@ -761,8 +821,8 @@
             "newClones": 0
           },
           "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/lib/itinerary.ts": {
-            "lines": 222,
-            "tokens": 2007,
+            "lines": 237,
+            "tokens": 2087,
             "sources": 1,
             "clones": 0,
             "duplicatedLines": 0,
@@ -797,8 +857,8 @@
             "newClones": 0
           },
           "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/lib/api-auth.ts": {
-            "lines": 146,
-            "tokens": 975,
+            "lines": 161,
+            "tokens": 1096,
             "sources": 1,
             "clones": 0,
             "duplicatedLines": 0,
@@ -821,8 +881,8 @@
             "newClones": 0
           },
           "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/proxy.ts": {
-            "lines": 91,
-            "tokens": 628,
+            "lines": 85,
+            "tokens": 605,
             "sources": 1,
             "clones": 0,
             "duplicatedLines": 0,
@@ -1074,14 +1134,14 @@
           }
         },
         "total": {
-          "lines": 11289,
-          "tokens": 97509,
-          "sources": 89,
-          "clones": 96,
-          "duplicatedLines": 1019,
-          "duplicatedTokens": 10329,
-          "percentage": 9.03,
-          "percentageTokens": 10.59,
+          "lines": 12131,
+          "tokens": 104920,
+          "sources": 94,
+          "clones": 107,
+          "duplicatedLines": 1120,
+          "duplicatedTokens": 11372,
+          "percentage": 9.23,
+          "percentageTokens": 10.84,
           "newDuplicatedLines": 0,
           "newClones": 0
         }
@@ -1196,21 +1256,9 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/components/task-form/task-form-fields.tsx": {
-            "lines": 182,
-            "tokens": 1581,
-            "sources": 1,
-            "clones": 0,
-            "duplicatedLines": 0,
-            "duplicatedTokens": 0,
-            "percentage": 0,
-            "percentageTokens": 0,
-            "newDuplicatedLines": 0,
-            "newClones": 0
-          },
           "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/components/task-detail/task-detail-view.tsx": {
-            "lines": 110,
-            "tokens": 913,
+            "lines": 297,
+            "tokens": 2260,
             "sources": 1,
             "clones": 0,
             "duplicatedLines": 0,
@@ -1233,8 +1281,8 @@
             "newClones": 0
           },
           "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/components/task-detail/task-detail-meta.tsx": {
-            "lines": 28,
-            "tokens": 268,
+            "lines": 93,
+            "tokens": 847,
             "sources": 1,
             "clones": 0,
             "duplicatedLines": 0,
@@ -1245,8 +1293,8 @@
             "newClones": 0
           },
           "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/components/task-detail/task-detail-items.tsx": {
-            "lines": 69,
-            "tokens": 486,
+            "lines": 151,
+            "tokens": 1066,
             "sources": 1,
             "clones": 0,
             "duplicatedLines": 0,
@@ -1296,11 +1344,11 @@
             "lines": 169,
             "tokens": 1193,
             "sources": 1,
-            "clones": 5,
-            "duplicatedLines": 78,
-            "duplicatedTokens": 371,
-            "percentage": 46.15,
-            "percentageTokens": 31.1,
+            "clones": 8,
+            "duplicatedLines": 120,
+            "duplicatedTokens": 572,
+            "percentage": 71.01,
+            "percentageTokens": 47.95,
             "newDuplicatedLines": 0,
             "newClones": 0
           },
@@ -1319,6 +1367,18 @@
           "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/components/staff-shifts/shift-bulk-create.tsx": {
             "lines": 129,
             "tokens": 958,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/components/staff/staff-sub-nav.tsx": {
+            "lines": 7,
+            "tokens": 34,
             "sources": 1,
             "clones": 0,
             "duplicatedLines": 0,
@@ -1569,8 +1629,8 @@
             "newClones": 0
           },
           "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/app/settings/page.tsx": {
-            "lines": 195,
-            "tokens": 1357,
+            "lines": 191,
+            "tokens": 1355,
             "sources": 1,
             "clones": 0,
             "duplicatedLines": 0,
@@ -1772,18 +1832,6 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/app/contacts/contacts-client.tsx": {
-            "lines": 235,
-            "tokens": 1714,
-            "sources": 1,
-            "clones": 0,
-            "duplicatedLines": 0,
-            "duplicatedTokens": 0,
-            "percentage": 0,
-            "percentageTokens": 0,
-            "newDuplicatedLines": 0,
-            "newClones": 0
-          },
           "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/app/artists/loading.tsx": {
             "lines": 0,
             "tokens": 3,
@@ -1845,8 +1893,8 @@
             "newClones": 0
           },
           "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/components/task-detail-dialog.tsx": {
-            "lines": 45,
-            "tokens": 355,
+            "lines": 46,
+            "tokens": 361,
             "sources": 1,
             "clones": 0,
             "duplicatedLines": 0,
@@ -1857,8 +1905,8 @@
             "newClones": 0
           },
           "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/components/task-card.tsx": {
-            "lines": 78,
-            "tokens": 527,
+            "lines": 104,
+            "tokens": 750,
             "sources": 1,
             "clones": 0,
             "duplicatedLines": 0,
@@ -1905,8 +1953,8 @@
             "newClones": 0
           },
           "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/components/running-order.tsx": {
-            "lines": 260,
-            "tokens": 2016,
+            "lines": 321,
+            "tokens": 2449,
             "sources": 1,
             "clones": 0,
             "duplicatedLines": 0,
@@ -1944,11 +1992,23 @@
             "lines": 174,
             "tokens": 1012,
             "sources": 1,
-            "clones": 14,
-            "duplicatedLines": 209,
-            "duplicatedTokens": 1014,
-            "percentage": 120.11,
-            "percentageTokens": 100.2,
+            "clones": 10,
+            "duplicatedLines": 148,
+            "duplicatedTokens": 718,
+            "percentage": 85.06,
+            "percentageTokens": 70.95,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/components/quick-artist-create.tsx": {
+            "lines": 61,
+            "tokens": 455,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
             "newDuplicatedLines": 0,
             "newClones": 0
           },
@@ -1989,8 +2049,8 @@
             "newClones": 0
           },
           "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/components/nav-bar.tsx": {
-            "lines": 221,
-            "tokens": 1566,
+            "lines": 232,
+            "tokens": 1664,
             "sources": 1,
             "clones": 0,
             "duplicatedLines": 0,
@@ -2013,8 +2073,8 @@
             "newClones": 0
           },
           "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/components/inventory-list.tsx": {
-            "lines": 138,
-            "tokens": 1031,
+            "lines": 133,
+            "tokens": 1011,
             "sources": 1,
             "clones": 0,
             "duplicatedLines": 0,
@@ -2108,6 +2168,18 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
+          "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/components/contact-form.tsx": {
+            "lines": 129,
+            "tokens": 711,
+            "sources": 1,
+            "clones": 4,
+            "duplicatedLines": 60,
+            "duplicatedTokens": 300,
+            "percentage": 46.51,
+            "percentageTokens": 42.19,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
           "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/components/checkin-checkout-modal.tsx": {
             "lines": 92,
             "tokens": 792,
@@ -2145,8 +2217,8 @@
             "newClones": 0
           },
           "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/components/artist-list.tsx": {
-            "lines": 89,
-            "tokens": 649,
+            "lines": 179,
+            "tokens": 1325,
             "sources": 1,
             "clones": 0,
             "duplicatedLines": 0,
@@ -2157,14 +2229,14 @@
             "newClones": 0
           },
           "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/components/artist-form.tsx": {
-            "lines": 174,
-            "tokens": 1039,
+            "lines": 177,
+            "tokens": 1035,
             "sources": 1,
-            "clones": 4,
-            "duplicatedLines": 61,
-            "duplicatedTokens": 296,
-            "percentage": 35.06,
-            "percentageTokens": 28.49,
+            "clones": 3,
+            "duplicatedLines": 42,
+            "duplicatedTokens": 201,
+            "percentage": 23.73,
+            "percentageTokens": 19.42,
             "newDuplicatedLines": 0,
             "newClones": 0
           },
@@ -2193,8 +2265,8 @@
             "newClones": 0
           },
           "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/app/layout.tsx": {
-            "lines": 0,
-            "tokens": 9,
+            "lines": 3,
+            "tokens": 33,
             "sources": 1,
             "clones": 0,
             "duplicatedLines": 0,
@@ -2242,14 +2314,14 @@
           }
         },
         "total": {
-          "lines": 7323,
-          "tokens": 58305,
-          "sources": 96,
-          "clones": 15,
-          "duplicatedLines": 256,
-          "duplicatedTokens": 1370,
+          "lines": 7623,
+          "tokens": 60150,
+          "sources": 97,
+          "clones": 16,
+          "duplicatedLines": 267,
+          "duplicatedTokens": 1425,
           "percentage": 3.5,
-          "percentageTokens": 2.35,
+          "percentageTokens": 2.37,
           "newDuplicatedLines": 0,
           "newClones": 0
         }
@@ -2305,8 +2377,8 @@
             "newClones": 0
           },
           "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/app/staff/availability/page.tsx": {
-            "lines": 117,
-            "tokens": 1021,
+            "lines": 145,
+            "tokens": 1227,
             "sources": 1,
             "clones": 0,
             "duplicatedLines": 0,
@@ -2392,29 +2464,17 @@
             "lines": 181,
             "tokens": 1478,
             "sources": 1,
-            "clones": 0,
-            "duplicatedLines": 0,
-            "duplicatedTokens": 0,
-            "percentage": 0,
-            "percentageTokens": 0,
-            "newDuplicatedLines": 0,
-            "newClones": 0
-          },
-          "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/components/task-form/task-form-fields.tsx": {
-            "lines": 276,
-            "tokens": 2406,
-            "sources": 1,
-            "clones": 0,
-            "duplicatedLines": 0,
-            "duplicatedTokens": 0,
-            "percentage": 0,
-            "percentageTokens": 0,
+            "clones": 1,
+            "duplicatedLines": 10,
+            "duplicatedTokens": 77,
+            "percentage": 5.52,
+            "percentageTokens": 5.21,
             "newDuplicatedLines": 0,
             "newClones": 0
           },
           "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/components/task-detail/task-detail-view.tsx": {
-            "lines": 211,
-            "tokens": 1900,
+            "lines": 389,
+            "tokens": 3134,
             "sources": 1,
             "clones": 0,
             "duplicatedLines": 0,
@@ -2437,8 +2497,8 @@
             "newClones": 0
           },
           "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/components/task-detail/task-detail-meta.tsx": {
-            "lines": 70,
-            "tokens": 668,
+            "lines": 154,
+            "tokens": 1376,
             "sources": 1,
             "clones": 0,
             "duplicatedLines": 0,
@@ -2449,14 +2509,14 @@
             "newClones": 0
           },
           "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/components/task-detail/task-detail-items.tsx": {
-            "lines": 120,
-            "tokens": 991,
+            "lines": 263,
+            "tokens": 2013,
             "sources": 1,
-            "clones": 0,
-            "duplicatedLines": 0,
-            "duplicatedTokens": 0,
-            "percentage": 0,
-            "percentageTokens": 0,
+            "clones": 1,
+            "duplicatedLines": 10,
+            "duplicatedTokens": 77,
+            "percentage": 3.8,
+            "percentageTokens": 3.83,
             "newDuplicatedLines": 0,
             "newClones": 0
           },
@@ -2523,6 +2583,18 @@
           "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/components/staff-shifts/shift-bulk-create.tsx": {
             "lines": 235,
             "tokens": 1765,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/components/staff/staff-sub-nav.tsx": {
+            "lines": 40,
+            "tokens": 328,
             "sources": 1,
             "clones": 0,
             "duplicatedLines": 0,
@@ -2725,8 +2797,8 @@
             "newClones": 0
           },
           "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/app/staff/staff-client.tsx": {
-            "lines": 305,
-            "tokens": 2473,
+            "lines": 302,
+            "tokens": 2443,
             "sources": 1,
             "clones": 0,
             "duplicatedLines": 0,
@@ -2785,8 +2857,8 @@
             "newClones": 0
           },
           "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/app/settings/page.tsx": {
-            "lines": 391,
-            "tokens": 2943,
+            "lines": 387,
+            "tokens": 2941,
             "sources": 1,
             "clones": 0,
             "duplicatedLines": 0,
@@ -3024,18 +3096,6 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
-          "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/app/contacts/contacts-client.tsx": {
-            "lines": 384,
-            "tokens": 2956,
-            "sources": 1,
-            "clones": 0,
-            "duplicatedLines": 0,
-            "duplicatedTokens": 0,
-            "percentage": 0,
-            "percentageTokens": 0,
-            "newDuplicatedLines": 0,
-            "newClones": 0
-          },
           "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/app/artists/page.tsx": {
             "lines": 14,
             "tokens": 119,
@@ -3085,8 +3145,8 @@
             "newClones": 0
           },
           "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/lib/user-context.tsx": {
-            "lines": 74,
-            "tokens": 644,
+            "lines": 121,
+            "tokens": 997,
             "sources": 1,
             "clones": 0,
             "duplicatedLines": 0,
@@ -3121,8 +3181,8 @@
             "newClones": 0
           },
           "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/components/task-detail-dialog.tsx": {
-            "lines": 369,
-            "tokens": 3694,
+            "lines": 436,
+            "tokens": 4203,
             "sources": 1,
             "clones": 0,
             "duplicatedLines": 0,
@@ -3133,8 +3193,8 @@
             "newClones": 0
           },
           "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/components/task-card.tsx": {
-            "lines": 242,
-            "tokens": 1817,
+            "lines": 292,
+            "tokens": 2269,
             "sources": 1,
             "clones": 0,
             "duplicatedLines": 0,
@@ -3148,11 +3208,11 @@
             "lines": 291,
             "tokens": 2215,
             "sources": 1,
-            "clones": 6,
-            "duplicatedLines": 71,
-            "duplicatedTokens": 575,
-            "percentage": 24.4,
-            "percentageTokens": 25.96,
+            "clones": 10,
+            "duplicatedLines": 149,
+            "duplicatedTokens": 1072,
+            "percentage": 51.2,
+            "percentageTokens": 48.4,
             "newDuplicatedLines": 0,
             "newClones": 0
           },
@@ -3181,8 +3241,8 @@
             "newClones": 0
           },
           "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/components/running-order.tsx": {
-            "lines": 357,
-            "tokens": 2674,
+            "lines": 422,
+            "tokens": 3117,
             "sources": 1,
             "clones": 0,
             "duplicatedLines": 0,
@@ -3208,11 +3268,11 @@
             "lines": 339,
             "tokens": 2746,
             "sources": 1,
-            "clones": 1,
-            "duplicatedLines": 8,
-            "duplicatedTokens": 84,
-            "percentage": 2.36,
-            "percentageTokens": 3.06,
+            "clones": 2,
+            "duplicatedLines": 16,
+            "duplicatedTokens": 168,
+            "percentage": 4.72,
+            "percentageTokens": 6.12,
             "newDuplicatedLines": 0,
             "newClones": 0
           },
@@ -3220,11 +3280,23 @@
             "lines": 299,
             "tokens": 2135,
             "sources": 1,
-            "clones": 3,
-            "duplicatedLines": 43,
-            "duplicatedTokens": 330,
-            "percentage": 14.38,
-            "percentageTokens": 15.46,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/components/quick-artist-create.tsx": {
+            "lines": 154,
+            "tokens": 1190,
+            "sources": 1,
+            "clones": 1,
+            "duplicatedLines": 17,
+            "duplicatedTokens": 97,
+            "percentage": 11.04,
+            "percentageTokens": 8.15,
             "newDuplicatedLines": 0,
             "newClones": 0
           },
@@ -3265,14 +3337,14 @@
             "newClones": 0
           },
           "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/components/nav-bar.tsx": {
-            "lines": 291,
-            "tokens": 2143,
+            "lines": 305,
+            "tokens": 2250,
             "sources": 1,
             "clones": 2,
             "duplicatedLines": 28,
             "duplicatedTokens": 232,
-            "percentage": 9.62,
-            "percentageTokens": 10.83,
+            "percentage": 9.18,
+            "percentageTokens": 10.31,
             "newDuplicatedLines": 0,
             "newClones": 0
           },
@@ -3289,14 +3361,14 @@
             "newClones": 0
           },
           "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/components/inventory-list.tsx": {
-            "lines": 316,
-            "tokens": 2651,
+            "lines": 344,
+            "tokens": 2936,
             "sources": 1,
             "clones": 2,
             "duplicatedLines": 18,
             "duplicatedTokens": 178,
-            "percentage": 5.7,
-            "percentageTokens": 6.71,
+            "percentage": 5.23,
+            "percentageTokens": 6.06,
             "newDuplicatedLines": 0,
             "newClones": 0
           },
@@ -3316,11 +3388,11 @@
             "lines": 482,
             "tokens": 3700,
             "sources": 1,
-            "clones": 7,
-            "duplicatedLines": 83,
-            "duplicatedTokens": 670,
-            "percentage": 17.22,
-            "percentageTokens": 18.11,
+            "clones": 8,
+            "duplicatedLines": 101,
+            "duplicatedTokens": 821,
+            "percentage": 20.95,
+            "percentageTokens": 22.19,
             "newDuplicatedLines": 0,
             "newClones": 0
           },
@@ -3365,10 +3437,10 @@
             "tokens": 2446,
             "sources": 1,
             "clones": 7,
-            "duplicatedLines": 89,
-            "duplicatedTokens": 653,
-            "percentage": 27.13,
-            "percentageTokens": 26.7,
+            "duplicatedLines": 101,
+            "duplicatedTokens": 716,
+            "percentage": 30.79,
+            "percentageTokens": 29.27,
             "newDuplicatedLines": 0,
             "newClones": 0
           },
@@ -3384,15 +3456,27 @@
             "newDuplicatedLines": 0,
             "newClones": 0
           },
+          "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/components/contact-form.tsx": {
+            "lines": 252,
+            "tokens": 1855,
+            "sources": 1,
+            "clones": 2,
+            "duplicatedLines": 17,
+            "duplicatedTokens": 183,
+            "percentage": 6.75,
+            "percentageTokens": 9.87,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
           "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/components/checkin-checkout-modal.tsx": {
             "lines": 276,
             "tokens": 2313,
             "sources": 1,
-            "clones": 2,
-            "duplicatedLines": 22,
-            "duplicatedTokens": 203,
-            "percentage": 7.97,
-            "percentageTokens": 8.78,
+            "clones": 3,
+            "duplicatedLines": 39,
+            "duplicatedTokens": 300,
+            "percentage": 14.13,
+            "percentageTokens": 12.97,
             "newDuplicatedLines": 0,
             "newClones": 0
           },
@@ -3421,8 +3505,8 @@
             "newClones": 0
           },
           "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/components/artist-list.tsx": {
-            "lines": 229,
-            "tokens": 1841,
+            "lines": 405,
+            "tokens": 3223,
             "sources": 1,
             "clones": 0,
             "duplicatedLines": 0,
@@ -3433,14 +3517,14 @@
             "newClones": 0
           },
           "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/components/artist-form.tsx": {
-            "lines": 321,
-            "tokens": 2332,
+            "lines": 322,
+            "tokens": 2316,
             "sources": 1,
-            "clones": 5,
-            "duplicatedLines": 66,
-            "duplicatedTokens": 512,
-            "percentage": 20.56,
-            "percentageTokens": 21.96,
+            "clones": 8,
+            "duplicatedLines": 140,
+            "duplicatedTokens": 992,
+            "percentage": 43.48,
+            "percentageTokens": 42.83,
             "newDuplicatedLines": 0,
             "newClones": 0
           },
@@ -3469,8 +3553,8 @@
             "newClones": 0
           },
           "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/app/layout.tsx": {
-            "lines": 58,
-            "tokens": 392,
+            "lines": 77,
+            "tokens": 584,
             "sources": 1,
             "clones": 0,
             "duplicatedLines": 0,
@@ -3494,28 +3578,28 @@
           }
         },
         "total": {
-          "lines": 16281,
-          "tokens": 134900,
-          "sources": 103,
-          "clones": 42,
-          "duplicatedLines": 468,
-          "duplicatedTokens": 4474,
-          "percentage": 2.87,
-          "percentageTokens": 3.32,
+          "lines": 16960,
+          "tokens": 139756,
+          "sources": 104,
+          "clones": 48,
+          "duplicatedLines": 577,
+          "duplicatedTokens": 5212,
+          "percentage": 3.4,
+          "percentageTokens": 3.73,
           "newDuplicatedLines": 0,
           "newClones": 0
         }
       }
     },
     "total": {
-      "lines": 34893,
-      "tokens": 290714,
-      "sources": 288,
-      "clones": 153,
-      "duplicatedLines": 1743,
-      "duplicatedTokens": 16173,
-      "percentage": 5,
-      "percentageTokens": 5.56,
+      "lines": 36714,
+      "tokens": 304826,
+      "sources": 295,
+      "clones": 171,
+      "duplicatedLines": 1964,
+      "duplicatedTokens": 18009,
+      "percentage": 5.35,
+      "percentageTokens": 5.91,
       "newDuplicatedLines": 0,
       "newClones": 0
     }
@@ -3842,6 +3926,78 @@
           "line": 64,
           "column": 2,
           "position": 605
+        }
+      }
+    },
+    {
+      "format": "typescript",
+      "lines": 11,
+      "fragment": "export async function POST(\n\trequest: NextRequest,\n\t{ params }: { params: Promise<{ id: string }> },\n) {\n\ttry {\n\t\tconst auth = await requireAuth(request, \"TASKS_WRITE\");\n\t\tif (!auth.authorized) return auth.response;\n\n\t\tconst { id: taskId } = await params;\n\n\t\t// Verify task exists",
+      "tokens": 0,
+      "firstFile": {
+        "name": "src/app/api/tasks/[id]/attachments/route.ts",
+        "start": 22,
+        "end": 32,
+        "startLoc": {
+          "line": 22,
+          "column": 1,
+          "position": 150
+        },
+        "endLoc": {
+          "line": 32,
+          "column": 22,
+          "position": 260
+        }
+      },
+      "secondFile": {
+        "name": "src/app/api/tasks/[id]/reject/route.ts",
+        "start": 8,
+        "end": 23,
+        "startLoc": {
+          "line": 8,
+          "column": 1,
+          "position": 76
+        },
+        "endLoc": {
+          "line": 23,
+          "column": 6,
+          "position": 228
+        }
+      }
+    },
+    {
+      "format": "typescript",
+      "lines": 10,
+      "fragment": "(\n\trequest: NextRequest,\n\t{ params }: { params: Promise<{ id: string }> },\n) {\n\ttry {\n\t\tconst auth = await requireAuth(request, \"TASKS_WRITE\");\n\t\tif (!auth.authorized) return auth.response;\n\n\t\tconst { id: taskId } = await params;\n\t\tconst attachmentId",
+      "tokens": 0,
+      "firstFile": {
+        "name": "src/app/api/tasks/[id]/attachments/route.ts",
+        "start": 148,
+        "end": 157,
+        "startLoc": {
+          "line": 148,
+          "column": 7,
+          "position": 1263
+        },
+        "endLoc": {
+          "line": 157,
+          "column": 13,
+          "position": 1367
+        }
+      },
+      "secondFile": {
+        "name": "src/app/api/tasks/[id]/reject/route.ts",
+        "start": 8,
+        "end": 23,
+        "startLoc": {
+          "line": 8,
+          "column": 5,
+          "position": 83
+        },
+        "endLoc": {
+          "line": 23,
+          "column": 5,
+          "position": 230
         }
       }
     },
@@ -4716,15 +4872,15 @@
       "tokens": 0,
       "firstFile": {
         "name": "src/app/api/tasks/[id]/route.ts",
-        "start": 106,
-        "end": 116,
+        "start": 114,
+        "end": 124,
         "startLoc": {
-          "line": 106,
+          "line": 114,
           "column": 1,
           "position": 351
         },
         "endLoc": {
-          "line": 116,
+          "line": 124,
           "column": 23,
           "position": 458
         }
@@ -4752,17 +4908,17 @@
       "tokens": 0,
       "firstFile": {
         "name": "src/app/api/tasks/[id]/route.ts",
-        "start": 156,
-        "end": 168,
+        "start": 168,
+        "end": 180,
         "startLoc": {
-          "line": 156,
+          "line": 168,
           "column": 4,
-          "position": 822
+          "position": 877
         },
         "endLoc": {
-          "line": 168,
+          "line": 180,
           "column": 6,
-          "position": 943
+          "position": 998
         }
       },
       "secondFile": {
@@ -4784,31 +4940,31 @@
     {
       "format": "typescript",
       "lines": 11,
-      "fragment": "(\n\trequest: NextRequest,\n\t{ params }: { params: Promise<{ id: string }> },\n) {\n\ttry {\n\t\tconst auth = await requireAuth(request, \"TASKS_WRITE\");\n\t\tif (!auth.authorized) return auth.response;\n\n\t\tconst { id } = await params;\n\n\t\tconst {",
+      "fragment": "export async function DELETE(\n\trequest: NextRequest,\n\t{ params }: { params: Promise<{ id: string }> },\n) {\n\ttry {\n\t\tconst auth = await requireAuth(request, \"TASKS_WRITE\");\n\t\tif (!auth.authorized) return auth.response;\n\n\t\tconst { id } = await params;\n\n\t\tconst {",
       "tokens": 0,
       "firstFile": {
         "name": "src/app/api/tasks/[id]/route.ts",
-        "start": 341,
-        "end": 351,
+        "start": 399,
+        "end": 409,
         "startLoc": {
-          "line": 341,
-          "column": 7,
-          "position": 2524
+          "line": 399,
+          "column": 1,
+          "position": 2898
         },
         "endLoc": {
-          "line": 351,
+          "line": 409,
           "column": 2,
-          "position": 2626
+          "position": 3007
         }
       },
       "secondFile": {
-        "name": "src/app/api/tasks/[id]/reject/route.ts",
-        "start": 8,
+        "name": "src/app/api/tasks/[id]/attachments/route.ts",
+        "start": 148,
         "end": 17,
         "startLoc": {
-          "line": 8,
-          "column": 5,
-          "position": 83
+          "line": 148,
+          "column": 1,
+          "position": 1256
         },
         "endLoc": {
           "line": 17,
@@ -4824,17 +4980,17 @@
       "tokens": 0,
       "firstFile": {
         "name": "src/app/api/tasks/[id]/route.ts",
-        "start": 351,
-        "end": 359,
+        "start": 409,
+        "end": 417,
         "startLoc": {
-          "line": 351,
+          "line": 409,
           "column": 8,
-          "position": 2641
+          "position": 3022
         },
         "endLoc": {
-          "line": 359,
+          "line": 417,
           "column": 23,
-          "position": 2734
+          "position": 3115
         }
       },
       "secondFile": {
@@ -4850,6 +5006,78 @@
           "line": 91,
           "column": 31,
           "position": 838
+        }
+      }
+    },
+    {
+      "format": "typescript",
+      "lines": 8,
+      "fragment": "import { NextRequest, NextResponse } from \"next/server\";\nimport { createClient } from \"@supabase/supabase-js\";\nimport { supabaseConfig } from \"@/lib/supabase/config\";\nimport { requireAuth } from \"@/lib/api-auth\";\n\nconst supabase = createClient(supabaseConfig.url, supabaseConfig.serviceKey);\n\nexport async function GET(request: NextRequest)",
+      "tokens": 0,
+      "firstFile": {
+        "name": "src/app/api/staff/me/route.ts",
+        "start": 4,
+        "end": 11,
+        "startLoc": {
+          "line": 4,
+          "column": 1,
+          "position": 5
+        },
+        "endLoc": {
+          "line": 11,
+          "column": 2,
+          "position": 93
+        }
+      },
+      "secondFile": {
+        "name": "src/app/api/tasks/[id]/history/route.ts",
+        "start": 1,
+        "end": 9,
+        "startLoc": {
+          "line": 1,
+          "column": 1,
+          "position": 0
+        },
+        "endLoc": {
+          "line": 9,
+          "column": 2,
+          "position": 90
+        }
+      }
+    },
+    {
+      "format": "typescript",
+      "lines": 10,
+      "fragment": "},\n\t\t\t\t\t{ status: 404 },\n\t\t\t\t);\n\t\t\t}\n\t\t\treturn NextResponse.json({ error: error.message }, { status: 500 });\n\t\t}\n\n\t\treturn NextResponse.json(data);\n\t} catch (error) {\n\t\tconsole.error(\"Error fetching staff member:\"",
+      "tokens": 0,
+      "firstFile": {
+        "name": "src/app/api/staff/[id]/route.ts",
+        "start": 39,
+        "end": 48,
+        "startLoc": {
+          "line": 39,
+          "column": 2,
+          "position": 279
+        },
+        "endLoc": {
+          "line": 48,
+          "column": 31,
+          "position": 361
+        }
+      },
+      "secondFile": {
+        "name": "src/app/api/staff/me/route.ts",
+        "start": 35,
+        "end": 44,
+        "startLoc": {
+          "line": 35,
+          "column": 2,
+          "position": 235
+        },
+        "endLoc": {
+          "line": 44,
+          "column": 35,
+          "position": 317
         }
       }
     },
@@ -5198,18 +5426,18 @@
         }
       },
       "secondFile": {
-        "name": "src/app/api/staff/[id]/route.ts",
-        "start": 39,
-        "end": 48,
+        "name": "src/app/api/staff/me/route.ts",
+        "start": 35,
+        "end": 44,
         "startLoc": {
-          "line": 39,
+          "line": 35,
           "column": 2,
-          "position": 279
+          "position": 235
         },
         "endLoc": {
-          "line": 48,
-          "column": 31,
-          "position": 361
+          "line": 44,
+          "column": 35,
+          "position": 317
         }
       }
     },
@@ -5935,6 +6163,186 @@
     },
     {
       "format": "typescript",
+      "lines": 10,
+      "fragment": "},\n\t\t\t\t\t{ status: 404 },\n\t\t\t\t);\n\t\t\t}\n\t\t\treturn NextResponse.json({ error: error.message }, { status: 500 });\n\t\t}\n\n\t\treturn NextResponse.json(data);\n\t} catch (error) {\n\t\tconsole.error(\"Error fetching contact:\"",
+      "tokens": 0,
+      "firstFile": {
+        "name": "src/app/api/contacts/[id]/route.ts",
+        "start": 31,
+        "end": 40,
+        "startLoc": {
+          "line": 31,
+          "column": 2,
+          "position": 279
+        },
+        "endLoc": {
+          "line": 40,
+          "column": 26,
+          "position": 361
+        }
+      },
+      "secondFile": {
+        "name": "src/app/api/staff/me/route.ts",
+        "start": 35,
+        "end": 44,
+        "startLoc": {
+          "line": 35,
+          "column": 2,
+          "position": 235
+        },
+        "endLoc": {
+          "line": 44,
+          "column": 35,
+          "position": 317
+        }
+      }
+    },
+    {
+      "format": "typescript",
+      "lines": 11,
+      "fragment": ")\n\t\t\t.single();\n\n\t\tif (error) {\n\t\t\tif (error.code === \"PGRST116\") {\n\t\t\t\treturn NextResponse.json(\n\t\t\t\t\t{ error: \"Contact not found\" },\n\t\t\t\t\t{ status: 404 },\n\t\t\t\t);\n\t\t\t}\n\t\t\treturn NextResponse.json({ error: error.message }, { status: 400",
+      "tokens": 0,
+      "firstFile": {
+        "name": "src/app/api/contacts/[id]/route.ts",
+        "start": 74,
+        "end": 84,
+        "startLoc": {
+          "line": 74,
+          "column": 2,
+          "position": 769
+        },
+        "endLoc": {
+          "line": 84,
+          "column": 4,
+          "position": 864
+        }
+      },
+      "secondFile": {
+        "name": "src/app/api/contacts/[id]/route.ts",
+        "start": 25,
+        "end": 35,
+        "startLoc": {
+          "line": 25,
+          "column": 3,
+          "position": 229
+        },
+        "endLoc": {
+          "line": 35,
+          "column": 4,
+          "position": 324
+        }
+      }
+    },
+    {
+      "format": "typescript",
+      "lines": 10,
+      "fragment": "},\n\t\t\t\t\t{ status: 404 },\n\t\t\t\t);\n\t\t\t}\n\t\t\treturn NextResponse.json({ error: error.message }, { status: 400 });\n\t\t}\n\n\t\treturn NextResponse.json(data);\n\t} catch (error) {\n\t\tconsole.error(\"Error updating contact:\"",
+      "tokens": 0,
+      "firstFile": {
+        "name": "src/app/api/contacts/[id]/route.ts",
+        "start": 80,
+        "end": 89,
+        "startLoc": {
+          "line": 80,
+          "column": 2,
+          "position": 819
+        },
+        "endLoc": {
+          "line": 89,
+          "column": 26,
+          "position": 901
+        }
+      },
+      "secondFile": {
+        "name": "src/app/api/rentals/[id]/route.ts",
+        "start": 88,
+        "end": 97,
+        "startLoc": {
+          "line": 88,
+          "column": 2,
+          "position": 745
+        },
+        "endLoc": {
+          "line": 97,
+          "column": 25,
+          "position": 827
+        }
+      }
+    },
+    {
+      "format": "typescript",
+      "lines": 11,
+      "fragment": "(\n\trequest: NextRequest,\n\t{ params }: { params: Promise<{ id: string }> },\n) {\n\ttry {\n\t\tconst auth = await requireAuth(request, \"CONTACTS_WRITE\");\n\t\tif (!auth.authorized) return auth.response;\n\n\t\tconst { id } = await params;\n\n\t\tconst {",
+      "tokens": 0,
+      "firstFile": {
+        "name": "src/app/api/contacts/[id]/route.ts",
+        "start": 98,
+        "end": 108,
+        "startLoc": {
+          "line": 98,
+          "column": 7,
+          "position": 957
+        },
+        "endLoc": {
+          "line": 108,
+          "column": 2,
+          "position": 1059
+        }
+      },
+      "secondFile": {
+        "name": "src/app/api/contacts/[id]/route.ts",
+        "start": 49,
+        "end": 58,
+        "startLoc": {
+          "line": 49,
+          "column": 4,
+          "position": 417
+        },
+        "endLoc": {
+          "line": 58,
+          "column": 5,
+          "position": 518
+        }
+      }
+    },
+    {
+      "format": "typescript",
+      "lines": 13,
+      "fragment": ");\n\n\t\tif (error) {\n\t\t\tif (error.code === \"PGRST116\") {\n\t\t\t\treturn NextResponse.json(\n\t\t\t\t\t{ error: \"Contact not found\" },\n\t\t\t\t\t{ status: 404 },\n\t\t\t\t);\n\t\t\t}\n\t\t\treturn NextResponse.json({ error: error.message }, { status: 400 });\n\t\t}\n\n\t\treturn NextResponse.json({",
+      "tokens": 0,
+      "firstFile": {
+        "name": "src/app/api/contacts/[id]/route.ts",
+        "start": 108,
+        "end": 120,
+        "startLoc": {
+          "line": 108,
+          "column": 3,
+          "position": 1086
+        },
+        "endLoc": {
+          "line": 120,
+          "column": 2,
+          "position": 1192
+        }
+      },
+      "secondFile": {
+        "name": "src/app/api/contacts/[id]/route.ts",
+        "start": 26,
+        "end": 87,
+        "startLoc": {
+          "line": 26,
+          "column": 2,
+          "position": 235
+        },
+        "endLoc": {
+          "line": 87,
+          "column": 5,
+          "position": 881
+        }
+      }
+    },
+    {
+      "format": "typescript",
       "lines": 13,
       "fragment": ",\n\t\t\t})\n\t\t\t.eq(\"id\", id)\n\t\t\t.select()\n\t\t\t.single();\n\n\t\tif (error) {\n\t\t\treturn NextResponse.json({ error: error.message }, { status: 400 });\n\t\t}\n\n\t\treturn NextResponse.json(data);\n\t} catch (error) {\n\t\tconsole.error(\"Error updating availability:\"",
       "tokens": 0,
@@ -6044,67 +6452,67 @@
     {
       "format": "typescript",
       "lines": 10,
-      "fragment": "(\n  request: NextRequest,\n  { params }: { params: Promise<{ id: string }> }\n) {\n  try {\n    const auth = await requireAuth(request, 'ARTISTS_WRITE');\n    if (!auth.authorized) return auth.response;\n\n    const { id } = await params;\n    const",
+      "fragment": "},\n\t\t\t\t\t{ status: 404 },\n\t\t\t\t);\n\t\t\t}\n\t\t\treturn NextResponse.json({ error: error.message }, { status: 500 });\n\t\t}\n\n\t\treturn NextResponse.json(data);\n\t} catch (error) {\n\t\tconsole.error(\"Error fetching artist:\"",
       "tokens": 0,
       "firstFile": {
         "name": "src/app/api/artists/[id]/route.ts",
-        "start": 52,
-        "end": 61,
+        "start": 31,
+        "end": 40,
         "startLoc": {
-          "line": 52,
-          "column": 4,
-          "position": 419
+          "line": 31,
+          "column": 2,
+          "position": 279
         },
         "endLoc": {
-          "line": 61,
-          "column": 6,
-          "position": 517
+          "line": 40,
+          "column": 25,
+          "position": 361
         }
       },
       "secondFile": {
-        "name": "src/app/api/artists/[id]/delete-rider/route.ts",
-        "start": 13,
-        "end": 23,
+        "name": "src/app/api/staff/me/route.ts",
+        "start": 35,
+        "end": 44,
         "startLoc": {
-          "line": 13,
-          "column": 7,
-          "position": 88
+          "line": 35,
+          "column": 2,
+          "position": 235
         },
         "endLoc": {
-          "line": 23,
-          "column": 37,
-          "position": 187
+          "line": 44,
+          "column": 35,
+          "position": 317
         }
       }
     },
     {
       "format": "typescript",
-      "lines": 15,
-      "fragment": "})\n      .eq('id', id)\n      .select()\n      .single();\n\n    if (error) {\n      return NextResponse.json(\n        { error: error.message },\n        { status: 400 }\n      );\n    }\n\n    return NextResponse.json(data);\n  } catch (error) {\n    console.error('Error updating artist:'",
+      "lines": 13,
+      "fragment": ",\n\t\t\t})\n\t\t\t.eq(\"id\", id)\n\t\t\t.select()\n\t\t\t.single();\n\n\t\tif (error) {\n\t\t\treturn NextResponse.json({ error: error.message }, { status: 400 });\n\t\t}\n\n\t\treturn NextResponse.json(data);\n\t} catch (error) {\n\t\tconsole.error(\"Error updating artist:\"",
       "tokens": 0,
       "firstFile": {
         "name": "src/app/api/artists/[id]/route.ts",
-        "start": 91,
-        "end": 105,
+        "start": 87,
+        "end": 99,
         "startLoc": {
-          "line": 91,
-          "column": 7,
-          "position": 665
+          "line": 87,
+          "column": 18,
+          "position": 663
         },
         "endLoc": {
-          "line": 105,
+          "line": 99,
           "column": 25,
-          "position": 767
+          "position": 763
         }
       },
       "secondFile": {
-        "name": "src/app/api/performances/[id]/route.ts",
-        "start": 124,
+        "name": "src/app/api/staff/[id]/route.ts",
+        "start": 76,
         "end": 246,
         "startLoc": {
-          "line": 124,
-          "column": 7,
-          "position": 916
+          "line": 76,
+          "column": 9,
+          "position": 601
         },
         "endLoc": {
           "line": 246,
@@ -6116,67 +6524,67 @@
     {
       "format": "typescript",
       "lines": 11,
-      "fragment": "export async function DELETE(\n  request: NextRequest,\n  { params }: { params: Promise<{ id: string }> }\n) {\n  try {\n    const auth = await requireAuth(request, 'ARTISTS_WRITE');\n    if (!auth.authorized) return auth.response;\n\n    const { id } = await params;\n\n    const {",
+      "fragment": "(\n\trequest: NextRequest,\n\t{ params }: { params: Promise<{ id: string }> },\n) {\n\ttry {\n\t\tconst auth = await requireAuth(request, \"ARTISTS_WRITE\");\n\t\tif (!auth.authorized) return auth.response;\n\n\t\tconst { id } = await params;\n\n\t\t// First delete all performances referencing this artist",
       "tokens": 0,
       "firstFile": {
         "name": "src/app/api/artists/[id]/route.ts",
-        "start": 114,
-        "end": 124,
+        "start": 108,
+        "end": 118,
         "startLoc": {
-          "line": 114,
-          "column": 1,
-          "position": 815
+          "line": 108,
+          "column": 7,
+          "position": 819
         },
         "endLoc": {
-          "line": 124,
-          "column": 2,
-          "position": 923
+          "line": 118,
+          "column": 57,
+          "position": 919
         }
       },
       "secondFile": {
-        "name": "src/app/api/artists/[id]/delete-rider/route.ts",
-        "start": 13,
-        "end": 61,
+        "name": "src/app/api/artists/[id]/route.ts",
+        "start": 49,
+        "end": 58,
         "startLoc": {
-          "line": 13,
-          "column": 1,
-          "position": 81
+          "line": 49,
+          "column": 4,
+          "position": 417
         },
         "endLoc": {
-          "line": 61,
-          "column": 5,
-          "position": 519
+          "line": 58,
+          "column": 6,
+          "position": 516
         }
       }
     },
     {
       "format": "typescript",
-      "lines": 14,
-      "fragment": ")\n      .delete()\n      .eq('id', id);\n\n    if (error) {\n      return NextResponse.json(\n        { error: error.message },\n        { status: 400 }\n      );\n    }\n\n    return NextResponse.json({ success: true });\n  } catch (error) {\n    console.error('Error deleting artist:'",
+      "lines": 9,
+      "fragment": ").delete().eq(\"id\", id);\n\n\t\tif (error) {\n\t\t\treturn NextResponse.json({ error: error.message }, { status: 400 });\n\t\t}\n\n\t\treturn NextResponse.json({ success: true });\n\t} catch (error) {\n\t\tconsole.error(\"Error deleting artist:\"",
       "tokens": 0,
       "firstFile": {
         "name": "src/app/api/artists/[id]/route.ts",
-        "start": 125,
+        "start": 130,
         "end": 138,
         "startLoc": {
-          "line": 125,
+          "line": 130,
           "column": 10,
-          "position": 940
+          "position": 1013
         },
         "endLoc": {
           "line": 138,
           "column": 25,
-          "position": 1042
+          "position": 1106
         }
       },
       "secondFile": {
-        "name": "src/app/api/performances/[id]/route.ts",
-        "start": 158,
+        "name": "src/app/api/venues/[id]/route.ts",
+        "start": 265,
         "end": 91,
         "startLoc": {
-          "line": 158,
-          "column": 15,
-          "position": 1191
+          "line": 265,
+          "column": 9,
+          "position": 2498
         },
         "endLoc": {
           "line": 91,
@@ -6475,37 +6883,37 @@
     },
     {
       "format": "typescript",
-      "lines": 8,
-      "fragment": "import { NextRequest, NextResponse } from \"next/server\";\nimport { createClient } from \"@supabase/supabase-js\";\nimport { supabaseConfig } from \"@/lib/supabase/config\";\nimport { requireAuth } from \"@/lib/api-auth\";\n\nconst supabase = createClient(supabaseConfig.url, supabaseConfig.serviceKey);\n\nexport async function GET(request: NextRequest)",
+      "lines": 10,
+      "fragment": "import { NextRequest, NextResponse } from \"next/server\";\nimport { createClient } from \"@supabase/supabase-js\";\nimport { supabaseConfig } from \"@/lib/supabase/config\";\nimport { requireAuth } from \"@/lib/api-auth\";\n\nconst supabase = createClient(supabaseConfig.url, supabaseConfig.serviceKey);\n\nexport async function GET(request: NextRequest) {\n\ttry {\n\t\tconst auth = await requireAuth(request, \"RENTALS_READ\"",
       "tokens": 0,
       "firstFile": {
         "name": "src/app/api/rentals/route.ts",
         "start": 1,
-        "end": 8,
+        "end": 10,
         "startLoc": {
           "line": 1,
           "column": 1,
           "position": 0
         },
         "endLoc": {
-          "line": 8,
-          "column": 2,
-          "position": 88
+          "line": 10,
+          "column": 15,
+          "position": 111
         }
       },
       "secondFile": {
         "name": "src/app/api/tasks/[id]/history/route.ts",
         "start": 1,
-        "end": 9,
+        "end": 13,
         "startLoc": {
           "line": 1,
           "column": 1,
           "position": 0
         },
         "endLoc": {
-          "line": 9,
-          "column": 2,
-          "position": 90
+          "line": 13,
+          "column": 13,
+          "position": 116
         }
       }
     },
@@ -6516,17 +6924,17 @@
       "tokens": 0,
       "firstFile": {
         "name": "src/app/api/performances/route.ts",
-        "start": 137,
-        "end": 148,
+        "start": 173,
+        "end": 184,
         "startLoc": {
-          "line": 137,
+          "line": 173,
           "column": 15,
-          "position": 1151
+          "position": 1444
         },
         "endLoc": {
-          "line": 148,
+          "line": 184,
           "column": 30,
-          "position": 1251
+          "position": 1544
         }
       },
       "secondFile": {
@@ -6537,6 +6945,78 @@
           "line": 136,
           "column": 9,
           "position": 1136
+        },
+        "endLoc": {
+          "line": 96,
+          "column": 26,
+          "position": 717
+        }
+      }
+    },
+    {
+      "format": "typescript",
+      "lines": 9,
+      "fragment": "import { NextRequest, NextResponse } from \"next/server\";\nimport { createClient } from \"@supabase/supabase-js\";\nimport { supabaseConfig } from \"@/lib/supabase/config\";\nimport { requireAuth } from \"@/lib/api-auth\";\nimport { cacheHeaders } from \"@/lib/api-cache\";\n\nconst supabase = createClient(supabaseConfig.url, supabaseConfig.serviceKey);\n\n// GET /api/labels - List all labels",
+      "tokens": 0,
+      "firstFile": {
+        "name": "src/app/api/labels/route.ts",
+        "start": 4,
+        "end": 12,
+        "startLoc": {
+          "line": 4,
+          "column": 1,
+          "position": 5
+        },
+        "endLoc": {
+          "line": 12,
+          "column": 37,
+          "position": 94
+        }
+      },
+      "secondFile": {
+        "name": "src/app/api/venues/route.ts",
+        "start": 4,
+        "end": 12,
+        "startLoc": {
+          "line": 4,
+          "column": 1,
+          "position": 5
+        },
+        "endLoc": {
+          "line": 12,
+          "column": 59,
+          "position": 94
+        }
+      }
+    },
+    {
+      "format": "typescript",
+      "lines": 11,
+      "fragment": "})\n\t\t\t.select()\n\t\t\t.single();\n\n\t\tif (error) {\n\t\t\treturn NextResponse.json({ error: error.message }, { status: 400 });\n\t\t}\n\n\t\treturn NextResponse.json(data, { status: 201 });\n\t} catch (error) {\n\t\tconsole.error(\"Error creating label:\"",
+      "tokens": 0,
+      "firstFile": {
+        "name": "src/app/api/labels/route.ts",
+        "start": 58,
+        "end": 68,
+        "startLoc": {
+          "line": 58,
+          "column": 2,
+          "position": 539
+        },
+        "endLoc": {
+          "line": 68,
+          "column": 24,
+          "position": 636
+        }
+      },
+      "secondFile": {
+        "name": "src/app/api/items/[id]/location-history/route.ts",
+        "start": 137,
+        "end": 96,
+        "startLoc": {
+          "line": 137,
+          "column": 4,
+          "position": 1139
         },
         "endLoc": {
           "line": 96,
@@ -6568,16 +7048,16 @@
       "secondFile": {
         "name": "src/app/api/tasks/[id]/history/route.ts",
         "start": 1,
-        "end": 10,
+        "end": 13,
         "startLoc": {
           "line": 1,
           "column": 1,
           "position": 0
         },
         "endLoc": {
-          "line": 10,
-          "column": 15,
-          "position": 111
+          "line": 13,
+          "column": 13,
+          "position": 116
         }
       }
     },
@@ -6727,6 +7207,42 @@
     },
     {
       "format": "typescript",
+      "lines": 12,
+      "fragment": ",\n\t\t\t})\n\t\t\t.select()\n\t\t\t.single();\n\n\t\tif (error) {\n\t\t\treturn NextResponse.json({ error: error.message }, { status: 400 });\n\t\t}\n\n\t\treturn NextResponse.json(data, { status: 201 });\n\t} catch (error) {\n\t\tconsole.error(\"Error creating contact:\"",
+      "tokens": 0,
+      "firstFile": {
+        "name": "src/app/api/contacts/route.ts",
+        "start": 57,
+        "end": 68,
+        "startLoc": {
+          "line": 57,
+          "column": 7,
+          "position": 461
+        },
+        "endLoc": {
+          "line": 68,
+          "column": 26,
+          "position": 561
+        }
+      },
+      "secondFile": {
+        "name": "src/app/api/items/[id]/location-history/route.ts",
+        "start": 136,
+        "end": 96,
+        "startLoc": {
+          "line": 136,
+          "column": 9,
+          "position": 1136
+        },
+        "endLoc": {
+          "line": 96,
+          "column": 26,
+          "position": 717
+        }
+      }
+    },
+    {
+      "format": "typescript",
       "lines": 13,
       "fragment": ",\n        checked_in_by: user.id,\n      })\n      .eq('id', entry.id)\n      .select()\n      .single();\n\n    if (error) {\n      return NextResponse.json({ error: error.message }, { status: 400 });\n    }\n\n    return NextResponse.json({\n      message: 'Check-in successful'",
       "tokens": 0,
@@ -6768,17 +7284,17 @@
       "tokens": 0,
       "firstFile": {
         "name": "src/app/api/availability/route.ts",
-        "start": 145,
-        "end": 156,
+        "start": 143,
+        "end": 154,
         "startLoc": {
-          "line": 145,
+          "line": 143,
           "column": 16,
-          "position": 1083
+          "position": 1127
         },
         "endLoc": {
-          "line": 156,
+          "line": 154,
           "column": 40,
-          "position": 1183
+          "position": 1227
         }
       },
       "secondFile": {
@@ -6794,42 +7310,6 @@
           "line": 96,
           "column": 26,
           "position": 717
-        }
-      }
-    },
-    {
-      "format": "typescript",
-      "lines": 9,
-      "fragment": "import { NextRequest, NextResponse } from \"next/server\";\nimport { createClient } from \"@supabase/supabase-js\";\nimport { supabaseConfig } from \"@/lib/supabase/config\";\nimport { requireAuth } from \"@/lib/api-auth\";\nimport { cacheHeaders } from \"@/lib/api-cache\";\n\nconst supabase = createClient(supabaseConfig.url, supabaseConfig.serviceKey);\n\n// GET /api/artists - List all artists with optional filtering",
-      "tokens": 0,
-      "firstFile": {
-        "name": "src/app/api/artists/route.ts",
-        "start": 4,
-        "end": 12,
-        "startLoc": {
-          "line": 4,
-          "column": 1,
-          "position": 5
-        },
-        "endLoc": {
-          "line": 12,
-          "column": 63,
-          "position": 94
-        }
-      },
-      "secondFile": {
-        "name": "src/app/api/venues/route.ts",
-        "start": 4,
-        "end": 12,
-        "startLoc": {
-          "line": 4,
-          "column": 1,
-          "position": 5
-        },
-        "endLoc": {
-          "line": 12,
-          "column": 59,
-          "position": 94
         }
       }
     },
@@ -6840,17 +7320,17 @@
       "tokens": 0,
       "firstFile": {
         "name": "src/app/api/artists/route.ts",
-        "start": 101,
-        "end": 112,
+        "start": 143,
+        "end": 154,
         "startLoc": {
-          "line": 101,
+          "line": 143,
           "column": 2,
-          "position": 869
+          "position": 1308
         },
         "endLoc": {
-          "line": 112,
+          "line": 154,
           "column": 25,
-          "position": 969
+          "position": 1408
         }
       },
       "secondFile": {
@@ -6866,6 +7346,42 @@
           "line": 96,
           "column": 26,
           "position": 717
+        }
+      }
+    },
+    {
+      "format": "tsx",
+      "lines": 11,
+      "fragment": ">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<Check className=\"h-3 w-3 mr-2 opacity-0\" />\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<div className=\"flex-1\">{item.name}</div>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<Badge className=\"bg-zinc-800 text-[10px]\">\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t{item.category}\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t</Badge>\n\t\t\t\t\t\t\t\t\t\t\t\t\t\t</CommandItem>\n\t\t\t\t\t\t\t\t\t\t\t\t\t))}\n\t\t\t\t\t\t\t\t\t\t\t</CommandGroup>\n\t\t\t\t\t\t\t\t\t\t</CommandList>\n\t\t\t\t\t\t\t\t\t<",
+      "tokens": 0,
+      "firstFile": {
+        "name": "src/components/task-detail/task-detail-items.tsx",
+        "start": 150,
+        "end": 160,
+        "startLoc": {
+          "line": 150,
+          "column": 15,
+          "position": 1218
+        },
+        "endLoc": {
+          "line": 160,
+          "column": 2,
+          "position": 1295
+        }
+      },
+      "secondFile": {
+        "name": "src/components/task-form/task-form-items.tsx",
+        "start": 101,
+        "end": 109,
+        "startLoc": {
+          "line": 101,
+          "column": 11,
+          "position": 783
+        },
+        "endLoc": {
+          "line": 109,
+          "column": 3,
+          "position": 856
         }
       }
     },
@@ -7884,32 +8400,32 @@
       "tokens": 0,
       "firstFile": {
         "name": "src/components/nav-bar.tsx",
-        "start": 79,
-        "end": 93,
+        "start": 82,
+        "end": 96,
         "startLoc": {
-          "line": 79,
+          "line": 82,
           "column": 14,
-          "position": 628
+          "position": 637
         },
         "endLoc": {
-          "line": 93,
+          "line": 96,
           "column": 11,
-          "position": 744
+          "position": 753
         }
       },
       "secondFile": {
         "name": "src/components/nav-bar.tsx",
-        "start": 50,
-        "end": 64,
+        "start": 53,
+        "end": 67,
         "startLoc": {
-          "line": 50,
+          "line": 53,
           "column": 8,
-          "position": 437
+          "position": 446
         },
         "endLoc": {
-          "line": 64,
+          "line": 67,
           "column": 5,
-          "position": 553
+          "position": 562
         }
       }
     },
@@ -7920,17 +8436,17 @@
       "tokens": 0,
       "firstFile": {
         "name": "src/components/inventory-list.tsx",
-        "start": 129,
-        "end": 137,
+        "start": 162,
+        "end": 170,
         "startLoc": {
-          "line": 129,
+          "line": 162,
           "column": 13,
-          "position": 1275
+          "position": 1580
         },
         "endLoc": {
-          "line": 137,
+          "line": 170,
           "column": 24,
-          "position": 1359
+          "position": 1664
         }
       },
       "secondFile": {
@@ -8043,17 +8559,17 @@
       },
       "secondFile": {
         "name": "src/components/inventory-list.tsx",
-        "start": 41,
-        "end": 51,
+        "start": 40,
+        "end": 50,
         "startLoc": {
-          "line": 41,
+          "line": 40,
           "column": 1,
-          "position": 316
+          "position": 309
         },
         "endLoc": {
-          "line": 51,
+          "line": 50,
           "column": 13,
-          "position": 410
+          "position": 403
         }
       }
     },
@@ -8418,6 +8934,114 @@
       }
     },
     {
+      "format": "javascript",
+      "lines": 17,
+      "fragment": "\"\n\t\t\t\t\t\t\t\t\t\tclassName=\"bg-zinc-950 border-zinc-800\"\n\t\t\t\t\t\t\t\t\t/>\n\t\t\t\t\t\t\t\t</FormControl>\n\t\t\t\t\t\t\t\t<FormMessage />\n\t\t\t\t\t\t\t</FormItem>\n\t\t\t\t\t\t)}\n\t\t\t\t\t/>\n\t\t\t\t</div>\n\n\t\t\t\t<div className=\"grid grid-cols-1 sm:grid-cols-2 gap-4\">\n\t\t\t\t\t<FormField\n\t\t\t\t\t\tcontrol={form.control}\n\t\t\t\t\t\tname=\"role\"\n\t\t\t\t\t\trender={({ field }) => (\n\t\t\t\t\t\t\t<FormItem>\n\t\t\t\t\t\t\t\t<FormLabel>Role",
+      "tokens": 0,
+      "firstFile": {
+        "name": "src/components/contact-form.tsx",
+        "start": 162,
+        "end": 178,
+        "startLoc": {
+          "line": 162,
+          "column": 20,
+          "position": 1373
+        },
+        "endLoc": {
+          "line": 178,
+          "column": 5,
+          "position": 1456
+        }
+      },
+      "secondFile": {
+        "name": "src/components/contact-form.tsx",
+        "start": 143,
+        "end": 157,
+        "startLoc": {
+          "line": 143,
+          "column": 15,
+          "position": 1279
+        },
+        "endLoc": {
+          "line": 157,
+          "column": 6,
+          "position": 1346
+        }
+      }
+    },
+    {
+      "format": "javascript",
+      "lines": 15,
+      "fragment": "\"\n\t\t\t\t\t\t\t\t\t\tclassName=\"bg-zinc-950 border-zinc-800\"\n\t\t\t\t\t\t\t\t\t/>\n\t\t\t\t\t\t\t\t</FormControl>\n\t\t\t\t\t\t\t\t<FormMessage />\n\t\t\t\t\t\t\t</FormItem>\n\t\t\t\t\t\t)}\n\t\t\t\t\t/>\n\n\t\t\t\t\t<FormField\n\t\t\t\t\t\tcontrol={form.control}\n\t\t\t\t\t\tname=\"company\"\n\t\t\t\t\t\trender={({ field }) => (\n\t\t\t\t\t\t\t<FormItem>\n\t\t\t\t\t\t\t\t<FormLabel>Company",
+      "tokens": 0,
+      "firstFile": {
+        "name": "src/components/contact-form.tsx",
+        "start": 182,
+        "end": 196,
+        "startLoc": {
+          "line": 182,
+          "column": 22,
+          "position": 1477
+        },
+        "endLoc": {
+          "line": 196,
+          "column": 8,
+          "position": 1544
+        }
+      },
+      "secondFile": {
+        "name": "src/components/contact-form.tsx",
+        "start": 143,
+        "end": 157,
+        "startLoc": {
+          "line": 143,
+          "column": 15,
+          "position": 1279
+        },
+        "endLoc": {
+          "line": 157,
+          "column": 6,
+          "position": 1346
+        }
+      }
+    },
+    {
+      "format": "tsx",
+      "lines": 9,
+      "fragment": ", {\n\t\t\t\t\tmethod: \"POST\",\n\t\t\t\t\theaders: { \"Content-Type\": \"application/json\" },\n\t\t\t\t\tbody: JSON.stringify(values),\n\t\t\t\t});\n\n\t\t\t\tif (!response.ok) {\n\t\t\t\t\tconst data = await response.json();\n\t\t\t\t\tthrow new Error(data.error || \"Failed to create contact\"",
+      "tokens": 0,
+      "firstFile": {
+        "name": "src/components/contact-form.tsx",
+        "start": 77,
+        "end": 85,
+        "startLoc": {
+          "line": 77,
+          "column": 16,
+          "position": 762
+        },
+        "endLoc": {
+          "line": 85,
+          "column": 27,
+          "position": 846
+        }
+      },
+      "secondFile": {
+        "name": "src/components/rentals-list.tsx",
+        "start": 91,
+        "end": 99,
+        "startLoc": {
+          "line": 91,
+          "column": 15,
+          "position": 864
+        },
+        "endLoc": {
+          "line": 99,
+          "column": 26,
+          "position": 948
+        }
+      }
+    },
+    {
       "format": "tsx",
       "lines": 13,
       "fragment": "{\n\t\t\tconst fetchVenues = async () => {\n\t\t\t\ttry {\n\t\t\t\t\tconst response = await fetch(\"/api/venues\");\n\t\t\t\t\tconst data = await response.json();\n\t\t\t\t\tsetVenues(data.venues || []);\n\t\t\t\t} catch (err) {\n\t\t\t\t\tconsole.error(\"Failed to fetch venues:\", err);\n\t\t\t\t}\n\t\t\t};\n\t\t\tfetchVenues();\n\n\t\t\t// Reset state",
@@ -8490,153 +9114,189 @@
       }
     },
     {
-      "format": "javascript",
-      "lines": 15,
-      "fragment": "\"\n                        className=\"bg-zinc-950 border-zinc-800\"\n                      />\n                    </FormControl>\n                    <FormMessage />\n                  </FormItem>\n                )}\n              />\n\n              <FormField\n                control={form.control}\n                name=\"fee\"\n                render={({ field }) => (\n                  <FormItem>\n                    <FormLabel>Fee",
+      "format": "tsx",
+      "lines": 18,
+      "fragment": ">}\n\t\t\t\t</div>\n\n\t\t\t\t<DialogFooter>\n\t\t\t\t\t<Button\n\t\t\t\t\t\tvariant=\"outline\"\n\t\t\t\t\t\tonClick={() => onOpenChange(false)}\n\t\t\t\t\t\tclassName=\"border-zinc-700\"\n\t\t\t\t\t>\n\t\t\t\t\t\tCancel\n\t\t\t\t\t</Button>\n\t\t\t\t\t<Button\n\t\t\t\t\t\tonClick={handleSubmit}\n\t\t\t\t\t\tdisabled={loading}\n\t\t\t\t\t\tclassName=\"bg-violet-600 hover:bg-violet-700\"\n\t\t\t\t\t>\n\t\t\t\t\t\t{loading && <Loader2 className=\"mr-2 h-4 w-4 animate-spin\" />}\n\t\t\t\t\t\tSubmit",
       "tokens": 0,
       "firstFile": {
-        "name": "src/components/artist-form.tsx",
-        "start": 187,
-        "end": 201,
+        "name": "src/components/checkin-checkout-modal.tsx",
+        "start": 254,
+        "end": 271,
         "startLoc": {
-          "line": 187,
-          "column": 21,
-          "position": 1572
-        },
-        "endLoc": {
-          "line": 201,
+          "line": 254,
           "column": 4,
-          "position": 1639
+          "position": 2190
+        },
+        "endLoc": {
+          "line": 271,
+          "column": 7,
+          "position": 2287
         }
       },
       "secondFile": {
-        "name": "src/components/rental-form.tsx",
-        "start": 150,
-        "end": 164,
+        "name": "src/components/quick-artist-create.tsx",
+        "start": 132,
+        "end": 148,
         "startLoc": {
-          "line": 150,
-          "column": 21,
-          "position": 1377
-        },
-        "endLoc": {
-          "line": 164,
-          "column": 15,
-          "position": 1444
-        }
-      }
-    },
-    {
-      "format": "javascript",
-      "lines": 16,
-      "fragment": "\n                  </FormItem>\n                )}\n              />\n\n              <FormField\n                control={form.control}\n                name=\"contact_email\"\n                render={({ field }) => (\n                  <FormItem>\n                    <FormLabel>Contact Email</FormLabel>\n                    <FormControl>\n                      <Input\n                        {...field}\n                        type=\"email\"\n                        placeholder=\"booking@example.com",
-      "tokens": 0,
-      "firstFile": {
-        "name": "src/components/artist-form.tsx",
-        "start": 211,
-        "end": 226,
-        "startLoc": {
-          "line": 211,
+          "line": 132,
           "column": 2,
-          "position": 1714
+          "position": 1046
         },
         "endLoc": {
-          "line": 226,
-          "column": 20,
-          "position": 1789
-        }
-      },
-      "secondFile": {
-        "name": "src/components/rental-form.tsx",
-        "start": 190,
-        "end": 205,
-        "startLoc": {
-          "line": 190,
-          "column": 3,
-          "position": 1571
-        },
-        "endLoc": {
-          "line": 205,
-          "column": 20,
-          "position": 1646
-        }
-      }
-    },
-    {
-      "format": "javascript",
-      "lines": 19,
-      "fragment": "\"\n                        className=\"bg-zinc-950 border-zinc-800\"\n                      />\n                    </FormControl>\n                    <FormMessage />\n                  </FormItem>\n                )}\n              />\n\n              <FormField\n                control={form.control}\n                name=\"contact_phone\"\n                render={({ field }) => (\n                  <FormItem>\n                    <FormLabel>Contact Phone</FormLabel>\n                    <FormControl>\n                      <Input\n                        {...field}\n                        placeholder=\"+49 123 456789",
-      "tokens": 0,
-      "firstFile": {
-        "name": "src/components/artist-form.tsx",
-        "start": 226,
-        "end": 244,
-        "startLoc": {
-          "line": 226,
-          "column": 20,
-          "position": 1790
-        },
-        "endLoc": {
-          "line": 244,
-          "column": 15,
-          "position": 1877
-        }
-      },
-      "secondFile": {
-        "name": "src/components/rental-form.tsx",
-        "start": 150,
-        "end": 186,
-        "startLoc": {
-          "line": 150,
-          "column": 21,
-          "position": 1377
-        },
-        "endLoc": {
-          "line": 186,
-          "column": 18,
-          "position": 1552
+          "line": 148,
+          "column": 2,
+          "position": 1150
         }
       }
     },
     {
       "format": "javascript",
       "lines": 15,
-      "fragment": "\"\n                        className=\"bg-zinc-950 border-zinc-800\"\n                      />\n                    </FormControl>\n                    <FormMessage />\n                  </FormItem>\n                )}\n              />\n\n              <FormField\n                control={form.control}\n                name=\"promo_pack_url\"\n                render={({ field }) => (\n                  <FormItem>\n                    <FormLabel>Promo Pack ",
+      "fragment": "\"\n\t\t\t\t\t\t\t\t\t\t\t\tclassName=\"bg-zinc-950 border-zinc-800\"\n\t\t\t\t\t\t\t\t\t\t\t/>\n\t\t\t\t\t\t\t\t\t\t</FormControl>\n\t\t\t\t\t\t\t\t\t\t<FormMessage />\n\t\t\t\t\t\t\t\t\t</FormItem>\n\t\t\t\t\t\t\t\t)}\n\t\t\t\t\t\t\t/>\n\n\t\t\t\t\t\t\t<FormField\n\t\t\t\t\t\t\t\tcontrol={form.control}\n\t\t\t\t\t\t\t\tname=\"fee\"\n\t\t\t\t\t\t\t\trender={({ field }) => (\n\t\t\t\t\t\t\t\t\t<FormItem>\n\t\t\t\t\t\t\t\t\t\t<FormLabel>Fee",
       "tokens": 0,
       "firstFile": {
         "name": "src/components/artist-form.tsx",
-        "start": 244,
-        "end": 258,
+        "start": 188,
+        "end": 202,
         "startLoc": {
-          "line": 244,
-          "column": 15,
-          "position": 1878
+          "line": 188,
+          "column": 21,
+          "position": 1561
         },
         "endLoc": {
-          "line": 258,
-          "column": 12,
-          "position": 1945
+          "line": 202,
+          "column": 4,
+          "position": 1628
         }
       },
       "secondFile": {
-        "name": "src/components/rental-form.tsx",
-        "start": 150,
-        "end": 164,
+        "name": "src/components/staff-shifts/shift-form.tsx",
+        "start": 154,
+        "end": 168,
         "startLoc": {
-          "line": 150,
-          "column": 21,
-          "position": 1377
+          "line": 154,
+          "column": 5,
+          "position": 1223
         },
         "endLoc": {
-          "line": 164,
+          "line": 168,
+          "column": 10,
+          "position": 1290
+        }
+      }
+    },
+    {
+      "format": "javascript",
+      "lines": 15,
+      "fragment": "\"\n\t\t\t\t\t\t\t\t\t\t\t\tclassName=\"bg-zinc-950 border-zinc-800\"\n\t\t\t\t\t\t\t\t\t\t\t/>\n\t\t\t\t\t\t\t\t\t\t</FormControl>\n\t\t\t\t\t\t\t\t\t\t<FormMessage />\n\t\t\t\t\t\t\t\t\t</FormItem>\n\t\t\t\t\t\t\t\t)}\n\t\t\t\t\t\t\t/>\n\n\t\t\t\t\t\t\t<FormField\n\t\t\t\t\t\t\t\tcontrol={form.control}\n\t\t\t\t\t\t\t\tname=\"contact_phone\"\n\t\t\t\t\t\t\t\trender={({ field }) => (\n\t\t\t\t\t\t\t\t\t<FormItem>\n\t\t\t\t\t\t\t\t\t\t<FormLabel>Contact Phone",
+      "tokens": 0,
+      "firstFile": {
+        "name": "src/components/artist-form.tsx",
+        "start": 227,
+        "end": 241,
+        "startLoc": {
+          "line": 227,
+          "column": 20,
+          "position": 1779
+        },
+        "endLoc": {
+          "line": 241,
+          "column": 14,
+          "position": 1846
+        }
+      },
+      "secondFile": {
+        "name": "src/components/staff-shifts/shift-form.tsx",
+        "start": 154,
+        "end": 168,
+        "startLoc": {
+          "line": 154,
+          "column": 5,
+          "position": 1223
+        },
+        "endLoc": {
+          "line": 168,
+          "column": 10,
+          "position": 1290
+        }
+      }
+    },
+    {
+      "format": "javascript",
+      "lines": 15,
+      "fragment": "\"\n\t\t\t\t\t\t\t\t\t\t\t\tclassName=\"bg-zinc-950 border-zinc-800\"\n\t\t\t\t\t\t\t\t\t\t\t/>\n\t\t\t\t\t\t\t\t\t\t</FormControl>\n\t\t\t\t\t\t\t\t\t\t<FormMessage />\n\t\t\t\t\t\t\t\t\t</FormItem>\n\t\t\t\t\t\t\t\t)}\n\t\t\t\t\t\t\t/>\n\n\t\t\t\t\t\t\t<FormField\n\t\t\t\t\t\t\t\tcontrol={form.control}\n\t\t\t\t\t\t\t\tname=\"promo_pack_url\"\n\t\t\t\t\t\t\t\trender={({ field }) => (\n\t\t\t\t\t\t\t\t\t<FormItem>\n\t\t\t\t\t\t\t\t\t\t<FormLabel>Promo Pack ",
+      "tokens": 0,
+      "firstFile": {
+        "name": "src/components/artist-form.tsx",
+        "start": 245,
+        "end": 259,
+        "startLoc": {
+          "line": 245,
           "column": 15,
-          "position": 1444
+          "position": 1867
+        },
+        "endLoc": {
+          "line": 259,
+          "column": 12,
+          "position": 1934
+        }
+      },
+      "secondFile": {
+        "name": "src/components/staff-shifts/shift-form.tsx",
+        "start": 154,
+        "end": 168,
+        "startLoc": {
+          "line": 154,
+          "column": 5,
+          "position": 1223
+        },
+        "endLoc": {
+          "line": 168,
+          "column": 10,
+          "position": 1290
+        }
+      }
+    },
+    {
+      "format": "tsx",
+      "lines": 10,
+      "fragment": "\"use client\";\n\nimport { useState } from \"react\";\nimport { useForm } from \"react-hook-form\";\nimport { zodResolver } from \"@hookform/resolvers/zod\";\nimport { z } from \"zod\";\nimport { Button } from \"@/components/ui/button\";\nimport { Input } from \"@/components/ui/input\";\nimport { Textarea } from \"@/components/ui/textarea\";\nimport { Card",
+      "tokens": 0,
+      "firstFile": {
+        "name": "src/components/artist-form.tsx",
+        "start": 1,
+        "end": 10,
+        "startLoc": {
+          "line": 1,
+          "column": 1,
+          "position": 0
+        },
+        "endLoc": {
+          "line": 10,
+          "column": 5,
+          "position": 99
+        }
+      },
+      "secondFile": {
+        "name": "src/components/contact-form.tsx",
+        "start": 1,
+        "end": 11,
+        "startLoc": {
+          "line": 1,
+          "column": 1,
+          "position": 0
+        },
+        "endLoc": {
+          "line": 11,
+          "column": 5,
+          "position": 100
         }
       }
     },
     {
       "format": "tsx",
       "lines": 19,
-      "fragment": "} from 'react';\nimport { useForm } from 'react-hook-form';\nimport { zodResolver } from '@hookform/resolvers/zod';\nimport { z } from 'zod';\nimport { Button } from '@/components/ui/button';\nimport { Input } from '@/components/ui/input';\nimport { Textarea } from '@/components/ui/textarea';\nimport { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';\nimport {\n  Select,\n  SelectContent,\n  SelectItem,\n  SelectTrigger,\n  SelectValue,\n} from '@/components/ui/select';\nimport {\n  Form,\n  FormControl,\n  FormDescription",
+      "fragment": "} from \"react\";\nimport { useForm } from \"react-hook-form\";\nimport { zodResolver } from \"@hookform/resolvers/zod\";\nimport { z } from \"zod\";\nimport { Button } from \"@/components/ui/button\";\nimport { Input } from \"@/components/ui/input\";\nimport { Textarea } from \"@/components/ui/textarea\";\nimport { Card, CardContent, CardHeader, CardTitle } from \"@/components/ui/card\";\nimport {\n\tSelect,\n\tSelectContent,\n\tSelectItem,\n\tSelectTrigger,\n\tSelectValue,\n} from \"@/components/ui/select\";\nimport {\n\tForm,\n\tFormControl,\n\tFormDescription",
       "tokens": 0,
       "firstFile": {
         "name": "src/components/artist-form.tsx",
@@ -8654,7 +9314,7 @@
         }
       },
       "secondFile": {
-        "name": "src/components/rental-form.tsx",
+        "name": "src/components/inventory-form.tsx",
         "start": 3,
         "end": 21,
         "startLoc": {
@@ -8671,8 +9331,44 @@
     },
     {
       "format": "tsx",
+      "lines": 21,
+      "fragment": ";\nimport {\n\tSelect,\n\tSelectContent,\n\tSelectItem,\n\tSelectTrigger,\n\tSelectValue,\n} from \"@/components/ui/select\";\nimport {\n\tForm,\n\tFormControl,\n\tFormDescription,\n\tFormField,\n\tFormItem,\n\tFormLabel,\n\tFormMessage,\n} from \"@/components/ui/form\";\nimport { useRouter } from \"next/navigation\";\nimport { Loader2 } from \"lucide-react\";\n\nconst artistSchema",
+      "tokens": 0,
+      "firstFile": {
+        "name": "src/components/artist-form.tsx",
+        "start": 10,
+        "end": 30,
+        "startLoc": {
+          "line": 10,
+          "column": 23,
+          "position": 115
+        },
+        "endLoc": {
+          "line": 30,
+          "column": 13,
+          "position": 216
+        }
+      },
+      "secondFile": {
+        "name": "src/components/staff-form.tsx",
+        "start": 10,
+        "end": 30,
+        "startLoc": {
+          "line": 10,
+          "column": 27,
+          "position": 118
+        },
+        "endLoc": {
+          "line": 30,
+          "column": 12,
+          "position": 219
+        }
+      }
+    },
+    {
+      "format": "tsx",
       "lines": 11,
-      "fragment": "{\n    id: string;\n    name: string;\n    city: string | null;\n    fee: number | null;\n    genre: string | null;\n    bio: string | null;\n    contact_email: string | null;\n    contact_phone: string | null;\n    promo_pack_url: string | null;\n  };",
+      "fragment": "{\n\t\tid: string;\n\t\tname: string;\n\t\tcity: string | null;\n\t\tfee: number | null;\n\t\tgenre: string | null;\n\t\tbio: string | null;\n\t\tcontact_email: string | null;\n\t\tcontact_phone: string | null;\n\t\tpromo_pack_url: string | null;\n\t};",
       "tokens": 0,
       "firstFile": {
         "name": "src/components/artist-form.tsx",
@@ -8708,103 +9404,139 @@
     {
       "format": "tsx",
       "lines": 13,
-      "fragment": ");\n    } catch (err) {\n      setError(err instanceof Error ? err.message : 'An error occurred');\n    } finally {\n      setLoading(false);\n    }\n  };\n\n  return (\n    <Card className=\"bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/70 rounded-lg\">\n      <CardHeader>\n        <CardTitle className=\"text-white\">\n          {",
+      "fragment": ");\n\t\t} catch (err) {\n\t\t\tsetError(err instanceof Error ? err.message : \"An error occurred\");\n\t\t} finally {\n\t\t\tsetLoading(false);\n\t\t}\n\t};\n\n\treturn (\n\t\t<Card className=\"bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/70 rounded-lg\">\n\t\t\t<CardHeader>\n\t\t\t\t<CardTitle className=\"text-white\">\n\t\t\t\t\t{mode === \"create\" ? \"Add New Artist\"",
       "tokens": 0,
       "firstFile": {
         "name": "src/components/artist-form.tsx",
-        "start": 116,
-        "end": 128,
+        "start": 114,
+        "end": 126,
         "startLoc": {
-          "line": 116,
-          "column": 2,
-          "position": 1062
+          "line": 114,
+          "column": 11,
+          "position": 1050
         },
         "endLoc": {
+          "line": 126,
+          "column": 17,
+          "position": 1149
+        }
+      },
+      "secondFile": {
+        "name": "src/components/staff-form.tsx",
+        "start": 128,
+        "end": 140,
+        "startLoc": {
           "line": 128,
           "column": 2,
-          "position": 1152
-        }
-      },
-      "secondFile": {
-        "name": "src/components/rental-form.tsx",
-        "start": 99,
-        "end": 110,
-        "startLoc": {
-          "line": 99,
-          "column": 8,
-          "position": 952
+          "position": 1082
         },
         "endLoc": {
-          "line": 110,
-          "column": 4,
-          "position": 1040
+          "line": 140,
+          "column": 23,
+          "position": 1181
         }
       }
     },
     {
       "format": "tsx",
-      "lines": 14,
-      "fragment": "</div>\n\n            {error && (\n              <div className=\"text-red-500 text-sm\">{error}</div>\n            )}\n\n            <div className=\"flex gap-4\">\n              <Button\n                type=\"submit\"\n                className=\"bg-violet-600 hover:bg-violet-700\"\n                disabled={loading}\n              >\n                {loading && <Loader2 className=\"mr-2 h-4 w-4 animate-spin\" />}\n                {",
+      "lines": 26,
+      "fragment": "}\n\t\t\t\t</CardTitle>\n\t\t\t</CardHeader>\n\t\t\t<CardContent>\n\t\t\t\t<Form {...form}>\n\t\t\t\t\t<form onSubmit={form.handleSubmit(onSubmit)} className=\"space-y-6\">\n\t\t\t\t\t\t<div className=\"grid grid-cols-1 md:grid-cols-2 gap-6\">\n\t\t\t\t\t\t\t<FormField\n\t\t\t\t\t\t\t\tcontrol={form.control}\n\t\t\t\t\t\t\t\tname=\"name\"\n\t\t\t\t\t\t\t\trender={({ field }) => (\n\t\t\t\t\t\t\t\t\t<FormItem>\n\t\t\t\t\t\t\t\t\t\t<FormLabel>Name *</FormLabel>\n\t\t\t\t\t\t\t\t\t\t<FormControl>\n\t\t\t\t\t\t\t\t\t\t\t<Input\n\t\t\t\t\t\t\t\t\t\t\t\t{...field}\n\t\t\t\t\t\t\t\t\t\t\t\tplaceholder=\"Artist/DJ name\"\n\t\t\t\t\t\t\t\t\t\t\t\tclassName=\"bg-zinc-950 border-zinc-800\"\n\t\t\t\t\t\t\t\t\t\t\t/>\n\t\t\t\t\t\t\t\t\t\t</FormControl>\n\t\t\t\t\t\t\t\t\t\t<FormMessage />\n\t\t\t\t\t\t\t\t\t</FormItem>\n\t\t\t\t\t\t\t\t)}\n\t\t\t\t\t\t\t/>\n\n\t\t\t\t\t\t\t<",
       "tokens": 0,
       "firstFile": {
         "name": "src/components/artist-form.tsx",
-        "start": 289,
-        "end": 302,
+        "start": 126,
+        "end": 151,
         "startLoc": {
-          "line": 289,
-          "column": 13,
-          "position": 2099
+          "line": 126,
+          "column": 14,
+          "position": 1154
         },
         "endLoc": {
-          "line": 302,
+          "line": 151,
           "column": 2,
-          "position": 2188
-        }
-      },
-      "secondFile": {
-        "name": "src/components/rental-form.tsx",
-        "start": 269,
-        "end": 282,
-        "startLoc": {
-          "line": 269,
-          "column": 13,
-          "position": 1958
-        },
-        "endLoc": {
-          "line": 282,
-          "column": 7,
-          "position": 2047
-        }
-      }
-    },
-    {
-      "format": "tsx",
-      "lines": 14,
-      "fragment": ">\n                Cancel\n              </Button>\n            </div>\n          </form>\n        </Form>\n      </CardContent>\n    </Card>\n  );\n}\n\nfunction Description({ children }: { children: React.ReactNode }) {\n  return <p className=\"text-sm text-zinc-400\">{children}</p>;\n}",
-      "tokens": 0,
-      "firstFile": {
-        "name": "src/components/artist-form.tsx",
-        "start": 309,
-        "end": 322,
-        "startLoc": {
-          "line": 309,
-          "column": 15,
-          "position": 2245
-        },
-        "endLoc": {
-          "line": 322,
-          "column": 2,
-          "position": 2332
+          "position": 1304
         }
       },
       "secondFile": {
         "name": "src/components/event-form.tsx",
-        "start": 316,
+        "start": 141,
+        "end": 166,
+        "startLoc": {
+          "line": 141,
+          "column": 13,
+          "position": 1261
+        },
+        "endLoc": {
+          "line": 166,
+          "column": 2,
+          "position": 1411
+        }
+      }
+    },
+    {
+      "format": "tsx",
+      "lines": 27,
+      "fragment": "\"\n\t\t\t\t\t\t\t\trender={({ field }) => (\n\t\t\t\t\t\t\t\t\t<FormItem>\n\t\t\t\t\t\t\t\t\t\t<FormLabel>Biography</FormLabel>\n\t\t\t\t\t\t\t\t\t\t<FormControl>\n\t\t\t\t\t\t\t\t\t\t\t<Textarea\n\t\t\t\t\t\t\t\t\t\t\t\t{...field}\n\t\t\t\t\t\t\t\t\t\t\t\tplaceholder=\"Artist biography...\"\n\t\t\t\t\t\t\t\t\t\t\t\tclassName=\"bg-zinc-950 border-zinc-800 min-h-[100px]\"\n\t\t\t\t\t\t\t\t\t\t\t/>\n\t\t\t\t\t\t\t\t\t\t</FormControl>\n\t\t\t\t\t\t\t\t\t\t<FormMessage />\n\t\t\t\t\t\t\t\t\t</FormItem>\n\t\t\t\t\t\t\t\t)}\n\t\t\t\t\t\t\t/>\n\t\t\t\t\t\t</div>\n\n\t\t\t\t\t\t{error && <div className=\"text-red-500 text-sm\">{error}</div>}\n\n\t\t\t\t\t\t<div className=\"flex gap-4\">\n\t\t\t\t\t\t\t<Button\n\t\t\t\t\t\t\t\ttype=\"submit\"\n\t\t\t\t\t\t\t\tclassName=\"bg-violet-600 hover:bg-violet-700\"\n\t\t\t\t\t\t\t\tdisabled={loading}\n\t\t\t\t\t\t\t>\n\t\t\t\t\t\t\t\t{loading && <Loader2 className=\"mr-2 h-4 w-4 animate-spin\" />}\n\t\t\t\t\t\t\t\t{mode === \"create\" ? \"Create Artist\"",
+      "tokens": 0,
+      "firstFile": {
+        "name": "src/components/artist-form.tsx",
+        "start": 277,
+        "end": 303,
+        "startLoc": {
+          "line": 277,
+          "column": 4,
+          "position": 2017
+        },
+        "endLoc": {
+          "line": 303,
+          "column": 16,
+          "position": 2181
+        }
+      },
+      "secondFile": {
+        "name": "src/components/staff-form.tsx",
+        "start": 246,
+        "end": 276,
+        "startLoc": {
+          "line": 246,
+          "column": 9,
+          "position": 1926
+        },
+        "endLoc": {
+          "line": 276,
+          "column": 22,
+          "position": 2128
+        }
+      }
+    },
+    {
+      "format": "tsx",
+      "lines": 21,
+      "fragment": ": \"Save Changes\"}\n\t\t\t\t\t\t\t</Button>\n\t\t\t\t\t\t\t<Button\n\t\t\t\t\t\t\t\ttype=\"button\"\n\t\t\t\t\t\t\t\tvariant=\"outline\"\n\t\t\t\t\t\t\t\tonClick={() => router.back()}\n\t\t\t\t\t\t\t\tclassName=\"border-zinc-700\"\n\t\t\t\t\t\t\t>\n\t\t\t\t\t\t\t\tCancel\n\t\t\t\t\t\t\t</Button>\n\t\t\t\t\t\t</div>\n\t\t\t\t\t</form>\n\t\t\t\t</Form>\n\t\t\t</CardContent>\n\t\t</Card>\n\t);\n}\n\nfunction Description({ children }: { children: React.ReactNode }) {\n\treturn <p className=\"text-sm text-zinc-400\">{children}</p>;\n}",
+      "tokens": 0,
+      "firstFile": {
+        "name": "src/components/artist-form.tsx",
+        "start": 303,
+        "end": 323,
+        "startLoc": {
+          "line": 303,
+          "column": 2,
+          "position": 2183
+        },
+        "endLoc": {
+          "line": 323,
+          "column": 2,
+          "position": 2316
+        }
+      },
+      "secondFile": {
+        "name": "src/components/staff-form.tsx",
+        "start": 276,
         "end": 329,
         "startLoc": {
-          "line": 316,
-          "column": 8,
-          "position": 2359
+          "line": 276,
+          "column": 2,
+          "position": 2130
         },
         "endLoc": {
           "line": 329,

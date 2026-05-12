@@ -33,14 +33,12 @@ export async function GET(request: NextRequest) {
 
 			// If no artists match this label, return empty early
 			if (matchingArtistIds.length === 0) {
-				return NextResponse.json(
-					{
-						artists: [],
-						total: 0,
-						limit: parseInt(limit),
-						offset: parseInt(offset),
-					},
-					);
+				return NextResponse.json({
+					artists: [],
+					total: 0,
+					limit: parseInt(limit),
+					offset: parseInt(offset),
+				});
 			}
 		}
 
