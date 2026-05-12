@@ -73,8 +73,17 @@ export default function SettingsPage() {
 				setLoadingProfile(false);
 			}
 		}
+
 		loadProfile();
-	}, [router, supabase]);
+
+		// Safety timeout: if loading takes >8s, show the page anyway
+		const timeoutId = setTimeout(() => {
+			console.warn("Settings: profile load timed out");
+			setLoadingProfile(false);
+		}, 8000);
+
+		return () => clearTimeout(timeoutId);
+	}, [router]);
 
 	// Save profile info
 	async function handleSaveProfile(e: React.FormEvent) {
