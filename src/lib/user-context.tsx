@@ -15,6 +15,7 @@ import { type AppRole } from "@/lib/permissions";
 
 interface UserContextType {
 	userId: string | null;
+	userEmail: string | null;
 	userRoles: AppRole[];
 	loading: boolean;
 	refresh: () => Promise<void>;
@@ -22,6 +23,7 @@ interface UserContextType {
 
 const UserContext = createContext<UserContextType>({
 	userId: null,
+	userEmail: null,
 	userRoles: [],
 	loading: true,
 	refresh: async () => {},
@@ -35,6 +37,7 @@ export function UserProvider({
 	initialRoles?: AppRole[];
 }) {
 	const [userId, setUserId] = useState<string | null>(null);
+	const [userEmail, setUserEmail] = useState<string | null>(null);
 	const [userRoles, setUserRoles] = useState<AppRole[]>(initialRoles || []);
 	const [loading, setLoading] = useState(true);
 	const didFetch = useRef(false);
@@ -47,11 +50,13 @@ export function UserProvider({
 			} = await supabase.auth.getUser();
 			if (!user) {
 				setUserId(null);
+				setUserEmail(null);
 				// Don't wipe server-provided roles if browser session isn't hydrated yet
 				// Only clear if we have no initial roles to fall back on
 				return;
 			}
 			setUserId(user.id);
+			setUserEmail(user.email ?? null);
 			const { data } = await supabase
 				.from("user_roles")
 				.select("role")
@@ -76,6 +81,7 @@ export function UserProvider({
 		} = supabase.auth.onAuthStateChange(async (event, session) => {
 			if (event === "SIGNED_OUT") {
 				setUserId(null);
+				setUserEmail(null);
 				setUserRoles([]);
 				return;
 			}
@@ -88,6 +94,7 @@ export function UserProvider({
 				setLoading(true);
 				try {
 					setUserId(session.user.id);
+					setUserEmail(session.user.email ?? null);
 					const { data } = await supabase
 						.from("user_roles")
 						.select("role")
@@ -110,7 +117,7 @@ export function UserProvider({
 
 	return (
 		<UserContext.Provider
-			value={{ userId, userRoles, loading, refresh: doFetch }}
+			value={{ userId, userEmail, userRoles, loading, refresh: doFetch }}
 		>
 			{children}
 		</UserContext.Provider>

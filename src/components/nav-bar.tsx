@@ -15,14 +15,11 @@ import {
 	LogOut,
 	Settings,
 } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { cn } from "@/lib/utils";
 import { useI18n } from "@/lib/i18n";
 import { useUser } from "@/lib/user-context";
-import {
-	createClient as createBrowserClient,
-	resetClient,
-} from "@/lib/supabase/browser";
+import { resetClient } from "@/lib/supabase/browser";
 import { canAccessRoute } from "@/lib/permissions";
 import {
 	Sheet,
@@ -197,21 +194,8 @@ export function NavBar() {
 
 function UserMenu() {
 	const router = useRouter();
-	const { userId } = useUser();
-	const [email, setEmail] = useState<string | null>(null);
+	const { userId, userEmail } = useUser();
 	const [open, setOpen] = useState(false);
-
-	useEffect(() => {
-		async function loadEmail() {
-			if (!userId) return;
-			const supabase = createBrowserClient();
-			const {
-				data: { user },
-			} = await supabase.auth.getUser();
-			if (user?.email) setEmail(user.email);
-		}
-		loadEmail();
-	}, [userId]);
 
 	async function handleSignOut() {
 		setOpen(false);
@@ -232,14 +216,14 @@ function UserMenu() {
 
 	if (!userId) return null;
 
-	const initials = email ? email.slice(0, 2).toUpperCase() : "??";
+	const initials = userEmail ? userEmail.slice(0, 2).toUpperCase() : "??";
 
 	return (
 		<DropdownMenu open={open} onOpenChange={setOpen}>
 			<DropdownMenuTrigger asChild>
 				<button
 					className="flex items-center justify-center w-8 h-8 rounded-full bg-violet-600/20 text-violet-400 text-xs font-bold hover:bg-violet-600/30 transition-colors"
-					title={email ?? "User menu"}
+					title={userEmail ?? "User menu"}
 				>
 					{initials}
 				</button>
@@ -249,9 +233,9 @@ function UserMenu() {
 				sideOffset={8}
 				className="w-56 bg-zinc-900 border-zinc-800"
 			>
-				{email && (
+				{userEmail && (
 					<div className="px-3 py-2 text-sm text-zinc-400 truncate border-b border-zinc-800">
-						{email}
+						{userEmail}
 					</div>
 				)}
 				<DropdownMenuItem
