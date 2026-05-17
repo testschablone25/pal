@@ -75,7 +75,7 @@ export function CapacityDashboard({ eventId, refreshInterval = 10000 }: Capacity
 
   if (isLoading && !data) {
     return (
-      <Card className="bg-zinc-900 border-zinc-800">
+      <Card className="bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/70 rounded-lg">
         <CardContent className="p-6">
           <div className="flex items-center justify-center">
             <RefreshCw className="w-6 h-6 animate-spin text-zinc-400" />
@@ -88,7 +88,7 @@ export function CapacityDashboard({ eventId, refreshInterval = 10000 }: Capacity
 
   if (error && !data) {
     return (
-      <Card className="bg-zinc-900 border-zinc-800">
+      <Card className="bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/70 rounded-lg">
         <CardContent className="p-6">
           <div className="text-red-400">
             <p>Error loading occupancy: {error}</p>
@@ -137,7 +137,7 @@ export function CapacityDashboard({ eventId, refreshInterval = 10000 }: Capacity
       </div>
 
       {/* Main occupancy card */}
-      <Card className="bg-zinc-900 border-zinc-800">
+      <Card className="bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/70 rounded-lg">
         <CardHeader className="pb-2">
           <CardTitle className="text-zinc-300 flex items-center gap-2">
             <Users className="w-5 h-5" />
@@ -173,7 +173,7 @@ export function CapacityDashboard({ eventId, refreshInterval = 10000 }: Capacity
 
       {/* Stats by category */}
       <div className="grid grid-cols-3 gap-4">
-        <Card className="bg-zinc-900 border-zinc-800">
+        <Card className="bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/70 rounded-lg">
           <CardContent className="p-4">
             <div className="flex items-center gap-2 mb-2">
               <Badge variant="outline" className="border-blue-500 text-blue-400">
@@ -184,7 +184,7 @@ export function CapacityDashboard({ eventId, refreshInterval = 10000 }: Capacity
           </CardContent>
         </Card>
 
-        <Card className="bg-zinc-900 border-zinc-800">
+        <Card className="bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/70 rounded-lg">
           <CardContent className="p-4">
             <div className="flex items-center gap-2 mb-2">
               <Badge variant="outline" className="border-purple-500 text-purple-400">
@@ -195,7 +195,7 @@ export function CapacityDashboard({ eventId, refreshInterval = 10000 }: Capacity
           </CardContent>
         </Card>
 
-        <Card className="bg-zinc-900 border-zinc-800">
+        <Card className="bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/70 rounded-lg">
           <CardContent className="p-4">
             <div className="flex items-center gap-2 mb-2">
               <Badge variant="outline" className="border-orange-500 text-orange-400">
@@ -208,7 +208,7 @@ export function CapacityDashboard({ eventId, refreshInterval = 10000 }: Capacity
       </div>
 
       {/* Door stats */}
-      <Card className="bg-zinc-900 border-zinc-800">
+      <Card className="bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/70 rounded-lg">
         <CardHeader className="pb-2">
           <CardTitle className="text-zinc-300 flex items-center gap-2">
             <TrendingUp className="w-5 h-5" />

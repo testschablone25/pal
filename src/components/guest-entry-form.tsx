@@ -101,7 +101,7 @@ export function GuestEntryForm({ guestListId, onSuccess, onError }: GuestEntryFo
   };
 
   return (
-    <Card className="bg-zinc-900 border-zinc-800">
+    <Card className="bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/70 rounded-lg">
       <CardHeader>
         <CardTitle className="flex items-center gap-2 text-white">
           <UserPlus className="w-5 h-5" />

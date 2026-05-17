@@ -1,236 +1,406 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Card, CardContent, CardFooter } from '@/components/ui/card';
+import { useState, useEffect } from "react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import { Badge } from '@/components/ui/badge';
-import { Skeleton } from '@/components/ui/skeleton';
-import { Search, Plus, MapPin, Music } from 'lucide-react';
-import Link from 'next/link';
+	AlertDialog,
+	AlertDialogAction,
+	AlertDialogCancel,
+	AlertDialogContent,
+	AlertDialogDescription,
+	AlertDialogFooter,
+	AlertDialogHeader,
+	AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { PageSkeleton } from "@/components/page-skeleton";
+import { PaginationControls } from "@/components/pagination-controls";
+import {
+	Plus,
+	MapPin,
+	Music,
+	Pencil,
+	Trash2,
+	Loader2,
+	Mail,
+	Disc3,
+} from "lucide-react";
+import { SearchFilterBar } from "@/components/search-filter-bar";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { EmptyState } from "@/components/empty-state";
+import { useToast } from "@/hooks/use-toast";
+
+interface Label {
+	id: string;
+	name: string;
+}
 
 interface Artist {
-  id: string;
-  name: string;
-  city: string | null;
-  fee: number | null;
-  genre: string | null;
-  contact_email: string | null;
-  contact_phone: string | null;
-  created_at: string;
+	id: string;
+	name: string;
+	city: string | null;
+	fee: number | null;
+	genre: string | null;
+	contact_email: string | null;
+	contact_phone: string | null;
+	created_at: string;
+	performance_count: number;
+	labels: Label[];
 }
 
 interface ArtistListResponse {
-  artists: Artist[];
-  total: number;
-  limit: number;
-  offset: number;
+	artists: Artist[];
+	total: number;
+	limit: number;
+	offset: number;
+}
+
+interface LabelOption {
+	id: string;
+	name: string;
 }
 
 const GENRES = [
-  'Techno',
-  'House',
-  'Drum & Bass',
-  'Trance',
-  'Hard Techno',
-  'Minimal',
-  'Tech House',
-  'Progressive',
-  'Electro',
-  'Dubstep',
+	"Techno",
+	"House",
+	"Drum & Bass",
+	"Trance",
+	"Hard Techno",
+	"Minimal",
+	"Tech House",
+	"Progressive",
+	"Electro",
+	"Dubstep",
 ];
 
 export function ArtistList() {
-  const [artists, setArtists] = useState<Artist[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [searchName, setSearchName] = useState('');
-  const [filterGenre, setFilterGenre] = useState<string>('');
-  const [filterCity, setFilterCity] = useState('');
-  const [total, setTotal] = useState(0);
+	const router = useRouter();
+	const { toast } = useToast();
+	const [artists, setArtists] = useState<Artist[]>([]);
+	const [loading, setLoading] = useState(true);
+	const [searchName, setSearchName] = useState("");
+	const [filterGenre, setFilterGenre] = useState<string>("");
+	const [filterCity, setFilterCity] = useState("");
+	const [filterLabelId, setFilterLabelId] = useState<string>("");
+	const [total, setTotal] = useState(0);
+	const [currentPage, setCurrentPage] = useState(1);
+	const pageSize = 24;
+	const totalPages = Math.ceil(total / pageSize);
 
-  const fetchArtists = async () => {
-    setLoading(true);
-    try {
-      const params = new URLSearchParams();
-      if (searchName) params.append('name', searchName);
-      if (filterGenre) params.append('genre', filterGenre);
-      if (filterCity) params.append('city', filterCity);
+	// Labels list for filter dropdown
+	const [labelOptions, setLabelOptions] = useState<LabelOption[]>([]);
 
-      const response = await fetch(`/api/artists?${params.toString()}`);
-      const data: ArtistListResponse = await response.json();
-      setArtists(data.artists || []);
-      setTotal(data.total);
-    } catch (error) {
-      console.error('Failed to fetch artists:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
+	// Delete state
+	const [deletingArtist, setDeletingArtist] = useState<Artist | null>(null);
+	const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+	const [deleting, setDeleting] = useState(false);
 
-  useEffect(() => {
-    fetchArtists();
-  }, []);
+	// Load labels for filter
+	useEffect(() => {
+		fetch("/api/labels")
+			.then((r) => r.json())
+			.then((data) => setLabelOptions(data.labels || []))
+			.catch(() => {});
+	}, []);
 
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault();
-    fetchArtists();
-  };
+	const fetchArtists = async () => {
+		setLoading(true);
+		try {
+			const params = new URLSearchParams();
+			if (searchName) params.append("name", searchName);
+			if (filterGenre) params.append("genre", filterGenre);
+			if (filterCity) params.append("city", filterCity);
+			if (filterLabelId) params.append("label_id", filterLabelId);
+			params.append("limit", String(pageSize));
+			params.append("offset", String((currentPage - 1) * pageSize));
 
-  const clearFilters = () => {
-    setSearchName('');
-    setFilterGenre('');
-    setFilterCity('');
-    setArtists([]);
-    fetchArtists();
-  };
+			const response = await fetch(`/api/artists?${params.toString()}`);
+			const data: ArtistListResponse = await response.json();
+			setArtists(data.artists || []);
+			setTotal(data.total);
+		} catch (error) {
+			console.error("Failed to fetch artists:", error);
+		} finally {
+			setLoading(false);
+		}
+	};
 
-  return (
-    <div className="space-y-6">
-      {/* Search and Filters */}
-      <Card className="bg-zinc-900 border-zinc-800">
-        <CardContent className="pt-6">
-          <form onSubmit={handleSearch} className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400" />
-                <Input
-                  placeholder="Search artists..."
-                  value={searchName}
-                  onChange={(e) => setSearchName(e.target.value)}
-                  className="pl-10 bg-zinc-950 border-zinc-800"
-                />
-              </div>
-              <Select value={filterGenre} onValueChange={setFilterGenre}>
-                <SelectTrigger className="bg-zinc-950 border-zinc-800">
-                  <SelectValue placeholder="Genre" />
-                </SelectTrigger>
-                <SelectContent className="bg-zinc-900 border-zinc-800">
-                  {GENRES.map((genre) => (
-                    <SelectItem key={genre} value={genre.toLowerCase()}>
-                      {genre}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <Input
-                placeholder="City"
-                value={filterCity}
-                onChange={(e) => setFilterCity(e.target.value)}
-                className="bg-zinc-950 border-zinc-800"
-              />
-              <div className="flex gap-2">
-                <Button type="submit" className="flex-1 bg-violet-600 hover:bg-violet-700">
-                  Search
-                </Button>
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={clearFilters}
-                  className="border-zinc-800"
-                >
-                  Clear
-                </Button>
-              </div>
-            </div>
-          </form>
-        </CardContent>
-      </Card>
+	useEffect(() => {
+		fetchArtists();
+	}, [searchName, filterGenre, filterCity, filterLabelId, currentPage]);
 
-      {/* Artist Grid */}
-      <div className="flex justify-between items-center">
-        <p className="text-sm text-zinc-400">
-          {loading ? 'Loading...' : `${total} artists found`}
-        </p>
-        <Link href="/artists/new">
-          <Button className="bg-violet-600 hover:bg-violet-700">
-            <Plus className="h-4 w-4 mr-2" />
-            Add Artist
-          </Button>
-        </Link>
-      </div>
+	const clearFilters = () => {
+		setSearchName("");
+		setFilterGenre("");
+		setFilterCity("");
+		setFilterLabelId("");
+		setCurrentPage(1);
+		setArtists([]);
+		fetchArtists();
+	};
 
-      {loading ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {[...Array(6)].map((_, i) => (
-            <Card key={i} className="bg-zinc-900 border-zinc-800">
-              <CardContent className="pt-6 space-y-3">
-                <Skeleton className="h-6 w-3/4 bg-zinc-800" />
-                <Skeleton className="h-4 w-1/2 bg-zinc-800" />
-                <Skeleton className="h-4 w-1/3 bg-zinc-800" />
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      ) : artists.length === 0 ? (
-        <Card className="bg-zinc-900 border-zinc-800">
-          <CardContent className="py-12 text-center">
-            <Music className="h-12 w-12 mx-auto text-zinc-600 mb-4" />
-            <p className="text-zinc-400">No artists found</p>
-            <Link href="/artists/new">
-              <Button className="mt-4 bg-violet-600 hover:bg-violet-700">
-                Add your first artist
-              </Button>
-            </Link>
-          </CardContent>
-        </Card>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {artists.map((artist) => (
-            <Card
-              key={artist.id}
-              className="bg-zinc-900 border-zinc-800 hover:border-violet-600/50 transition-colors"
-            >
-              <CardContent className="pt-6">
-                <div className="space-y-3">
-                  <div className="flex justify-between items-start">
-                    <h3 className="text-lg font-semibold">{artist.name}</h3>
-                    {artist.fee && (
-                      <span className="text-violet-400 font-medium">
-                        €{artist.fee.toLocaleString()}
-                      </span>
-                    )}
-                  </div>
-                  {artist.genre && (
-                    <Badge
-                      variant="outline"
-                      className="border-violet-600/50 text-violet-400"
-                    >
-                      {artist.genre}
-                    </Badge>
-                  )}
-                  {artist.city && (
-                    <div className="flex items-center text-sm text-zinc-400">
-                      <MapPin className="h-4 w-4 mr-1" />
-                      {artist.city}
-                    </div>
-                  )}
-                </div>
-              </CardContent>
-              <CardFooter className="border-t border-zinc-800">
-                <div className="flex gap-2 w-full">
-                  <Link href={`/artists/${artist.id}`} className="flex-1">
-                    <Button variant="outline" className="w-full border-zinc-800">
-                      View
-                    </Button>
-                  </Link>
-                  <Link href={`/artists/${artist.id}/edit`} className="flex-1">
-                    <Button className="w-full bg-violet-600 hover:bg-violet-700">
-                      Edit
-                    </Button>
-                  </Link>
-                </div>
-              </CardFooter>
-            </Card>
-          ))}
-        </div>
-      )}
-    </div>
-  );
+	const handleDelete = async () => {
+		if (!deletingArtist) return;
+		setDeleting(true);
+		try {
+			const response = await fetch(`/api/artists/${deletingArtist.id}`, {
+				method: "DELETE",
+			});
+			if (!response.ok) {
+				const body = await response.json();
+				throw new Error(body.error || "Failed to delete artist");
+			}
+
+			// Remove from local state immediately
+			setArtists((prev) => prev.filter((a) => a.id !== deletingArtist.id));
+			setTotal((prev) => Math.max(0, prev - 1));
+
+			setShowDeleteDialog(false);
+			const deletedName = deletingArtist.name;
+			setDeletingArtist(null);
+			toast({
+				title: "Artist deleted",
+				description: `${deletedName} has been removed.`,
+			});
+		} catch (err) {
+			toast({
+				variant: "destructive",
+				title: "Error",
+				description:
+					err instanceof Error ? err.message : "Failed to delete artist",
+			});
+		} finally {
+			setDeleting(false);
+		}
+	};
+
+	return (
+		<div className="space-y-6">
+			{/* Search and Filters */}
+			<Card className="bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/70 rounded-lg">
+				<CardContent className="pt-6">
+					<div className="space-y-4">
+						<SearchFilterBar
+							placeholder="Search artists..."
+							searchValue={searchName}
+							onSearchChange={setSearchName}
+							filters={[
+								{
+									key: "genre",
+									label: "Genre",
+									options: GENRES.map((genre) => ({
+										value: genre.toLowerCase(),
+										label: genre,
+									})),
+									value: filterGenre,
+									onChange: setFilterGenre,
+								},
+								{
+									key: "label",
+									label: "Label",
+									options: labelOptions.map((l) => ({
+										value: l.id,
+										label: l.name,
+									})),
+									value: filterLabelId,
+									onChange: setFilterLabelId,
+								},
+							]}
+						/>
+						<div className="flex gap-3">
+							<div className="flex-1 md:max-w-[200px]">
+								<input
+									placeholder="City"
+									value={filterCity}
+									onChange={(e) => setFilterCity(e.target.value)}
+									className="w-full h-10 px-3 py-2 text-sm bg-zinc-950 border border-zinc-700 rounded-md placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-violet-600/50"
+								/>
+							</div>
+							<Button
+								type="button"
+								variant="outline"
+								onClick={clearFilters}
+								className="border-zinc-700"
+							>
+								Clear
+							</Button>
+						</div>
+					</div>
+				</CardContent>
+			</Card>
+
+			{/* Section header + count */}
+			<div className="flex justify-between items-center">
+				<div className="flex items-center gap-2">
+					<Music className="h-4 w-4 text-zinc-400" />
+					<p className="text-sm text-zinc-400">
+						{loading ? "Loading..." : `${total} artists found`}
+					</p>
+				</div>
+				<Link href="/artists/new">
+					<Button className="bg-violet-600 hover:bg-violet-700">
+						<Plus className="h-4 w-4 mr-2" />
+						Add Artist
+					</Button>
+				</Link>
+			</div>
+
+			{loading ? (
+				<PageSkeleton rows={6} />
+			) : artists.length === 0 ? (
+				<EmptyState
+					icon={Music}
+					title="Keine Künstler gefunden"
+					description="Füge deinen ersten Künstler hinzu"
+					actionLabel="Künstler hinzufügen"
+					actionHref="/artists/new"
+				/>
+			) : (
+				<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+					{artists.map((artist) => (
+						<div key={artist.id} className="group">
+							<div
+								onClick={() => router.push(`/artists/${artist.id}`)}
+								onKeyDown={(e) => {
+									if (e.key === "Enter") router.push(`/artists/${artist.id}`);
+								}}
+								role="button"
+								tabIndex={0}
+								className="cursor-pointer"
+							>
+								<Card className="bg-zinc-900 border-zinc-800 hover:border-violet-600/50 transition-all">
+									<CardContent className="pt-6 pb-4">
+										<div className="space-y-3">
+											{/* Top row: name + actions */}
+											<div className="flex items-start justify-between gap-2">
+												<div className="min-w-0 flex-1">
+													<h3 className="text-lg font-semibold text-white truncate group-hover:text-violet-300 transition-colors">
+														{artist.name}
+													</h3>
+												</div>
+												<div className="flex items-center gap-1 shrink-0">
+													<Link
+														href={`/artists/${artist.id}/edit`}
+														onClick={(e) => e.stopPropagation()}
+													>
+														<Button
+															variant="ghost"
+															size="icon"
+															className="h-8 w-8 text-zinc-400 hover:text-white hover:bg-zinc-800"
+														>
+															<Pencil className="h-4 w-4" />
+														</Button>
+													</Link>
+													<Button
+														variant="ghost"
+														size="icon"
+														className="h-8 w-8 text-zinc-400 hover:text-red-400 hover:bg-red-600/10"
+														onClick={(e) => {
+															e.preventDefault();
+															e.stopPropagation();
+															setDeletingArtist(artist);
+															setShowDeleteDialog(true);
+														}}
+													>
+														<Trash2 className="h-4 w-4" />
+													</Button>
+												</div>
+											</div>
+
+											{/* Genre badge + city */}
+											<div className="flex flex-wrap items-center gap-2">
+												{artist.genre && (
+													<Badge
+														variant="outline"
+														className="border-violet-600/50 text-violet-400"
+													>
+														{artist.genre}
+													</Badge>
+												)}
+												{artist.city && (
+													<div className="flex items-center text-sm text-zinc-400">
+														<MapPin className="h-4 w-4 mr-1" />
+														{artist.city}
+													</div>
+												)}
+											</div>
+
+											{/* Labels */}
+											{artist.labels && artist.labels.length > 0 && (
+												<div className="flex flex-wrap items-center gap-1.5">
+													<Disc3 className="h-3.5 w-3.5 text-zinc-500 shrink-0" />
+													{artist.labels.map((label) => (
+														<Badge
+															key={label.id}
+															variant="outline"
+															className="border-amber-600/40 text-amber-400 text-[11px] px-1.5 py-0"
+														>
+															{label.name}
+														</Badge>
+													))}
+												</div>
+											)}
+
+											{/* Contact email */}
+											{artist.contact_email && (
+												<div className="flex items-center text-sm text-zinc-500">
+													<Mail className="h-3.5 w-3.5 mr-1.5 shrink-0" />
+													<span className="truncate">
+														{artist.contact_email}
+													</span>
+												</div>
+											)}
+										</div>
+									</CardContent>
+								</Card>
+							</div>
+						</div>
+					))}
+				</div>
+			)}
+
+			<PaginationControls
+				currentPage={currentPage}
+				totalPages={totalPages}
+				totalItems={total}
+				onPageChange={(page) => {
+					setCurrentPage(page);
+					window.scrollTo({ top: 0, behavior: "smooth" });
+				}}
+				className="mt-6"
+			/>
+
+			{/* Delete Confirmation */}
+			<AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+				<AlertDialogContent className="bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/70 rounded-lg">
+					<AlertDialogHeader>
+						<AlertDialogTitle className="text-white">
+							Delete Artist
+						</AlertDialogTitle>
+						<AlertDialogDescription className="text-zinc-400">
+							Are you sure you want to delete{" "}
+							<strong className="text-zinc-200">{deletingArtist?.name}</strong>?
+							Any event performances for this artist will also be removed. This
+							action cannot be undone.
+						</AlertDialogDescription>
+					</AlertDialogHeader>
+					<AlertDialogFooter>
+						<AlertDialogCancel className="border-zinc-800 bg-zinc-900 text-white hover:bg-zinc-800">
+							Cancel
+						</AlertDialogCancel>
+						<AlertDialogAction
+							onClick={handleDelete}
+							disabled={deleting}
+							className="bg-red-600 hover:bg-red-700 text-white"
+						>
+							{deleting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+							Delete
+						</AlertDialogAction>
+					</AlertDialogFooter>
+				</AlertDialogContent>
+			</AlertDialog>
+		</div>
+	);
 }

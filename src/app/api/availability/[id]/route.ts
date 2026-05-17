@@ -1,79 +1,74 @@
 // Availability CRUD API - Single Entry
 // Phase 3 - Nightclub Booking System
 
-import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@supabase/supabase-js';
-import { supabaseConfig } from '@/lib/supabase/config';
+import { NextRequest, NextResponse } from "next/server";
+import { createClient } from "@supabase/supabase-js";
+import { supabaseConfig } from "@/lib/supabase/config";
+import { requireAuth } from "@/lib/api-auth";
 
 const supabase = createClient(supabaseConfig.url, supabaseConfig.serviceKey);
 
 // PUT /api/availability/[id] - Update availability
 export async function PUT(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+	request: NextRequest,
+	{ params }: { params: Promise<{ id: string }> },
 ) {
-  try {
-    const { id } = await params;
-    const body = await request.json();
+	try {
+		const auth = await requireAuth(request, "AVAILABILITY_WRITE");
+		if (!auth.authorized) return auth.response;
 
-    const {
-      available,
-      reason
-    } = body;
+		const { id } = await params;
+		const body = await request.json();
 
-    const { data, error } = await supabase
-      .from('availability')
-      .update({
-        available,
-        reason: available ? null : reason
-      })
-      .eq('id', id)
-      .select()
-      .single();
+		const { available, reason } = body;
 
-    if (error) {
-      return NextResponse.json(
-        { error: error.message },
-        { status: 400 }
-      );
-    }
+		const { data, error } = await supabase
+			.from("availability")
+			.update({
+				available,
+				reason: available ? null : reason,
+			})
+			.eq("id", id)
+			.select()
+			.single();
 
-    return NextResponse.json(data);
-  } catch (error) {
-    console.error('Error updating availability:', error);
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
-  }
+		if (error) {
+			return NextResponse.json({ error: error.message }, { status: 400 });
+		}
+
+		return NextResponse.json(data);
+	} catch (error) {
+		console.error("Error updating availability:", error);
+		return NextResponse.json(
+			{ error: "Internal server error" },
+			{ status: 500 },
+		);
+	}
 }
 
 // DELETE /api/availability/[id] - Delete availability
 export async function DELETE(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+	request: NextRequest,
+	{ params }: { params: Promise<{ id: string }> },
 ) {
-  try {
-    const { id } = await params;
+	try {
+		const auth = await requireAuth(request, "AVAILABILITY_WRITE");
+		if (!auth.authorized) return auth.response;
 
-    const { error } = await supabase
-      .from('availability')
-      .delete()
-      .eq('id', id);
+		const { id } = await params;
 
-    if (error) {
-      return NextResponse.json(
-        { error: error.message },
-        { status: 400 }
-      );
-    }
+		const { error } = await supabase.from("availability").delete().eq("id", id);
 
-    return NextResponse.json({ success: true });
-  } catch (error) {
-    console.error('Error deleting availability:', error);
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
-  }
+		if (error) {
+			return NextResponse.json({ error: error.message }, { status: 400 });
+		}
+
+		return NextResponse.json({ success: true });
+	} catch (error) {
+		console.error("Error deleting availability:", error);
+		return NextResponse.json(
+			{ error: "Internal server error" },
+			{ status: 500 },
+		);
+	}
 }

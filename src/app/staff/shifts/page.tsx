@@ -1,776 +1,1241 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Skeleton } from '@/components/ui/skeleton';
+import { useState, useEffect, useCallback } from "react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from "@/components/ui/select";
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
+	Dialog,
+	DialogContent,
+	DialogHeader,
+	DialogTitle,
+	DialogDescription,
+	DialogFooter,
+} from "@/components/ui/dialog";
 import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/components/ui/form';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
-import { Calendar, Clock, Plus, Trash2, AlertTriangle, Loader2 } from 'lucide-react';
-
-interface Event {
-  id: string;
-  name: string;
-  date: string;
-  door_time: string | null;
-  end_time: string | null;
-}
-
-interface StaffMember {
-  id: string;
-  role: string;
-  contract_type: string;
-  profiles?: {
-    full_name: string | null;
-  } | null;
-}
-
-interface Shift {
-  id: string;
-  event_id: string;
-  staff_id: string;
-  role: string;
-  start_time: string;
-  end_time: string;
-  break_minutes: number;
-  status: 'scheduled' | 'confirmed' | 'completed' | 'cancelled';
-  staff?: StaffMember;
-}
-
-interface Availability {
-  id: string;
-  staff_id: string;
-  date: string;
-  available: boolean;
-  reason: string | null;
-}
-
-const shiftSchema = z.object({
-  staff_id: z.string().min(1, 'Staff member is required'),
-  role: z.string().min(1, 'Role is required'),
-  start_time: z.string().min(1, 'Start time is required'),
-  end_time: z.string().min(1, 'End time is required'),
-  break_minutes: z.number().min(0),
-  status: z.enum(['scheduled', 'confirmed', 'completed', 'cancelled']),
-});
-
-type ShiftFormValues = z.infer<typeof shiftSchema>;
-
-const STAFF_ROLES = [
-  'Bar Staff',
-  'Security',
-  'Door Staff',
-  'Cloakroom',
-  'Cleaner',
-  'Manager',
-  'Sound Engineer',
-  'Lighting',
-  'VIP Host',
-  'Runner',
-];
-
-const ROLE_COLORS: Record<string, string> = {
-  'Bar Staff': 'bg-blue-600',
-  'Security': 'bg-red-600',
-  'Door Staff': 'bg-orange-600',
-  'Cloakroom': 'bg-cyan-600',
-  'Cleaner': 'bg-gray-600',
-  'Manager': 'bg-yellow-600',
-  'Sound Engineer': 'bg-pink-600',
-  'Lighting': 'bg-indigo-600',
-  'VIP Host': 'bg-rose-600',
-  'Runner': 'bg-teal-600',
-};
+	AlertDialog,
+	AlertDialogAction,
+	AlertDialogCancel,
+	AlertDialogContent,
+	AlertDialogDescription,
+	AlertDialogFooter,
+	AlertDialogHeader,
+	AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import {
+	DropdownMenu,
+	DropdownMenuContent,
+	DropdownMenuItem,
+	DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
+	Calendar,
+	Clock,
+	Plus,
+	AlertTriangle,
+	Users,
+	Puzzle,
+	Download,
+	ArrowUpDown,
+	Check,
+	X,
+	Send,
+} from "lucide-react";
+import { ShiftTimeline } from "@/components/staff-shifts/shift-timeline";
+import { ShiftForm } from "@/components/staff-shifts/shift-form";
+import type { ShiftFormValues } from "@/lib/staff-shifts/form-schema";
+import {
+	ShiftClockActions,
+	ShiftInfoRow,
+} from "@/components/staff-shifts/shift-clock-actions";
+import { ShiftBulkCreate } from "@/components/staff-shifts/shift-bulk-create";
+import { ShiftTemplateApplyDialog } from "@/components/shift-template-apply-dialog";
+import { statusBadgeClass } from "@/lib/utils";
+import {
+	formatTime,
+	getLocalTimezoneOffset,
+	getTimeInputValue,
+} from "@/lib/staff-shifts/utils";
+import { snapTo15Minutes } from "@/lib/staff-shifts/utils";
+import type { Shift } from "@/lib/staff-shifts/types";
+import type {
+	Event,
+	StaffMember,
+	Availability,
+	ConflictingShift,
+	SwapRequest,
+	BulkShiftInput,
+} from "@/lib/staff-shifts/types";
+import { jsPDF } from "jspdf";
+import { EmptyState } from "@/components/empty-state";
+import { useToast } from "@/hooks/use-toast";
+import { StaffSubNav } from "@/components/staff/staff-sub-nav";
 
 export default function ShiftsPage() {
-  const [events, setEvents] = useState<Event[]>([]);
-  const [staff, setStaff] = useState<StaffMember[]>([]);
-  const [shifts, setShifts] = useState<Shift[]>([]);
-  const [availability, setAvailability] = useState<Availability[]>([]);
-  const [selectedEventId, setSelectedEventId] = useState<string>('');
-  const [loading, setLoading] = useState(true);
-  const [shiftDialogOpen, setShiftDialogOpen] = useState(false);
-  const [saving, setSaving] = useState(false);
-  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-  const [shiftToDelete, setShiftToDelete] = useState<Shift | null>(null);
-  const [deleting, setDeleting] = useState(false);
+	const { toast } = useToast();
+	const [events, setEvents] = useState<Event[]>([]);
+	const [staff, setStaff] = useState<StaffMember[]>([]);
+	const [shifts, setShifts] = useState<Shift[]>([]);
+	const [availability, setAvailability] = useState<Availability[]>([]);
+	const [selectedEventId, setSelectedEventId] = useState<string>("");
+	const [loading, setLoading] = useState(true);
 
-  const form = useForm<ShiftFormValues>({
-    resolver: zodResolver(shiftSchema),
-    defaultValues: {
-      staff_id: '',
-      role: '',
-      start_time: '',
-      end_time: '',
-      break_minutes: 0,
-      status: 'scheduled',
-    },
-  });
+	// Shift form dialog
+	const [shiftDialogOpen, setShiftDialogOpen] = useState(false);
+	const [saving, setSaving] = useState(false);
+	const [editingShift, setEditingShift] = useState<Shift | null>(null);
 
-  useEffect(() => {
-    fetchEvents();
-    fetchStaff();
-  }, []);
+	// Delete dialog
+	const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+	const [shiftToDelete, setShiftToDelete] = useState<Shift | null>(null);
+	const [deleting, setDeleting] = useState(false);
 
-  useEffect(() => {
-    if (selectedEventId) {
-      fetchShifts();
-      fetchAvailability();
-    }
-  }, [selectedEventId]);
+	// Timeline filtering & drag
+	const [roleFilter, setRoleFilter] = useState<string>("all");
+	const [shiftSearch, setShiftSearch] = useState<string>("");
+	const [activeDragShift, setActiveDragShift] = useState<Shift | null>(null);
+	const [dragDelta, setDragDelta] = useState<number>(0);
+	const [savingIndicator, setSavingIndicator] = useState<string | null>(null);
 
-  const fetchEvents = async () => {
-    try {
-      const response = await fetch('/api/events?status=published');
-      const data = await response.json();
-      setEvents(data.events || []);
-      if (data.events?.length > 0 && !selectedEventId) {
-        setSelectedEventId(data.events[0].id);
-      }
-    } catch (error) {
-      console.error('Failed to fetch events:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
+	// Conflict dialog
+	const [conflictDialogOpen, setConflictDialogOpen] = useState(false);
+	const [conflictData, setConflictData] = useState<{
+		conflictingShifts: ConflictingShift[];
+		pendingSubmit: () => Promise<void>;
+	} | null>(null);
 
-  const fetchStaff = async () => {
-    try {
-      const response = await fetch('/api/staff');
-      const data = await response.json();
-      setStaff(data.staff || []);
-    } catch (error) {
-      console.error('Failed to fetch staff:', error);
-    }
-  };
+	// Bulk assignment dialog
+	const [bulkDialogOpen, setBulkDialogOpen] = useState(false);
 
-  const fetchShifts = async () => {
-    try {
-      const response = await fetch(`/api/shifts?event_id=${selectedEventId}`);
-      const data = await response.json();
-      setShifts(data.shifts || []);
-    } catch (error) {
-      console.error('Failed to fetch shifts:', error);
-    }
-  };
+	// Template dialog
+	const [templateDialogOpen, setTemplateDialogOpen] = useState(false);
 
-  const fetchAvailability = async () => {
-    try {
-      const selectedEvent = events.find(e => e.id === selectedEventId);
-      if (!selectedEvent) return;
+	// Swap request state
+	const [swapRequests, setSwapRequests] = useState<SwapRequest[]>([]);
+	const [swapDialogOpen, setSwapDialogOpen] = useState(false);
+	const [swapTargetShift, setSwapTargetShift] = useState<Shift | null>(null);
+	const [swapSelectedStaff, setSwapSelectedStaff] = useState<string>("");
+	const [swapReason, setSwapReason] = useState<string>("");
 
-      const response = await fetch(`/api/availability?date_from=${selectedEvent.date}&date_to=${selectedEvent.date}`);
-      const data = await response.json();
-      setAvailability(data.availability || []);
-    } catch (error) {
-      console.error('Failed to fetch availability:', error);
-    }
-  };
+	// Clock-in/out state
+	const [clockingIn, setClockingIn] = useState<string | null>(null);
+	const [clockingOut, setClockingOut] = useState<string | null>(null);
 
-  const onSubmit = async (values: ShiftFormValues) => {
-    if (!selectedEventId) return;
+	useEffect(() => {
+		fetchEvents();
+		fetchStaff();
+	}, []);
 
-    setSaving(true);
-    try {
-      const selectedEvent = events.find(e => e.id === selectedEventId);
-      if (!selectedEvent) throw new Error('Event not found');
+	useEffect(() => {
+		if (selectedEventId) {
+			fetchShifts();
+			fetchAvailability();
+		}
+	}, [selectedEventId]);
 
-      const startDateTime = `${selectedEvent.date}T${values.start_time}:00`;
-      const endDateTime = `${selectedEvent.date}T${values.end_time}:00`;
+	const fetchEvents = async () => {
+		try {
+			const response = await fetch("/api/events");
+			const data = await response.json();
+			setEvents(data.events || []);
+			if (data.events?.length > 0 && !selectedEventId) {
+				setSelectedEventId(data.events[0].id);
+			}
+		} catch (error) {
+			console.error("Failed to fetch events:", error);
+		} finally {
+			setLoading(false);
+		}
+	};
 
-      const response = await fetch('/api/shifts', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          event_id: selectedEventId,
-          staff_id: values.staff_id,
-          role: values.role,
-          start_time: startDateTime,
-          end_time: endDateTime,
-          break_minutes: values.break_minutes,
-          status: values.status,
-        }),
-      });
+	const fetchStaff = async () => {
+		try {
+			const response = await fetch("/api/staff");
+			const data = await response.json();
+			setStaff(data.staff || []);
+		} catch (error) {
+			console.error("Failed to fetch staff:", error);
+		}
+	};
 
-      if (!response.ok) {
-        const data = await response.json();
-        throw new Error(data.error || 'Failed to create shift');
-      }
+	const fetchShifts = async () => {
+		try {
+			const response = await fetch(`/api/shifts?event_id=${selectedEventId}`);
+			const data = await response.json();
+			setShifts(data.shifts || []);
+		} catch (error) {
+			console.error("Failed to fetch shifts:", error);
+		}
+	};
 
-      setShiftDialogOpen(false);
-      form.reset();
-      fetchShifts();
-    } catch (error) {
-      console.error('Error creating shift:', error);
-    } finally {
-      setSaving(false);
-    }
-  };
+	const fetchAvailability = async () => {
+		try {
+			const selectedEvent = events.find((e) => e.id === selectedEventId);
+			if (!selectedEvent) return;
+			const response = await fetch(
+				`/api/availability?date_from=${selectedEvent.date}&date_to=${selectedEvent.date}`,
+			);
+			const data = await response.json();
+			setAvailability(data.availability || []);
+		} catch (error) {
+			console.error("Failed to fetch availability:", error);
+		}
+	};
 
-  const handleDeleteClick = (shift: Shift) => {
-    setShiftToDelete(shift);
-    setDeleteDialogOpen(true);
-  };
+	const checkForConflicts = async (
+		staffId: string,
+		eventId: string,
+		startTime: string,
+		endTime: string,
+		excludeShiftId?: string,
+	): Promise<{
+		hasConflict: boolean;
+		conflictingShifts: ConflictingShift[];
+	}> => {
+		try {
+			const params = new URLSearchParams({
+				check_conflict: "true",
+				staff_id: staffId,
+				event_id: eventId,
+				start_time: startTime,
+				end_time: endTime,
+			});
+			if (excludeShiftId) params.set("exclude_shift_id", excludeShiftId);
+			const response = await fetch(`/api/shifts?${params}`);
+			return await response.json();
+		} catch (error) {
+			console.error("Failed to check conflicts:", error);
+			return { hasConflict: false, conflictingShifts: [] };
+		}
+	};
 
-  const handleDeleteConfirm = async () => {
-    if (!shiftToDelete) return;
+	const openCreateDialog = () => {
+		setEditingShift(null);
+		setShiftDialogOpen(true);
+	};
 
-    setDeleting(true);
-    try {
-      const response = await fetch(`/api/shifts/${shiftToDelete.id}`, {
-        method: 'DELETE',
-      });
+	const openEditDialog = (shift: Shift) => {
+		setEditingShift(shift);
+		setShiftDialogOpen(true);
+	};
 
-      if (!response.ok) {
-        throw new Error('Failed to delete shift');
-      }
+	const isStaffUnavailable = (staffId: string) => {
+		return availability.some((a) => a.staff_id === staffId && !a.available);
+	};
 
-      setDeleteDialogOpen(false);
-      setShiftToDelete(null);
-      fetchShifts();
-    } catch (error) {
-      console.error('Error deleting shift:', error);
-    } finally {
-      setDeleting(false);
-    }
-  };
+	const getAvailabilityReason = (staffId: string) => {
+		const avail = availability.find(
+			(a) => a.staff_id === staffId && !a.available,
+		);
+		return avail?.reason;
+	};
 
-  const isStaffUnavailable = (staffId: string) => {
-    return availability.some(a => a.staff_id === staffId && !a.available);
-  };
+	const handleFormSubmit = async (values: ShiftFormValues) => {
+		if (!selectedEventId) return;
+		const selectedEvent = events.find((e) => e.id === selectedEventId);
+		if (!selectedEvent) return;
 
-  const getAvailabilityReason = (staffId: string) => {
-    const avail = availability.find(a => a.staff_id === staffId && !a.available);
-    return avail?.reason;
-  };
+		const tz = getLocalTimezoneOffset();
+		const startDateTime = `${selectedEvent.date}T${values.start_time}:00${tz}`;
+		let endDateTime = `${selectedEvent.date}T${values.end_time}:00${tz}`;
+		if (values.end_time <= values.start_time) {
+			const nextDay = new Date(selectedEvent.date);
+			nextDay.setDate(nextDay.getDate() + 1);
+			endDateTime = `${nextDay.toISOString().split("T")[0]}T${values.end_time}:00${tz}`;
+		}
 
-  const formatTime = (dateTime: string) => {
-    const date = new Date(dateTime);
-    return date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false });
-  };
+		const conflictResult = await checkForConflicts(
+			values.staff_id,
+			selectedEventId,
+			startDateTime,
+			endDateTime,
+			editingShift?.id,
+		);
 
-  const getTimePosition = (dateTime: string) => {
-    const date = new Date(dateTime);
-    const hours = date.getHours();
-    const minutes = date.getMinutes();
-    // Timeline spans 18:00 to 06:00 (12 hours)
-    let hourOffset = hours - 18;
-    if (hourOffset < 0) hourOffset += 24;
-    const totalMinutes = hourOffset * 60 + minutes;
-    return (totalMinutes / (12 * 60)) * 100;
-  };
+		if (conflictResult.hasConflict) {
+			return new Promise<void>((resolve) => {
+				setConflictData({
+					conflictingShifts: conflictResult.conflictingShifts,
+					pendingSubmit: async () => {
+						setConflictDialogOpen(false);
+						setConflictData(null);
+						await performSubmit(values, startDateTime, endDateTime);
+						resolve();
+					},
+				});
+				setConflictDialogOpen(true);
+			});
+		}
+		await performSubmit(values, startDateTime, endDateTime);
+	};
 
-  const getTimeWidth = (startTime: string, endTime: string) => {
-    const start = new Date(startTime);
-    const end = new Date(endTime);
-    const diffMs = end.getTime() - start.getTime();
-    const diffMinutes = diffMs / (1000 * 60);
-    return (diffMinutes / (12 * 60)) * 100;
-  };
+	const performSubmit = async (
+		values: ShiftFormValues,
+		startDateTime: string,
+		endDateTime: string,
+	) => {
+		if (!selectedEventId) return;
+		setSaving(true);
+		try {
+			const url = editingShift
+				? `/api/shifts/${editingShift.id}`
+				: "/api/shifts";
+			const method = editingShift ? "PUT" : "POST";
+			const response = await fetch(url, {
+				method,
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify({
+					event_id: selectedEventId,
+					staff_id: values.staff_id,
+					role: values.role,
+					start_time: startDateTime,
+					end_time: endDateTime,
+					break_minutes: values.break_minutes,
+					status: values.status,
+				}),
+			});
+			if (!response.ok) {
+				const data = await response.json();
+				throw new Error(data.error || "Failed to save shift");
+			}
+			setShiftDialogOpen(false);
+			setEditingShift(null);
+			fetchShifts();
+			toast({
+				title: editingShift ? "Schicht aktualisiert" : "Schicht erstellt",
+				description: editingShift
+					? "Die Schicht wurde erfolgreich aktualisiert."
+					: "Die Schicht wurde erfolgreich erstellt.",
+			});
+		} catch (error) {
+			console.error("Error saving shift:", error);
+			toast({
+				variant: "destructive",
+				title: "Fehler",
+				description:
+					error instanceof Error
+						? error.message
+						: "Fehler beim Speichern der Schicht.",
+			});
+		} finally {
+			setSaving(false);
+		}
+	};
 
-  const selectedEvent = events.find(e => e.id === selectedEventId);
+	const selectedEvent = events.find((e) => e.id === selectedEventId);
 
-  // Generate timeline hours (18:00 to 06:00)
-  const timelineHours = [];
-  for (let i = 18; i < 24; i++) {
-    timelineHours.push(`${i}:00`);
-  }
-  for (let i = 0; i < 6; i++) {
-    timelineHours.push(`${i.toString().padStart(2, '0')}:00`);
-  }
+	// Filter shifts
+	const filteredShifts = shifts.filter((s) => {
+		const matchesRole = roleFilter === "all" || s.role === roleFilter;
+		const matchesSearch =
+			!shiftSearch ||
+			(s.staff?.profiles?.full_name || "")
+				.toLowerCase()
+				.includes(shiftSearch.toLowerCase());
+		return matchesRole && matchesSearch;
+	});
 
-  return (
-    <div className="container mx-auto py-8 px-4">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-white">Shift Scheduling</h1>
-        <p className="text-zinc-400 mt-2">
-          Plan and assign staff shifts for events
-        </p>
-      </div>
+	// Drag handlers
+	const handleDragEnd = useCallback(
+		async (event: {
+			active: { data: { current?: Record<string, unknown> } };
+			delta: { x: number };
+		}) => {
+			const { active, delta } = event;
+			setActiveDragShift(null);
+			setDragDelta(0);
 
-      {/* Event Selector */}
-      <Card className="bg-zinc-900 border-zinc-800 mb-6">
-        <CardContent className="pt-6">
-          <div className="flex flex-col md:flex-row gap-4 items-start md:items-center justify-between">
-            <div className="flex-1 w-full md:w-auto">
-              <label className="text-sm text-zinc-400 mb-2 block">Select Event</label>
-              <Select value={selectedEventId} onValueChange={setSelectedEventId}>
-                <SelectTrigger className="bg-zinc-950 border-zinc-800 w-full md:w-[300px]">
-                  <SelectValue placeholder="Choose an event" />
-                </SelectTrigger>
-                <SelectContent className="bg-zinc-900 border-zinc-800">
-                  {events.map((event) => (
-                    <SelectItem key={event.id} value={event.id}>
-                      {event.name} - {new Date(event.date).toLocaleDateString()}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            <Button
-              onClick={() => setShiftDialogOpen(true)}
-              disabled={!selectedEventId}
-              className="bg-violet-600 hover:bg-violet-700"
-            >
-              <Plus className="h-4 w-4 mr-2" />
-              Add Shift
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
+			const shiftId = active.data.current?.shiftId as string;
+			const originalStartTime = active.data.current?.startTime as string;
+			const originalEndTime = active.data.current?.endTime as string;
+			if (!shiftId || !originalStartTime || !originalEndTime) return;
 
-      {loading ? (
-        <Card className="bg-zinc-900 border-zinc-800">
-          <CardContent className="pt-6 space-y-4">
-            {[...Array(5)].map((_, i) => (
-              <Skeleton key={i} className="h-16 w-full bg-zinc-800" />
-            ))}
-          </CardContent>
-        </Card>
-      ) : !selectedEventId ? (
-        <Card className="bg-zinc-900 border-zinc-800">
-          <CardContent className="py-12 text-center">
-            <Calendar className="h-12 w-12 mx-auto text-zinc-600 mb-4" />
-            <p className="text-zinc-400">Select an event to view and manage shifts</p>
-          </CardContent>
-        </Card>
-      ) : (
-        <>
-          {/* Event Info */}
-          {selectedEvent && (
-            <Card className="bg-zinc-900 border-zinc-800 mb-6">
-              <CardContent className="pt-6">
-                <div className="flex flex-wrap gap-6">
-                  <div>
-                    <p className="text-sm text-zinc-400">Event</p>
-                    <p className="text-white font-medium">{selectedEvent.name}</p>
-                  </div>
-                  <div>
-                    <p className="text-sm text-zinc-400">Date</p>
-                    <p className="text-white font-medium">
-                      {new Date(selectedEvent.date).toLocaleDateString('en-US', {
-                        weekday: 'long',
-                        year: 'numeric',
-                        month: 'long',
-                        day: 'numeric',
-                      })}
-                    </p>
-                  </div>
-                  {selectedEvent.door_time && (
-                    <div>
-                      <p className="text-sm text-zinc-400">Door Time</p>
-                      <p className="text-white font-medium">{selectedEvent.door_time}</p>
-                    </div>
-                  )}
-                  {selectedEvent.end_time && (
-                    <div>
-                      <p className="text-sm text-zinc-400">End Time</p>
-                      <p className="text-white font-medium">{selectedEvent.end_time}</p>
-                    </div>
-                  )}
-                  <div>
-                    <p className="text-sm text-zinc-400">Total Shifts</p>
-                    <p className="text-white font-medium">{shifts.length}</p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          )}
+			const containerEl = document.querySelector("[data-timeline-container]");
+			if (!containerEl) return;
+			const containerWidth = containerEl.clientWidth;
+			if (containerWidth === 0) return;
 
-          {/* Timeline View */}
-          <Card className="bg-zinc-900 border-zinc-800 mb-6">
-            <CardHeader>
-              <CardTitle className="text-white flex items-center gap-2">
-                <Clock className="h-5 w-5" />
-                Timeline View
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              {/* Timeline Header */}
-              <div className="relative mb-4">
-                <div className="flex border-b border-zinc-800 pb-2">
-                  <div className="w-48 flex-shrink-0"></div>
-                  <div className="flex-1 relative h-8">
-                    {timelineHours.map((hour, i) => (
-                      <div
-                        key={hour}
-                        className="absolute text-xs text-zinc-500"
-                        style={{ left: `${(i / 12) * 100}%` }}
-                      >
-                        {hour}
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
+			const deltaMinutes = (delta.x / containerWidth) * (12 * 60);
+			if (Math.abs(deltaMinutes) < 1) return;
 
-              {/* Shift Bars */}
-              {shifts.length === 0 ? (
-                <div className="text-center py-8 text-zinc-400">
-                  No shifts scheduled for this event
-                </div>
-              ) : (
-                <div className="space-y-2">
-                  {shifts.map((shift) => {
-                    const left = getTimePosition(shift.start_time);
-                    const width = getTimeWidth(shift.start_time, shift.end_time);
-                    const colorClass = ROLE_COLORS[shift.role] || 'bg-zinc-600';
+			const snappedDelta = Math.round(deltaMinutes / 15) * 15;
+			const newStartTime = snapTo15Minutes(originalStartTime, snappedDelta);
+			const newEndTime = snapTo15Minutes(originalEndTime, snappedDelta);
+			if (newStartTime === originalStartTime && newEndTime === originalEndTime)
+				return;
 
-                    return (
-                      <div key={shift.id} className="flex items-center group">
-                        <div className="w-48 flex-shrink-0 pr-4">
-                          <p className="text-sm text-white truncate">
-                            {shift.staff?.profiles?.full_name || 'Unknown'}
-                          </p>
-                          <p className="text-xs text-zinc-400">{shift.role}</p>
-                        </div>
-                        <div className="flex-1 relative h-12 bg-zinc-950 rounded">
-                          <div
-                            className={`absolute h-full ${colorClass} rounded opacity-80 hover:opacity-100 transition-opacity cursor-pointer flex items-center px-2`}
-                            style={{
-                              left: `${left}%`,
-                              width: `${width}%`,
-                              minWidth: '60px',
-                            }}
-                          >
-                            <span className="text-xs text-white truncate">
-                              {formatTime(shift.start_time)} - {formatTime(shift.end_time)}
-                            </span>
-                          </div>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="absolute right-2 top-1/2 -translate-y-1/2 h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity text-red-400 hover:text-red-300 hover:bg-red-600/10"
-                            onClick={() => handleDeleteClick(shift)}
-                          >
-                            <Trash2 className="h-3 w-3" />
-                          </Button>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              )}
+			setSavingIndicator(shiftId);
+			try {
+				const response = await fetch(`/api/shifts/${shiftId}`, {
+					method: "PUT",
+					headers: { "Content-Type": "application/json" },
+					body: JSON.stringify({
+						start_time: newStartTime,
+						end_time: newEndTime,
+					}),
+				});
+				if (!response.ok) throw new Error("Failed to update shift");
+				fetchShifts();
+				toast({
+					title: "Schicht verschoben",
+					description: "Die Schicht wurde erfolgreich verschoben.",
+				});
+			} catch (error) {
+				console.error("Error updating shift time:", error);
+				toast({
+					variant: "destructive",
+					title: "Fehler",
+					description: "Fehler beim Verschieben der Schicht.",
+				});
+			} finally {
+				setSavingIndicator(null);
+			}
+		},
+		[fetchShifts],
+	);
 
-              {/* Legend */}
-              <div className="mt-6 pt-4 border-t border-zinc-800">
-                <p className="text-sm text-zinc-400 mb-2">Role Colors</p>
-                <div className="flex flex-wrap gap-2">
-                  {Object.entries(ROLE_COLORS).map(([role, colorClass]) => (
-                    <div key={role} className="flex items-center gap-1">
-                      <div className={`w-3 h-3 rounded ${colorClass}`}></div>
-                      <span className="text-xs text-zinc-400">{role}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+	const handleDragMove = useCallback((event: { delta: { x: number } }) => {
+		setDragDelta(event.delta.x);
+	}, []);
 
-          {/* Shifts List */}
-          <Card className="bg-zinc-900 border-zinc-800">
-            <CardHeader>
-              <CardTitle className="text-white">All Shifts</CardTitle>
-            </CardHeader>
-            <CardContent>
-              {shifts.length === 0 ? (
-                <div className="text-center py-8 text-zinc-400">
-                  No shifts scheduled. Click "Add Shift" to create one.
-                </div>
-              ) : (
-                <div className="space-y-3">
-                  {shifts.map((shift) => {
-                    const isUnavailable = isStaffUnavailable(shift.staff_id);
-                    const unavailReason = getAvailabilityReason(shift.staff_id);
+	const handleDragStart = useCallback(
+		(event: { active: { data: { current?: Record<string, unknown> } } }) => {
+			const shiftId = event.active.data.current?.shiftId as string;
+			const shift = shifts.find((s) => s.id === shiftId);
+			if (shift) {
+				setActiveDragShift(shift);
+				setDragDelta(0);
+			}
+		},
+		[shifts],
+	);
 
-                    return (
-                      <div
-                        key={shift.id}
-                        className="flex items-center justify-between p-4 bg-zinc-950 border border-zinc-800"
-                      >
-                        <div className="flex items-center gap-4">
-                          <div className={`w-2 h-12 rounded ${ROLE_COLORS[shift.role] || 'bg-zinc-600'}`}></div>
-                          <div>
-                            <div className="flex items-center gap-2">
-                              <p className="font-medium text-white">
-                                {shift.staff?.profiles?.full_name || 'Unknown Staff'}
-                              </p>
-                              {isUnavailable && (
-                                <Badge className="bg-amber-600/20 text-amber-400 border-amber-600/50">
-                                  <AlertTriangle className="h-3 w-3 mr-1" />
-                                  Unavailable
-                                </Badge>
-                              )}
-                            </div>
-                            <p className="text-sm text-zinc-400">
-                              {shift.role} • {formatTime(shift.start_time)} - {formatTime(shift.end_time)}
-                              {shift.break_minutes > 0 && ` • ${shift.break_minutes}min break`}
-                            </p>
-                            {isUnavailable && unavailReason && (
-                              <p className="text-xs text-amber-400 mt-1">Reason: {unavailReason}</p>
-                            )}
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <Badge
-                            className={
-                              shift.status === 'confirmed'
-                                ? 'bg-emerald-600/20 text-emerald-400 border-emerald-600/50'
-                                : shift.status === 'completed'
-                                ? 'bg-blue-600/20 text-blue-400 border-blue-600/50'
-                                : shift.status === 'cancelled'
-                                ? 'bg-red-600/20 text-red-400 border-red-600/50'
-                                : 'bg-zinc-600/20 text-zinc-400 border-zinc-600/50'
-                            }
-                          >
-                            {shift.status}
-                          </Badge>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="h-8 w-8 text-red-400 hover:text-red-300 hover:bg-red-600/10"
-                            onClick={() => handleDeleteClick(shift)}
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              )}
-            </CardContent>
-          </Card>
-        </>
-      )}
+	// Delete handler
+	const handleDeleteClick = (shift: Shift) => {
+		setShiftToDelete(shift);
+		setDeleteDialogOpen(true);
+	};
 
-      {/* Add Shift Dialog */}
-      <Dialog open={shiftDialogOpen} onOpenChange={setShiftDialogOpen}>
-        <DialogContent className="bg-zinc-900 border-zinc-800 max-w-md">
-          <DialogHeader>
-            <DialogTitle className="text-white">Add New Shift</DialogTitle>
-            <DialogDescription className="text-zinc-400">
-              Schedule a staff member for {selectedEvent?.name}
-            </DialogDescription>
-          </DialogHeader>
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-              <FormField
-                control={form.control}
-                name="staff_id"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Staff Member *</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
-                      <FormControl>
-                        <SelectTrigger className="bg-zinc-950 border-zinc-800">
-                          <SelectValue placeholder="Select staff member" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent className="bg-zinc-900 border-zinc-800">
-                        {staff.map((member) => {
-                          const unavailable = isStaffUnavailable(member.id);
-                          return (
-                            <SelectItem key={member.id} value={member.id}>
-                              <div className="flex items-center gap-2">
-                                {member.profiles?.full_name || 'Unknown'}
-                                {unavailable && (
-                                  <AlertTriangle className="h-3 w-3 text-amber-400" />
-                                )}
-                              </div>
-                            </SelectItem>
-                          );
-                        })}
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+	const handleDeleteConfirm = async () => {
+		if (!shiftToDelete) return;
+		setDeleting(true);
+		try {
+			const response = await fetch(`/api/shifts/${shiftToDelete.id}`, {
+				method: "DELETE",
+			});
+			if (!response.ok) throw new Error("Failed to delete shift");
+			setDeleteDialogOpen(false);
+			setShiftToDelete(null);
+			fetchShifts();
+			toast({
+				title: "Schicht gelöscht",
+				description: "Die Schicht wurde erfolgreich gelöscht.",
+			});
+		} catch (error) {
+			console.error("Error deleting shift:", error);
+			toast({
+				variant: "destructive",
+				title: "Fehler",
+				description: "Fehler beim Löschen der Schicht.",
+			});
+		} finally {
+			setDeleting(false);
+		}
+	};
 
-              <FormField
-                control={form.control}
-                name="role"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Role *</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
-                      <FormControl>
-                        <SelectTrigger className="bg-zinc-950 border-zinc-800">
-                          <SelectValue placeholder="Select role" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent className="bg-zinc-900 border-zinc-800">
-                        {STAFF_ROLES.map((role) => (
-                          <SelectItem key={role} value={role}>
-                            {role}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+	// Bulk submit handler
+	const handleBulkSubmit = async (data: {
+		eventId: string;
+		staffIds: string[];
+		role: string;
+		startTime: string;
+		endTime: string;
+		breakMinutes: number;
+	}) => {
+		const ev = events.find((e) => e.id === data.eventId);
+		if (!ev) return;
 
-              <div className="grid grid-cols-2 gap-4">
-                <FormField
-                  control={form.control}
-                  name="start_time"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Start Time *</FormLabel>
-                      <FormControl>
-                        <Input
-                          {...field}
-                          type="time"
-                          className="bg-zinc-950 border-zinc-800"
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+		const tz = getLocalTimezoneOffset();
+		const startDateTime = `${ev.date}T${data.startTime}:00${tz}`;
+		let endDateTime = `${ev.date}T${data.endTime}:00${tz}`;
+		if (data.endTime <= data.startTime) {
+			const nextDay = new Date(ev.date);
+			nextDay.setDate(nextDay.getDate() + 1);
+			endDateTime = `${nextDay.toISOString().split("T")[0]}T${data.endTime}:00${tz}`;
+		}
 
-                <FormField
-                  control={form.control}
-                  name="end_time"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>End Time *</FormLabel>
-                      <FormControl>
-                        <Input
-                          {...field}
-                          type="time"
-                          className="bg-zinc-950 border-zinc-800"
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
+		const shiftsToCreate: BulkShiftInput[] = data.staffIds.map((staffId) => ({
+			staff_id: staffId,
+			role: data.role,
+			start_time: startDateTime,
+			end_time: endDateTime,
+			break_minutes: data.breakMinutes,
+		}));
 
-              <FormField
-                control={form.control}
-                name="break_minutes"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Break (minutes)</FormLabel>
-                    <FormControl>
-                      <Input
-                        {...field}
-                        type="number"
-                        placeholder="0"
-                        className="bg-zinc-950 border-zinc-800"
-                        onChange={(e) => field.onChange(parseInt(e.target.value) || 0)}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+		const response = await fetch("/api/shifts/bulk", {
+			method: "POST",
+			headers: { "Content-Type": "application/json" },
+			body: JSON.stringify({ event_id: data.eventId, shifts: shiftsToCreate }),
+		});
 
-              <FormField
-                control={form.control}
-                name="status"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Status</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
-                      <FormControl>
-                        <SelectTrigger className="bg-zinc-950 border-zinc-800">
-                          <SelectValue placeholder="Select status" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent className="bg-zinc-900 border-zinc-800">
-                        <SelectItem value="scheduled">Scheduled</SelectItem>
-                        <SelectItem value="confirmed">Confirmed</SelectItem>
-                        <SelectItem value="completed">Completed</SelectItem>
-                        <SelectItem value="cancelled">Cancelled</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+		if (!response.ok) {
+			const err = await response.json();
+			throw new Error(err.error || "Failed to create bulk shifts");
+		}
 
-              <DialogFooter>
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => setShiftDialogOpen(false)}
-                  className="border-zinc-800"
-                >
-                  Cancel
-                </Button>
-                <Button
-                  type="submit"
-                  disabled={saving}
-                  className="bg-violet-600 hover:bg-violet-700"
-                >
-                  {saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                  Add Shift
-                </Button>
-              </DialogFooter>
-            </form>
-          </Form>
-        </DialogContent>
-      </Dialog>
+		setBulkDialogOpen(false);
+		fetchShifts();
+		toast({
+			title: "Massenschichten erstellt",
+			description: `${data.staffIds.length} Schichten wurden erfolgreich erstellt.`,
+		});
+	};
 
-      {/* Delete Confirmation Dialog */}
-      <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
-        <DialogContent className="bg-zinc-900 border-zinc-800">
-          <DialogHeader>
-            <DialogTitle className="text-white">Delete Shift</DialogTitle>
-            <DialogDescription className="text-zinc-400">
-              Are you sure you want to delete this shift? This action cannot be undone.
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter>
-            <Button
-              variant="outline"
-              onClick={() => setDeleteDialogOpen(false)}
-              className="border-zinc-800"
-            >
-              Cancel
-            </Button>
-            <Button
-              onClick={handleDeleteConfirm}
-              disabled={deleting}
-              className="bg-red-600 hover:bg-red-700"
-            >
-              {deleting ? 'Deleting...' : 'Delete'}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-    </div>
-  );
+	const handleTemplateApplied = () => {
+		fetchShifts();
+	};
+
+	// Clock handlers
+	const handleClockIn = async (shiftId: string) => {
+		setClockingIn(shiftId);
+		try {
+			const response = await fetch(`/api/shifts/${shiftId}/clock-in`, {
+				method: "POST",
+			});
+			if (!response.ok) throw new Error("Failed to clock in");
+			await fetchShifts();
+			toast({
+				title: "Eingestempelt",
+				description: "Der Mitarbeiter wurde erfolgreich eingestempelt.",
+			});
+		} catch (error) {
+			console.error("Error clocking in:", error);
+			toast({
+				variant: "destructive",
+				title: "Fehler",
+				description: "Fehler beim Einstempeln.",
+			});
+		} finally {
+			setClockingIn(null);
+		}
+	};
+
+	const handleClockOut = async (shiftId: string) => {
+		setClockingOut(shiftId);
+		try {
+			const response = await fetch(`/api/shifts/${shiftId}/clock-out`, {
+				method: "POST",
+			});
+			if (!response.ok) throw new Error("Failed to clock out");
+			await fetchShifts();
+			toast({
+				title: "Ausgestempelt",
+				description: "Der Mitarbeiter wurde erfolgreich ausgestempelt.",
+			});
+		} catch (error) {
+			console.error("Error clocking out:", error);
+			toast({
+				variant: "destructive",
+				title: "Fehler",
+				description: "Fehler beim Ausstempeln.",
+			});
+		} finally {
+			setClockingOut(null);
+		}
+	};
+
+	// Swap handlers
+	const handleOpenSwapDialog = (shift: Shift) => {
+		setSwapTargetShift(shift);
+		setSwapSelectedStaff("");
+		setSwapReason("");
+		setSwapDialogOpen(true);
+	};
+
+	const handleSubmitSwapRequest = () => {
+		if (!swapTargetShift || !swapSelectedStaff) return;
+		const requestingStaffMember = staff.find(
+			(s) => s.id === swapTargetShift.staff_id,
+		);
+		const newSwapRequest: SwapRequest = {
+			id: `swap-${Date.now()}`,
+			shiftId: swapTargetShift.id,
+			requestedByStaffId: swapTargetShift.staff_id,
+			requestedToStaffId: swapSelectedStaff,
+			status: "pending",
+			reason: swapReason || undefined,
+			requestedByName: requestingStaffMember?.profiles?.full_name || "Unknown",
+		};
+		setSwapRequests((prev) => [...prev, newSwapRequest]);
+		setSwapDialogOpen(false);
+		setSwapTargetShift(null);
+	};
+
+	const handleAcceptSwap = (swapId: string) => {
+		setSwapRequests((prev) =>
+			prev.map((sr) =>
+				sr.id === swapId ? { ...sr, status: "accepted" as const } : sr,
+			),
+		);
+	};
+
+	const handleDeclineSwap = (swapId: string) => {
+		setSwapRequests((prev) =>
+			prev.map((sr) =>
+				sr.id === swapId ? { ...sr, status: "declined" as const } : sr,
+			),
+		);
+	};
+
+	const handleApproveSwap = (swapId: string) => {
+		const swap = swapRequests.find((sr) => sr.id === swapId);
+		if (!swap) return;
+		setShifts((prev) =>
+			prev.map((s) => {
+				if (s.id === swap.shiftId)
+					return { ...s, staff_id: swap.requestedToStaffId };
+				if (s.staff_id === swap.requestedToStaffId)
+					return { ...s, staff_id: swap.requestedByStaffId };
+				return s;
+			}),
+		);
+		setSwapRequests((prev) =>
+			prev.map((sr) =>
+				sr.id === swapId ? { ...sr, status: "approved" as const } : sr,
+			),
+		);
+	};
+
+	// Export handlers
+	const handleExportCSV = () => {
+		if (!selectedEvent) return;
+		const headers = [
+			"Staff Name",
+			"Role",
+			"Start Time",
+			"End Time",
+			"Duration (h)",
+			"Break (min)",
+			"Status",
+		];
+		const rows = filteredShifts.map((shift) => {
+			const start = new Date(shift.start_time);
+			const end = new Date(shift.end_time);
+			const durationHours = (
+				(end.getTime() - start.getTime()) /
+				(1000 * 60 * 60)
+			).toFixed(1);
+			return [
+				shift.staff?.profiles?.full_name || "Unknown",
+				shift.role,
+				formatTime(shift.start_time),
+				formatTime(shift.end_time),
+				durationHours,
+				shift.break_minutes.toString(),
+				shift.status,
+			];
+		});
+		const csvContent = [
+			headers.join(","),
+			...rows.map((row) => row.join(",")),
+		].join("\n");
+		const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+		const url = URL.createObjectURL(blob);
+		const link = document.createElement("a");
+		link.href = url;
+		link.download = `shift-schedule-${selectedEvent.name.replace(/\s+/g, "-")}-${selectedEvent.date}.csv`;
+		link.click();
+		URL.revokeObjectURL(url);
+	};
+
+	const handleExportPDF = () => {
+		if (!selectedEvent) return;
+		const doc = new jsPDF();
+		const pageWidth = doc.internal.pageSize.getWidth();
+		doc.setFontSize(16);
+		doc.text(
+			`Shift Schedule - ${selectedEvent.name} - ${selectedEvent.date}`,
+			pageWidth / 2,
+			20,
+			{ align: "center" },
+		);
+		doc.setFontSize(10);
+		const tableHeaders = ["Name", "Role", "Start", "End", "Status"];
+		const columnWidths = [50, 40, 30, 30, 30];
+		let yPos = 35;
+		doc.setFont("helvetica", "bold");
+		let xPos = 10;
+		tableHeaders.forEach((header, i) => {
+			doc.text(header, xPos, yPos);
+			xPos += columnWidths[i];
+		});
+		yPos += 8;
+		doc.setFont("helvetica", "normal");
+		filteredShifts.forEach((shift) => {
+			if (yPos > 270) {
+				doc.addPage();
+				yPos = 20;
+			}
+			xPos = 10;
+			[
+				shift.staff?.profiles?.full_name || "Unknown",
+				shift.role,
+				formatTime(shift.start_time),
+				formatTime(shift.end_time),
+				shift.status,
+			].forEach((cell, i) => {
+				doc.text(cell, xPos, yPos);
+				xPos += columnWidths[i];
+			});
+			yPos += 7;
+		});
+		doc.save(
+			`shift-schedule-${selectedEvent.name.replace(/\s+/g, "-")}-${selectedEvent.date}.pdf`,
+		);
+	};
+
+	return (
+		<div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8">
+			<div className="mb-8">
+				<h1 className="text-3xl font-bold text-white">Shift Scheduling</h1>
+				<p className="text-zinc-400 mt-2">
+					Plan and assign staff shifts for events
+				</p>
+			</div>
+
+			<StaffSubNav />
+
+			{/* Event Selector */}
+			<Card className="bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/70 mb-6">
+				<CardContent className="pt-6">
+					<div className="flex flex-col md:flex-row gap-4 items-start md:items-center justify-between">
+						<div className="flex-1 w-full md:w-auto">
+							<label className="text-sm text-zinc-400 mb-2 block">
+								Select Event
+							</label>
+							<Select
+								value={selectedEventId}
+								onValueChange={setSelectedEventId}
+							>
+								<SelectTrigger className="bg-zinc-950 border-zinc-800 w-full md:w-[300px]">
+									<SelectValue placeholder="Choose an event" />
+								</SelectTrigger>
+								<SelectContent className="bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/70">
+									{events.map((event) => (
+										<SelectItem key={event.id} value={event.id}>
+											{event.name} - {new Date(event.date).toLocaleDateString()}
+										</SelectItem>
+									))}
+								</SelectContent>
+							</Select>
+						</div>
+						<div className="flex gap-2">
+							<Button
+								onClick={() => setBulkDialogOpen(true)}
+								disabled={!selectedEventId}
+								variant="outline"
+								className="border-zinc-800"
+							>
+								<Users className="h-4 w-4 mr-2" />
+								Bulk Assign
+							</Button>
+							<Button
+								onClick={() => setTemplateDialogOpen(true)}
+								disabled={!selectedEventId}
+								variant="outline"
+								className="border-zinc-800"
+							>
+								<Puzzle className="h-4 w-4 mr-2" />
+								Apply Template
+							</Button>
+							<Button
+								onClick={openCreateDialog}
+								disabled={!selectedEventId}
+								className="bg-violet-600 hover:bg-violet-700"
+							>
+								<Plus className="h-4 w-4 mr-2" />
+								Add Shift
+							</Button>
+							<DropdownMenu>
+								<DropdownMenuTrigger asChild>
+									<Button
+										disabled={!selectedEventId}
+										variant="outline"
+										className="border-zinc-800"
+									>
+										<Download className="h-4 w-4 mr-2" />
+										Export
+									</Button>
+								</DropdownMenuTrigger>
+								<DropdownMenuContent className="bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/70">
+									<DropdownMenuItem
+										onClick={handleExportCSV}
+										className="text-zinc-300 hover:text-white hover:bg-zinc-800 cursor-pointer"
+									>
+										Export as CSV
+									</DropdownMenuItem>
+									<DropdownMenuItem
+										onClick={handleExportPDF}
+										className="text-zinc-300 hover:text-white hover:bg-zinc-800 cursor-pointer"
+									>
+										Export as PDF
+									</DropdownMenuItem>
+								</DropdownMenuContent>
+							</DropdownMenu>
+						</div>
+					</div>
+				</CardContent>
+			</Card>
+
+			{loading ? (
+				<Card className="bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/70">
+					<CardContent className="pt-6 space-y-4">
+						{[...Array(5)].map((_, i) => (
+							<Skeleton key={i} className="h-16 w-full bg-zinc-800" />
+						))}
+					</CardContent>
+				</Card>
+			) : !selectedEventId ? (
+				<Card className="bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/70">
+					<CardContent className="py-12 text-center">
+						<Calendar className="h-12 w-12 mx-auto text-zinc-600 mb-4" />
+						<p className="text-zinc-400">
+							Select an event to view and manage shifts
+						</p>
+					</CardContent>
+				</Card>
+			) : (
+				<>
+					{/* Event Info */}
+					{selectedEvent && (
+						<Card className="bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/70 mb-6">
+							<CardContent className="pt-6">
+								<div className="flex flex-wrap gap-6">
+									<div>
+										<p className="text-sm text-zinc-400">Event</p>
+										<p className="text-white font-medium">
+											{selectedEvent.name}
+										</p>
+									</div>
+									<div>
+										<p className="text-sm text-zinc-400">Date</p>
+										<p className="text-white font-medium">
+											{new Date(selectedEvent.date).toLocaleDateString(
+												"en-US",
+												{
+													weekday: "long",
+													year: "numeric",
+													month: "long",
+													day: "numeric",
+												},
+											)}
+										</p>
+									</div>
+									{selectedEvent.door_time && (
+										<div>
+											<p className="text-sm text-zinc-400">Door Time</p>
+											<p className="text-white font-medium">
+												{selectedEvent.door_time}
+											</p>
+										</div>
+									)}
+									{selectedEvent.end_time && (
+										<div>
+											<p className="text-sm text-zinc-400">End Time</p>
+											<p className="text-white font-medium">
+												{selectedEvent.end_time}
+											</p>
+										</div>
+									)}
+									<div>
+										<p className="text-sm text-zinc-400">Total Shifts</p>
+										<p className="text-white font-medium">{shifts.length}</p>
+									</div>
+								</div>
+							</CardContent>
+						</Card>
+					)}
+
+					{/* Timeline */}
+					<ShiftTimeline
+						shifts={shifts}
+						filteredShifts={filteredShifts}
+						shiftSearch={shiftSearch}
+						onShiftSearchChange={setShiftSearch}
+						roleFilter={roleFilter}
+						onRoleFilterChange={setRoleFilter}
+						savingIndicator={savingIndicator}
+						onEditShift={openEditDialog}
+						onDeleteClick={handleDeleteClick}
+						onDragEnd={handleDragEnd}
+						onDragStart={handleDragStart}
+						onDragMove={handleDragMove}
+						activeDragShift={activeDragShift}
+						dragDelta={dragDelta}
+					/>
+
+					{/* Shifts List */}
+					<Card className="bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/70">
+						<CardHeader>
+							<CardTitle className="text-white">All Shifts</CardTitle>
+						</CardHeader>
+						<CardContent>
+							{filteredShifts.length === 0 ? (
+								<EmptyState
+									icon={Clock}
+									title={
+										roleFilter !== "all"
+											? `Keine Schichten mit Rolle "${roleFilter}"`
+											: "Keine Schichten geplant"
+									}
+									description="Füge eine Schicht hinzu"
+									className="py-8"
+								/>
+							) : (
+								<div className="space-y-3">
+									{filteredShifts.map((shift) => {
+										const isUnavailable = isStaffUnavailable(shift.staff_id);
+										const unavailReason = getAvailabilityReason(shift.staff_id);
+										return (
+											<div
+												key={shift.id}
+												className="flex items-center justify-between p-4 bg-zinc-950 border border-zinc-800 cursor-pointer hover:border-zinc-700 transition-colors"
+												onClick={() => openEditDialog(shift)}
+											>
+												<div className="flex items-center gap-4">
+													<div
+														className={`w-2 h-12 rounded ${"bg-zinc-600"}`}
+													/>
+													<div>
+														<div className="flex items-center gap-2">
+															<p className="font-medium text-white">
+																{shift.staff?.profiles?.full_name ||
+																	"Unknown Staff"}
+															</p>
+															{isUnavailable && (
+																<Badge
+																	className={statusBadgeClass("unavailable")}
+																>
+																	<AlertTriangle className="h-3 w-3 mr-1" />
+																	Unavailable
+																</Badge>
+															)}
+														</div>
+														<p className="text-sm text-zinc-400">
+															{shift.role} • {formatTime(shift.start_time)} -{" "}
+															{formatTime(shift.end_time)}
+															{shift.break_minutes > 0 &&
+																` • ${shift.break_minutes}min break`}
+														</p>
+														<ShiftInfoRow
+															clockedInAt={shift.clocked_in_at}
+															clockedOutAt={shift.clocked_out_at}
+														/>
+														{isUnavailable && unavailReason && (
+															<p className="text-xs text-amber-400 mt-1">
+																Reason: {unavailReason}
+															</p>
+														)}
+													</div>
+												</div>
+												<div className="flex items-center gap-2">
+													<Badge className={statusBadgeClass(shift.status)}>
+														{shift.status}
+													</Badge>
+													<ShiftClockActions
+														shift={shift}
+														clockingIn={clockingIn}
+														clockingOut={clockingOut}
+														onClockIn={handleClockIn}
+														onClockOut={handleClockOut}
+														onOpenSwap={handleOpenSwapDialog}
+														onDeleteClick={handleDeleteClick}
+													/>
+												</div>
+											</div>
+										);
+									})}
+								</div>
+							)}
+						</CardContent>
+					</Card>
+
+					{/* Pending Swaps */}
+					{swapRequests.length > 0 && (
+						<Card className="bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/70 mt-6">
+							<CardHeader>
+								<CardTitle className="text-white flex items-center gap-2">
+									<ArrowUpDown className="h-5 w-5" />
+									Pending Swap Requests
+								</CardTitle>
+							</CardHeader>
+							<CardContent className="space-y-3">
+								{swapRequests.map((sr) => {
+									const relatedShift = shifts.find((s) => s.id === sr.shiftId);
+									const targetStaff = staff.find(
+										(s) => s.id === sr.requestedToStaffId,
+									);
+									const requestingStaff = staff.find(
+										(s) => s.id === sr.requestedByStaffId,
+									);
+									return (
+										<div
+											key={sr.id}
+											className="p-4 bg-zinc-950 border border-zinc-800 rounded"
+										>
+											<div className="flex items-center justify-between">
+												<div>
+													<p className="text-sm text-white font-medium">
+														{sr.requestedByName ||
+															requestingStaff?.profiles?.full_name ||
+															"Someone"}{" "}
+														wants to swap with{" "}
+														{targetStaff?.profiles?.full_name || "Unknown"}
+													</p>
+													<p className="text-xs text-zinc-400 mt-1">
+														Shift:{" "}
+														{relatedShift
+															? `${formatTime(relatedShift.start_time)} - ${formatTime(relatedShift.end_time)}`
+															: "Unknown"}
+														{sr.reason && <> • Reason: {sr.reason}</>}
+													</p>
+												</div>
+												<div className="flex items-center gap-2">
+													<Badge className={statusBadgeClass(sr.status)}>
+														{sr.status}
+													</Badge>
+													{sr.status === "pending" && (
+														<>
+															<Button
+																variant="ghost"
+																size="sm"
+																className="h-7 text-xs text-emerald-400 hover:text-emerald-300 hover:bg-emerald-600/10"
+																onClick={() => handleAcceptSwap(sr.id)}
+															>
+																<Check className="h-3 w-3 mr-1" />
+																Accept
+															</Button>
+															<Button
+																variant="ghost"
+																size="sm"
+																className="h-7 text-xs text-red-400 hover:text-red-300 hover:bg-red-600/10"
+																onClick={() => handleDeclineSwap(sr.id)}
+															>
+																<X className="h-3 w-3 mr-1" />
+																Decline
+															</Button>
+														</>
+													)}
+													{sr.status === "accepted" && (
+														<Button
+															variant="ghost"
+															size="sm"
+															className="h-7 text-xs text-violet-400 hover:text-violet-300 hover:bg-violet-600/10"
+															onClick={() => handleApproveSwap(sr.id)}
+														>
+															<Send className="h-3 w-3 mr-1" />
+															Approve
+														</Button>
+													)}
+												</div>
+											</div>
+										</div>
+									);
+								})}
+							</CardContent>
+						</Card>
+					)}
+				</>
+			)}
+
+			{/* Shift Form Dialog */}
+			<ShiftForm
+				open={shiftDialogOpen}
+				onOpenChange={(open) => {
+					setShiftDialogOpen(open);
+					if (!open) setEditingShift(null);
+				}}
+				editingShift={editingShift}
+				staff={staff}
+				selectedEvent={selectedEvent || null}
+				saving={saving}
+				onSubmit={handleFormSubmit}
+				isStaffUnavailable={isStaffUnavailable}
+			/>
+
+			{/* Delete Confirmation */}
+			<Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+				<DialogContent className="bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/70">
+					<DialogHeader>
+						<DialogTitle className="text-white">Delete Shift</DialogTitle>
+						<DialogDescription className="text-zinc-400">
+							Are you sure you want to delete this shift? This action cannot be
+							undone.
+						</DialogDescription>
+					</DialogHeader>
+					<DialogFooter>
+						<Button
+							variant="outline"
+							onClick={() => setDeleteDialogOpen(false)}
+							className="border-zinc-800"
+						>
+							Cancel
+						</Button>
+						<Button
+							onClick={handleDeleteConfirm}
+							disabled={deleting}
+							className="bg-red-600 hover:bg-red-700"
+						>
+							{deleting ? "Deleting..." : "Delete"}
+						</Button>
+					</DialogFooter>
+				</DialogContent>
+			</Dialog>
+
+			{/* Conflict Warning */}
+			<AlertDialog
+				open={conflictDialogOpen}
+				onOpenChange={setConflictDialogOpen}
+			>
+				<AlertDialogContent className="bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/70">
+					<AlertDialogHeader>
+						<AlertDialogTitle className="text-white flex items-center gap-2">
+							<AlertTriangle className="h-5 w-5 text-amber-400" />
+							Shift Conflict Detected
+						</AlertDialogTitle>
+						<AlertDialogDescription className="text-zinc-400">
+							This staff member has an overlapping shift
+							{conflictData?.conflictingShifts?.[0] && (
+								<>
+									{" "}
+									on{" "}
+									<span className="text-zinc-300">
+										{formatTime(conflictData.conflictingShifts[0].start_time)} -{" "}
+										{formatTime(conflictData.conflictingShifts[0].end_time)}
+										{conflictData.conflictingShifts[0].role &&
+											` (${conflictData.conflictingShifts[0].role})`}
+									</span>
+								</>
+							)}
+							. Do you want to save anyway?
+						</AlertDialogDescription>
+					</AlertDialogHeader>
+					<AlertDialogFooter>
+						<AlertDialogCancel className="border-zinc-800 text-zinc-400 hover:text-white">
+							Cancel
+						</AlertDialogCancel>
+						<AlertDialogAction
+							onClick={() => conflictData?.pendingSubmit()}
+							className="bg-amber-600 hover:bg-amber-700 text-white"
+						>
+							Save Anyway
+						</AlertDialogAction>
+					</AlertDialogFooter>
+				</AlertDialogContent>
+			</AlertDialog>
+
+			{/* Bulk Shift Assignment */}
+			<ShiftBulkCreate
+				open={bulkDialogOpen}
+				onOpenChange={setBulkDialogOpen}
+				selectedEvent={selectedEvent || null}
+				staff={staff}
+				onBulkSubmit={handleBulkSubmit}
+			/>
+
+			{/* Swap Request Dialog */}
+			<Dialog open={swapDialogOpen} onOpenChange={setSwapDialogOpen}>
+				<DialogContent className="bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/70 max-w-md">
+					<DialogHeader>
+						<DialogTitle className="text-white">Request Shift Swap</DialogTitle>
+						<DialogDescription className="text-zinc-400">
+							Select a colleague to swap shifts with
+							{swapTargetShift && (
+								<>
+									{" "}
+									for {formatTime(swapTargetShift.start_time)} -{" "}
+									{formatTime(swapTargetShift.end_time)}
+								</>
+							)}
+						</DialogDescription>
+					</DialogHeader>
+					<div className="space-y-4">
+						<div className="space-y-2">
+							<label className="text-sm text-zinc-400">
+								Select Colleague *
+							</label>
+							<Select
+								value={swapSelectedStaff}
+								onValueChange={setSwapSelectedStaff}
+							>
+								<SelectTrigger className="bg-zinc-950 border-zinc-800">
+									<SelectValue placeholder="Choose a staff member" />
+								</SelectTrigger>
+								<SelectContent className="bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/70">
+									{staff
+										.filter(
+											(s) =>
+												swapTargetShift &&
+												s.role === swapTargetShift.role &&
+												s.id !== swapTargetShift.staff_id,
+										)
+										.map((member) => (
+											<SelectItem key={member.id} value={member.id}>
+												{member.profiles?.full_name || "Unknown"}
+											</SelectItem>
+										))}
+								</SelectContent>
+							</Select>
+						</div>
+						<div className="space-y-2">
+							<label className="text-sm text-zinc-400">Reason (optional)</label>
+							<textarea
+								value={swapReason}
+								onChange={(e) => setSwapReason(e.target.value)}
+								placeholder="Why do you want to swap?"
+								className="w-full bg-zinc-950 border border-zinc-800 rounded-md p-2 text-sm text-zinc-300 resize-none"
+								rows={3}
+							/>
+						</div>
+					</div>
+					<DialogFooter>
+						<Button
+							variant="outline"
+							onClick={() => setSwapDialogOpen(false)}
+							className="border-zinc-800"
+						>
+							Cancel
+						</Button>
+						<Button
+							onClick={handleSubmitSwapRequest}
+							disabled={!swapSelectedStaff}
+							className="bg-violet-600 hover:bg-violet-700"
+						>
+							<Send className="h-4 w-4 mr-2" />
+							Send Request
+						</Button>
+					</DialogFooter>
+				</DialogContent>
+			</Dialog>
+
+			{/* Template Apply Dialog */}
+			<ShiftTemplateApplyDialog
+				eventId={selectedEventId}
+				eventDate={selectedEvent?.date || ""}
+				doorTime={selectedEvent?.door_time || null}
+				staff={staff}
+				open={templateDialogOpen}
+				onOpenChange={setTemplateDialogOpen}
+				onApplied={handleTemplateApplied}
+			/>
+		</div>
+	);
 }

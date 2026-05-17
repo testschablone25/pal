@@ -4,107 +4,14 @@ import PDFParser from "pdf2json";
 
 import { generateRiderTasksForArtist } from "@/lib/riders/task-generation";
 import { supabaseConfig } from "@/lib/supabase/config";
-import { renderPdfToImages } from "@/lib/riders/pdf-to-image";
+import { requireAuth } from "@/lib/api-auth";
 
 const supabase = createClient(supabaseConfig.url, supabaseConfig.serviceKey);
 
-const LM_STUDIO_URL = process.env.LM_STUDIO_URL || "http://127.0.0.1:1234/v1";
-const DEFAULT_MODEL = "google/gemma-4-e2b";
+const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY;
+const OPENROUTER_MODEL = "nvidia/nemotron-3-super-120b-a12b:free";
 
-const EXTRACTION_PROMPT = `You are an expert at extracting technical and hospitality rider data from PDF documents. 
-Analyze the PDF text carefully and extract ALL information into the correct JSON fields. Be thorough - do not leave information unextracted.
-
-CRITICAL FIELD MAPPING RULES:
-
-## TECHNICAL RIDER (Stage & Performance Equipment)
-
-### 1. BACKLINE (CRITICAL - DJ Equipment)
-- Extract ALL CDJs, mixers, turntables into backline
-- Examples:
-  - "3x CDJ2000 NEXUS (Linked)" → "cdjs": [{"model": "CDJ2000 NEXUS", "quantity": 3}]
-  - "x1 Allen&Heath 92 or 96 mixer" → "mixer_minimum_requirements": "Allen&Heath 92 or 96 mixer required"
-- If artist specifies "DJ setup" or "DJ equipment" or mentions specific mixer/CDJ models, extract them!
-
-### 2. STAGE SETUP (Monitors, Power, Furniture)
-- "monitors": Extract booth monitors, wedge monitors
-  - Example: "2x high quality booth monitors w/ full volume control" → monitors: [{"type": "Booth Monitors", "quantity": 2, "location": "booth", "notes": "with full volume control"}]
-- "furniture": Tables, laptop stands, DJ booth
-
-### 3. AUDIO (inputs_needed, monitor_type, special_requirements)
-- "inputs_needed": number of audio inputs required
-- "monitor_type": type of monitor (booth, wedge, in-ear, etc.)
-- "special_requirements": any additional audio requirements
-
-### 4. PERFORMANCE REQUIREMENTS - STAFF (CRITICAL - check every rider for these)
-- Look for mentions of: "Sound Technician", "Sound Tech", "Lighting Technician", "Lighting Tech", "Tech Rider", "Stage Manager"
-- Map to boolean fields:
-  - "sound_tech": true if ANY sound technician/staff is mentioned
-  - "lighting_tech": true if ANY lighting technician/staff is mentioned
-  - Add details in _notes fields
-
-### 5. EQUIPMENT (equipment array)
-- "artist_brings": true if artist brings it, false if venue must supply
-- Include quantity and any notes
-
-### 6. TECHNICAL NOTES
-- Any technical specifications, diagrams, special instructions that don't fit above
-- DO NOT put travel/booking info here - that's for hospitality!
-
-## HOSPITALITY RIDER
-
-### 1. TRAVEL REQUIREMENTS (CRITICAL - goes in transport_ground, NOT in tech_rider!)
-This is NOT the technical transport - it's how the artist gets to the venue!
-- "flights_needed": true if artist needs flights
-- "origin_city": departure city (e.g., "Flying from London", "Origin: Berlin")
-- "priority_boarding": true if mentioned
-- "baggage_requirements": hand luggage only, checked bags, seat preferences (window/aisle)
-- "travel_booking_notes": "Travel options must be sent to agent before booking", "Priority boarding and window or aisle seat must be booked for low-budget airlines"
-- Put ALL travel/flight info in transport_ground, NOT in tech_rider!
-
-### 2. GROUND TRANSPORT (transport_ground)
-- "car_service": true if car/van transport needed
-- "pickup_time": pickup time
-- "pickup_location": pickup location (airport, station)
-- "return_required": return transport needed
-- "vehicle_type": type of vehicle
-
-### 3. ACCOMMODATION (nights, room_type, bed_type, hotel_requirements, check_in, check_out)
-- "nights": number of nights required
-- "room_type": Double, Single, Twin, Suite, "Double Room for single use"
-- "bed_type": "double (x2 single beds is not acceptable)", "king size", etc.
-- "hotel_requirements": "minimum 4* hotel", "breakfast included", "free WIFI", "late checkout"
-- "check_in": check-in time
-- "check_out": check-out time (e.g., "late check-out")
-- Extract hotel star requirements and amenities into hotel_requirements!
-
-### 4. CATERING (meals, dietary, drinks, special_requests)
-- "meals": Array of meal descriptions
-- "dietary": Array of dietary requirements (snacks, allergies)
-- "drinks.water": true if still water/bottled water mentioned
-- "special_requests": Buyout options
-
-### 5. HOSPITALITY NOTES
-- Use ONLY for miscellaneous info that doesn't fit above
-
-## EXTRACTION EXAMPLES:
-
-Input: "3x CDJ2000 NEXUS (Linked) - x1 Allen&Heath 92 or 96 mixer"
-Output: "backline": { "cdjs": [{"model": "CDJ2000 NEXUS", "quantity": 3}], "mixer_minimum_requirements": "Allen&Heath 92 or 96 mixer required" }
-
-Input: "2x high quality booth monitors w/ full volume control"
-Output: "stage_setup": { "monitors": [{"type": "Booth Monitors", "quantity": 2, "location": "booth", "notes": "with full volume control"}] }
-
-Input: "Sound Technician and Lighting Technician required for the show"
-Output: "performance_requirements": { "staff": { "sound_tech": true, "sound_tech_notes": "Sound Technician required", "lighting_tech": true, "lighting_tech_notes": "Lighting Technician required" } }
-
-Input: "Travel options must be sent to agent before booking. Hand luggage only. Priority boarding and window or aisle seat must be booked for low-budget airlines."
-Output: "transport_ground": { "flights_needed": true, "priority_boarding": true, "baggage_requirements": "hand luggage only", "travel_booking_notes": "Travel options must be sent to agent before booking. Priority boarding and window or aisle seat must be booked for low-budget airlines." }
-
-Input: "x1 Double Room for single use, minimum of 4*. Bed must be double (x2 single beds is not acceptable). Hotel must include late checkout, breakfast & free WIFI in room."
-Output: "accommodation": { "required": true, "nights": 1, "room_type": "Double Room for single use", "bed_type": "double (x2 single beds is not acceptable)", "hotel_requirements": "minimum 4* hotel with late checkout, breakfast and free WIFI", "check_out": "late checkout" }
-
-Input: "x1 hot, substantial, nutritious meal to be served at the artists' discretion. Snacks: bananas, nuts (NO hazelnuts and almonds), dark chocolate. Alternatively, promoter agrees to pay £45/€50 buyout per person per day."
-Output: "catering": { "meals": ["x1 hot substantial nutritious meal at artist's discretion"], "dietary": ["bananas", "nuts (NO hazelnuts and almonds)", "dark chocolate"], "special_requests": "Promoter can pay £45/€50 buyout per person per day instead of catering" }
+const EXTRACTION_PROMPT = `Extract technical and hospitality rider data from the PDF text.
 
 Return JSON only. No markdown. No commentary.
 
@@ -113,7 +20,7 @@ Schema:
   "tech_rider": {
     "equipment": [{ "name": "", "quantity": 1, "artist_brings": false, "notes": "" }],
     "stage_setup": {
-      "monitors": [{ "type": "", "quantity": 0, "location": "", "notes": "" }],
+      "monitors": [{ "type": "", "quantity": 0, "location": "" }],
       "power": [{ "type": "", "quantity": 0 }],
       "furniture": [{ "type": "", "quantity": 0, "dimensions": "" }]
     },
@@ -127,6 +34,12 @@ Schema:
       "monitor_type": "booth",
       "preferred_mixers": [{ "model": "", "required_features": "", "priority": 1 }],
       "special_requirements": ""
+    },
+    "transport": {
+      "flights_needed": false,
+      "priority_boarding": false,
+      "baggage_requirements": "",
+      "origin_city": ""
     },
     "technical_notes": "",
     "referenced_images": [""],
@@ -152,8 +65,6 @@ Schema:
       "required": false,
       "nights": 0,
       "room_type": "",
-      "bed_type": "",
-      "hotel_requirements": "",
       "check_in": "",
       "check_out": "",
       "location_preference": ""
@@ -170,11 +81,6 @@ Schema:
       "special_requests": ""
     },
     "transport_ground": {
-      "flights_needed": false,
-      "origin_city": "",
-      "priority_boarding": false,
-      "baggage_requirements": "",
-      "travel_booking_notes": "",
       "car_service": false,
       "pickup_time": "",
       "pickup_location": "",
@@ -1168,166 +1074,6 @@ async function extractPdfText(buffer: Buffer): Promise<string> {
   });
 }
 
-/**
- * Assess text quality to determine if vision fallback is needed
- */
-interface QualityMetrics {
-  characterCount: number;
-  controlCharRatio: number;
-  wordDensity: number;
-  quality: 'high' | 'medium' | 'low' | 'failed';
-}
-
-function assessTextQuality(text: string): QualityMetrics {
-  const controlChars = (text.match(/[\x00-\x1F\x7F]/g) || []).length;
-  const controlCharRatio = text.length > 0 ? controlChars / text.length : 1;
-  
-  // Count recognizable words (alphanumeric sequences > 2 chars)
-  const words = text.match(/[a-zA-Z0-9]{3,}/g) || [];
-  const wordDensity = text.length > 0 ? words.length / (text.length / 5) : 0;
-  
-  let quality: 'high' | 'medium' | 'low' | 'failed' = 'low';
-  
-  if (text.length < 50) {
-    quality = 'failed';
-  } else if (text.length < 150 || wordDensity < 0.2) {
-    quality = 'low';
-  } else if (text.length < 500) {
-    quality = 'medium';
-  } else {
-    quality = 'high';
-  }
-  
-  return {
-    characterCount: text.length,
-    controlCharRatio,
-    wordDensity,
-    quality,
-  };
-}
-
-/**
- * Extract from PDF using vision model
- */
-async function extractWithVision(
-  buffer: Buffer,
-  model: string
-): Promise<ExtractionResult | null> {
-  try {
-    // Render ALL pages to images
-    const pages = await renderPdfToImages(buffer, { scale: 2.0 });
-    
-    if (pages.length === 0) {
-      console.error("[Vision] Could not render PDF to image");
-      return null;
-    }
-    
-    console.log(`[Vision] Rendering ${pages.length} page(s)`);
-    
-    // Send all page images to vision model
-    const imageMessages = pages.map((page) => ({
-      type: 'image_url' as const,
-      image_url: { url: `data:image/png;base64,${page.imageData}` },
-    }));
-    
-    // Try vision model first
-    const response = await fetch(`${LM_STUDIO_URL}/chat/completions`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        model,
-        messages: [
-          { role: 'system', content: EXTRACTION_PROMPT },
-          {
-            role: 'user',
-            content: [
-              { type: 'text', text: `Extract rider data from these ${pages.length} PDF page images:` },
-              ...imageMessages
-            ]
-          }
-        ],
-        temperature: 0.1,
-        max_tokens: 4000,
-      }),
-      signal: AbortSignal.timeout(180000),
-    });
-    
-    if (!response.ok) {
-      console.error(`[Vision] HTTP ${response.status}`);
-      return null;
-    }
-    
-    const data = await response.json();
-    const content = data.choices?.[0]?.message?.content;
-    
-    if (!content) {
-      console.error("[Vision] No content in response");
-      return null;
-    }
-    
-    const parsed = extractJsonPayload(content);
-    if (!parsed) {
-      return null;
-    }
-    
-    return buildExtractionResult(parsed, '');
-  } catch (error) {
-    console.error("[Vision] Extraction failed:", error instanceof Error ? error.message : 'Unknown error');
-    return null;
-  }
-}
-
-/**
- * Hybrid extraction: try text first, fallback to vision if needed
- */
-async function extractRiderHybrid(
-  buffer: Buffer,
-  model: string
-): Promise<{
-  extractedData: ExtractionResult | null;
-  method: 'text' | 'vision';
-  quality: QualityMetrics;
-  warnings: string[];
-}> {
-  const warnings: string[] = [];
-  
-  // Step 1: Try text extraction
-  console.log("[Hybrid] Step 1: Trying text extraction...");
-  const pdfText = await extractPdfText(buffer);
-  const quality = assessTextQuality(pdfText);
-  
-  console.log(`[Hybrid] Text extraction: ${quality.quality} (${quality.characterCount} chars)`);
-  
-  // Step 2: Decide whether to use vision
-  const shouldUseVision =
-    quality.quality === 'failed' ||
-    quality.quality === 'low';
-  
-  if (!shouldUseVision) {
-    console.log("[Hybrid] Using text extraction (good quality)");
-    const extractedData = await extractWithLMStudio(pdfText);
-    return {
-      extractedData,
-      method: 'text',
-      quality,
-      warnings,
-    };
-  }
-  
-  // Step 3: Use vision model
-  console.log("[Hybrid] Text quality low, using vision model...");
-  warnings.push('Text extraction failed, using vision model');
-  
-  const extractedData = await extractWithVision(buffer, model);
-  
-  return {
-    extractedData,
-    method: 'vision',
-    quality,
-    warnings,
-  };
-}
-
 function extractJsonPayload(content: string): Record<string, unknown> | null {
   const cleaned = content.replace(/```json/gi, "").replace(/```/g, "").trim();
   const firstBrace = cleaned.indexOf("{");
@@ -1343,7 +1089,6 @@ function extractJsonPayload(content: string): Record<string, unknown> | null {
     const parsed = JSON.parse(jsonString);
     return isRecord(parsed) ? parsed : null;
   } catch (error) {
-    console.error("[LM Studio] JSON parse failed:", error);
     return null;
   }
 }
@@ -1458,29 +1203,24 @@ function detectStaffRequirements(pdfText: string): {
   };
 }
 
-async function extractWithLMStudio(pdfText: string): Promise<ExtractionResult | null> {
+async function extractOpenRouter(pdfText: string): Promise<ExtractionResult> {
+  console.log("[extractOpenRouter] OPENROUTER_API_KEY exists:", !!OPENROUTER_API_KEY);
+
+  if (!OPENROUTER_API_KEY) {
+    throw new Error("OPENROUTER_API_KEY not configured");
+  }
+
   try {
-    let modelName = process.env.LM_STUDIO_MODEL || DEFAULT_MODEL;
-
-    try {
-      const modelsResponse = await fetch(`${LM_STUDIO_URL}/models`, {
-        signal: AbortSignal.timeout(3000),
-      });
-      if (modelsResponse.ok) {
-        const modelsData = await modelsResponse.json();
-        if (Array.isArray(modelsData.data) && modelsData.data[0]?.id) {
-          modelName = modelsData.data[0].id as string;
-        }
-      }
-    } catch {
-      // Use fallback model
-    }
-
-    const response = await fetch(`${LM_STUDIO_URL}/chat/completions`, {
+    const response = await fetch("https://openrouter.ai/v1/chat/completions", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${OPENROUTER_API_KEY}`,
+        "HTTP-Referer": "https://pal-steel.vercel.app",
+        "X-Title": "PAL Rider Extraction",
+      },
       body: JSON.stringify({
-        model: modelName,
+        model: OPENROUTER_MODEL,
         messages: [
           { role: "system", content: EXTRACTION_PROMPT },
           { role: "user", content: pdfText.slice(0, 12000) },
@@ -1493,33 +1233,30 @@ async function extractWithLMStudio(pdfText: string): Promise<ExtractionResult | 
 
     if (!response.ok) {
       const errorText = await response.text();
-      console.error("[LM Studio] HTTP error:", response.status, errorText);
-      return buildExtractionResult({}, pdfText);
+      throw new Error(`OpenRouter API error ${response.status}: ${errorText}`);
     }
 
     const data = await response.json();
     const content = data.choices?.[0]?.message?.content;
 
     if (typeof content !== "string" || !content.trim()) {
-      console.error("[LM Studio] Empty completion");
-      return buildExtractionResult({}, pdfText);
+      throw new Error("Empty completion from OpenRouter");
     }
 
     const parsed = extractJsonPayload(content);
     if (!parsed) {
-      return buildExtractionResult({}, pdfText);
+      throw new Error("Failed to parse JSON from OpenRouter response");
     }
 
     return buildExtractionResult(parsed, pdfText);
   } catch (error) {
-    console.error("LM Studio extraction failed:", error);
-    return buildExtractionResult({}, pdfText);
+    console.error("[extractOpenRouter] Extraction failed:", error);
+    throw error;
   }
 }
 
 function getWarnings(data: ExtractionResult): string[] {
   const warnings: string[] = [];
-
   if (data.tech_rider.transport?.priority_boarding) {
     warnings.push("Priority boarding required");
   }
@@ -1546,6 +1283,9 @@ function getWarnings(data: ExtractionResult): string[] {
 
 export async function POST(request: NextRequest) {
   try {
+    const auth = await requireAuth(request, "ARTISTS_WRITE");
+    if (!auth.authorized) return auth.response;
+
     const formData = await request.formData();
     const file = formData.get("file");
     const artistId = formData.get("artist_id");
@@ -1560,37 +1300,23 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Only PDF files are supported" }, { status: 400 });
     }
 
-    try {
-      const healthCheck = await fetch(`${LM_STUDIO_URL}/models`, {
-        signal: AbortSignal.timeout(5000),
-      });
-      if (!healthCheck.ok) {
-        console.warn("[LM Studio] Health check failed, using PDF fallback extraction only");
-      }
-    } catch {
-      console.warn("[LM Studio] Unreachable, using PDF fallback extraction only");
+    const buffer = Buffer.from(await file.arrayBuffer());
+    const pdfText = await extractPdfText(buffer);
+
+    if (pdfText.length < 50) {
+      return NextResponse.json({ error: "PDF text extraction failed" }, { status: 400 });
     }
 
-    const buffer = Buffer.from(await file.arrayBuffer());
-    
-    // Use hybrid extraction: text first, vision fallback
-    const { extractedData, method, quality, warnings } = await extractRiderHybrid(
-      buffer,
-      DEFAULT_MODEL
-    );
-
-    if (!extractedData) {
+    let extracted: ExtractionResult | null = null;
+    try {
+      extracted = await extractOpenRouter(pdfText);
+    } catch (error) {
+      console.error("[POST] Rider extraction failed:", error);
       return NextResponse.json(
-        {
-          error: "Failed to extract rider data",
-          details: `Extraction method: ${method}, Quality: ${quality.quality}`,
-          warnings,
-        },
+        { error: error instanceof Error ? error.message : "Failed to extract rider data" },
         { status: 500 },
       );
     }
-
-    const extracted = extractedData;
 
     const updateData: Record<string, unknown> = {};
     if (riderType === "tech" || riderType === "both") {
@@ -1664,14 +1390,11 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      extractionMethod: method,
-      textQuality: quality.quality,
-      textCharacters: quality.characterCount,
       tech_rider: extracted.tech_rider,
       hospitality_rider: extracted.hospitality_rider,
       tasks_created: tasksCreated,
       task_events: taskEvents,
-      warnings: [...warnings, ...extractionWarnings, ...taskWarnings],
+      warnings: [...extractionWarnings, ...taskWarnings],
     });
   } catch (error) {
     console.error("Rider error:", error);
@@ -1679,41 +1402,39 @@ export async function POST(request: NextRequest) {
   }
 }
 
-export async function GET() {
+export async function GET(request: NextRequest) {
+  const auth = await requireAuth(request, "ARTISTS_READ");
+  if (!auth.authorized) return auth.response;
+
+  if (!OPENROUTER_API_KEY) {
+    return NextResponse.json({
+      status: "disconnected",
+      message: "OPENROUTER_API_KEY not configured",
+    });
+  }
+
   try {
-    const response = await fetch(`${LM_STUDIO_URL}/models`, {
+    const response = await fetch("https://openrouter.ai/v1/models", {
       signal: AbortSignal.timeout(5000),
+      headers: {
+        "Authorization": `Bearer ${OPENROUTER_API_KEY}`,
+      },
     });
 
     if (!response.ok) {
-      return NextResponse.json({
-        status: "disconnected",
-        message: "LM Studio not running on port 1234",
-      });
+      throw new Error(`OpenRouter API error ${response.status}`);
     }
 
     const data = await response.json();
-    const models = Array.isArray(data.data) ? data.data.map((model: { id: string }) => model.id) : [];
-    
-    // Check for vision models
-    const visionModels = models.filter((m: string) => 
-      m.toLowerCase().includes('llava') || 
-      m.toLowerCase().includes('cogvlm') ||
-      m.toLowerCase().includes('qwen-vl') ||
-      m.toLowerCase().includes('vision')
-    );
-    
     return NextResponse.json({
       status: "connected",
-      models,
-      visionModels,
-      hasVisionSupport: visionModels.length > 0,
-      defaultModel: DEFAULT_MODEL,
+      provider: "openrouter",
+      model: OPENROUTER_MODEL,
     });
-  } catch {
+  } catch (error) {
     return NextResponse.json({
       status: "disconnected",
-      message: "LM Studio not accessible",
+      message: error instanceof Error ? error.message : "Failed to connect to OpenRouter",
     });
   }
 }

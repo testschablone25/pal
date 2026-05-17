@@ -1,23 +1,27 @@
 // Staff CRUD API - Single Staff Member
 // Phase 3 - Nightclub Booking System
 
-import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@supabase/supabase-js';
-import { supabaseConfig } from '@/lib/supabase/config';
+import { NextRequest, NextResponse } from "next/server";
+import { createClient } from "@supabase/supabase-js";
+import { supabaseConfig } from "@/lib/supabase/config";
+import { requireAuth } from "@/lib/api-auth";
 
 const supabase = createClient(supabaseConfig.url, supabaseConfig.serviceKey);
 
 // GET /api/staff/[id] - Get single staff member
 export async function GET(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+	request: NextRequest,
+	{ params }: { params: Promise<{ id: string }> },
 ) {
-  try {
-    const { id } = await params;
+	try {
+		const auth = await requireAuth(request, "STAFF_READ");
+		if (!auth.authorized) return auth.response;
 
-    const { data, error } = await supabase
-      .from('staff')
-      .select(`
+		const { id } = await params;
+
+		const { data, error } = await supabase
+			.from("staff")
+			.select(`
         *,
         profiles:profile_id (
           id,
@@ -26,105 +30,100 @@ export async function GET(
           phone
         )
       `)
-      .eq('id', id)
-      .single();
+			.eq("id", id)
+			.single();
 
-    if (error) {
-      if (error.code === 'PGRST116') {
-        return NextResponse.json(
-          { error: 'Staff member not found' },
-          { status: 404 }
-        );
-      }
-      return NextResponse.json(
-        { error: error.message },
-        { status: 500 }
-      );
-    }
+		if (error) {
+			if (error.code === "PGRST116") {
+				return NextResponse.json(
+					{ error: "Staff member not found" },
+					{ status: 404 },
+				);
+			}
+			return NextResponse.json({ error: error.message }, { status: 500 });
+		}
 
-    return NextResponse.json(data);
-  } catch (error) {
-    console.error('Error fetching staff member:', error);
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
-  }
+		return NextResponse.json(data);
+	} catch (error) {
+		console.error("Error fetching staff member:", error);
+		return NextResponse.json(
+			{ error: "Internal server error" },
+			{ status: 500 },
+		);
+	}
 }
 
 // PUT /api/staff/[id] - Update staff member
 export async function PUT(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+	request: NextRequest,
+	{ params }: { params: Promise<{ id: string }> },
 ) {
-  try {
-    const { id } = await params;
-    const body = await request.json();
+	try {
+		const auth = await requireAuth(request, "STAFF_WRITE");
+		if (!auth.authorized) return auth.response;
 
-    const {
-      profile_id,
-      role,
-      contract_type,
-      is_minor,
-      hourly_rate
-    } = body;
+		const { id } = await params;
+		const body = await request.json();
 
-    const { data, error } = await supabase
-      .from('staff')
-      .update({
-        profile_id,
-        role,
-        contract_type,
-        is_minor,
-        hourly_rate: hourly_rate ? parseFloat(hourly_rate) : null
-      })
-      .eq('id', id)
-      .select()
-      .single();
+		const { profile_id, role, contract_type, is_minor } = body;
 
-    if (error) {
-      return NextResponse.json(
-        { error: error.message },
-        { status: 400 }
-      );
-    }
+		const { data, error } = await supabase
+			.from("staff")
+			.update({
+				profile_id,
+				role,
+				contract_type,
+				is_minor,
+			})
+			.eq("id", id)
+			.select()
+			.single();
 
-    return NextResponse.json(data);
-  } catch (error) {
-    console.error('Error updating staff member:', error);
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
-  }
+		if (error) {
+			return NextResponse.json({ error: error.message }, { status: 400 });
+		}
+
+		return NextResponse.json(data);
+	} catch (error) {
+		console.error("Error updating staff member:", error);
+		return NextResponse.json(
+			{ error: "Internal server error" },
+			{ status: 500 },
+		);
+	}
 }
 
-// DELETE /api/staff/[id] - Delete staff member
+// DELETE /api/staff/[id] - Delete staff member (cascades shifts + availability)
 export async function DELETE(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+	request: NextRequest,
+	{ params }: { params: Promise<{ id: string }> },
 ) {
-  try {
-    const { id } = await params;
+	try {
+		const auth = await requireAuth(request, "STAFF_WRITE");
+		if (!auth.authorized) return auth.response;
 
-    const { error } = await supabase
-      .from('staff')
-      .delete()
-      .eq('id', id);
+		const { id } = await params;
 
-    if (error) {
-      return NextResponse.json(
-        { error: error.message },
-        { status: 400 }
-      );
-    }
+		// Cascade-delete related records first
+		await supabase.from("availability").delete().eq("staff_id", id);
+		await supabase
+			.from("availability")
+			.update({ set_by: null })
+			.eq("set_by", id);
+		await supabase.from("shifts").delete().eq("staff_id", id);
 
-    return NextResponse.json({ success: true });
-  } catch (error) {
-    console.error('Error deleting staff member:', error);
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
-  }
+		const { error } = await supabase.from("staff").delete().eq("id", id);
+
+		if (error) {
+			return NextResponse.json({ error: error.message }, { status: 400 });
+		}
+
+		return NextResponse.json({ success: true });
+	} catch (error) {
+		console.error("Error deleting staff member:", error);
+		return NextResponse.json(
+			{ error: "Internal server error" },
+			{ status: 500 },
+		);
+	}
 }

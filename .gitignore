@@ -47,7 +47,19 @@ nul
 
 # Sisyphus
 .sisyphus/
+<<<<<<< HEAD
 
 # Worktrees
 .worktrees/~/.pi/
 *.db
+=======
+.vercel
+.worktrees
+.env.vercel
+
+# Project config
+.pi-lens/
+
+# Build artifacts
+tsconfig.tsbuildinfo
+>>>>>>> 9f1dc6034329c8b20179c5229a33f39bb70731a0

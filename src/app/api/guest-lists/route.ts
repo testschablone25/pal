@@ -1,9 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
+import { requireAuth } from '@/lib/api-auth';
 
 // GET /api/guest-lists - Get all guest lists (optionally filtered by event)
 export async function GET(request: NextRequest) {
   try {
+    const auth = await requireAuth(request, 'GUEST_LISTS_READ');
+    if (!auth.authorized) return auth.response;
+
     const supabase = await createClient();
     const { searchParams } = new URL(request.url);
     const eventId = searchParams.get('event_id');
@@ -37,14 +41,10 @@ export async function GET(request: NextRequest) {
 // POST /api/guest-lists - Create a new guest list
 export async function POST(request: NextRequest) {
   try {
+    const auth = await requireAuth(request, 'GUEST_LISTS_WRITE');
+    if (!auth.authorized) return auth.response;
+
     const supabase = await createClient();
-    
-    // Get current user
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
-    
-    if (authError || !user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
 
     const body = await request.json();
     const { event_id, name } = body;
@@ -61,7 +61,7 @@ export async function POST(request: NextRequest) {
       .insert({
         event_id,
         name,
-        created_by: user.id,
+        created_by: auth.userId,
       })
       .select()
       .single();

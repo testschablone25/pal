@@ -1,414 +1,437 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from "react";
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Textarea } from '@/components/ui/textarea';
-import { Separator } from '@/components/ui/separator';
-import { TaskForm } from './task-form';
-import {
-  Edit,
-  Trash2,
-  MessageSquare,
-  Calendar,
-  User,
-  Loader2,
-  Send,
-} from 'lucide-react';
-import { cn } from '@/lib/utils';
-
-interface Task {
-  id: string;
-  title: string;
-  description: string | null;
-  status: 'needs_refining' | 'todo' | 'in_progress' | 'review' | 'done' | 'cancelled';
-  priority: 'low' | 'medium' | 'high' | 'urgent';
-  assignee_id: string | null;
-  event_id: string | null;
-  created_at: string;
-  updated_at: string;
-  assignee?: {
-    id: string;
-    full_name: string | null;
-    email: string | null;
-    avatar_url: string | null;
-  } | null;
-  event?: {
-    id: string;
-    name: string;
-    date: string;
-  } | null;
-  comment_count?: number;
-}
-
-interface Comment {
-  id: string;
-  task_id: string;
-  author_id: string | null;
-  content: string;
-  created_at: string;
-  author?: {
-    id: string;
-    full_name: string | null;
-    email: string | null;
-    avatar_url: string | null;
-  } | null;
-}
+	Dialog,
+	DialogContent,
+	DialogHeader,
+	DialogTitle,
+} from "@/components/ui/dialog";
+import { TaskForm } from "./task-form";
+import { TaskDetailView } from "./task-detail/task-detail-view";
+import { createClient } from "@/lib/supabase/browser";
+import { useI18n } from "@/lib/i18n";
+import { useToast } from "@/hooks/use-toast";
+import type { Task, Comment, Profile, Event } from "./task-detail/types";
 
 interface TaskDetailDialogProps {
-  task: Task | null;
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  onTaskUpdated: (task: Task) => void;
-  onTaskDeleted: (taskId: string) => void;
-}
-
-const priorityConfig = {
-  low: {
-    label: 'Low',
-    className: 'bg-zinc-600/20 text-zinc-400 border-zinc-600/50',
-  },
-  medium: {
-    label: 'Medium',
-    className: 'bg-blue-600/20 text-blue-400 border-blue-600/50',
-  },
-  high: {
-    label: 'High',
-    className: 'bg-orange-600/20 text-orange-400 border-orange-600/50',
-  },
-  urgent: {
-    label: 'Urgent',
-    className: 'bg-red-600/20 text-red-400 border-red-600/50',
-  },
-};
-
-const statusConfig = {
-  needs_refining: { label: 'Needs Refining', className: 'bg-orange-600/20 text-orange-400 border-orange-600/50' },
-  todo: { label: 'To Do', className: 'bg-zinc-600/20 text-zinc-400 border-zinc-600/50' },
-  in_progress: { label: 'In Progress', className: 'bg-blue-600/20 text-blue-400 border-blue-600/50' },
-  review: { label: 'Review', className: 'bg-yellow-600/20 text-yellow-400 border-yellow-600/50' },
-  done: { label: 'Done', className: 'bg-green-600/20 text-green-400 border-green-600/50' },
-  cancelled: { label: 'Cancelled', className: 'bg-red-600/20 text-red-400 border-red-600/50' },
-};
-
-function getInitials(name: string | null): string {
-  if (!name) return '?';
-  return name
-    .split(' ')
-    .map(n => n[0])
-    .join('')
-    .toUpperCase()
-    .slice(0, 2);
-}
-
-function formatDate(dateString: string): string {
-  return new Date(dateString).toLocaleDateString('en-US', {
-    month: 'short',
-    day: 'numeric',
-    year: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
-  });
+	task: Task | null;
+	open: boolean;
+	onOpenChange: (open: boolean) => void;
+	onTaskUpdated: (task: Task) => void;
+	onTaskDeleted: (taskId: string) => void;
 }
 
 export function TaskDetailDialog({
-  task,
-  open,
-  onOpenChange,
-  onTaskUpdated,
-  onTaskDeleted,
+	task,
+	open,
+	onOpenChange,
+	onTaskUpdated,
+	onTaskDeleted,
 }: TaskDetailDialogProps) {
-  const [isEditing, setIsEditing] = useState(false);
-  const [comments, setComments] = useState<Comment[]>([]);
-  const [newComment, setNewComment] = useState('');
-  const [loadingComments, setLoadingComments] = useState(false);
-  const [submittingComment, setSubmittingComment] = useState(false);
-  const [deleting, setDeleting] = useState(false);
+	const { t } = useI18n();
+	const { toast } = useToast();
 
-  useEffect(() => {
-    if (open && task) {
-      fetchComments();
-    }
-  }, [open, task]);
+	const [isEditing, setIsEditing] = useState(false);
+	const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+	const [comments, setComments] = useState<Comment[]>([]);
+	const [loadingComments, setLoadingComments] = useState(false);
+	const [deleting, setDeleting] = useState(false);
+	const [approving, setApproving] = useState(false);
+	const [rejecting, setRejecting] = useState(false);
+	const [blocking, setBlocking] = useState(false);
+	const [profiles, setProfiles] = useState<Profile[]>([]);
+	const [events, setEvents] = useState<Event[]>([]);
+	const [fullTask, setFullTask] = useState<Task | null>(null);
+	const [parentTaskTitle, setParentTaskTitle] = useState<string | null>(null);
 
-  const fetchComments = async () => {
-    if (!task) return;
+	useEffect(() => {
+		if (open && task) {
+			fetchComments();
+			getCurrentUser();
+			fetchProfiles();
+			fetchEvents();
+			fetchFullTask();
+		} else {
+			setFullTask(null);
+			setParentTaskTitle(null);
+			setIsEditing(false);
+		}
+	}, [open, task]);
 
-    setLoadingComments(true);
-    try {
-      const response = await fetch(`/api/tasks/${task.id}/comments`);
-      const data = await response.json();
-      setComments(data.comments || []);
-    } catch (error) {
-      console.error('Failed to fetch comments:', error);
-    } finally {
-      setLoadingComments(false);
-    }
-  };
+	const getCurrentUser = async () => {
+		try {
+			const supabase = createClient();
+			const { data } = await supabase.auth.getUser();
+			if (data?.user) setCurrentUserId(data.user.id);
+		} catch (error) {
+			console.error("Failed to get current user:", error);
+		}
+	};
 
-  const handleAddComment = async () => {
-    if (!task || !newComment.trim()) return;
+	const fetchComments = async () => {
+		if (!task) return;
+		setLoadingComments(true);
+		try {
+			const response = await fetch(`/api/tasks/${task.id}/comments`);
+			const data = await response.json();
+			setComments(data.comments || []);
+		} catch (error) {
+			console.error("Failed to fetch comments:", error);
+		} finally {
+			setLoadingComments(false);
+		}
+	};
 
-    setSubmittingComment(true);
-    try {
-      const response = await fetch(`/api/tasks/${task.id}/comments`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ content: newComment }),
-      });
+	const fetchProfiles = async () => {
+		try {
+			const response = await fetch("/api/profiles");
+			const data = await response.json();
+			setProfiles(data.profiles || []);
+		} catch (error) {
+			console.error("Failed to fetch profiles:", error);
+		}
+	};
 
-      if (!response.ok) {
-        throw new Error('Failed to add comment');
-      }
+	const fetchEvents = async () => {
+		try {
+			const response = await fetch("/api/events");
+			const data = await response.json();
+			setEvents(data.events || []);
+		} catch (error) {
+			console.error("Failed to fetch events:", error);
+		}
+	};
 
-      const comment = await response.json();
-      setComments([...comments, comment]);
-      setNewComment('');
-    } catch (error) {
-      console.error('Error adding comment:', error);
-    } finally {
-      setSubmittingComment(false);
-    }
-  };
+	const fetchFullTask = async () => {
+		if (!task) return;
+		try {
+			const response = await fetch(`/api/tasks/${task.id}`);
+			if (!response.ok) throw new Error("Failed to fetch full task");
+			const fetched = await response.json();
+			setFullTask(fetched);
+			if (fetched.parent_task) {
+				setParentTaskTitle(fetched.parent_task.title);
+			}
+		} catch (err) {
+			console.error("Failed to fetch full task:", err);
+			setFullTask(null);
+		}
+	};
 
-  const handleUpdateTask = async (values: {
-    title: string;
-    description?: string;
-    status: 'needs_refining' | 'todo' | 'in_progress' | 'review' | 'done' | 'cancelled';
-    priority: 'low' | 'medium' | 'high' | 'urgent';
-    assignee_id?: string;
-    event_id?: string;
-  }) => {
-    if (!task) return;
+	const handleFieldSave = async (field: string, value: string) => {
+		if (!task || !currentUserId) return;
+		try {
+			const response = await fetch(`/api/tasks/${task.id}`, {
+				method: "PUT",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify({
+					[field]: value === "" && field !== "title" ? null : value,
+					changed_by: currentUserId,
+				}),
+			});
+			if (!response.ok) throw new Error("Failed to update");
+			const updated = await response.json();
+			onTaskUpdated(updated);
+		} catch (error) {
+			console.error("Field save failed:", error);
+			toast({
+				variant: "destructive",
+				title: "Error",
+				description:
+					error instanceof Error ? error.message : "Failed to update field.",
+			});
+		}
+	};
 
-    try {
-      const response = await fetch(`/api/tasks/${task.id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(values),
-      });
+	const handleApprove = async () => {
+		if (!task || !currentUserId) return;
+		setApproving(true);
+		try {
+			const response = await fetch(`/api/tasks/${task.id}/approve`, {
+				method: "POST",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify({ approved_by: currentUserId }),
+			});
+			if (!response.ok) throw new Error("Failed to approve");
+			const updatedTask = await response.json();
+			onTaskUpdated({ ...updatedTask, task_items: task.task_items });
+			toast({
+				title: "Task approved",
+				description: "The task has been approved.",
+			});
+		} catch (error) {
+			console.error("Error approving task:", error);
+			toast({
+				variant: "destructive",
+				title: "Error",
+				description:
+					error instanceof Error ? error.message : "Failed to approve.",
+			});
+		} finally {
+			setApproving(false);
+		}
+	};
 
-      if (!response.ok) {
-        throw new Error('Failed to update task');
-      }
+	const handleReject = async (reason: string) => {
+		if (!task || !currentUserId) return;
+		setRejecting(true);
+		try {
+			const response = await fetch(`/api/tasks/${task.id}/reject`, {
+				method: "POST",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify({ rejected_by: currentUserId, reason }),
+			});
+			if (!response.ok) throw new Error("Failed to reject");
+			const updatedTask = await response.json();
+			onTaskUpdated({ ...updatedTask, task_items: task.task_items });
+			toast({
+				title: "Task rejected",
+				description: "The task has been rejected.",
+			});
+		} catch (error) {
+			console.error("Error rejecting task:", error);
+			toast({
+				variant: "destructive",
+				title: "Error",
+				description:
+					error instanceof Error ? error.message : "Failed to reject.",
+			});
+		} finally {
+			setRejecting(false);
+		}
+	};
 
-      const updatedTask = await response.json();
-      onTaskUpdated(updatedTask);
-      setIsEditing(false);
-    } catch (error) {
-      console.error('Error updating task:', error);
-      throw error;
-    }
-  };
+	const handleToggleBlock = async (reason: string) => {
+		if (!task || !currentUserId) return;
+		const shouldBlock = !task.blocked;
+		setBlocking(true);
+		try {
+			const response = await fetch(`/api/tasks/${task.id}/block`, {
+				method: "POST",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify({
+					blocked: shouldBlock,
+					blocked_reason: shouldBlock ? reason : null,
+					changed_by: currentUserId,
+				}),
+			});
+			if (!response.ok) throw new Error("Failed to update block");
+			const updatedTask = await response.json();
+			onTaskUpdated({ ...updatedTask, task_items: task.task_items });
+			toast({
+				title: shouldBlock ? "Task blocked" : "Task unblocked",
+			});
+		} catch (error) {
+			console.error("Error toggling block:", error);
+			toast({
+				variant: "destructive",
+				title: "Error",
+				description:
+					error instanceof Error
+						? error.message
+						: "Failed to update block status.",
+			});
+		} finally {
+			setBlocking(false);
+		}
+	};
 
-  const handleDeleteTask = async () => {
-    if (!task) return;
+	const handleDelete = async () => {
+		if (!task) return;
+		setDeleting(true);
+		try {
+			const response = await fetch(`/api/tasks/${task.id}`, {
+				method: "DELETE",
+			});
+			if (!response.ok) throw new Error("Failed to delete task");
+			onTaskDeleted(task.id);
+			onOpenChange(false);
+			toast({ title: "Task deleted" });
+		} catch (error) {
+			console.error("Error deleting task:", error);
+			toast({
+				variant: "destructive",
+				title: "Error",
+				description:
+					error instanceof Error ? error.message : "Failed to delete.",
+			});
+		} finally {
+			setDeleting(false);
+		}
+	};
 
-    setDeleting(true);
-    try {
-      const response = await fetch(`/api/tasks/${task.id}`, {
-        method: 'DELETE',
-      });
+	const handleAddItems = async (itemIds: string[]) => {
+		if (!task || !currentUserId) return;
+		const existingItems = (fullTask || task).task_items || [];
+		const newItems = [
+			...existingItems.map((ti) => ({
+				item_id: ti.item_id,
+				goal_sub_location_id: ti.goal_sub_location_id,
+			})),
+			...itemIds.map((id) => ({ item_id: id, goal_sub_location_id: null })),
+		];
 
-      if (!response.ok) {
-        throw new Error('Failed to delete task');
-      }
+		try {
+			const response = await fetch(`/api/tasks/${task.id}`, {
+				method: "PUT",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify({
+					items: newItems,
+					changed_by: currentUserId,
+				}),
+			});
+			if (!response.ok) {
+				const errBody = await response.json().catch(() => ({}));
+				throw new Error(errBody.error || "Failed to add items");
+			}
+			const updatedTask = await response.json();
+			onTaskUpdated(updatedTask);
+			toast({
+				title: "Item added",
+				description: "Item has been linked to this task.",
+			});
+		} catch (error) {
+			console.error("Error adding items:", error);
+			toast({
+				variant: "destructive",
+				title: "Error",
+				description:
+					error instanceof Error ? error.message : "Failed to add items.",
+			});
+			throw error;
+		}
+	};
 
-      onTaskDeleted(task.id);
-      onOpenChange(false);
-    } catch (error) {
-      console.error('Error deleting task:', error);
-    } finally {
-      setDeleting(false);
-    }
-  };
+	const handleUpdateTask = async (values: Record<string, unknown>) => {
+		if (!task) return;
+		try {
+			const response = await fetch(`/api/tasks/${task.id}`, {
+				method: "PUT",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify(values),
+			});
+			if (!response.ok) {
+				const errBody = await response.json().catch(() => ({}));
+				throw new Error(
+					errBody.error || `Failed to update (${response.status})`,
+				);
+			}
+			const updatedTask = await response.json();
+			onTaskUpdated(updatedTask);
+			setIsEditing(false);
+			toast({ title: "Task updated" });
+		} catch (error) {
+			console.error("Error updating task:", error);
+			toast({
+				variant: "destructive",
+				title: "Error",
+				description:
+					error instanceof Error ? error.message : "Failed to update task.",
+			});
+			throw error;
+		}
+	};
 
-  if (!task) return null;
+	const handleCreateSubtask = async (title: string) => {
+		if (!task || !currentUserId) return;
+		const subtaskAssigneeIds = task.assignees
+			? task.assignees.map((a) => a.id)
+			: task.assignee_id
+				? [task.assignee_id]
+				: [];
+		const response = await fetch("/api/tasks", {
+			method: "POST",
+			headers: { "Content-Type": "application/json" },
+			body: JSON.stringify({
+				title,
+				status: "todo",
+				assignee_id: task.assignee_id,
+				assignee_ids: subtaskAssigneeIds,
+				event_id: task.event_id,
+				priority: task.priority,
+				parent_task_id: task.id,
+				created_by: currentUserId,
+			}),
+		});
+		if (!response.ok) throw new Error("Failed to create sub-task");
+		const newSubtask = await response.json();
+		onTaskUpdated({
+			...task,
+			subtasks: [...(task.subtasks || []), newSubtask],
+		});
+		toast({ title: "Sub-task created", description: `${title} created.` });
+	};
 
-  const priority = priorityConfig[task.priority];
-  const status = statusConfig[task.status];
+	const handleNavigateToTask = useCallback(
+		async (taskId: string) => {
+			try {
+				const response = await fetch(`/api/tasks/${taskId}`);
+				if (!response.ok) throw new Error("Failed to fetch task");
+				const fullTaskData = await response.json();
+				onTaskUpdated(fullTaskData);
+			} catch (error) {
+				console.error("Failed to navigate to task:", error);
+			}
+		},
+		[onTaskUpdated],
+	);
 
-  return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="bg-zinc-900 border-zinc-800 max-w-2xl max-h-[90vh] overflow-y-auto">
-        <DialogHeader>
-          <DialogTitle className="text-white">
-            {isEditing ? 'Edit Task' : 'Task Details'}
-          </DialogTitle>
-        </DialogHeader>
+	if (!task) return null;
 
-        {isEditing ? (
-          <TaskForm
-            task={task}
-            mode="edit"
-            onSubmit={handleUpdateTask}
-            onCancel={() => setIsEditing(false)}
-          />
-        ) : (
-          <div className="space-y-6">
-            {/* Task Header */}
-            <div>
-              <h3 className="text-xl font-semibold text-white mb-2">{task.title}</h3>
-              <div className="flex items-center gap-2 flex-wrap">
-                <Badge variant="outline" className={status.className}>
-                  {status.label}
-                </Badge>
-                <Badge variant="outline" className={priority.className}>
-                  {priority.label}
-                </Badge>
-                {task.event && (
-                  <Badge variant="outline" className="bg-violet-600/20 text-violet-400 border-violet-600/50">
-                    {task.event.name}
-                  </Badge>
-                )}
-              </div>
-            </div>
+	const displaySubtasks = fullTask?.subtasks || task.subtasks || [];
 
-            {/* Description */}
-            {task.description && (
-              <div>
-                <h4 className="text-sm font-medium text-zinc-400 mb-2">Description</h4>
-                <p className="text-zinc-300 whitespace-pre-wrap">{task.description}</p>
-              </div>
-            )}
+	return (
+		<Dialog open={open} onOpenChange={onOpenChange}>
+			<DialogContent className="bg-zinc-900 border-zinc-800 max-w-2xl max-h-[90vh] overflow-y-auto">
+				<DialogHeader>
+					<DialogTitle className="text-white">
+						{isEditing ? "Edit Task" : "Task Details"}
+					</DialogTitle>
+				</DialogHeader>
 
-            {/* Meta Info */}
-            <div className="grid grid-cols-2 gap-4">
-              <div className="flex items-center gap-2">
-                <User className="h-4 w-4 text-zinc-500" />
-                <span className="text-sm text-zinc-400">Assignee:</span>
-                {task.assignee ? (
-                  <div className="flex items-center gap-2">
-                    <Avatar className="h-5 w-5">
-                      <AvatarImage src={task.assignee.avatar_url || undefined} />
-                      <AvatarFallback className="bg-zinc-800 text-zinc-300 text-xs">
-                        {getInitials(task.assignee.full_name)}
-                      </AvatarFallback>
-                    </Avatar>
-                    <span className="text-sm text-zinc-300">
-                      {task.assignee.full_name || 'Unknown'}
-                    </span>
-                  </div>
-                ) : (
-                  <span className="text-sm text-zinc-500">Unassigned</span>
-                )}
-              </div>
-
-              <div className="flex items-center gap-2">
-                <Calendar className="h-4 w-4 text-zinc-500" />
-                <span className="text-sm text-zinc-400">Created:</span>
-                <span className="text-sm text-zinc-300">{formatDate(task.created_at)}</span>
-              </div>
-            </div>
-
-            {/* Actions */}
-            <div className="flex gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setIsEditing(true)}
-                className="border-zinc-800"
-              >
-                <Edit className="h-4 w-4 mr-2" />
-                Edit
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={handleDeleteTask}
-                disabled={deleting}
-                className="border-zinc-800 text-red-400 hover:text-red-300 hover:bg-red-600/10"
-              >
-                {deleting ? (
-                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                ) : (
-                  <Trash2 className="h-4 w-4 mr-2" />
-                )}
-                Delete
-              </Button>
-            </div>
-
-            <Separator className="bg-zinc-800" />
-
-            {/* Comments Section */}
-            <div>
-              <h4 className="text-sm font-medium text-zinc-400 mb-4 flex items-center gap-2">
-                <MessageSquare className="h-4 w-4" />
-                Comments ({comments.length})
-              </h4>
-
-              {/* Comment List */}
-              <div className="space-y-4 mb-4">
-                {loadingComments ? (
-                  <div className="flex items-center justify-center py-4">
-                    <Loader2 className="h-5 w-5 animate-spin text-zinc-500" />
-                  </div>
-                ) : comments.length === 0 ? (
-                  <p className="text-sm text-zinc-500 text-center py-4">
-                    No comments yet
-                  </p>
-                ) : (
-                  comments.map((comment) => (
-                    <div key={comment.id} className="flex gap-3">
-                      <Avatar className="h-8 w-8">
-                        <AvatarImage src={comment.author?.avatar_url || undefined} />
-                        <AvatarFallback className="bg-zinc-800 text-zinc-300 text-xs">
-                          {getInitials(comment.author?.full_name || null)}
-                        </AvatarFallback>
-                      </Avatar>
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2 mb-1">
-                          <span className="text-sm font-medium text-zinc-300">
-                            {comment.author?.full_name || 'Unknown'}
-                          </span>
-                          <span className="text-xs text-zinc-500">
-                            {formatDate(comment.created_at)}
-                          </span>
-                        </div>
-                        <p className="text-sm text-zinc-400 whitespace-pre-wrap">
-                          {comment.content}
-                        </p>
-                      </div>
-                    </div>
-                  ))
-                )}
-              </div>
-
-              {/* Add Comment Form */}
-              <div className="flex gap-2">
-                <Textarea
-                  value={newComment}
-                  onChange={(e) => setNewComment(e.target.value)}
-                  placeholder="Add a comment..."
-                  className="bg-zinc-950 border-zinc-800 min-h-[80px]"
-                />
-              </div>
-              <div className="flex justify-end mt-2">
-                <Button
-                  onClick={handleAddComment}
-                  disabled={!newComment.trim() || submittingComment}
-                  size="sm"
-                  className="bg-violet-600 hover:bg-violet-700"
-                >
-                  {submittingComment ? (
-                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                  ) : (
-                    <Send className="h-4 w-4 mr-2" />
-                  )}
-                  Send
-                </Button>
-              </div>
-            </div>
-          </div>
-        )}
-      </DialogContent>
-    </Dialog>
-  );
+				{isEditing ? (
+					<TaskForm
+						task={{
+							...(fullTask || task),
+							items: (fullTask || task).task_items?.map((ti) => ({
+								item_id: ti.item_id,
+								goal_sub_location_id: ti.goal_sub_location_id,
+							})),
+							item_ids:
+								(fullTask || task).task_items?.map((ti) => ti.item_id) || [],
+						}}
+						mode="edit"
+						onSubmit={handleUpdateTask}
+						onCancel={() => setIsEditing(false)}
+					/>
+				) : (
+					<TaskDetailView
+						task={task}
+						fullTask={fullTask}
+						currentUserId={currentUserId}
+						comments={comments}
+						loadingComments={loadingComments}
+						onCommentsChange={setComments}
+						subtasks={displaySubtasks}
+						onNavigateToTask={handleNavigateToTask}
+						onCreateSubtask={handleCreateSubtask}
+						onEditRequest={() => setIsEditing(true)}
+						onApprove={handleApprove}
+						onReject={handleReject}
+						onToggleBlock={handleToggleBlock}
+						onDelete={handleDelete}
+						onAddItems={handleAddItems}
+						deleting={deleting}
+						approving={approving}
+						rejecting={rejecting}
+						blocking={blocking}
+						onFieldSave={handleFieldSave}
+						profiles={profiles}
+						parentTaskTitle={parentTaskTitle}
+					/>
+				)}
+			</DialogContent>
+		</Dialog>
+	);
 }

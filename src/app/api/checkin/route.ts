@@ -1,9 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
+import { requireAuth } from '@/lib/api-auth';
 
 // POST /api/checkin - Check in a guest via QR token
 export async function POST(request: NextRequest) {
   try {
+    const auth = await requireAuth(request, 'CHECKIN');
+    if (!auth.authorized) return auth.response;
+
     const supabase = await createClient();
 
     // Get current user (staff checking in guests)
