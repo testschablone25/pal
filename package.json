@@ -64,6 +64,7 @@
     "next": "^16.2.1",
     "next-themes": "^0.4.6",
     "pdf-parse": "^2.4.5",
+    "pdf-raster": "^0.1.0",
     "pdf2json": "^4.0.2",
     "pdfjs-dist": "^5.6.205",
     "qrcode": "^1.5.4",

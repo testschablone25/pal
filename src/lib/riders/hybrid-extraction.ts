@@ -1,21 +1,20 @@
 /**
  * Hybrid PDF Extraction System
  * Combines text extraction with vision-based fallback
+ * Uses pdf-raster for PDF to image conversion
  */
 
-import * as pdfjsLib from 'pdfjs-dist/legacy/build/pdf.mjs';
+import { convert } from 'pdf-raster';
 import { createCanvas } from 'canvas';
+import * as pdfjsLib from 'pdfjs-dist/legacy/build/pdf.mjs';
 import path from 'path';
 
-// Configure pdfjs-dist for Node.js with actual worker file
+// Configure pdfjs-dist for text extraction
 if (typeof pdfjsLib.GlobalWorkerOptions !== 'undefined') {
-  // Point to the actual worker file in node_modules
-  // Convert to file:// URL for Windows compatibility
   const workerPath = path.join(
     process.cwd(),
     'node_modules/pdfjs-dist/legacy/build/pdf.worker.mjs'
   );
-  // Convert Windows path to file:// URL
   const workerUrl = new URL(`file:///${workerPath.replace(/\\/g, '/')}`);
   pdfjsLib.GlobalWorkerOptions.workerSrc = workerUrl.href;
 }
@@ -130,26 +129,15 @@ async function extractTextFromPdf(buffer: Buffer): Promise<string> {
 }
 
 /**
- * Render PDF page to image
+ * Render PDF to images using pdf-raster
  */
-async function renderPageToImage(
-  page: pdfjsLib.PDFPageProxy,
-  scale: number = 2.0
-): Promise<string> {
-  const viewport = page.getViewport({ scale });
-  const canvas = createCanvas(
-    Math.floor(viewport.width),
-    Math.floor(viewport.height)
-  );
-  const ctx = canvas.getContext('2d');
+async function renderPdfToImages(buffer: Buffer, scale: number = 2.0): Promise<Buffer[]> {
+  const pages = await convert(buffer, {
+    scale,
+    format: 'png',
+  } as any);
 
-  await page.render({
-    canvasContext: ctx as unknown as CanvasRenderingContext2D,
-    canvas: canvas as unknown as HTMLCanvasElement,
-    viewport,
-  }).promise;
-
-  return canvas.toBuffer('image/png').toString('base64');
+  return pages.map(page => Buffer.from(page.data));
 }
 
 /**
@@ -162,18 +150,22 @@ async function extractWithVision(
   const startTime = Date.now();
 
   try {
-    // Render first page to image
-    const typedArray = new Uint8Array(buffer);
-    const loadingTask = pdfjsLib.getDocument({ 
-      data: typedArray,
-      isEvalSupported: false,
-      disableFontFace: true,
-    });
-    const pdfDocument = await loadingTask.promise;
-    const page = await pdfDocument.getPage(1);
-    const imageBase64 = await renderPageToImage(page, 2.0);
-
-    // Send to vision model
+    // Render ALL pages to images using pdf-raster
+    const imageBuffers = await renderPdfToImages(buffer, 2.0);
+    
+    if (imageBuffers.length === 0) {
+      throw new Error('Could not render PDF to image');
+    }
+    
+    console.log(`[Vision] Rendering ${imageBuffers.length} page(s)`);
+    
+    // Send all page images to vision model
+    const imageMessages = imageBuffers.map((imgBuffer, idx) => ({
+      type: 'image_url' as const,
+      image_url: { url: `data:image/png;base64,${imgBuffer.toString('base64')}` },
+    }));
+    
+    // Try vision model
     const response = await fetch(`${config.lmStudioUrl}/chat/completions`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -182,21 +174,32 @@ async function extractWithVision(
         messages: [
           {
             role: 'system',
-            content: `Extract technical and hospitality rider data from this PDF image.
-Return JSON only. No markdown. No commentary.`
+            content: `You are an expert at extracting technical and hospitality rider data from PDF images. 
+Analyze the PDF carefully and extract ALL information into the correct JSON fields.
+
+CRITICAL RULES:
+1. BACKLINE (DJ Equipment): Extract CDJs, mixers, turntables - e.g., "3x CDJ2000 NEXUS" → cdjs: [{"model": "CDJ2000 NEXUS", "quantity": 3}]
+2. STAGE SETUP: Extract booth monitors - e.g., "2x high quality booth monitors w/ full volume control" → monitors
+3. For STAFF requirements: Look for "Sound Technician", "Lighting Technician" - map to boolean fields
+4. TRAVEL goes in hospitality transport_ground (NOT tech): flights_needed, priority_boarding, baggage_requirements, travel_booking_notes
+5. ACCOMMODATION: Extract nights, room_type, bed_type ("double (x2 single beds is not acceptable)"), hotel_requirements ("minimum 4* hotel"), check_in/check_out
+6. CATERING: Extract meals to "meals" array, dietary to "dietary" array, buyout to "special_requests"
+7. Do NOT dump everything into hospitality_notes - use the proper fields!
+
+Return JSON only. No markdown.`
           },
           {
             role: 'user',
             content: [
-              { type: 'text', text: 'Extract rider data from this PDF:' },
-              { type: 'image_url', image_url: { url: `data:image/png;base64,${imageBase64}` } }
+              { type: 'text', text: `Extract rider data from these ${imageBuffers.length} PDF page images:` },
+              ...imageMessages
             ]
           }
         ],
         temperature: 0.1,
         max_tokens: 4000,
       }),
-      signal: AbortSignal.timeout(60000),
+      signal: AbortSignal.timeout(180000),
     });
 
     if (!response.ok) {
@@ -210,10 +213,10 @@ Return JSON only. No markdown. No commentary.`
 
     return {
       text,
-      quality: 'medium', // Vision extraction quality is harder to assess
+      quality: 'medium',
       method: 'vision',
       warnings: ['Extracted using vision model'],
-      pagesProcessed: 1,
+      pagesProcessed: imageBuffers.length,
     };
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';

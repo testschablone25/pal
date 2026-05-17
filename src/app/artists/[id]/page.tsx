@@ -24,12 +24,6 @@ interface TechRider {
     monitor_type: string;
     special_requirements?: string;
   };
-  transport?: {
-    flights_needed: boolean;
-    priority_boarding: boolean;
-    baggage_requirements?: string;
-    origin_city?: string;
-  };
   technical_notes?: string;
 }
 

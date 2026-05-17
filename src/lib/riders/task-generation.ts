@@ -80,6 +80,8 @@ export interface HospitalityRider {
     required: boolean;
     nights: number;
     room_type: string;
+    bed_type?: string;
+    hotel_requirements?: string;
     check_in?: string;
     check_out?: string;
     location_preference?: string;
@@ -96,10 +98,15 @@ export interface HospitalityRider {
     special_requests?: string;
   };
   transport_ground?: {
-    car_service: boolean;
+    flights_needed?: boolean;
+    origin_city?: string;
+    priority_boarding?: boolean;
+    baggage_requirements?: string;
+    travel_booking_notes?: string;
+    car_service?: boolean;
     pickup_time?: string;
     pickup_location?: string;
-    return_required: boolean;
+    return_required?: boolean;
     vehicle_type?: string;
   };
   hospitality_notes?: string;
@@ -237,15 +244,24 @@ function buildTaskDrafts(
 ): TaskDraft[] {
   const tasks: TaskDraft[] = [];
 
-  if (techRider?.transport?.flights_needed) {
-    const isPriority = techRider.transport.priority_boarding;
+  // Check for flights in both tech_rider.transport AND hospitality_rider.transport_ground
+  const hasFlights = techRider?.transport?.flights_needed || hospitalityRider?.transport_ground?.flights_needed;
+  if (hasFlights) {
+    // Prefer hospitality_rider data (extracted from hospitality notes), fallback to tech_rider
+    const transportData = hospitalityRider?.transport_ground?.flights_needed 
+      ? hospitalityRider.transport_ground 
+      : techRider?.transport;
+    const isPriority = transportData?.priority_boarding || false;
+    const travelNotes = transportData?.travel_booking_notes;
+    
     tasks.push({
       title: `${isPriority ? '✈️ Book flight with PRIORITY BOARDING' : '✈️ Book flight'}: ${artistName}`,
       description: `Artist ${artistName} requires flight booking for ${eventName} (${eventDate}).
 
-ROUTE: ${techRider.transport.origin_city || 'Unknown'} → Hamburg
+ROUTE: ${transportData?.origin_city || 'Unknown'} → Hamburg
 ${isPriority ? '**PRIORITY BOARDING / FAST TRACK REQUIRED**' : ''}
-BAGGAGE: ${techRider.transport.baggage_requirements || 'Standard'}
+BAGGAGE: ${transportData?.baggage_requirements || 'Standard'}
+${travelNotes ? `\nBOOKING NOTES: ${travelNotes}` : ''}
 
 ACTION NEEDED:
 1. Search flights arriving minimum 4 hours before set time
@@ -602,22 +618,27 @@ ACTION NEEDED:
   }
 
   if (hospitalityRider?.accommodation?.required) {
+    const acc = hospitalityRider.accommodation;
     tasks.push({
       title: `🏨 Book hotel: ${artistName}`,
       description: `Artist ${artistName} requires accommodation for ${eventName} (${eventDate}).
 
 REQUIREMENTS:
-- Nights: ${hospitalityRider.accommodation.nights}
-- Room type: ${hospitalityRider.accommodation.room_type}
-- Check-in: ${hospitalityRider.accommodation.check_in || '18:00'}
-- Check-out: ${hospitalityRider.accommodation.check_out || '14:00'}
-- Location: ${hospitalityRider.accommodation.location_preference || 'Near venue'}
+- Nights: ${acc.nights}
+- Room type: ${acc.room_type}
+- Bed type: ${acc.bed_type || 'Standard (not specified)'}
+- Hotel requirements: ${acc.hotel_requirements || 'None specified'}
+- Check-in: ${acc.check_in || '18:00'}
+- Check-out: ${acc.check_out || '14:00'}
+- Location: ${acc.location_preference || 'Near venue'}
 ${hospitalityRider.hospitality_notes ? `\nSPECIAL NOTES: ${hospitalityRider.hospitality_notes}` : ''}
 
 ACTION NEEDED:
-1. Find hotel matching requirements
-2. Book room(s)
-3. Send confirmation to artist`,
+1. Find hotel matching requirements (${acc.hotel_requirements || 'standard'})
+2. Book room(s) - verify bed type: ${acc.bed_type || 'as available'}
+3. Book late checkout if required
+4. Confirm breakfast & WiFi included
+5. Send confirmation to artist`,
       priority: 'medium',
       assignment_target: 'booker',
       category: 'accommodation',

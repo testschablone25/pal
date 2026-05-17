@@ -99,12 +99,6 @@ interface TechRider {
     preferred_mixers?: MixerRequirement[];
     special_requirements?: string;
   };
-  transport?: {
-    flights_needed: boolean;
-    priority_boarding: boolean;
-    baggage_requirements?: string;
-    origin_city?: string;
-  };
   technical_notes?: string;
   referenced_images?: string[];
   performance_requirements?: PerformanceRequirements;
@@ -115,6 +109,8 @@ interface HospitalityRider {
     required: boolean;
     nights: number;
     room_type: string;
+    bed_type?: string;
+    hotel_requirements?: string;
     check_in?: string;
     check_out?: string;
     location_preference?: string;
@@ -131,10 +127,15 @@ interface HospitalityRider {
     special_requests?: string;
   };
   transport_ground?: {
-    car_service: boolean;
+    flights_needed?: boolean;
+    origin_city?: string;
+    priority_boarding?: boolean;
+    baggage_requirements?: string;
+    travel_booking_notes?: string;
+    car_service?: boolean;
     pickup_time?: string;
     pickup_location?: string;
-    return_required: boolean;
+    return_required?: boolean;
     vehicle_type?: string;
   };
   hospitality_notes?: string;
@@ -281,12 +282,16 @@ export function RiderViewer({
     }
   };
 
-  const hasTechTransport = Boolean(
-    techRider?.transport &&
-      (techRider.transport.flights_needed ||
-        techRider.transport.priority_boarding ||
-        techRider.transport.origin_city ||
-        techRider.transport.baggage_requirements)
+  const hasTravelRequirements = Boolean(
+    hospitalityRider?.transport_ground && (
+      hospitalityRider.transport_ground.flights_needed ||
+      hospitalityRider.transport_ground.priority_boarding ||
+      hospitalityRider.transport_ground.baggage_requirements ||
+      hospitalityRider.transport_ground.origin_city ||
+      hospitalityRider.transport_ground.travel_booking_notes ||
+      hospitalityRider.transport_ground.car_service ||
+      hospitalityRider.transport_ground.pickup_location
+    )
   );
   const hasStageSetup = Boolean(
     techRider?.stage_setup?.monitors?.length ||
@@ -302,16 +307,16 @@ export function RiderViewer({
   const hasHospitality = Boolean(
     hospitalityRider?.accommodation ||
       hospitalityRider?.catering ||
-      hospitalityRider?.transport_ground ||
+      hasTravelRequirements ||
       hospitalityRider?.hospitality_notes
   );
   const hasRiders = Boolean(
     techRider?.equipment?.length ||
-      hasTechTransport ||
       hasStageSetup ||
       hasMixerRequirements ||
       techRider?.technical_notes ||
       techRider?.referenced_images?.length ||
+      techRider?.performance_requirements ||
       hasHospitality
   );
 
@@ -511,30 +516,6 @@ export function RiderViewer({
             </TabsList>
 
             <TabsContent value="tech" className="mt-4 space-y-4">
-              {/* Transport */}
-              {hasTechTransport && techRider?.transport && (
-                <div className="p-3 bg-blue-950/30 border border-blue-800/50 rounded-lg">
-                  <div className="flex items-center gap-2 mb-2">
-                    <Plane className="h-4 w-4 text-blue-400" />
-                    <span className="font-medium text-white">Flight Requirements</span>
-                    {techRider.transport.priority_boarding && (
-                      <Badge className="bg-red-600 text-xs">Priority Boarding</Badge>
-                    )}
-                  </div>
-                  <div className="text-sm text-zinc-400 space-y-1">
-                    {(techRider.transport.origin_city || techRider.transport.flights_needed) && (
-                      <p>Origin: {techRider.transport.origin_city || 'Unknown'}</p>
-                    )}
-                    {techRider.transport.baggage_requirements && (
-                      <p>Baggage: {techRider.transport.baggage_requirements}</p>
-                    )}
-                    {!techRider.transport.flights_needed && techRider.transport.priority_boarding && (
-                      <p>Priority boarding required for travel booking</p>
-                    )}
-                  </div>
-                </div>
-              )}
-
               {/* Audio */}
               {techRider?.audio && (
                 <div className="p-3 bg-zinc-800/50 rounded-lg">
@@ -793,6 +774,45 @@ export function RiderViewer({
             </TabsContent>
 
             <TabsContent value="hospitality" className="mt-4 space-y-4">
+              {/* Travel Requirements */}
+              {hasTravelRequirements && hospitalityRider?.transport_ground && (
+                <div className="p-3 bg-blue-950/30 border border-blue-800/50 rounded-lg">
+                  <div className="flex items-center gap-2 mb-2">
+                    <Plane className="h-4 w-4 text-blue-400" />
+                    <span className="font-medium text-white">Travel Requirements</span>
+                    {hospitalityRider.transport_ground.priority_boarding && (
+                      <Badge className="bg-red-600 text-xs">Priority Boarding</Badge>
+                    )}
+                    {hospitalityRider.transport_ground.car_service && (
+                      <Badge className="bg-green-600 text-xs">Car Service</Badge>
+                    )}
+                  </div>
+                  <div className="text-sm text-zinc-400 space-y-1">
+                    {(hospitalityRider.transport_ground.origin_city || hospitalityRider.transport_ground.flights_needed) && (
+                      <p>Origin: {hospitalityRider.transport_ground.origin_city || 'Not specified'}</p>
+                    )}
+                    {hospitalityRider.transport_ground.flights_needed && (
+                      <p>Flights required</p>
+                    )}
+                    {hospitalityRider.transport_ground.baggage_requirements && (
+                      <p>Baggage: {hospitalityRider.transport_ground.baggage_requirements}</p>
+                    )}
+                    {hospitalityRider.transport_ground.travel_booking_notes && (
+                      <p className="text-yellow-400">{hospitalityRider.transport_ground.travel_booking_notes}</p>
+                    )}
+                    {hospitalityRider.transport_ground.pickup_location && (
+                      <p>Pickup from: {hospitalityRider.transport_ground.pickup_location}</p>
+                    )}
+                    {hospitalityRider.transport_ground.pickup_time && (
+                      <p>Pickup time: {hospitalityRider.transport_ground.pickup_time}</p>
+                    )}
+                    {hospitalityRider.transport_ground.return_required && (
+                      <p>Return transport required</p>
+                    )}
+                  </div>
+                </div>
+              )}
+
               {/* Accommodation */}
               {hospitalityRider?.accommodation && (
                 <div className="p-3 bg-purple-950/30 border border-purple-800/50 rounded-lg">
@@ -805,6 +825,12 @@ export function RiderViewer({
                       {hospitalityRider.accommodation.nights > 0 ? `${hospitalityRider.accommodation.nights} night(s), ` : ''}
                       {hospitalityRider.accommodation.room_type || 'Accommodation requested'}
                     </p>
+                    {hospitalityRider.accommodation.bed_type && (
+                      <p>Bed: {hospitalityRider.accommodation.bed_type}</p>
+                    )}
+                    {hospitalityRider.accommodation.hotel_requirements && (
+                      <p className="text-purple-300">Hotel: {hospitalityRider.accommodation.hotel_requirements}</p>
+                    )}
                     {(hospitalityRider.accommodation.check_in || hospitalityRider.accommodation.check_out) && (
                       <p>
                         Check-in: {hospitalityRider.accommodation.check_in || 'n/a'} / Check-out: {hospitalityRider.accommodation.check_out || 'n/a'}
@@ -813,27 +839,6 @@ export function RiderViewer({
                     {hospitalityRider.accommodation.location_preference && (
                       <p>Location: {hospitalityRider.accommodation.location_preference}</p>
                     )}
-                  </div>
-                </div>
-              )}
-
-              {/* Ground Transport */}
-              {hospitalityRider?.transport_ground && (
-                <div className="p-3 bg-green-950/30 border border-green-800/50 rounded-lg">
-                  <div className="flex items-center gap-2 mb-2">
-                    <Car className="h-4 w-4 text-green-400" />
-                    <span className="font-medium text-white">Ground Transport</span>
-                  </div>
-                  <div className="text-sm text-zinc-400 space-y-1">
-                    {(hospitalityRider.transport_ground.pickup_time || hospitalityRider.transport_ground.pickup_location) && (
-                      <p>
-                        Pickup: {hospitalityRider.transport_ground.pickup_time || 'n/a'} from {hospitalityRider.transport_ground.pickup_location || 'n/a'}
-                      </p>
-                    )}
-                    {hospitalityRider.transport_ground.vehicle_type && (
-                      <p>Vehicle: {hospitalityRider.transport_ground.vehicle_type}</p>
-                    )}
-                    <p>Return: {hospitalityRider.transport_ground.return_required ? 'Required' : 'Not needed'}</p>
                   </div>
                 </div>
               )}
