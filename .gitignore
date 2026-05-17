@@ -49,4 +49,5 @@ nul
 .sisyphus/
 
 # Worktrees
-.worktrees/
+.worktrees/~/.pi/
+*.db
