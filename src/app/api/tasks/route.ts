@@ -155,12 +155,13 @@ export async function GET(request: NextRequest) {
 			return NextResponse.json({ error: error.message }, { status: 500 });
 		}
 
+		const taskIds = (data || [])
+			.map((t: Record<string, unknown>) => t.id)
+			.filter(Boolean);
+
 		// Fetch task_assignees separately (table may not exist yet in dev)
 		const assigneeMap: Record<string, Array<Record<string, unknown>>> = {};
 		try {
-			const taskIds = (data || [])
-				.map((t: Record<string, unknown>) => t.id)
-				.filter(Boolean);
 			if (taskIds.length > 0) {
 				const { data: taData } = await supabase
 					.from("task_assignees")
@@ -177,10 +178,32 @@ export async function GET(request: NextRequest) {
 			// task_assignees table doesn't exist yet — continue without assignee data
 		}
 
-		const tasksWithCommentCount =
+		// Fetch subtasks for all top-level tasks
+		const subtaskMap: Record<string, Array<Record<string, unknown>>> = {};
+		if (taskIds.length > 0) {
+			try {
+				const { data: subData } = await supabase
+					.from("tasks")
+					.select(
+						"id, title, status, priority, due_date, blocked, blocked_reason, needs_approval, parent_task_id, assignee_id, assignee:assignee_id(id, full_name, email, avatar_url)",
+					)
+					.in("parent_task_id", taskIds)
+					.order("created_at", { ascending: true });
+				for (const st of (subData as Array<Record<string, unknown>>) || []) {
+					const pid = st.parent_task_id as string;
+					if (!subtaskMap[pid]) subtaskMap[pid] = [];
+					subtaskMap[pid].push(st);
+				}
+			} catch {
+				// subtask query failed — continue without
+			}
+		}
+
+		const tasksWithSubtasks =
 			(data || []).map((task: Record<string, unknown>) => ({
 				...task,
 				assignees: assigneeMap[task.id as string] || null,
+				subtasks: subtaskMap[task.id as string] || [],
 				comment_count:
 					(task.comments as Array<{ count: number }>)?.[0]?.count || 0,
 				comments: undefined,
@@ -188,7 +211,7 @@ export async function GET(request: NextRequest) {
 
 		return NextResponse.json(
 			{
-				tasks: tasksWithCommentCount,
+				tasks: tasksWithSubtasks,
 				total: count || 0,
 				limit: parseInt(limit),
 				offset: parseInt(offset),
@@ -229,6 +252,7 @@ export async function POST(request: NextRequest) {
 			item_ids,
 			items, // structured: [{ item_id, goal_sub_location_id }]
 			parent_task_id,
+			subtask_titles, // string[] — batch-created after parent
 		} = body;
 
 		if (!title) {
@@ -362,6 +386,45 @@ export async function POST(request: NextRequest) {
 			console.error("Failed to log task history:", historyError);
 		}
 
+		// Batch-create sub-tasks (for initial task creation flow)
+		const createdSubtasks: Array<Record<string, unknown>> = [];
+		if (subtask_titles?.length > 0 && taskData) {
+			const subtaskInserts = subtask_titles
+				.filter((st: string) => st?.trim())
+				.map((st: string) => ({
+					title: st.trim(),
+					status: "todo",
+					priority: resolvedPriority,
+					assignee_id: resolvedAssigneeId || null,
+					event_id: resolvedEventId || null,
+					parent_task_id: taskData.id,
+					created_by,
+				}));
+
+			if (subtaskInserts.length > 0) {
+				const { data: subData, error: subError } = await supabase
+					.from("tasks")
+					.insert(subtaskInserts)
+					.select("id, title, status, priority, parent_task_id");
+
+				if (subError) {
+					console.error("Failed to create sub-tasks:", subError);
+				} else if (subData) {
+					createdSubtasks.push(...subData);
+					// Log history for each sub-task
+					await supabase.from("task_history").insert(
+						subData.map((st: Record<string, unknown>) => ({
+							task_id: st.id,
+							changed_by: created_by,
+							from_status: null,
+							to_status: "todo",
+							change_type: "created",
+						})),
+					);
+				}
+			}
+		}
+
 		return NextResponse.json(
 			{
 				...taskData,
@@ -374,6 +437,7 @@ export async function POST(request: NextRequest) {
 					(i: { item_id: string }) => i.item_id,
 				),
 				parent_task_id: parent_task_id || null,
+				subtasks: createdSubtasks,
 			},
 			{ status: 201 },
 		);

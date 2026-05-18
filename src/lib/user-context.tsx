@@ -1,5 +1,4 @@
 "use client";
-/* eslint-disable react-hooks/set-state-in-effect */
 
 import {
 	createContext,
@@ -40,7 +39,8 @@ export function UserProvider({
 	const [userEmail, setUserEmail] = useState<string | null>(null);
 	const [userRoles, setUserRoles] = useState<AppRole[]>(initialRoles || []);
 	const [loading, setLoading] = useState(true);
-	const didFetch = useRef(false);
+	const mountedRef = useRef(false);
+	const hydratedRoles = useRef(!!initialRoles && initialRoles.length > 0);
 
 	const doFetch = useCallback(async () => {
 		try {
@@ -49,31 +49,39 @@ export function UserProvider({
 				data: { user },
 			} = await supabase.auth.getUser();
 			if (!user) {
-				setUserId(null);
-				setUserEmail(null);
-				// Don't wipe server-provided roles if browser session isn't hydrated yet
-				// Only clear if we have no initial roles to fall back on
+				// Only clear roles if we had no SSR head-start — avoids flash
+				if (!hydratedRoles.current) {
+					setUserId(null);
+					setUserEmail(null);
+					setUserRoles([]);
+				}
 				return;
 			}
 			setUserId(user.id);
 			setUserEmail(user.email ?? null);
+
 			const { data } = await supabase
 				.from("user_roles")
 				.select("role")
 				.eq("user_id", user.id);
 			setUserRoles(data?.map((r: { role: string }) => r.role as AppRole) ?? []);
+
+			// Mark as hydrated so auth-state-change handler won't re-fetch
+			hydratedRoles.current = true;
 		} catch (err) {
 			console.error("UserProvider: failed to fetch roles", err);
 		}
 	}, []);
 
+	// Mount effect: single explicit fetch, then mark loading done
 	useEffect(() => {
-		if (didFetch.current) return;
-		didFetch.current = true;
+		if (mountedRef.current) return;
+		mountedRef.current = true;
 		doFetch().finally(() => setLoading(false));
 	}, [doFetch]);
 
-	// Listen for auth state changes to react to login/logout
+	// Auth state listener: skip INITIAL_SESSION (handled by mount fetch),
+	// and only react to actual SIGNED_IN / SIGNED_OUT.
 	useEffect(() => {
 		const supabase = createBrowserClient();
 		const {
@@ -83,14 +91,16 @@ export function UserProvider({
 				setUserId(null);
 				setUserEmail(null);
 				setUserRoles([]);
+				hydratedRoles.current = false;
 				return;
 			}
-			// INITIAL_SESSION fires when Supabase loads the existing session from
-			// cookies on mount; SIGNED_IN fires after an actual sign-in action.
-			if (
-				(event === "SIGNED_IN" || event === "INITIAL_SESSION") &&
-				session?.user
-			) {
+
+			// INITIAL_SESSION is redundant because doFetch already handled it.
+			// Only SIGNED_IN (actual login or token refresh callback) should re-fetch.
+			if (event === "SIGNED_IN" && session?.user) {
+				// Avoid racing with the mount fetch — if already hydrated, skip
+				if (hydratedRoles.current) return;
+
 				setLoading(true);
 				try {
 					setUserId(session.user.id);
@@ -102,6 +112,7 @@ export function UserProvider({
 					setUserRoles(
 						data?.map((r: { role: string }) => r.role as AppRole) ?? [],
 					);
+					hydratedRoles.current = true;
 				} catch (err) {
 					console.error(
 						"UserProvider: failed to fetch roles on auth event",

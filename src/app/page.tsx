@@ -1,5 +1,4 @@
 import { Suspense, cache } from "react";
-import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { createClient as createAdminClient } from "@supabase/supabase-js";
 import { supabaseConfig } from "@/lib/supabase/config";
@@ -24,12 +23,51 @@ const getAdmin = cache(() =>
 // ── Page (Server Component) ───────────────────────────────────────────
 
 export default async function DashboardPage() {
-	const supabase = await createClient();
-	const {
-		data: { user },
-	} = await supabase.auth.getUser();
+	// Use getSession() instead of getUser() to avoid an extraneous HTTP
+	// call to the /user endpoint that can fail independently of the session.
+	// The middleware has already validated the session before we get here,
+	// and the server-client cookie store reflects any token refresh the
+	// middleware may have done (via request.cookies.set()).
+	//
+	// getUser() failure → also clears local session → getSession() fails too
+	// → renders "Nicht angemeldet" → user clicks login → middleware sees
+	// session → redirects back → loop.  Using getSession() breaks this.
+	let sessionUser: { id: string; email?: string | null } | null = null;
+	try {
+		const supabase = await createClient();
+		const {
+			data: { session },
+		} = await supabase.auth.getSession();
 
-	if (!user) redirect("/login");
+		if (session?.user) {
+			sessionUser = session.user;
+		}
+	} catch (err) {
+		console.error("Dashboard: session check threw", err);
+	}
+
+	if (!sessionUser) {
+		// Instead of redirecting (which creates a loop with middleware's
+		// /login → / redirect), render a simple inline fallback.
+		return (
+			<div className="min-h-screen bg-zinc-950 flex items-center justify-center">
+				<div className="text-center space-y-4">
+					<p className="text-lg text-zinc-300">Nicht angemeldet</p>
+					<p className="text-sm text-zinc-500">
+						Bitte melde dich an, um fortzufahren.
+					</p>
+					<a
+						href="/login?redirect=/"
+						className="inline-block px-6 py-2 rounded-lg bg-violet-600 text-white hover:bg-violet-700 transition-colors"
+					>
+						Anmelden
+					</a>
+				</div>
+			</div>
+		);
+	}
+
+	const user = sessionUser;
 
 	const adminClient = getAdmin();
 	const userId = user.id;
@@ -41,14 +79,29 @@ export default async function DashboardPage() {
 	weekEnd.setDate(weekEnd.getDate() + 7);
 	const weekEndStr = weekEnd.toISOString().split("T")[0];
 
-	// Profile (must succeed first — fast, single row by PK)
-	const { data: profile } = await adminClient
-		.from("profiles")
-		.select("*")
-		.eq("id", userId)
-		.single();
+	// Profile (try/catch to prevent redirect loop when profile is missing)
+	let profile: Record<string, unknown> | null = null;
+	try {
+		const result = await adminClient
+			.from("profiles")
+			.select("*")
+			.eq("id", userId)
+			.single();
+		profile = result.data as Record<string, unknown> | null;
+	} catch (err) {
+		console.error("Dashboard: profile fetch error", err);
+	}
 
-	if (!profile) redirect("/login");
+	if (!profile) {
+		// Instead of redirecting to /login (which would cause a redirect loop
+		// via middleware → / → /login → /...), build a minimal profile from
+		// the auth user so the dashboard can render a reasonable fallback.
+		profile = {
+			id: userId,
+			email: user.email ?? "",
+			full_name: user.email?.split("@")[0] ?? "User",
+		} as unknown as DashboardData["profile"] & Record<string, unknown>;
+	}
 
 	// ── Phase 1: Fan out all independent queries ──────────────────
 	// Was 9 queries (including 5 count:exact). Now 5 — counts are derived from data.
@@ -158,7 +211,7 @@ export default async function DashboardPage() {
 	}
 
 	const data: DashboardData = {
-		profile: profile as DashboardData["profile"],
+		profile: profile as unknown as DashboardData["profile"],
 		userRoles,
 		staffRecord: staffRecord as DashboardData["staffRecord"],
 		tasks: taskList as DashboardData["tasks"],

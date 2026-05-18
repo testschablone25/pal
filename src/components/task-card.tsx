@@ -218,6 +218,56 @@ export function TaskCard({ task, onClick }: TaskCardProps) {
 							</div>
 						</div>
 
+						{/* Subtasks (compact inline list) */}
+						{task.subtasks && task.subtasks.length > 0 && (
+							<div className="mb-2 space-y-0.5">
+								{task.subtasks.slice(0, 5).map((sub) => (
+									<div
+										key={sub.id}
+										className="flex items-center gap-1.5 text-xs text-zinc-400"
+									>
+										<CornerDownRight className="h-3 w-3 text-zinc-600 shrink-0" />
+										<div
+											className={cn(
+												"w-1.5 h-1.5 rounded-full shrink-0",
+												sub.status === "done"
+													? "bg-emerald-500"
+													: sub.status === "in_progress"
+														? "bg-blue-500"
+														: "bg-zinc-600",
+											)}
+										/>
+										<div
+											className={cn(
+												"w-1 h-1 rounded-full shrink-0",
+												sub.priority === "urgent"
+													? "bg-red-500"
+													: sub.priority === "high"
+														? "bg-orange-500"
+														: sub.priority === "medium"
+															? "bg-blue-500"
+															: "bg-zinc-500",
+											)}
+										/>
+										<span className="truncate">{sub.title}</span>
+										{sub.blocked && (
+											<span
+												className="shrink-0 text-[10px]"
+												title={sub.blocked_reason || ""}
+											>
+												⛔
+											</span>
+										)}
+									</div>
+								))}
+								{task.subtasks.length > 5 && (
+									<div className="flex items-center gap-1.5 text-[10px] text-zinc-600 pl-5">
+										+{task.subtasks.length - 5} mehr
+									</div>
+								)}
+							</div>
+						)}
+
 						{/* Bottom Row: Assignee + Comment Count */}
 						<div className="flex items-center justify-between">
 							{/* Assignee Avatars — multi-assignee with overflow */}

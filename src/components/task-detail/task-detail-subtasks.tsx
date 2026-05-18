@@ -6,16 +6,16 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
-import {
-	CornerDownRight,
-	Plus,
-	Check,
-	X,
-	Loader2,
-} from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+import { CornerDownRight, Plus, Check, X, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { formatDateShort } from "@/lib/dates";
-import { getInitials, statusDotConfig, priorityDotConfig, type Task } from "./types";
+import {
+	getInitials,
+	statusDotConfig,
+	priorityDotConfig,
+	type Task,
+} from "./types";
 
 interface SubtaskTreeItemProps {
 	sub: Task;
@@ -66,7 +66,10 @@ function SubtaskTreeItem({ sub, depth, onNavigate }: SubtaskTreeItemProps) {
 				</div>
 
 				{sub.blocked && (
-					<span className="text-xs text-red-400 shrink-0" title={sub.blocked_reason || ""}>
+					<span
+						className="text-xs text-red-400 shrink-0"
+						title={sub.blocked_reason || ""}
+					>
 						⛔
 					</span>
 				)}
@@ -105,20 +108,17 @@ function SubtaskTreeItem({ sub, depth, onNavigate }: SubtaskTreeItemProps) {
 }
 
 interface TaskDetailSubtasksProps {
-	task: Task;
 	subtasks: Task[];
-	currentUserId: string | null;
 	onNavigate: (taskId: string) => void;
 	onCreateSubtask: (title: string) => Promise<void>;
 }
 
 export function TaskDetailSubtasks({
-	task,
 	subtasks,
-	currentUserId,
 	onNavigate,
 	onCreateSubtask,
 }: TaskDetailSubtasksProps) {
+	const { toast } = useToast();
 	const [subtaskTitle, setSubtaskTitle] = useState("");
 	const [showSubtaskForm, setShowSubtaskForm] = useState(false);
 	const [creatingSubtask, setCreatingSubtask] = useState(false);
@@ -133,6 +133,15 @@ export function TaskDetailSubtasks({
 			await onCreateSubtask(subtaskTitle.trim());
 			setSubtaskTitle("");
 			setShowSubtaskForm(false);
+		} catch (err) {
+			toast({
+				variant: "destructive",
+				title: "Fehler",
+				description:
+					err instanceof Error
+						? err.message
+						: "Subtask konnte nicht erstellt werden",
+			});
 		} finally {
 			setCreatingSubtask(false);
 		}

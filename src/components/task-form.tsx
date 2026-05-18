@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -33,12 +33,21 @@ import {
 	CommandGroup,
 	CommandList,
 } from "@/components/ui/command";
+import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { createClient } from "@/lib/supabase/browser";
 import { TASK_TYPES } from "@/lib/i18n";
 import { TaskFormFields } from "./task-form/task-form-fields";
 import { TaskFormItems } from "./task-form/task-form-items";
-import { Loader2, Check, ChevronsUpDown, CornerDownRight } from "lucide-react";
+import {
+	Loader2,
+	Check,
+	ChevronsUpDown,
+	CornerDownRight,
+	Plus,
+	X,
+} from "lucide-react";
 
 // Schema for structured items with goal location
 const itemEntrySchema = z.object({
@@ -65,6 +74,7 @@ const taskSchema = z.object({
 	items: z.array(itemEntrySchema).default([]),
 	created_by: z.string().optional(),
 	parent_task_id: z.string().nullable().optional(),
+	subtask_titles: z.array(z.string()).default([]),
 	task_type: z.string().nullable().optional(),
 	attachments: z.array(z.any()).default([]),
 });
@@ -140,6 +150,8 @@ export function TaskForm({
 	const [uploading, setUploading] = useState(false);
 	const [pendingFiles, setPendingFiles] = useState<File[]>([]);
 	const [error, setError] = useState<string | null>(null);
+	const [subtaskTitles, setSubtaskTitles] = useState<string[]>([""]);
+	const isCreate = mode === "create";
 	const [profiles, setProfiles] = useState<Profile[]>([]);
 	const [events, setEvents] = useState<Event[]>([]);
 	const [items, setItems] = useState<InventoryItem[]>([]);
@@ -353,12 +365,21 @@ export function TaskForm({
 		setError(null);
 
 		try {
+			// Include non-empty sub-task titles so the API can batch-create them
+			const validSubtasks = subtaskTitles.filter((s) => s.trim());
+			const valuesWithSubtasks = {
+				...values,
+				subtask_titles: validSubtasks.length > 0 ? validSubtasks : undefined,
+			};
+
 			if (isCreate && pendingFiles.length > 0 && onCreateWithFiles) {
-				await onCreateWithFiles(values, pendingFiles);
+				await onCreateWithFiles(valuesWithSubtasks, pendingFiles);
 				setPendingFiles([]);
 			} else {
-				await onSubmit(values);
+				await onSubmit(valuesWithSubtasks);
 			}
+
+			setSubtaskTitles([""]);
 		} catch (err) {
 			setError(err instanceof Error ? err.message : "An error occurred");
 		} finally {
@@ -371,7 +392,6 @@ export function TaskForm({
 		item_id: i.item_id,
 		goal_sub_location_id: i.goal_sub_location_id ?? null,
 	}));
-	const isCreate = mode === "create";
 	const hasParentTask = !!task?.parent_task_id;
 
 	return (
@@ -550,6 +570,65 @@ export function TaskForm({
 					onGoalLocationChange={handleSetGoalLocation}
 					venues={venues}
 				/>
+
+				{/* Sub-tasks (create mode only — batch-created via API) */}
+				{isCreate && (
+					<div className="space-y-2">
+						<div className="flex items-center gap-2 text-xs text-zinc-500 font-medium uppercase tracking-wider">
+							<CornerDownRight className="h-3.5 w-3.5 text-zinc-500" />
+							<span>Sub-tasks</span>
+							{subtaskTitles.filter((s) => s.trim()).length > 0 && (
+								<Badge className="bg-zinc-800 text-zinc-400 text-[10px]">
+									{subtaskTitles.filter((s) => s.trim()).length}
+								</Badge>
+							)}
+						</div>
+						<div className="space-y-1.5">
+							{subtaskTitles.map((title, idx) => (
+								<div key={idx} className="flex gap-1.5 items-center">
+									<CornerDownRight className="h-3.5 w-3.5 text-zinc-600 shrink-0" />
+									<Input
+										value={title}
+										onChange={(e) => {
+											const next = [...subtaskTitles];
+											next[idx] = e.target.value;
+											setSubtaskTitles(next);
+										}}
+										placeholder="Sub-task title..."
+										className="bg-zinc-950 border-zinc-800 h-8 text-sm flex-1"
+										onKeyDown={(e) => {
+											if (e.key === "Enter") {
+												e.preventDefault();
+												setSubtaskTitles([...subtaskTitles, ""]);
+											}
+										}}
+									/>
+									<button
+										type="button"
+										onClick={() =>
+											setSubtaskTitles(
+												subtaskTitles.filter((_, i) => i !== idx),
+											)
+										}
+										className="text-zinc-600 hover:text-red-400 transition-colors shrink-0"
+									>
+										<X className="h-3.5 w-3.5" />
+									</button>
+								</div>
+							))}
+						</div>
+						<Button
+							type="button"
+							variant="outline"
+							size="sm"
+							onClick={() => setSubtaskTitles([...subtaskTitles, ""])}
+							className="border-zinc-800 w-full h-8 text-xs"
+						>
+							<Plus className="h-3.5 w-3.5 mr-1.5" />
+							Add sub-task
+						</Button>
+					</div>
+				)}
 
 				{/* ========== FOOTER ========== */}
 				<div className="flex items-center justify-between pt-4 border-t border-zinc-800">
