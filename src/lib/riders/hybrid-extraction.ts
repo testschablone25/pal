@@ -83,7 +83,8 @@ async function extractTextFromPdf(buffer: Buffer): Promise<string> {
     standardFontDataUrl: undefined,
     isEvalSupported: false,
     disableFontFace: true,
-  });
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } as any);
 
   const pdfDocument = await loadingTask.promise;
   const textParts: string[] = [];
