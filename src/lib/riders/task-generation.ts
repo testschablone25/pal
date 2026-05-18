@@ -252,7 +252,7 @@ function buildTaskDrafts(
       ? hospitalityRider.transport_ground 
       : techRider?.transport;
     const isPriority = transportData?.priority_boarding || false;
-    const travelNotes = transportData?.travel_booking_notes;
+    const travelNotes = (transportData as Record<string, unknown>)?.travel_booking_notes as string | undefined;
     
     tasks.push({
       title: `${isPriority ? '✈️ Book flight with PRIORITY BOARDING' : '✈️ Book flight'}: ${artistName}`,
