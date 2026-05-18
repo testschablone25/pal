@@ -640,9 +640,7 @@ export function TaskDetailView({
 
 			{/* Subtasks */}
 			<TaskDetailSubtasks
-				task={task}
 				subtasks={subtasks}
-				currentUserId={currentUserId}
 				onNavigate={onNavigateToTask}
 				onCreateSubtask={onCreateSubtask}
 			/>
