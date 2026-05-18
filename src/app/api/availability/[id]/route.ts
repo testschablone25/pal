@@ -1,10 +1,11 @@
-// Availability CRUD API - Single Entry
-// Phase 3 - Nightclub Booking System
+// Availability CRUD API — Single Entry — Phase 2 Rework
+// Zod validation
 
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import { supabaseConfig } from "@/lib/supabase/config";
 import { requireAuth } from "@/lib/api-auth";
+import { availabilityUpsertSchema } from "@/lib/validations/availability";
 
 const supabase = createClient(supabaseConfig.url, supabaseConfig.serviceKey);
 
@@ -20,14 +21,22 @@ export async function PUT(
 		const { id } = await params;
 		const body = await request.json();
 
-		const { available, reason } = body;
+		// Zod validation
+		const parsed = availabilityUpsertSchema.partial().safeParse(body);
+		if (!parsed.success) {
+			return NextResponse.json(
+				{ error: "Validation failed", details: parsed.error.flatten() },
+				{ status: 400 },
+			);
+		}
+
+		const payload: Record<string, unknown> = {
+			...parsed.data,
+		};
 
 		const { data, error } = await supabase
 			.from("availability")
-			.update({
-				available,
-				reason: available ? null : reason,
-			})
+			.update(payload)
 			.eq("id", id)
 			.select()
 			.single();

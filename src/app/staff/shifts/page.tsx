@@ -13,14 +13,6 @@ import {
 	SelectValue,
 } from "@/components/ui/select";
 import {
-	Dialog,
-	DialogContent,
-	DialogHeader,
-	DialogTitle,
-	DialogDescription,
-	DialogFooter,
-} from "@/components/ui/dialog";
-import {
 	AlertDialog,
 	AlertDialogAction,
 	AlertDialogCancel,
@@ -30,6 +22,14 @@ import {
 	AlertDialogHeader,
 	AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import {
+	Dialog,
+	DialogContent,
+	DialogDescription,
+	DialogFooter,
+	DialogHeader,
+	DialogTitle,
+} from "@/components/ui/dialog";
 import {
 	DropdownMenu,
 	DropdownMenuContent,
@@ -49,8 +49,8 @@ import {
 	X,
 	Send,
 } from "lucide-react";
-import { ShiftTimeline } from "@/components/staff-shifts/shift-timeline";
-import { ShiftForm } from "@/components/staff-shifts/shift-form";
+import { ShiftTimeline } from "@/components/shifts/timeline/shift-timeline";
+import { ShiftFormDialog } from "@/components/shifts/shift-form-dialog";
 import type { ShiftFormValues } from "@/lib/staff-shifts/form-schema";
 import {
 	ShiftClockActions,
@@ -60,11 +60,9 @@ import { ShiftBulkCreate } from "@/components/staff-shifts/shift-bulk-create";
 import { ShiftTemplateApplyDialog } from "@/components/shift-template-apply-dialog";
 import { statusBadgeClass } from "@/lib/utils";
 import {
-	formatTime,
 	getLocalTimezoneOffset,
 	getTimeInputValue,
 } from "@/lib/staff-shifts/utils";
-import { snapTo15Minutes } from "@/lib/staff-shifts/utils";
 import type { Shift } from "@/lib/staff-shifts/types";
 import type {
 	Event,
@@ -79,6 +77,11 @@ import { EmptyState } from "@/components/empty-state";
 import { useToast } from "@/hooks/use-toast";
 import { StaffSubNav } from "@/components/staff/staff-sub-nav";
 
+interface VenueInfo {
+	id: string;
+	name: string;
+}
+
 export default function ShiftsPage() {
 	const { toast } = useToast();
 	const [events, setEvents] = useState<Event[]>([]);
@@ -86,6 +89,7 @@ export default function ShiftsPage() {
 	const [shifts, setShifts] = useState<Shift[]>([]);
 	const [availability, setAvailability] = useState<Availability[]>([]);
 	const [selectedEventId, setSelectedEventId] = useState<string>("");
+	const [selectedVenue, setSelectedVenue] = useState<VenueInfo | null>(null);
 	const [loading, setLoading] = useState(true);
 
 	// Shift form dialog
@@ -98,12 +102,9 @@ export default function ShiftsPage() {
 	const [shiftToDelete, setShiftToDelete] = useState<Shift | null>(null);
 	const [deleting, setDeleting] = useState(false);
 
-	// Timeline filtering & drag
+	// Timeline filtering
 	const [roleFilter, setRoleFilter] = useState<string>("all");
 	const [shiftSearch, setShiftSearch] = useState<string>("");
-	const [activeDragShift, setActiveDragShift] = useState<Shift | null>(null);
-	const [dragDelta, setDragDelta] = useState<number>(0);
-	const [savingIndicator, setSavingIndicator] = useState<string | null>(null);
 
 	// Conflict dialog
 	const [conflictDialogOpen, setConflictDialogOpen] = useState(false);
@@ -129,6 +130,10 @@ export default function ShiftsPage() {
 	const [clockingIn, setClockingIn] = useState<string | null>(null);
 	const [clockingOut, setClockingOut] = useState<string | null>(null);
 
+	// Hydration guard: prevent SSR/CSR mismatch on boolean HTML attributes
+	const [mounted, setMounted] = useState(false);
+	useEffect(() => setMounted(true), []);
+
 	useEffect(() => {
 		fetchEvents();
 		fetchStaff();
@@ -138,6 +143,7 @@ export default function ShiftsPage() {
 		if (selectedEventId) {
 			fetchShifts();
 			fetchAvailability();
+			fetchEventVenue();
 		}
 	}, [selectedEventId]);
 
@@ -187,6 +193,23 @@ export default function ShiftsPage() {
 			setAvailability(data.availability || []);
 		} catch (error) {
 			console.error("Failed to fetch availability:", error);
+		}
+	};
+
+	const fetchEventVenue = async () => {
+		try {
+			const selectedEvent = events.find((e) => e.id === selectedEventId);
+			if (!selectedEvent) return;
+			const response = await fetch(`/api/events/${selectedEventId}`);
+			const data = await response.json();
+			if (data.venue_id) {
+				setSelectedVenue({ id: data.venue_id, name: "" });
+			} else {
+				setSelectedVenue(null);
+			}
+		} catch (error) {
+			console.error("Failed to fetch event venue:", error);
+			setSelectedVenue(null);
 		}
 	};
 
@@ -296,6 +319,7 @@ export default function ShiftsPage() {
 					event_id: selectedEventId,
 					staff_id: values.staff_id,
 					role: values.role,
+					sub_location_id: values.sub_location_id || null,
 					start_time: startDateTime,
 					end_time: endDateTime,
 					break_minutes: values.break_minutes,
@@ -330,49 +354,9 @@ export default function ShiftsPage() {
 		}
 	};
 
-	const selectedEvent = events.find((e) => e.id === selectedEventId);
-
-	// Filter shifts
-	const filteredShifts = shifts.filter((s) => {
-		const matchesRole = roleFilter === "all" || s.role === roleFilter;
-		const matchesSearch =
-			!shiftSearch ||
-			(s.staff?.profiles?.full_name || "")
-				.toLowerCase()
-				.includes(shiftSearch.toLowerCase());
-		return matchesRole && matchesSearch;
-	});
-
-	// Drag handlers
-	const handleDragEnd = useCallback(
-		async (event: {
-			active: { data: { current?: Record<string, unknown> } };
-			delta: { x: number };
-		}) => {
-			const { active, delta } = event;
-			setActiveDragShift(null);
-			setDragDelta(0);
-
-			const shiftId = active.data.current?.shiftId as string;
-			const originalStartTime = active.data.current?.startTime as string;
-			const originalEndTime = active.data.current?.endTime as string;
-			if (!shiftId || !originalStartTime || !originalEndTime) return;
-
-			const containerEl = document.querySelector("[data-timeline-container]");
-			if (!containerEl) return;
-			const containerWidth = containerEl.clientWidth;
-			if (containerWidth === 0) return;
-
-			const deltaMinutes = (delta.x / containerWidth) * (12 * 60);
-			if (Math.abs(deltaMinutes) < 1) return;
-
-			const snappedDelta = Math.round(deltaMinutes / 15) * 15;
-			const newStartTime = snapTo15Minutes(originalStartTime, snappedDelta);
-			const newEndTime = snapTo15Minutes(originalEndTime, snappedDelta);
-			if (newStartTime === originalStartTime && newEndTime === originalEndTime)
-				return;
-
-			setSavingIndicator(shiftId);
+	// Drag-to-move handler for timeline
+	const handleShiftMoved = useCallback(
+		async (shiftId: string, newStartTime: string, newEndTime: string) => {
 			try {
 				const response = await fetch(`/api/shifts/${shiftId}`, {
 					method: "PUT",
@@ -382,7 +366,16 @@ export default function ShiftsPage() {
 						end_time: newEndTime,
 					}),
 				});
-				if (!response.ok) throw new Error("Failed to update shift");
+				if (!response.ok) {
+					let errorMsg = "Failed to update shift";
+					try {
+						const errBody = await response.json();
+						errorMsg = errBody.error || errBody.details || errorMsg;
+					} catch {
+						// Response was not valid JSON, use fallback message
+					}
+					throw new Error(errorMsg);
+				}
 				fetchShifts();
 				toast({
 					title: "Schicht verschoben",
@@ -393,30 +386,17 @@ export default function ShiftsPage() {
 				toast({
 					variant: "destructive",
 					title: "Fehler",
-					description: "Fehler beim Verschieben der Schicht.",
+					description:
+						error instanceof Error
+							? error.message
+							: "Fehler beim Verschieben der Schicht.",
 				});
-			} finally {
-				setSavingIndicator(null);
 			}
 		},
-		[fetchShifts],
+		[fetchShifts, toast],
 	);
 
-	const handleDragMove = useCallback((event: { delta: { x: number } }) => {
-		setDragDelta(event.delta.x);
-	}, []);
-
-	const handleDragStart = useCallback(
-		(event: { active: { data: { current?: Record<string, unknown> } } }) => {
-			const shiftId = event.active.data.current?.shiftId as string;
-			const shift = shifts.find((s) => s.id === shiftId);
-			if (shift) {
-				setActiveDragShift(shift);
-				setDragDelta(0);
-			}
-		},
-		[shifts],
-	);
+	const selectedEvent = events.find((e) => e.id === selectedEventId);
 
 	// Delete handler
 	const handleDeleteClick = (shift: Shift) => {
@@ -483,7 +463,10 @@ export default function ShiftsPage() {
 		const response = await fetch("/api/shifts/bulk", {
 			method: "POST",
 			headers: { "Content-Type": "application/json" },
-			body: JSON.stringify({ event_id: data.eventId, shifts: shiftsToCreate }),
+			body: JSON.stringify({
+				event_id: data.eventId,
+				shifts: shiftsToCreate,
+			}),
 		});
 
 		if (!response.ok) {
@@ -626,7 +609,7 @@ export default function ShiftsPage() {
 			"Break (min)",
 			"Status",
 		];
-		const rows = filteredShifts.map((shift) => {
+		const rows = shifts.map((shift) => {
 			const start = new Date(shift.start_time);
 			const end = new Date(shift.end_time);
 			const durationHours = (
@@ -636,8 +619,8 @@ export default function ShiftsPage() {
 			return [
 				shift.staff?.profiles?.full_name || "Unknown",
 				shift.role,
-				formatTime(shift.start_time),
-				formatTime(shift.end_time),
+				getTimeInputValue(shift.start_time),
+				getTimeInputValue(shift.end_time),
 				durationHours,
 				shift.break_minutes.toString(),
 				shift.status,
@@ -679,7 +662,7 @@ export default function ShiftsPage() {
 		});
 		yPos += 8;
 		doc.setFont("helvetica", "normal");
-		filteredShifts.forEach((shift) => {
+		shifts.forEach((shift) => {
 			if (yPos > 270) {
 				doc.addPage();
 				yPos = 20;
@@ -688,8 +671,8 @@ export default function ShiftsPage() {
 			[
 				shift.staff?.profiles?.full_name || "Unknown",
 				shift.role,
-				formatTime(shift.start_time),
-				formatTime(shift.end_time),
+				getTimeInputValue(shift.start_time),
+				getTimeInputValue(shift.end_time),
 				shift.status,
 			].forEach((cell, i) => {
 				doc.text(cell, xPos, yPos);
@@ -740,7 +723,7 @@ export default function ShiftsPage() {
 						<div className="flex gap-2">
 							<Button
 								onClick={() => setBulkDialogOpen(true)}
-								disabled={!selectedEventId}
+								disabled={!mounted || !selectedEventId}
 								variant="outline"
 								className="border-zinc-800"
 							>
@@ -749,7 +732,7 @@ export default function ShiftsPage() {
 							</Button>
 							<Button
 								onClick={() => setTemplateDialogOpen(true)}
-								disabled={!selectedEventId}
+								disabled={!mounted || !selectedEventId}
 								variant="outline"
 								className="border-zinc-800"
 							>
@@ -758,7 +741,7 @@ export default function ShiftsPage() {
 							</Button>
 							<Button
 								onClick={openCreateDialog}
-								disabled={!selectedEventId}
+								disabled={!mounted || !selectedEventId}
 								className="bg-violet-600 hover:bg-violet-700"
 							>
 								<Plus className="h-4 w-4 mr-2" />
@@ -767,7 +750,7 @@ export default function ShiftsPage() {
 							<DropdownMenu>
 								<DropdownMenuTrigger asChild>
 									<Button
-										disabled={!selectedEventId}
+										disabled={!mounted || !selectedEventId}
 										variant="outline"
 										className="border-zinc-800"
 									>
@@ -864,22 +847,18 @@ export default function ShiftsPage() {
 						</Card>
 					)}
 
-					{/* Timeline */}
+					{/* Timeline — now event-driven with sub-location support */}
 					<ShiftTimeline
 						shifts={shifts}
-						filteredShifts={filteredShifts}
-						shiftSearch={shiftSearch}
-						onShiftSearchChange={setShiftSearch}
+						doorTime={selectedEvent?.door_time || null}
+						endTime={selectedEvent?.end_time || null}
+						searchValue={shiftSearch}
+						onSearchChange={setShiftSearch}
 						roleFilter={roleFilter}
 						onRoleFilterChange={setRoleFilter}
-						savingIndicator={savingIndicator}
 						onEditShift={openEditDialog}
-						onDeleteClick={handleDeleteClick}
-						onDragEnd={handleDragEnd}
-						onDragStart={handleDragStart}
-						onDragMove={handleDragMove}
-						activeDragShift={activeDragShift}
-						dragDelta={dragDelta}
+						onDeleteShift={handleDeleteClick}
+						onShiftMoved={handleShiftMoved}
 					/>
 
 					{/* Shifts List */}
@@ -888,7 +867,7 @@ export default function ShiftsPage() {
 							<CardTitle className="text-white">All Shifts</CardTitle>
 						</CardHeader>
 						<CardContent>
-							{filteredShifts.length === 0 ? (
+							{shifts.length === 0 ? (
 								<EmptyState
 									icon={Clock}
 									title={
@@ -901,7 +880,7 @@ export default function ShiftsPage() {
 								/>
 							) : (
 								<div className="space-y-3">
-									{filteredShifts.map((shift) => {
+									{shifts.map((shift) => {
 										const isUnavailable = isStaffUnavailable(shift.staff_id);
 										const unavailReason = getAvailabilityReason(shift.staff_id);
 										return (
@@ -930,8 +909,9 @@ export default function ShiftsPage() {
 															)}
 														</div>
 														<p className="text-sm text-zinc-400">
-															{shift.role} • {formatTime(shift.start_time)} -{" "}
-															{formatTime(shift.end_time)}
+															{shift.role} •{" "}
+															{getTimeInputValue(shift.start_time)} -{" "}
+															{getTimeInputValue(shift.end_time)}
 															{shift.break_minutes > 0 &&
 																` • ${shift.break_minutes}min break`}
 														</p>
@@ -1003,7 +983,7 @@ export default function ShiftsPage() {
 													<p className="text-xs text-zinc-400 mt-1">
 														Shift:{" "}
 														{relatedShift
-															? `${formatTime(relatedShift.start_time)} - ${formatTime(relatedShift.end_time)}`
+															? `${getTimeInputValue(relatedShift.start_time)} - ${getTimeInputValue(relatedShift.end_time)}`
 															: "Unknown"}
 														{sr.reason && <> • Reason: {sr.reason}</>}
 													</p>
@@ -1056,8 +1036,8 @@ export default function ShiftsPage() {
 				</>
 			)}
 
-			{/* Shift Form Dialog */}
-			<ShiftForm
+			{/* Shift Form Dialog — now with sub-location selector */}
+			<ShiftFormDialog
 				open={shiftDialogOpen}
 				onOpenChange={(open) => {
 					setShiftDialogOpen(open);
@@ -1065,40 +1045,38 @@ export default function ShiftsPage() {
 				}}
 				editingShift={editingShift}
 				staff={staff}
-				selectedEvent={selectedEvent || null}
+				venueId={selectedVenue?.id || null}
+				eventName={selectedEvent?.name}
 				saving={saving}
 				onSubmit={handleFormSubmit}
 				isStaffUnavailable={isStaffUnavailable}
 			/>
 
 			{/* Delete Confirmation */}
-			<Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
-				<DialogContent className="bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/70">
-					<DialogHeader>
-						<DialogTitle className="text-white">Delete Shift</DialogTitle>
-						<DialogDescription className="text-zinc-400">
+			<AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+				<AlertDialogContent className="bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/70">
+					<AlertDialogHeader>
+						<AlertDialogTitle className="text-white">
+							Delete Shift
+						</AlertDialogTitle>
+						<AlertDialogDescription className="text-zinc-400">
 							Are you sure you want to delete this shift? This action cannot be
 							undone.
-						</DialogDescription>
-					</DialogHeader>
-					<DialogFooter>
-						<Button
-							variant="outline"
-							onClick={() => setDeleteDialogOpen(false)}
-							className="border-zinc-800"
-						>
+						</AlertDialogDescription>
+					</AlertDialogHeader>
+					<AlertDialogFooter>
+						<AlertDialogCancel className="border-zinc-800 text-zinc-400 hover:text-white">
 							Cancel
-						</Button>
-						<Button
+						</AlertDialogCancel>
+						<AlertDialogAction
 							onClick={handleDeleteConfirm}
-							disabled={deleting}
 							className="bg-red-600 hover:bg-red-700"
 						>
 							{deleting ? "Deleting..." : "Delete"}
-						</Button>
-					</DialogFooter>
-				</DialogContent>
-			</Dialog>
+						</AlertDialogAction>
+					</AlertDialogFooter>
+				</AlertDialogContent>
+			</AlertDialog>
 
 			{/* Conflict Warning */}
 			<AlertDialog
@@ -1118,8 +1096,13 @@ export default function ShiftsPage() {
 									{" "}
 									on{" "}
 									<span className="text-zinc-300">
-										{formatTime(conflictData.conflictingShifts[0].start_time)} -{" "}
-										{formatTime(conflictData.conflictingShifts[0].end_time)}
+										{getTimeInputValue(
+											conflictData.conflictingShifts[0].start_time,
+										)}{" "}
+										-{" "}
+										{getTimeInputValue(
+											conflictData.conflictingShifts[0].end_time,
+										)}
 										{conflictData.conflictingShifts[0].role &&
 											` (${conflictData.conflictingShifts[0].role})`}
 									</span>
@@ -1161,8 +1144,8 @@ export default function ShiftsPage() {
 							{swapTargetShift && (
 								<>
 									{" "}
-									for {formatTime(swapTargetShift.start_time)} -{" "}
-									{formatTime(swapTargetShift.end_time)}
+									for {getTimeInputValue(swapTargetShift.start_time)} -{" "}
+									{getTimeInputValue(swapTargetShift.end_time)}
 								</>
 							)}
 						</DialogDescription>

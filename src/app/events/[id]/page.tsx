@@ -95,10 +95,15 @@ export default function EventDetailPage() {
 		setLoading(true);
 		try {
 			const response = await fetch(`/api/events/${eventId}`);
+			if (!response.ok) {
+				setEvent(null);
+				return;
+			}
 			const data = await response.json();
 			setEvent(data);
 		} catch (error) {
 			console.error("Failed to fetch event:", error);
+			setEvent(null);
 		} finally {
 			setLoading(false);
 		}
@@ -168,10 +173,26 @@ export default function EventDetailPage() {
 
 	const handleDeleteEvent = async () => {
 		try {
-			await fetch(`/api/events/${eventId}`, { method: "DELETE" });
+			const response = await fetch(`/api/events/${eventId}`, {
+				method: "DELETE",
+			});
+			if (!response.ok) {
+				const err = await response.json();
+				throw new Error(err.error || "Failed to delete event");
+			}
+			toast({
+				title: "Event deleted",
+				description: "The event has been removed.",
+			});
 			router.push("/events");
 		} catch (error) {
 			console.error("Failed to delete event:", error);
+			toast({
+				variant: "destructive",
+				title: "Delete failed",
+				description:
+					error instanceof Error ? error.message : "Could not delete event",
+			});
 		}
 	};
 

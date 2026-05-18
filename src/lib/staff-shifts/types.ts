@@ -22,6 +22,7 @@ export interface Shift {
 	event_id: string;
 	staff_id: string;
 	role: string;
+	sub_location_id?: string | null;
 	start_time: string;
 	end_time: string;
 	break_minutes: number;
@@ -111,3 +112,29 @@ export const ROLE_COLORS: Record<string, string> = {
 	Label: "bg-violet-600",
 	Staff: "bg-cyan-600",
 };
+
+const FALLBACK_COLORS = [
+	"bg-blue-500",
+	"bg-emerald-500",
+	"bg-amber-500",
+	"bg-rose-500",
+	"bg-cyan-500",
+	"bg-violet-500",
+	"bg-orange-500",
+	"bg-teal-500",
+	"bg-indigo-500",
+	"bg-pink-500",
+	"bg-lime-500",
+	"bg-sky-500",
+];
+
+/** Get a deterministic color for any role name, even if not in ROLE_COLORS */
+export function getRoleColor(role: string): string {
+	if (ROLE_COLORS[role]) return ROLE_COLORS[role];
+	// Deterministic hash: sum char codes, pick from fallback palette
+	let hash = 0;
+	for (let i = 0; i < role.length; i++) {
+		hash = ((hash << 5) - hash + role.charCodeAt(i)) | 0;
+	}
+	return FALLBACK_COLORS[Math.abs(hash) % FALLBACK_COLORS.length];
+}

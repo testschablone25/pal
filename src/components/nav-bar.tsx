@@ -167,7 +167,7 @@ export function NavBar() {
 											PAL
 										</span>
 										<span className="text-zinc-500 text-sm font-normal">
-											Nightclub
+											.tool
 										</span>
 									</div>
 

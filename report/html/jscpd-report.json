@@ -1,6 +1,6 @@
 {
   "statistics": {
-    "detectionDate": "2026-05-12T11:53:59.112Z",
+    "detectionDate": "2026-05-12T14:41:06.444Z",
     "formats": {
       "typescript": {
         "sources": {
@@ -245,14 +245,14 @@
             "newClones": 0
           },
           "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/app/api/tasks/[id]/route.ts": {
-            "lines": 422,
-            "tokens": 3159,
+            "lines": 473,
+            "tokens": 3673,
             "sources": 1,
             "clones": 4,
             "duplicatedLines": 40,
             "duplicatedTokens": 430,
-            "percentage": 9.48,
-            "percentageTokens": 13.61,
+            "percentage": 8.46,
+            "percentageTokens": 11.71,
             "newDuplicatedLines": 0,
             "newClones": 0
           },
@@ -473,14 +473,14 @@
             "newClones": 0
           },
           "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/app/api/tasks/route.ts": {
-            "lines": 362,
-            "tokens": 2975,
+            "lines": 386,
+            "tokens": 3256,
             "sources": 1,
             "clones": 1,
             "duplicatedLines": 8,
             "duplicatedTokens": 89,
-            "percentage": 2.21,
-            "percentageTokens": 2.99,
+            "percentage": 2.07,
+            "percentageTokens": 2.73,
             "newDuplicatedLines": 0,
             "newClones": 0
           },
@@ -1134,14 +1134,14 @@
           }
         },
         "total": {
-          "lines": 12131,
-          "tokens": 104920,
+          "lines": 12206,
+          "tokens": 105715,
           "sources": 94,
           "clones": 107,
           "duplicatedLines": 1120,
           "duplicatedTokens": 11372,
-          "percentage": 9.23,
-          "percentageTokens": 10.84,
+          "percentage": 9.18,
+          "percentageTokens": 10.76,
           "newDuplicatedLines": 0,
           "newClones": 0
         }
@@ -1247,18 +1247,6 @@
           "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/components/task-form/task-form-items.tsx": {
             "lines": 90,
             "tokens": 828,
-            "sources": 1,
-            "clones": 0,
-            "duplicatedLines": 0,
-            "duplicatedTokens": 0,
-            "percentage": 0,
-            "percentageTokens": 0,
-            "newDuplicatedLines": 0,
-            "newClones": 0
-          },
-          "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/components/task-detail/task-detail-view.tsx": {
-            "lines": 297,
-            "tokens": 2260,
             "sources": 1,
             "clones": 0,
             "duplicatedLines": 0,
@@ -1954,7 +1942,7 @@
           },
           "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/components/running-order.tsx": {
             "lines": 321,
-            "tokens": 2449,
+            "tokens": 2469,
             "sources": 1,
             "clones": 0,
             "duplicatedLines": 0,
@@ -2314,14 +2302,14 @@
           }
         },
         "total": {
-          "lines": 7623,
-          "tokens": 60150,
-          "sources": 97,
+          "lines": 7326,
+          "tokens": 57910,
+          "sources": 96,
           "clones": 16,
           "duplicatedLines": 267,
           "duplicatedTokens": 1425,
-          "percentage": 3.5,
-          "percentageTokens": 2.37,
+          "percentage": 3.64,
+          "percentageTokens": 2.46,
           "newDuplicatedLines": 0,
           "newClones": 0
         }
@@ -2469,18 +2457,6 @@
             "duplicatedTokens": 77,
             "percentage": 5.52,
             "percentageTokens": 5.21,
-            "newDuplicatedLines": 0,
-            "newClones": 0
-          },
-          "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/components/task-detail/task-detail-view.tsx": {
-            "lines": 389,
-            "tokens": 3134,
-            "sources": 1,
-            "clones": 0,
-            "duplicatedLines": 0,
-            "duplicatedTokens": 0,
-            "percentage": 0,
-            "percentageTokens": 0,
             "newDuplicatedLines": 0,
             "newClones": 0
           },
@@ -2857,8 +2833,8 @@
             "newClones": 0
           },
           "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/app/settings/page.tsx": {
-            "lines": 387,
-            "tokens": 2941,
+            "lines": 410,
+            "tokens": 3123,
             "sources": 1,
             "clones": 0,
             "duplicatedLines": 0,
@@ -3242,7 +3218,7 @@
           },
           "/Users/oliverjeschke/Desktop/glibber/repos/pal/src/components/running-order.tsx": {
             "lines": 422,
-            "tokens": 3117,
+            "tokens": 3142,
             "sources": 1,
             "clones": 0,
             "duplicatedLines": 0,
@@ -3578,28 +3554,28 @@
           }
         },
         "total": {
-          "lines": 16960,
-          "tokens": 139756,
-          "sources": 104,
+          "lines": 16594,
+          "tokens": 136829,
+          "sources": 103,
           "clones": 48,
           "duplicatedLines": 577,
           "duplicatedTokens": 5212,
-          "percentage": 3.4,
-          "percentageTokens": 3.73,
+          "percentage": 3.48,
+          "percentageTokens": 3.81,
           "newDuplicatedLines": 0,
           "newClones": 0
         }
       }
     },
     "total": {
-      "lines": 36714,
-      "tokens": 304826,
-      "sources": 295,
+      "lines": 36126,
+      "tokens": 300454,
+      "sources": 293,
       "clones": 171,
       "duplicatedLines": 1964,
       "duplicatedTokens": 18009,
-      "percentage": 5.35,
-      "percentageTokens": 5.91,
+      "percentage": 5.44,
+      "percentageTokens": 5.99,
       "newDuplicatedLines": 0,
       "newClones": 0
     }
@@ -4868,7 +4844,7 @@
     {
       "format": "typescript",
       "lines": 11,
-      "fragment": "export async function GET(\n\trequest: NextRequest,\n\t{ params }: { params: Promise<{ id: string }> },\n) {\n\ttry {\n\t\tconst auth = await requireAuth(request, \"TASKS_READ\");\n\t\tif (!auth.authorized) return auth.response;\n\n\t\tconst { id } = await params;\n\n\t\t// Fetch the main task",
+      "fragment": "export async function GET(\n\trequest: NextRequest,\n\t{ params }: { params: Promise<{ id: string }> },\n) {\n\ttry {\n\t\tconst auth = await requireAuth(request, \"TASKS_READ\");\n\t\tif (!auth.authorized) return auth.response;\n\n\t\tconst { id } = await params;\n\n\t\t// Fetch the main task — gracefully handle missing task_assignees table",
       "tokens": 0,
       "firstFile": {
         "name": "src/app/api/tasks/[id]/route.ts",
@@ -4881,7 +4857,7 @@
         },
         "endLoc": {
           "line": 124,
-          "column": 23,
+          "column": 72,
           "position": 458
         }
       },
@@ -4908,17 +4884,17 @@
       "tokens": 0,
       "firstFile": {
         "name": "src/app/api/tasks/[id]/route.ts",
-        "start": 168,
-        "end": 180,
+        "start": 196,
+        "end": 208,
         "startLoc": {
-          "line": 168,
+          "line": 196,
           "column": 4,
-          "position": 877
+          "position": 1145
         },
         "endLoc": {
-          "line": 180,
+          "line": 208,
           "column": 6,
-          "position": 998
+          "position": 1266
         }
       },
       "secondFile": {
@@ -4944,17 +4920,17 @@
       "tokens": 0,
       "firstFile": {
         "name": "src/app/api/tasks/[id]/route.ts",
-        "start": 399,
-        "end": 409,
+        "start": 450,
+        "end": 460,
         "startLoc": {
-          "line": 399,
+          "line": 450,
           "column": 1,
-          "position": 2898
+          "position": 3412
         },
         "endLoc": {
-          "line": 409,
+          "line": 460,
           "column": 2,
-          "position": 3007
+          "position": 3521
         }
       },
       "secondFile": {
@@ -4980,17 +4956,17 @@
       "tokens": 0,
       "firstFile": {
         "name": "src/app/api/tasks/[id]/route.ts",
-        "start": 409,
-        "end": 417,
+        "start": 460,
+        "end": 468,
         "startLoc": {
-          "line": 409,
+          "line": 460,
           "column": 8,
-          "position": 3022
+          "position": 3536
         },
         "endLoc": {
-          "line": 417,
+          "line": 468,
           "column": 23,
-          "position": 3115
+          "position": 3629
         }
       },
       "secondFile": {

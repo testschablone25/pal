@@ -10,7 +10,7 @@
 
 This plan reworks the shift scheduling system from the ground up, targeting a **production launch in 2 weeks**. The current system is a basic CRUD-only skeleton (create/delete shifts, simple timeline, no validation). We're building a production-grade scheduling module with:
 
-- **Venue area–aware shifts** (staff assigned to specific rooms/stages within a venue)
+- **Venue sub-location–aware shifts** (staff assigned to specific rooms/stages/areas within a venue — e.g. KERN, ORB, ORBIT)
 - **Event-driven timeline** (operating hours derived from event `door_time`/`end_time`)
 - **Drag-and-drop shift creation** using existing `@dnd-kit` infrastructure
 - **Shift templates** (save/apply shift plans by name)
@@ -35,12 +35,23 @@ This plan reworks the shift scheduling system from the ground up, targeting a **
 ### Schema (existing)
 
 ```sql
--- No venue_areas table
-venues (id, name, address, capacity)
+-- ✅ venue_sub_locations already exists! (KERN, ORB, ORBIT seeded per venue)
+venue_sub_locations (id, venue_id, name, description, capacity)
+
+venues (id, name, address, capacity, venue_type, is_pal_location, ...)
 shifts (id, event_id, staff_id, role, start_time, end_time, break_minutes, status)
 staff (id, profile_id, role, contract_type, is_minor, hourly_rate)
 availability (id, staff_id, date, available, reason)
 ```
+
+### Sub-Locations (existing — no work needed here)
+
+- **Table:** `venue_sub_locations` with `id, venue_id, name, description, capacity, created_at`
+- **Seeded:** KERN (Main dancefloor), ORB (Second room/ambient), ORBIT (Bar/lounge) for the main venue
+- **API:** Full CRUD at `/api/venues/[id]/sublocations/` and `...[subId]/route.ts`
+- **UI:** `VenueSubLocationForm` component with add/delete dialog, integrated into venues page
+- **Used by:** `items.sub_location_id`, `task_items.goal_sub_location_id`
+- **Not yet connected to:** `shifts`
 
 ### API (existing — all use service role key, no Zod validation)
 
@@ -48,13 +59,15 @@ availability (id, staff_id, date, available, reason)
 - `GET/PUT/DELETE /api/shifts/[id]` — manual field checks
 - `GET/POST /api/availability` — manual checks, upsert pattern
 - `GET/PUT/DELETE /api/availability/[id]`
+- `GET/POST /api/venues/[id]/sublocations/` — sub-location CRUD ✅ (already exists)
+- `PUT/DELETE /api/venues/[id]/sublocations/[subId]/`
 
 ### UI (existing — single-page client component at `/staff/shifts`)
 
 - Inline types + inline Zod schema (no shared schemas)
 - Timeline hardcoded 18:00-06:00, not derived from event
 - Create + Delete only (no edit)
-- No area/room assignment
+- No sub-location/room assignment
 - No drag-and-drop
 - No templates
 
@@ -66,40 +79,22 @@ availability (id, staff_id, date, available, reason)
 - `date-fns` — date formatting
 - `profiles` + `user_roles` tables — staff auth infrastructure exists
 - `notifications` table — schema exists for future use
+- `venue_sub_locations` table + CRUD API + UI — already built for inventory, now reused for shifts
 
 ---
 
 ## Phase 1: Schema + Shared Validation (2 days)
 
-### 1A — Migration: `venue_areas` Table
+### 1A — Migration: Add `sub_location_id` to Shifts (no new table needed)
 
-Venues have sublocations (stages, rooms, areas) that staff get assigned to. We need a dedicated table.
-
-```sql
-CREATE TABLE venue_areas (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  venue_id UUID REFERENCES venues(id) ON DELETE CASCADE,
-  name TEXT NOT NULL,               -- e.g. "Main Stage", "Bar 1", "VIP Lounge", "Cloakroom"
-  area_type TEXT DEFAULT 'general', -- 'stage', 'bar', 'vip', 'cloakroom', 'security', 'general'
-  capacity INT,                      -- optional area-specific capacity
-  sort_order INT DEFAULT 0,
-  created_at TIMESTAMPTZ DEFAULT NOW(),
-  updated_at TIMESTAMPTZ DEFAULT NOW()
-);
-
-CREATE INDEX idx_venue_areas_venue_id ON venue_areas(venue_id);
-
--- Seed default areas per venue (triggered by venue insert or done in seed script)
-```
-
-### 1B — Migration: Add `area_id` to Shifts
+**`venue_sub_locations` already exists** with seeded data (KERN, ORB, ORBIT). We just need to link shifts to it:
 
 ```sql
-ALTER TABLE shifts ADD COLUMN area_id UUID REFERENCES venue_areas(id);
-CREATE INDEX idx_shifts_area_id ON shifts(area_id);
+ALTER TABLE shifts ADD COLUMN sub_location_id UUID REFERENCES venue_sub_locations(id);
+CREATE INDEX idx_shifts_sub_location_id ON shifts(sub_location_id);
 ```
 
-### 1C — Migration: Add `clock_in` / `clock_out` columns (for future)
+### 1B — Migration: Add `clock_in` / `clock_out` columns (for future)
 
 ```sql
 ALTER TABLE shifts ADD COLUMN clocked_in_at TIMESTAMPTZ;
@@ -109,7 +104,7 @@ ALTER TABLE shifts ADD COLUMN actual_break_minutes INT;
 
 (These are schema-only — UI/API for clock-in is future. Keeps migration atomic.)
 
-### 1D — Shared Validation Schemas
+### 1C — Shared Validation Schemas
 
 Create `src/lib/validations/shift.ts`:
 
@@ -128,7 +123,7 @@ export const shiftCreateSchema = z.object({
   event_id: z.string().uuid(),
   staff_id: z.string().uuid(),
   role: z.string().min(1),
-  area_id: z.string().uuid().nullable().optional(),
+  sub_location_id: z.string().uuid().nullable().optional(),
   start_time: z.string().datetime(),
   end_time: z.string().datetime(),
   break_minutes: z.number().int().min(0).default(0),
@@ -140,7 +135,7 @@ export const shiftUpdateSchema = shiftCreateSchema.partial();
 export const shiftFilterSchema = z.object({
   event_id: z.string().uuid().optional(),
   staff_id: z.string().uuid().optional(),
-  area_id: z.string().uuid().optional(),
+  sub_location_id: z.string().uuid().optional(),
   status: shiftStatusEnum.optional(),
   date_from: z.string().optional(),
   date_to: z.string().optional(),
@@ -175,7 +170,7 @@ import { z } from "zod/v4";
 
 export const templateSlotSchema = z.object({
   role: z.string().min(1),
-  area_id: z.string().uuid().nullable().optional(),
+  sub_location_id: z.string().uuid().nullable().optional(),
   count: z.number().int().min(1),
   start_offset_minutes: z.number().int(), // relative to door_time
   duration_minutes: z.number().int().min(30),
@@ -198,23 +193,27 @@ export type TemplateSlot = z.infer<typeof templateSlotSchema>;
 src/lib/validations/shift.ts
 src/lib/validations/availability.ts
 src/lib/validations/template.ts
-supabase/migrations/20240518000000_venue_areas.sql
-supabase/migrations/20240518000001_shifts_area_id.sql
-supabase/migrations/20240518000002_shifts_clock_columns.sql
+supabase/migrations/20260518000001_shifts_sub_location_id.sql
+supabase/migrations/20260518000002_shifts_clock_columns.sql
 ```
 
 ---
 
 ## Phase 2: Shift API Rework (2 days)
 
-### 2A — Venue Areas API
+### 2A — Sub-Locations API (already exists — no work needed)
 
-```
-GET /api/venues/[id]/areas — List areas for a venue
-POST /api/venues/[id]/areas — Create area
-PUT /api/venues/[id]/areas/[id] — Update area
-DELETE /api/venues/[id]/areas/[id] — Delete area
-```
+Sub-locations are already fully CRUD-capable:
+
+| Route                                          | Description                    | Status      |
+| ---------------------------------------------- | ------------------------------ | ----------- |
+| `GET /api/venues/[id]/sublocations`            | List sub-locations for a venue | ✅ Existing |
+| `POST /api/venues/[id]/sublocations`           | Create sub-location            | ✅ Existing |
+| `PUT /api/venues/[id]/sublocations/[subId]`    | Update sub-location            | ✅ Existing |
+| `DELETE /api/venues/[id]/sublocations/[subId]` | Delete sub-location            | ✅ Existing |
+| `VenueSubLocationForm` component               | Add/delete UI on venues page   | ✅ Existing |
+
+The shift scheduling page will call `GET /api/venues/[id]/sublocations` (where `id` is the event's venue) to populate the sub-location dropdown.
 
 ### 2B — Rewrite `/api/shifts` with Zod validation + conflict detection
 
@@ -245,8 +244,8 @@ async function checkShiftConflict(
 }
 ```
 
-**GET /api/shifts** — Add `area_id` filter, include venue_area data in joins  
-**POST /api/shifts** — Zod validation → conflict check → insert with `area_id`  
+**GET /api/shifts** — Add `sub_location_id` filter, include venue_sub_locations data in joins  
+**POST /api/shifts** — Zod validation → conflict check → insert with `sub_location_id`  
 **PUT /api/shifts/[id]** — Zod validation → conflict check (exclude self) → update  
 **DELETE /api/shifts/[id]** — Soft delete (set status = 'cancelled') or hard delete
 
@@ -258,7 +257,7 @@ interface ShiftResponse {
   event_id: string;
   staff_id: string;
   role: string;
-  area_id: string | null;
+  sub_location_id: string | null;
   start_time: string;
   end_time: string;
   break_minutes: number;
@@ -269,7 +268,11 @@ interface ShiftResponse {
     contract_type: string;
     profiles: { full_name: string | null; email: string | null };
   };
-  venue_areas: { id: string; name: string; area_type: string } | null;
+  venue_sub_locations: {
+    id: string;
+    name: string;
+    description: string | null;
+  } | null;
   events: {
     id: string;
     name: string;
@@ -303,19 +306,17 @@ for (const slot of template.slots) {
   const shiftStart = addMinutes(eventDoorTime, slot.start_offset_minutes);
   const shiftEnd = addMinutes(shiftStart, slot.duration_minutes);
   // Create `slot.count` shifts for available staff matching slot.role
-  // Assign to slot.area_id if set
+  // Assign to slot.sub_location_id if set
 }
 ```
 
 ### 2E — Dashboard API Update
 
-Update `/api/dashboard` to include new shift shape (area_id, venue_areas data).
+Update `/api/dashboard` to include new shift shape (sub_location_id, venue_sub_locations data).
 
-**Files to create/modify:**
+**Files to modify:**
 
 ```
-src/app/api/venues/[id]/areas/route.ts          # NEW
-src/app/api/venues/[id]/areas/[id]/route.ts     # NEW
 src/app/api/shifts/route.ts                     # REWRITE
 src/app/api/shifts/[id]/route.ts                # REWRITE
 src/app/api/availability/route.ts               # REWRITE
@@ -330,16 +331,11 @@ src/app/api/dashboard/route.ts                  # UPDATE
 
 ## Phase 3: Shift UI Rework (4 days)
 
-### 3A — Venue Areas Management UI
+### 3A — Sub-Locations Management (already exists — no work needed)
 
-Add area management to the Venues page or create a dedicated areas manager.
+The `VenueSubLocationForm` component at `src/components/venues/venue-sub-location-form.tsx` already provides full CRUD for sub-locations, integrated into the venues page. No new UI needed.
 
-**Components:**
-
-```
-src/components/venues/area-manager.tsx         # NEW - List + CRUD areas within a venue
-src/components/venues/area-form.tsx            # NEW - Create/edit area dialog
-```
+The shift scheduling page will fetch sub-locations via the existing API and display them in a dropdown on the shift form.
 
 ### 3B — Shift Timeline Component (Core)
 
@@ -348,7 +344,7 @@ Build a new **event-driven timeline** that replaces the hardcoded 18:00-06:00.
 **Key features:**
 
 - X-axis spans from `event.door_time` to `event.end_time` (may cross midnight)
-- Each row = a venue area (grouped), then staff within each area
+- Each row = a venue sub-location (grouped), then staff within each sub-location
 - Colored bars = shifts, color-coded by role
 - **Drag from empty row space to create a shift** (click-and-drag on timeline)
 - Click existing shift to edit
@@ -391,7 +387,7 @@ src/components/shifts/shift-details.tsx        # NEW - Read-only detail view (fo
 
 - Staff member (dropdown, filtered by role, shows availability badge)
 - Role (dropdown from STAFF_ROLES constant, auto-filled if creating from role-filtered row)
-- Area (dropdown of venue areas for the event's venue)
+- Sub-location (dropdown of venue sub-locations for the event's venue — fetched via existing API)
 - Start time + End time (time inputs, pre-filled from timeline drag)
 - Break (minutes, number input)
 - Status (dropdown: draft → scheduled → confirmed → completed → cancelled)
@@ -405,7 +401,7 @@ Building on the existing `@dnd-kit` infrastructure in `running-order.tsx`:
 1. User mousedowns on empty timeline row
 2. Ghost block appears, follows cursor horizontally
 3. On mouseup → compute start_time/end_time from pixel position (snapped to 30-min intervals)
-4. Open shift-form-dialog with pre-filled times, staff, role, area
+4. Open shift-form-dialog with pre-filled times, staff, role, sub-location
 
 **Click on existing shift block:**
 
@@ -413,16 +409,16 @@ Building on the existing `@dnd-kit` infrastructure in `running-order.tsx`:
 
 **Hover on shift block:**
 
-- Show tooltip with: staff name, role, time range, break, status
+- Show tooltip with: staff name, role, time range, break, status, sub-location
 - Show delete button (trash icon)
 
 ### 3E — Event Selector + Info Bar
 
 Refactor the existing event selector. When an event is selected:
 
-- Load venue areas for that event's venue
+- Load venue sub-locations for that event's venue via existing `/api/venues/[id]/sublocations`
 - Show event info (venue name, date, door_time → end_time)
-- Show staffing summary (X shifts across Y staff, grouped by role/area)
+- Show staffing summary (X shifts across Y staff, grouped by role/sub-location)
 - Timeline renders with dynamic hours from event's door_time/end_time
 
 **Files to modify:**
@@ -456,7 +452,7 @@ src/components/shifts/my-shifts-calendar.tsx    # NEW — Calendar overview for 
 **Features:**
 
 - Upcoming shifts list (next 30 days, sorted by date)
-- Each shift shows: event name, date, role, area, time range, break, status
+- Each shift shows: event name, date, role, sub-location, time range, break, status
 - "Confirm" button for draft/scheduled shifts
 - "Request swap" placeholder (UI only, logic is future)
 - Calendar overview with shift markers
@@ -500,7 +496,7 @@ src/components/templates/template-slot-row.tsx     # NEW
 - Description (textarea, optional)
 - Slots (repeating group):
   - Role (dropdown)
-  - Area (dropdown of venue areas — nullable)
+  - Sub-location (dropdown of venue sub-locations — nullable)
   - Count (number, how many staff with this role)
   - Start offset (number of minutes before/after door_time)
   - Duration (minutes)
@@ -526,7 +522,7 @@ On the shift scheduling page, add a "Apply Template" button that opens a dialog:
 On the shift scheduling page, add "Save as Template" button that:
 
 1. Collects all shifts for the current event
-2. Groups by role + area, computes offsets from event.door_time
+2. Groups by role + sub-location, computes offsets from event.door_time
 3. Opens template form pre-filled with the derived slots
 4. Manager can edit name, description, adjust counts/times before saving
 
@@ -559,7 +555,7 @@ On event detail pages (existing or upcoming), show:
 
 - Staffing summary card: "5 bar, 3 security, 2 door scheduled"
 - Link to shift scheduling page pre-filtered to this event
-- Venue areas list for the event's venue
+- Venue sub-locations list for the event's venue
 
 ### 6C — Testing
 
@@ -574,17 +570,15 @@ On event detail pages (existing or upcoming), show:
 
 **Integration tests:**
 
-- `src/test/integration/shifts.test.ts` — CRUD + conflict detection + area assignment
+- `src/test/integration/shifts.test.ts` — CRUD + conflict detection + sub-location assignment
 - `src/test/integration/availability.test.ts`
 - `src/test/integration/templates.test.ts`
-- `src/test/integration/venue-areas.test.ts`
 
 **E2E tests:**
 
 - `src/test/e2e/shifts/schedule.spec.ts` — Full flow: select event → create shift via form → verify on timeline
 - `src/test/e2e/shifts/templates.spec.ts` — Create template → apply to event → verify shifts created
 - `src/test/e2e/shifts/my-shifts.spec.ts` — Staff logs in → views shifts → confirms a shift
-- `src/test/e2e/venues/areas.spec.ts` — Add area to venue → verify in shift form
 
 ### 6D — Lint + Dead Code Cleanup
 
@@ -607,22 +601,17 @@ Or simpler: seed script that creates auth users for each staff member without a 
 
 ## File Creation Summary
 
-### New Files (~30 total)
+### New Files (~28 total)
 
 ```
-supabase/migrations/20240518000000_venue_areas.sql
-supabase/migrations/20240518000001_shifts_area_id.sql
-supabase/migrations/20240518000002_shifts_clock_columns.sql
+supabase/migrations/20260518000001_shifts_sub_location_id.sql
+supabase/migrations/20260518000002_shifts_clock_columns.sql
 src/lib/validations/shift.ts
 src/lib/validations/availability.ts
 src/lib/validations/template.ts
-src/app/api/venues/[id]/areas/route.ts
-src/app/api/venues/[id]/areas/[id]/route.ts
 src/app/api/shift-templates/route.ts
 src/app/api/shift-templates/[id]/route.ts
 src/app/api/shift-templates/[id]/apply/route.ts
-src/components/venues/area-manager.tsx
-src/components/venues/area-form.tsx
 src/components/shifts/timeline/shift-timeline.tsx
 src/components/shifts/timeline/timeline-header.tsx
 src/components/shifts/timeline/timeline-row.tsx
@@ -647,12 +636,23 @@ src/app/admin/link-staff/page.tsx
 
 ```
 src/app/staff/shifts/page.tsx         # Full rewrite
-src/app/api/shifts/route.ts           # Zod validation + conflict detection
-src/app/api/shifts/[id]/route.ts      # Zod validation + conflict detection
+src/app/api/shifts/route.ts           # Zod validation + conflict detection + sub_location_id
+src/app/api/shifts/[id]/route.ts      # Zod validation + conflict detection + sub_location_id
 src/app/api/availability/route.ts     # Zod validation
 src/app/api/availability/[id]/route.ts
 src/app/api/dashboard/route.ts        # Updated shift shape
 src/components/nav-bar.tsx            # Add "My Shifts" link
+```
+
+### Skipped (already exist — no work needed)
+
+```
+❌ supabase/migrations/20240518000000_venue_areas.sql     → venue_sub_locations already exists
+❌ src/app/api/venues/[id]/areas/                      → sub-locations CRUD already exists at .../sublocations/
+❌ src/components/venues/area-manager.tsx              → VenueSubLocationForm already exists
+❌ src/components/venues/area-form.tsx                 → Already covered by VenueSubLocationForm
+❌ src/test/integration/venue-areas.test.ts            → venue_sub_locations already tested via inventory
+❌ src/test/e2e/venues/areas.spec.ts                   → Existing venue tests cover sub-locations
 ```
 
 ---
@@ -725,7 +725,7 @@ src/components/nav-bar.tsx            # Add "My Shifts" link
 ### Multi-Venue Staffing
 
 - Staff may work across multiple venues (if same company)
-- Template slots could reference venue-specific areas
+- Template slots could reference venue-specific sub-locations
 - Cross-venue conflict detection (same staff, different venue, same night)
 - Combined dashboard for multi-venue managers
 
@@ -734,14 +734,12 @@ src/components/nav-bar.tsx            # Add "My Shifts" link
 ## Commit Strategy
 
 ```
-feat(schema): add venue_areas table, area_id to shifts, clock columns
+feat(schema): add sub_location_id to shifts, clock columns
 feat(validations): add shared Zod schemas for shifts, availability, templates
-feat(api): rewrite shifts API with Zod validation + conflict detection
-feat(api): add venue areas CRUD API
+feat(api): rewrite shifts API with Zod validation + conflict detection + sub_location_id
 feat(api): add shift templates CRUD + apply API
-feat(ui): add venue area manager component
 feat(ui): build event-driven timeline with drag-to-create shifts
-feat(ui): rewrite shift scheduling page with new timeline + form dialog
+feat(ui): rewrite shift scheduling page with new timeline + form dialog + sub-location selector
 feat(ui): add staff self-service my-shifts page
 feat(ui): add shift template manager (list, create, edit, apply)
 feat(nav): add "My Shifts" navigation link

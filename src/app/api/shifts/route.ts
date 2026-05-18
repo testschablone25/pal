@@ -1,11 +1,12 @@
-// Shifts CRUD API
-// Phase 3 - Nightclub Booking System
+// Shifts CRUD API — Phase 2 Rework
+// Zod validation + conflict detection + sub_location_id support
 
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import { supabaseConfig } from "@/lib/supabase/config";
 import { requireAuth } from "@/lib/api-auth";
 import { cacheHeaders } from "@/lib/api-cache";
+import { shiftCreateSchema, shiftFilterSchema } from "@/lib/validations/shift";
 
 const supabase = createClient(supabaseConfig.url, supabaseConfig.serviceKey);
 
@@ -62,55 +63,81 @@ export async function GET(request: NextRequest) {
 			});
 		}
 
-		const eventId = searchParams.get("event_id");
-		const staffId = searchParams.get("staff_id");
-		const status = searchParams.get("status");
-		const dateFrom = searchParams.get("date_from");
-		const dateTo = searchParams.get("date_to");
-		const limit = searchParams.get("limit") || "100";
-		const offset = searchParams.get("offset") || "0";
+		// Parse and validate filter params
+		const filterResult = shiftFilterSchema.safeParse({
+			event_id: searchParams.get("event_id") || undefined,
+			staff_id: searchParams.get("staff_id") || undefined,
+			sub_location_id: searchParams.get("sub_location_id") || undefined,
+			status: searchParams.get("status") || undefined,
+			date_from: searchParams.get("date_from") || undefined,
+			date_to: searchParams.get("date_to") || undefined,
+			limit: searchParams.get("limit") || "100",
+			offset: searchParams.get("offset") || "0",
+		});
+
+		if (!filterResult.success) {
+			return NextResponse.json(
+				{
+					error: "Invalid filter parameters",
+					details: filterResult.error.flatten(),
+				},
+				{ status: 400 },
+			);
+		}
+
+		const filters = filterResult.data;
 
 		let query = supabase
 			.from("shifts")
 			.select(
 				`
-        *,
-        staff:staff_id (
-          id,
-          role,
-          contract_type,
-          profiles:profile_id (
-            id,
-            full_name,
-            email
-          )
-        ),
-        events:event_id (
-          id,
-          name,
-          date
-        )
-      `,
+				*,
+				staff:staff_id (
+					id,
+					role,
+					contract_type,
+					profiles:profile_id (
+						id,
+						full_name,
+						email
+					)
+				),
+				venue_sub_locations:sub_location_id (
+					id,
+					name,
+					description
+				),
+				events:event_id (
+					id,
+					name,
+					date,
+					door_time,
+					end_time
+				)
+			`,
 				{ count: "exact" },
 			)
 			.order("start_time", { ascending: true })
-			.range(parseInt(offset), parseInt(offset) + parseInt(limit) - 1);
+			.range(filters.offset, filters.offset + filters.limit - 1);
 
 		// Apply filters
-		if (eventId) {
-			query = query.eq("event_id", eventId);
+		if (filters.event_id) {
+			query = query.eq("event_id", filters.event_id);
 		}
-		if (staffId) {
-			query = query.eq("staff_id", staffId);
+		if (filters.staff_id) {
+			query = query.eq("staff_id", filters.staff_id);
 		}
-		if (status) {
-			query = query.eq("status", status);
+		if (filters.sub_location_id) {
+			query = query.eq("sub_location_id", filters.sub_location_id);
 		}
-		if (dateFrom) {
-			query = query.gte("start_time", dateFrom);
+		if (filters.status) {
+			query = query.eq("status", filters.status);
 		}
-		if (dateTo) {
-			query = query.lte("end_time", dateTo);
+		if (filters.date_from) {
+			query = query.gte("start_time", filters.date_from);
+		}
+		if (filters.date_to) {
+			query = query.lte("end_time", filters.date_to);
 		}
 
 		const { data, error, count } = await query;
@@ -123,8 +150,8 @@ export async function GET(request: NextRequest) {
 			{
 				shifts: data,
 				total: count || 0,
-				limit: parseInt(limit),
-				offset: parseInt(offset),
+				limit: filters.limit,
+				offset: filters.offset,
 			},
 			{ headers: cacheHeaders(30) },
 		);
@@ -145,61 +172,75 @@ export async function POST(request: NextRequest) {
 
 		const body = await request.json();
 
-		const {
-			event_id,
-			staff_id,
-			role,
-			start_time,
-			end_time,
-			break_minutes,
-			status,
-		} = body;
-
-		// Validate required fields
-		if (!event_id) {
+		// Zod validation
+		const parsed = shiftCreateSchema.safeParse(body);
+		if (!parsed.success) {
 			return NextResponse.json(
-				{ error: "Event ID is required" },
+				{
+					error: "Validation failed",
+					details: parsed.error.flatten(),
+				},
 				{ status: 400 },
 			);
 		}
 
-		if (!staff_id) {
-			return NextResponse.json(
-				{ error: "Staff ID is required" },
-				{ status: 400 },
-			);
-		}
+		const { sub_location_id, ...insertData } = parsed.data;
 
-		if (!role) {
-			return NextResponse.json({ error: "Role is required" }, { status: 400 });
-		}
+		// Conflict detection: check for overlapping shifts
+		const { data: conflictingShifts, error: conflictError } = await supabase
+			.from("shifts")
+			.select("id, start_time, end_time, role")
+			.eq("staff_id", insertData.staff_id)
+			.eq("event_id", insertData.event_id)
+			.neq("status", "cancelled")
+			.lte("start_time", insertData.end_time)
+			.gte("end_time", insertData.start_time);
 
-		if (!start_time) {
+		if (conflictError) {
+			console.error("Conflict check query failed:", conflictError);
+		} else if (conflictingShifts && conflictingShifts.length > 0) {
 			return NextResponse.json(
-				{ error: "Start time is required" },
-				{ status: 400 },
-			);
-		}
-
-		if (!end_time) {
-			return NextResponse.json(
-				{ error: "End time is required" },
-				{ status: 400 },
+				{
+					error: "Shift conflict detected",
+					conflictingShifts,
+				},
+				{ status: 409 },
 			);
 		}
 
 		const { data, error } = await supabase
 			.from("shifts")
 			.insert({
-				event_id,
-				staff_id,
-				role,
-				start_time,
-				end_time,
-				break_minutes: break_minutes || 0,
-				status: status || "scheduled",
+				...insertData,
+				sub_location_id: sub_location_id || null,
 			})
-			.select()
+			.select(
+				`
+				*,
+				staff:staff_id (
+					id,
+					role,
+					contract_type,
+					profiles:profile_id (
+						id,
+						full_name,
+						email
+					)
+				),
+				venue_sub_locations:sub_location_id (
+					id,
+					name,
+					description
+				),
+				events:event_id (
+					id,
+					name,
+					date,
+					door_time,
+					end_time
+				)
+			`,
+			)
 			.single();
 
 		if (error) {

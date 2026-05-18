@@ -1,10 +1,11 @@
-// Availability CRUD API
-// Phase 3 - Nightclub Booking System
+// Availability CRUD API — Phase 2 Rework
+// Zod validation
 
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import { supabaseConfig } from "@/lib/supabase/config";
 import { requireAuth } from "@/lib/api-auth";
+import { availabilityUpsertSchema } from "@/lib/validations/availability";
 
 const supabase = createClient(supabaseConfig.url, supabaseConfig.serviceKey);
 
@@ -92,49 +93,25 @@ export async function POST(request: NextRequest) {
 
 		const body = await request.json();
 
-		const {
-			staff_id,
-			date,
-			available,
-			reason,
-			set_by,
-			available_from,
-			available_until,
-			notes,
-		} = body;
-
-		// Validate required fields
-		if (!staff_id) {
+		// Zod validation for core fields
+		const parsed = availabilityUpsertSchema.safeParse(body);
+		if (!parsed.success) {
 			return NextResponse.json(
-				{ error: "Staff ID is required" },
+				{ error: "Validation failed", details: parsed.error.flatten() },
 				{ status: 400 },
 			);
 		}
 
-		if (!date) {
-			return NextResponse.json({ error: "Date is required" }, { status: 400 });
-		}
-
-		if (available === undefined || available === null) {
-			return NextResponse.json(
-				{ error: "Available status is required" },
-				{ status: 400 },
-			);
-		}
-
-		// Build upsert payload — only include fields that were actually sent
+		// Build upsert payload — include extra fields beyond the schema
 		const payload: Record<string, unknown> = {
-			staff_id,
-			date,
-			available,
+			...parsed.data,
 		};
-		if ("reason" in body) payload.reason = reason || null;
-		if ("notes" in body) payload.notes = notes || null;
+		if ("set_by" in body) payload.set_by = body.set_by;
+		if ("notes" in body) payload.notes = body.notes || null;
 		if ("available_from" in body)
-			payload.available_from = available_from || null;
+			payload.available_from = body.available_from || null;
 		if ("available_until" in body)
-			payload.available_until = available_until || null;
-		if (set_by) payload.set_by = set_by;
+			payload.available_until = body.available_until || null;
 
 		// Upsert: insert or update if exists
 		const { data, error } = await supabase
