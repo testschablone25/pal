@@ -369,7 +369,7 @@ export function TaskForm({
 			const validSubtasks = subtaskTitles.filter((s) => s.trim());
 			const valuesWithSubtasks = {
 				...values,
-				subtask_titles: validSubtasks.length > 0 ? validSubtasks : undefined,
+				subtask_titles: validSubtasks,
 			};
 
 			if (isCreate && pendingFiles.length > 0 && onCreateWithFiles) {
