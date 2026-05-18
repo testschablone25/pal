@@ -6,6 +6,7 @@ import { I18nProvider } from "@/lib/i18n";
 import { UserProvider } from "@/lib/user-context";
 import { Toaster } from "@/components/ui/toaster";
 import { createClient } from "@/lib/supabase/server";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 
 // Self-host Montserrat variable font (latin subset only, saves ~300KB)
 const montserrat = localFont({
@@ -70,6 +71,7 @@ export default async function RootLayout({
 							{children}
 						</main>
 						<Toaster />
+						<SpeedInsights />
 					</UserProvider>
 				</I18nProvider>
 			</body>
