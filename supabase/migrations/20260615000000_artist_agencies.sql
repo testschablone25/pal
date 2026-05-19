@@ -41,7 +41,9 @@ CREATE POLICY "Anyone can view artist agencies" ON artist_agencies
 
 CREATE POLICY "Admins, managers and booking can manage artist agencies" ON artist_agencies
   FOR ALL USING (
-    SELECT 1 FROM user_roles
-    WHERE user_id = auth.uid()
-    AND role IN ('admin', 'manager', 'booking')
+    EXISTS (
+      SELECT 1 FROM user_roles
+      WHERE user_id = auth.uid()
+      AND role IN ('admin', 'manager', 'booking')
+    )
   );
