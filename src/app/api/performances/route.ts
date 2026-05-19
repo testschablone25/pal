@@ -4,7 +4,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requireAuth, getAuthenticatedClient } from "@/lib/api-auth";
 
-
 // GET /api/performances - List performances with optional filtering
 export async function GET(request: NextRequest) {
 	try {
@@ -78,6 +77,42 @@ function timesOverlap(
 }
 
 // POST /api/performances - Create a new performance
+// DELETE /api/performances - Bulk delete performances (by event_id)
+export async function DELETE(request: NextRequest) {
+	try {
+		const auth = await requireAuth(request, "EVENTS_WRITE");
+		if (!auth.authorized) return auth.response;
+		const supabase = getAuthenticatedClient(request);
+
+		const searchParams = request.nextUrl.searchParams;
+		const eventId = searchParams.get("event_id");
+
+		if (!eventId) {
+			return NextResponse.json(
+				{ error: "event_id query parameter is required" },
+				{ status: 400 },
+			);
+		}
+
+		const { error } = await supabase
+			.from("performances")
+			.delete()
+			.eq("event_id", eventId);
+
+		if (error) {
+			return NextResponse.json({ error: error.message }, { status: 400 });
+		}
+
+		return NextResponse.json({ success: true });
+	} catch (error) {
+		console.error("Error deleting performances:", error);
+		return NextResponse.json(
+			{ error: "Internal server error" },
+			{ status: 500 },
+		);
+	}
+}
+
 export async function POST(request: NextRequest) {
 	try {
 		const auth = await requireAuth(request, "EVENTS_WRITE");
@@ -86,78 +121,83 @@ export async function POST(request: NextRequest) {
 
 		const body = await request.json();
 
-		const { event_id, artist_id, start_time, end_time, stage, order_index } =
-			body;
+		const {
+			event_id,
+			artist_id,
+			start_time,
+			end_time,
+			stage,
+			order_index,
+			time_slot_id,
+		} = body;
+
+		// Resolve times from time_slot_id if provided (overrides direct start/end times)
+		let resolvedStartTime = start_time;
+		let resolvedEndTime = end_time;
+		const resolvedTimeSlotId = time_slot_id || null;
+
+		if (time_slot_id) {
+			const { data: slot } = await supabase
+				.from("time_slots")
+				.select("start_time, end_time")
+				.eq("id", time_slot_id)
+				.single();
+
+			if (!slot) {
+				return NextResponse.json(
+					{ error: "Time slot not found" },
+					{ status: 404 },
+				);
+			}
+
+			resolvedStartTime = slot.start_time;
+			resolvedEndTime = slot.end_time;
+		}
 
 		// Validate required fields
-		if (!event_id || !artist_id || !start_time || !end_time) {
+		if (!event_id || !artist_id || !resolvedStartTime || !resolvedEndTime) {
 			return NextResponse.json(
-				{ error: "event_id, artist_id, start_time, and end_time are required" },
+				{
+					error:
+						"event_id, artist_id, and either start_time/end_time or time_slot_id are required",
+				},
 				{ status: 400 },
 			);
 		}
 
 		// Check for time overlap with existing performances for this event
-		const { data: existingPerformances } = await supabase
-			.from("performances")
-			.select("*")
-			.eq("event_id", event_id);
+		// (skip if using timeslot since slots are non-overlapping by design)
+		if (!time_slot_id) {
+			const { data: existingPerformances } = await supabase
+				.from("performances")
+				.select("*")
+				.eq("event_id", event_id);
 
-		type PerfRow = {
-			id: string;
-			start_time: string;
-			end_time: string;
-			order_index: number;
-		};
+			type PerfRow = {
+				id: string;
+				start_time: string;
+				end_time: string;
+				order_index: number;
+			};
 
-		const perfRows = (existingPerformances ?? []) as PerfRow[];
+			const perfRows = (existingPerformances ?? []) as PerfRow[];
 
-		if (perfRows.length > 0) {
-			const hasOverlap = perfRows.some((p) => {
-				return timesOverlap(start_time, end_time, p.start_time, p.end_time);
-			});
+			if (perfRows.length > 0) {
+				const hasOverlap = perfRows.some((p) => {
+					return timesOverlap(
+						resolvedStartTime,
+						resolvedEndTime,
+						p.start_time,
+						p.end_time,
+					);
+				});
 
-			if (hasOverlap) {
-				return NextResponse.json(
-					{ error: "Time overlap detected with existing performance" },
-					{ status: 409 },
-				);
-			}
-		}
-
-		// Calculate order_index based on start_time position
-		let nextOrderIndex = 0;
-		if (perfRows.length > 0) {
-			// Sort existing performances by start_time
-			const sorted = [...perfRows].sort((a, b) =>
-				a.start_time.localeCompare(b.start_time),
-			);
-
-			// Find first performance that starts after the new one
-			const insertIndex = sorted.findIndex(
-				(p) => p.start_time > start_time,
-			);
-
-			if (insertIndex === -1) {
-				// Append at end
-				const maxOrder = Math.max(
-					...sorted.map((p) => p.order_index || 0),
-				);
-				nextOrderIndex = maxOrder + 1;
-			} else {
-				// Insert at position, shift subsequent performances down
-				const subsequent = sorted.slice(insertIndex);
-				for (const perf of subsequent) {
-					const { error: shiftError } = await supabase
-						.from("performances")
-						.update({ order_index: (perf.order_index || 0) + 1 })
-						.eq("id", perf.id);
-
-					if (shiftError) {
-						console.error("Failed to shift performance order:", shiftError);
-					}
+				if (hasOverlap) {
+					return NextResponse.json(
+						{ error: "Time overlap detected with existing performance" },
+						{ status: 409 },
+					);
 				}
-				nextOrderIndex = insertIndex;
 			}
 		}
 
@@ -166,12 +206,23 @@ export async function POST(request: NextRequest) {
 			.insert({
 				event_id,
 				artist_id,
-				start_time,
-				end_time,
+				start_time: resolvedStartTime,
+				end_time: resolvedEndTime,
 				stage: stage || "main",
-				order_index: order_index ?? nextOrderIndex,
+				order_index: order_index ?? 0,
+				time_slot_id: resolvedTimeSlotId,
 			})
-			.select()
+			.select(
+				`
+				*,
+				artists:artist_id (
+					id,
+					name,
+					city,
+					genre
+				)
+			`,
+			)
 			.single();
 
 		if (error) {

@@ -23,7 +23,6 @@ import {
 	AlertDialogAction,
 } from "@/components/ui/alert-dialog";
 import { RunningOrder } from "@/components/running-order";
-import { PerformanceForm } from "@/components/performance-form";
 import { TaskForm } from "@/components/task-form";
 import { TaskCard, type Task } from "@/components/task-card";
 import { TaskDetailDialog } from "@/components/task-detail-dialog";
@@ -71,11 +70,6 @@ export default function EventDetailPage() {
 	const eventId = params.id as string;
 	const [event, setEvent] = useState<Event | null>(null);
 	const [loading, setLoading] = useState(true);
-	const [addPerformanceOpen, setAddPerformanceOpen] = useState(false);
-	const [preselectedArtistId, setPreselectedArtistId] = useState<string | null>(
-		null,
-	);
-	const [refreshKey, setRefreshKey] = useState(0);
 	const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
 	// Task state
@@ -194,29 +188,6 @@ export default function EventDetailPage() {
 					error instanceof Error ? error.message : "Could not delete event",
 			});
 		}
-	};
-
-	const handleAddPerformance = (artistId?: string) => {
-		setPreselectedArtistId(artistId || null);
-		setAddPerformanceOpen(true);
-	};
-
-	const handlePerformanceSuccess = (_performance: Record<string, unknown>) => {
-		setAddPerformanceOpen(false);
-		setPreselectedArtistId(null);
-		setRefreshKey((prev) => prev + 1);
-		toast({
-			title: "Performance added",
-			description: "The performance has been added to the running order.",
-		});
-	};
-
-	const handlePerformanceError = (error: string) => {
-		toast({
-			variant: "destructive",
-			title: "Error",
-			description: error,
-		});
 	};
 
 	// ===== Task Functions =====
@@ -539,11 +510,7 @@ export default function EventDetailPage() {
 			)}
 
 			{/* Running Order */}
-			<RunningOrder
-				key={refreshKey}
-				eventId={eventId}
-				onAddPerformance={handleAddPerformance}
-			/>
+			<RunningOrder eventId={eventId} />
 
 			{/* Tasks Section */}
 			<Card className="bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/70 mb-6">
@@ -604,27 +571,6 @@ export default function EventDetailPage() {
 					)}
 				</CardContent>
 			</Card>
-
-			{/* Add Performance Modal */}
-			<Dialog
-				open={addPerformanceOpen}
-				onOpenChange={(open) => {
-					setAddPerformanceOpen(open);
-					if (!open) setPreselectedArtistId(null);
-				}}
-			>
-				<DialogContent className="bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/70 rounded-lg max-w-lg">
-					<DialogHeader>
-						<DialogTitle>Add Performance</DialogTitle>
-					</DialogHeader>
-					<PerformanceForm
-						eventId={eventId}
-						preselectedArtistId={preselectedArtistId || undefined}
-						onSuccess={handlePerformanceSuccess}
-						onError={handlePerformanceError}
-					/>
-				</DialogContent>
-			</Dialog>
 
 			{/* Create Task Modal */}
 			<Dialog open={createTaskOpen} onOpenChange={setCreateTaskOpen}>
