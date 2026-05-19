@@ -222,7 +222,11 @@ export function LabelAgencyManager({
 			const data = await res.json();
 			setLabels(data.labels || []);
 		} catch {
-			toast({ variant: "destructive", title: "Error", description: "Failed to load labels" });
+			toast({
+				variant: "destructive",
+				title: "Error",
+				description: "Failed to load labels",
+			});
 		} finally {
 			setLoadingLabels(false);
 		}
@@ -235,7 +239,11 @@ export function LabelAgencyManager({
 			const data = await res.json();
 			setAgencies(data.agencies || []);
 		} catch {
-			toast({ variant: "destructive", title: "Error", description: "Failed to load agencies" });
+			toast({
+				variant: "destructive",
+				title: "Error",
+				description: "Failed to load agencies",
+			});
 		} finally {
 			setLoadingAgencies(false);
 		}
@@ -268,9 +276,17 @@ export function LabelAgencyManager({
 				),
 			);
 			setNewLabelName("");
-			toast({ title: "Label created", description: `"${trimmed}" has been added.` });
+			toast({
+				title: "Label created",
+				description: `"${trimmed}" has been added.`,
+			});
 		} catch (err) {
-			toast({ variant: "destructive", title: "Error", description: err instanceof Error ? err.message : "Failed to create label" });
+			toast({
+				variant: "destructive",
+				title: "Error",
+				description:
+					err instanceof Error ? err.message : "Failed to create label",
+			});
 		} finally {
 			setCreatingLabel(false);
 		}
@@ -318,9 +334,17 @@ export function LabelAgencyManager({
 				),
 			);
 			setNewAgencyName("");
-			toast({ title: "Agency created", description: `"${trimmed}" has been added.` });
+			toast({
+				title: "Agency created",
+				description: `"${trimmed}" has been added.`,
+			});
 		} catch (err) {
-			toast({ variant: "destructive", title: "Error", description: err instanceof Error ? err.message : "Failed to create agency" });
+			toast({
+				variant: "destructive",
+				title: "Error",
+				description:
+					err instanceof Error ? err.message : "Failed to create agency",
+			});
 		} finally {
 			setCreatingAgency(false);
 		}

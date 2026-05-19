@@ -4,7 +4,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requireAuth, getAuthenticatedClient } from "@/lib/api-auth";
 
-
 // GET /api/artists - List all artists with optional filtering
 export async function GET(request: NextRequest) {
 	try {
@@ -30,7 +29,6 @@ export async function GET(request: NextRequest) {
 
 			matchingArtistIds = (junctionRows || []).map((r) => r.artist_id);
 
-			// If no artists match this label, return empty early
 			if (matchingArtistIds.length === 0) {
 				return NextResponse.json({
 					artists: [],
@@ -44,30 +42,34 @@ export async function GET(request: NextRequest) {
 		// When filtering by agency, first get matching artist IDs from junction table
 		let matchingAgencyArtistIds: string[] | null = null;
 		if (agencyId) {
-			const { data: junctionRows } = await supabase
-				.from("artist_agencies")
-				.select("artist_id")
-				.eq("agency_id", agencyId);
+			try {
+				const { data: junctionRows } = await supabase
+					.from("artist_agencies")
+					.select("artist_id")
+					.eq("agency_id", agencyId);
 
-			matchingAgencyArtistIds = (junctionRows || []).map((r) => r.artist_id);
+				matchingAgencyArtistIds = (junctionRows || []).map((r) => r.artist_id);
 
-			if (matchingAgencyArtistIds.length === 0) {
-				return NextResponse.json({
-					artists: [],
-					total: 0,
-					limit: parseInt(limit),
-					offset: parseInt(offset),
-				});
+				if (matchingAgencyArtistIds.length === 0) {
+					return NextResponse.json({
+						artists: [],
+						total: 0,
+						limit: parseInt(limit),
+						offset: parseInt(offset),
+					});
+				}
+			} catch {
+				// artist_agencies table doesn't exist yet
+				matchingAgencyArtistIds = [];
 			}
 		}
 
-		// Build the query with performance count + labels + agencies subqueries
+		// Build base query with performance count + labels
+		const selectFields = `*, performance_count:performances(count), artist_labels(label_id, labels(id, name))`;
+
 		let query = supabase
 			.from("artists")
-			.select(
-				`*, performance_count:performances(count), artist_labels(label_id, labels(id, name)), artist_agencies(agency_id, agencies(id, name))`,
-				{ count: "exact" },
-			)
+			.select(selectFields, { count: "exact" })
 			.order("name", { ascending: true })
 			.range(parseInt(offset), parseInt(offset) + parseInt(limit) - 1);
 
@@ -94,14 +96,31 @@ export async function GET(request: NextRequest) {
 			return NextResponse.json({ error: error.message }, { status: 500 });
 		}
 
+		// Fetch agencies separately (resilient to missing table)
+		const agencyMap: Record<string, { id: string; name: string }[]> = {};
+		try {
+			const { data: agencyJunction } = await supabase
+				.from("artist_agencies")
+				.select("artist_id, agencies(id, name)");
+
+			if (agencyJunction) {
+				for (const row of agencyJunction) {
+					const aId = row.artist_id as string;
+					const aData = row.agencies as unknown as { id: string; name: string } | null;
+					if (!agencyMap[aId]) agencyMap[aId] = [];
+					if (aData) agencyMap[aId].push(aData);
+				}
+			}
+		} catch {
+			// artist_agencies table doesn't exist yet — use empty
+		}
+
 		// Normalize subquery formats
 		const artists = (data || []).map((artist: Record<string, unknown>) => {
 			const rawLabels = artist.artist_labels as
 				| { labels: { id: string; name: string } | null }[]
 				| undefined;
-			const rawAgencies = artist.artist_agencies as
-				| { agencies: { id: string; name: string } | null }[]
-				| undefined;
+			const artistId = artist.id as string;
 			return {
 				...artist,
 				performance_count:
@@ -111,10 +130,7 @@ export async function GET(request: NextRequest) {
 					.filter(Boolean)
 					.filter((l): l is { id: string; name: string } => l !== null)
 					.sort((a, b) => a.name.localeCompare(b.name)),
-				agencies: (rawAgencies || [])
-					.map((aa) => aa.agencies)
-					.filter(Boolean)
-					.filter((a): a is { id: string; name: string } => a !== null)
+				agencies: (agencyMap[artistId] || [])
 					.sort((a, b) => a.name.localeCompare(b.name)),
 			};
 		});
@@ -155,7 +171,6 @@ export async function POST(request: NextRequest) {
 			documents,
 		} = body;
 
-		// Validate required fields
 		if (!name) {
 			return NextResponse.json({ error: "Name is required" }, { status: 400 });
 		}

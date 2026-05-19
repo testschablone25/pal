@@ -150,7 +150,14 @@ export function ArtistList() {
 
 	useEffect(() => {
 		fetchArtists();
-	}, [searchName, filterGenre, filterCity, filterLabelId, filterAgencyId, currentPage]);
+	}, [
+		searchName,
+		filterGenre,
+		filterCity,
+		filterLabelId,
+		filterAgencyId,
+		currentPage,
+	]);
 
 	const clearFilters = () => {
 		setSearchName("");

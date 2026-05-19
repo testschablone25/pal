@@ -4,7 +4,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requireAuth, getAuthenticatedClient } from "@/lib/api-auth";
 
-
 // GET /api/artists/[id] - Get single artist
 export async function GET(
 	request: NextRequest,
@@ -17,10 +16,11 @@ export async function GET(
 
 		const { id } = await params;
 
+		// Fetch artist with labels (labels table always exists)
 		const { data, error } = await supabase
 			.from("artists")
 			.select(
-				`*, artist_labels(label_id, labels(id, name)), artist_agencies(agency_id, agencies(id, name))`,
+				`*, artist_labels(label_id, labels(id, name))`,
 			)
 			.eq("id", id)
 			.single();
@@ -35,12 +35,28 @@ export async function GET(
 			return NextResponse.json({ error: error.message }, { status: 500 });
 		}
 
-		// Normalize subquery formats
+		// Fetch agencies separately (resilient to missing table)
+		let agencies: { id: string; name: string }[] = [];
+		try {
+			const { data: agencyJunction } = await supabase
+				.from("artist_agencies")
+				.select("agencies(id, name)")
+				.eq("artist_id", id);
+
+			if (agencyJunction) {
+				agencies = agencyJunction
+					.map((row) => row.agencies as unknown as { id: string; name: string } | null)
+					.filter(Boolean)
+					.filter((a): a is { id: string; name: string } => a !== null)
+					.sort((a, b) => a.name.localeCompare(b.name));
+			}
+		} catch {
+			// artist_agencies table doesn't exist yet
+		}
+
+		// Normalize labels subquery
 		const rawLabels = data.artist_labels as
 			| { labels: { id: string; name: string } | null }[]
-			| undefined;
-		const rawAgencies = data.artist_agencies as
-			| { agencies: { id: string; name: string } | null }[]
 			| undefined;
 
 		const result = {
@@ -50,11 +66,7 @@ export async function GET(
 				.filter(Boolean)
 				.filter((l): l is { id: string; name: string } => l !== null)
 				.sort((a, b) => a.name.localeCompare(b.name)),
-			agencies: (rawAgencies || [])
-				.map((aa) => aa.agencies)
-				.filter(Boolean)
-				.filter((a): a is { id: string; name: string } => a !== null)
-				.sort((a, b) => a.name.localeCompare(b.name)),
+			agencies,
 		};
 
 		return NextResponse.json(result);
