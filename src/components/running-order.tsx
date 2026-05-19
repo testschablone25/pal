@@ -5,15 +5,17 @@ import {
 	DndContext,
 	DragOverlay,
 	PointerSensor,
+	KeyboardSensor,
 	useSensor,
 	useSensors,
 	useDraggable,
 	useDroppable,
-	closestCenter,
+	pointerWithin,
 	DragStartEvent,
 	DragEndEvent,
 	DragOverEvent,
 } from "@dnd-kit/core";
+import { snapCenterToCursor, restrictToWindowEdges } from "@dnd-kit/modifiers";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -111,6 +113,7 @@ interface SlotCardProps {
 	slot: TimeSlot;
 	performances: PerformanceBrief[];
 	isDragging: boolean;
+	isDragOver?: boolean;
 	onAssignArtist: (slotId: string) => void;
 	onArtistClick: (slotId: string, performance: PerformanceBrief) => void;
 	onEditLabel: (slotId: string, label: string) => void;
@@ -185,6 +188,7 @@ function SlotCard({
 	slot,
 	performances,
 	isDragging,
+	isDragOver,
 	onAssignArtist,
 	onArtistClick,
 	onEditLabel,
@@ -266,7 +270,7 @@ function SlotCard({
 			data-slot-id={slot.id}
 			className={`relative flex items-start gap-3 p-4 bg-zinc-900/90 border border-zinc-800 rounded-lg transition-all
 				${isDragging ? "opacity-40 ring-2 ring-violet-500" : ""}
-				${isOver ? "ring-2 ring-violet-400" : ""}
+				${isOver || isDragOver ? "ring-2 ring-violet-400 bg-violet-950/20" : ""}
 				${hasArtists ? "border-l-violet-500 border-l-2" : "border-l-zinc-700 border-l-2 border-dashed"}`}
 		>
 			{/* Left time indicator column — clickable to edit */}
@@ -687,7 +691,7 @@ function ArtistSelectPopover({
 
 function DragPreview({ performance }: { performance: PerformanceBrief }) {
 	return (
-		<div className="flex items-center gap-3 p-3 bg-zinc-800 border border-violet-500 rounded-md shadow-xl w-64">
+		<div className="flex items-center gap-3 p-3 bg-zinc-800 border border-violet-500 rounded-md shadow-xl w-64 pointer-events-none">
 			<GripVertical className="h-4 w-4 text-violet-400" />
 			<div className="flex-1 min-w-0">
 				<div className="text-sm font-medium text-white truncate">
@@ -738,11 +742,13 @@ export function RunningOrder({ eventId }: RunningOrderProps) {
 	// Clear all artists
 	const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 	const [showClearAllDialog, setShowClearAllDialog] = useState(false);
+	const [dragOverSlotId, setDragOverSlotId] = useState<string | null>(null);
 
 	const sensors = useSensors(
 		useSensor(PointerSensor, {
-			activationConstraint: { distance: 8 },
+			activationConstraint: { distance: 3 },
 		}),
+		useSensor(KeyboardSensor),
 	);
 
 	// ── Data fetching ──
@@ -1215,6 +1221,7 @@ export function RunningOrder({ eventId }: RunningOrderProps) {
 			if (perf) {
 				setActiveId(perf.id);
 				setActivePerformance(perf);
+				setDragOverSlotId(null);
 				return;
 			}
 		}
@@ -1223,6 +1230,7 @@ export function RunningOrder({ eventId }: RunningOrderProps) {
 	const handleDragEnd = async (event: DragEndEvent) => {
 		setActiveId(null);
 		setActivePerformance(null);
+		setDragOverSlotId(null);
 
 		const { active, over } = event;
 		if (!over || !active) return;
@@ -1246,6 +1254,9 @@ export function RunningOrder({ eventId }: RunningOrderProps) {
 		}
 
 		if (!sourceSlotId || !draggingPerf) return;
+
+		// Don't move if dropped on the same slot
+		if (sourceSlotId === targetSlotId) return;
 
 		// Move performance via API (supports multiple performances per slot)
 		setSaving(true);
@@ -1288,8 +1299,9 @@ export function RunningOrder({ eventId }: RunningOrderProps) {
 		}
 	};
 
-	const handleDragOver = (_event: DragOverEvent) => {
-		// Visual feedback via activeId state on slot cards
+	const handleDragOver = (event: DragOverEvent) => {
+		const { over } = event;
+		setDragOverSlotId(over ? (over.id as string) : null);
 	};
 
 	// ── Render ──
@@ -1402,7 +1414,7 @@ export function RunningOrder({ eventId }: RunningOrderProps) {
 					) : (
 						<DndContext
 							sensors={sensors}
-							collisionDetection={closestCenter}
+							collisionDetection={pointerWithin}
 							onDragStart={handleDragStart}
 							onDragEnd={handleDragEnd}
 							onDragOver={handleDragOver}
@@ -1424,6 +1436,7 @@ export function RunningOrder({ eventId }: RunningOrderProps) {
 												slot={slot}
 												performances={perfArray}
 												isDragging={isActive}
+												isDragOver={dragOverSlotId === slot.id}
 												onAssignArtist={openAssignPopover}
 												onArtistClick={openEditPopover}
 												onEditLabel={handleEditLabel}
@@ -1436,7 +1449,9 @@ export function RunningOrder({ eventId }: RunningOrderProps) {
 								</div>
 							</div>
 
-							<DragOverlay>
+							<DragOverlay
+								modifiers={[snapCenterToCursor, restrictToWindowEdges]}
+							>
 								{activePerformance ? (
 									<DragPreview performance={activePerformance} />
 								) : null}
