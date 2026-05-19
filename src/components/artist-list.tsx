@@ -26,13 +26,10 @@ import {
 	Mail,
 	Disc3,
 	Building2,
-	X,
-	Phone,
-	ExternalLink,
 } from "lucide-react";
 import { SearchFilterBar } from "@/components/search-filter-bar";
 import Link from "next/link";
-
+import { useRouter } from "next/navigation";
 import { EmptyState } from "@/components/empty-state";
 import { useToast } from "@/hooks/use-toast";
 import { LabelAgencyManager } from "@/components/label-agency-manager";
@@ -102,7 +99,6 @@ const GENRES = [
 ];
 
 export function ArtistList() {
-
 	const { toast } = useToast();
 	const [artists, setArtists] = useState<Artist[]>([]);
 	const [loading, setLoading] = useState(true);
@@ -120,12 +116,11 @@ export function ArtistList() {
 	const [labelOptions, setLabelOptions] = useState<LabelOption[]>([]);
 	const [agencyOptions, setAgencyOptions] = useState<AgencyOption[]>([]);
 
-	// Create / Edit / Delete / Expand state
+	const router = useRouter();
+
+	// Create / Edit / Delete state
 	const [showCreateDialog, setShowCreateDialog] = useState(false);
 	const [editingArtist, setEditingArtist] = useState<Artist | null>(null);
-	const [expandedArtistId, setExpandedArtistId] = useState<string | null>(null);
-	const [expandedArtist, setExpandedArtist] = useState<Artist | null>(null);
-	const [loadingExpanded, setLoadingExpanded] = useState(false);
 	const [showEditDialog, setShowEditDialog] = useState(false);
 	const [deletingArtist, setDeletingArtist] = useState<Artist | null>(null);
 	const [showDeleteDialog, setShowDeleteDialog] = useState(false);
@@ -332,36 +327,11 @@ export function ArtistList() {
 					{artists.map((artist) => (
 						<div key={artist.id} className="group">
 							<div
-								onClick={async () => {
-									setExpandedArtistId(artist.id);
-									setLoadingExpanded(true);
-									try {
-										const res = await fetch(`/api/artists/${artist.id}`);
-										if (res.ok) {
-											const data = await res.json();
-											setExpandedArtist({
-												...artist,
-												bio: data.bio || artist.bio,
-												contact_email: data.contact_email || artist.contact_email,
-												contact_phone: data.contact_phone || artist.contact_phone,
-												promo_pack_url: data.promo_pack_url || artist.promo_pack_url,
-												fee: data.fee ?? artist.fee,
-												labels: data.labels || artist.labels,
-												agencies: data.agencies || artist.agencies,
-											});
-										}
-									} catch {
-										// stay with list data
-									} finally {
-										setLoadingExpanded(false);
-									}
-								}}
+								onClick={() => router.push(`/artists/${artist.id}`)}
 								onKeyDown={(e) => {
 									if (e.key === "Enter")
-										setExpandedArtistId(artist.id);
+										router.push(`/artists/${artist.id}`);
 								}}
-								role="button"
-								tabIndex={0}
 								className="cursor-pointer"
 							>
 								<Card className="bg-zinc-900 border-zinc-800 hover:border-violet-600/50 transition-all">
@@ -482,163 +452,6 @@ export function ArtistList() {
 				}}
 				className="mt-6"
 			/>
-
-			{/* Expanded Artist Overlay */}
-			{expandedArtistId && expandedArtist && (
-				<div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-					<div
-						className="absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity"
-						onClick={() => {
-							setExpandedArtistId(null);
-							setExpandedArtist(null);
-						}}
-					/>
-					<div className="relative w-full max-w-4xl max-h-[85vh] bg-zinc-900 border border-zinc-700 rounded-xl shadow-2xl flex flex-col overflow-hidden animate-modal-in">
-						<div className="flex items-center justify-between px-6 py-4 border-b border-zinc-800 shrink-0">
-							<div className="flex items-center gap-3 min-w-0">
-								<h2 className="text-lg font-semibold text-white truncate">
-									{expandedArtist.name}
-								</h2>
-								{expandedArtist.genre && (
-									<Badge
-										variant="outline"
-										className="border-violet-600/50 text-violet-400 shrink-0"
-									>
-										{expandedArtist.genre}
-									</Badge>
-								)}
-							</div>
-							<button
-								onClick={() => {
-									setExpandedArtistId(null);
-									setExpandedArtist(null);
-								}}
-								className="p-1.5 rounded-lg text-zinc-400 hover:text-white hover:bg-zinc-800 transition-colors"
-							>
-								<X className="h-5 w-5" />
-							</button>
-						</div>
-						<div className="flex-1 overflow-y-auto p-6 space-y-6">
-							{loadingExpanded ? (
-								<div className="flex items-center justify-center py-12">
-									<Loader2 className="h-6 w-6 animate-spin text-zinc-500" />
-								</div>
-							) : (
-								<>
-									{/* Info grid */}
-									<div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-										{expandedArtist.city && (
-											<div className="flex items-center gap-2 text-sm text-zinc-400">
-												<MapPin className="h-4 w-4 text-zinc-500 shrink-0" />
-												{expandedArtist.city}
-											</div>
-										)}
-										{expandedArtist.fee !== null && (
-											<div className="text-sm">
-												<span className="text-zinc-500">Fee:</span>{" "}
-												<span className="text-violet-400 font-medium">
-													€{expandedArtist.fee.toLocaleString()}
-												</span>
-											</div>
-										)}
-										{expandedArtist.performance_count > 0 && (
-											<div className="text-sm text-zinc-400">
-												{expandedArtist.performance_count} performance
-												{expandedArtist.performance_count !== 1 ? "s" : ""}
-											</div>
-										)}
-									</div>
-
-									{/* Labels & Agencies */}
-									{(expandedArtist.labels?.length > 0 ||
-										expandedArtist.agencies?.length > 0) && (
-										<div className="flex flex-wrap items-center gap-3">
-											{expandedArtist.labels?.length > 0 && (
-												<div className="flex flex-wrap items-center gap-1.5">
-													<Disc3 className="h-4 w-4 text-amber-400/70 shrink-0" />
-													{expandedArtist.labels.map((l) => (
-														<Badge
-															key={l.id}
-															variant="outline"
-															className="border-amber-600/40 text-amber-400 text-xs"
-														>
-															{l.name}
-														</Badge>
-													))}
-												</div>
-											)}
-											{expandedArtist.agencies?.length > 0 && (
-												<div className="flex flex-wrap items-center gap-1.5">
-													<Building2 className="h-4 w-4 text-blue-400/70 shrink-0" />
-													{expandedArtist.agencies.map((a) => (
-														<Badge
-															key={a.id}
-															variant="outline"
-															className="border-blue-600/40 text-blue-400 text-xs"
-														>
-															{a.name}
-														</Badge>
-													))}
-												</div>
-											)}
-										</div>
-									)}
-
-									{/* Contact */}
-									{(expandedArtist.contact_email ||
-										expandedArtist.contact_phone) && (
-										<div className="space-y-2">
-											{expandedArtist.contact_email && (
-												<a
-													href={`mailto:${expandedArtist.contact_email}`}
-													className="flex items-center gap-2 text-sm text-violet-400 hover:text-violet-300"
-												>
-													<Mail className="h-4 w-4" />
-													{expandedArtist.contact_email}
-												</a>
-											)}
-											{expandedArtist.contact_phone && (
-												<a
-													href={`tel:${expandedArtist.contact_phone}`}
-													className="flex items-center gap-2 text-sm text-zinc-300 hover:text-white"
-												>
-													<Phone className="h-4 w-4 text-zinc-500" />
-													{expandedArtist.contact_phone}
-												</a>
-											)}
-										</div>
-									)}
-
-									{/* Bio */}
-									{expandedArtist.bio && (
-										<div>
-											<h3 className="text-sm font-medium text-zinc-300 mb-2">
-												Biography
-											</h3>
-											<p className="text-sm text-zinc-400 whitespace-pre-wrap">
-												{expandedArtist.bio}
-											</p>
-										</div>
-									)}
-
-									{/* Promo link */}
-									{expandedArtist.promo_pack_url && (
-										<a
-											href={expandedArtist.promo_pack_url}
-											target="_blank"
-											rel="noopener noreferrer"
-											className="flex items-center gap-2 text-sm text-violet-400 hover:text-violet-300"
-										>
-											<ExternalLink className="h-4 w-4" />
-											View Promo Pack
-										</a>
-									)}
-								</>
-							)}
-						</div>
-					</div>
-				</div>
-			)}
 
 			{/* Create Artist Dialog */}
 			<Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
