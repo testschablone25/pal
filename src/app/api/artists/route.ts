@@ -16,6 +16,7 @@ export async function GET(request: NextRequest) {
 		const genre = searchParams.get("genre");
 		const city = searchParams.get("city");
 		const labelId = searchParams.get("label_id");
+		const agencyId = searchParams.get("agency_id");
 		const limit = searchParams.get("limit") || "50";
 		const offset = searchParams.get("offset") || "0";
 
@@ -40,11 +41,31 @@ export async function GET(request: NextRequest) {
 			}
 		}
 
-		// Build the query with performance count + labels subqueries
+		// When filtering by agency, first get matching artist IDs from junction table
+		let matchingAgencyArtistIds: string[] | null = null;
+		if (agencyId) {
+			const { data: junctionRows } = await supabase
+				.from("artist_agencies")
+				.select("artist_id")
+				.eq("agency_id", agencyId);
+
+			matchingAgencyArtistIds = (junctionRows || []).map((r) => r.artist_id);
+
+			if (matchingAgencyArtistIds.length === 0) {
+				return NextResponse.json({
+					artists: [],
+					total: 0,
+					limit: parseInt(limit),
+					offset: parseInt(offset),
+				});
+			}
+		}
+
+		// Build the query with performance count + labels + agencies subqueries
 		let query = supabase
 			.from("artists")
 			.select(
-				`*, performance_count:performances(count), artist_labels(label_id, labels(id, name))`,
+				`*, performance_count:performances(count), artist_labels(label_id, labels(id, name)), artist_agencies(agency_id, agencies(id, name))`,
 				{ count: "exact" },
 			)
 			.order("name", { ascending: true })
@@ -63,6 +84,9 @@ export async function GET(request: NextRequest) {
 		if (matchingArtistIds) {
 			query = query.in("id", matchingArtistIds);
 		}
+		if (matchingAgencyArtistIds) {
+			query = query.in("id", matchingAgencyArtistIds);
+		}
 
 		const { data, error, count } = await query;
 
@@ -75,6 +99,9 @@ export async function GET(request: NextRequest) {
 			const rawLabels = artist.artist_labels as
 				| { labels: { id: string; name: string } | null }[]
 				| undefined;
+			const rawAgencies = artist.artist_agencies as
+				| { agencies: { id: string; name: string } | null }[]
+				| undefined;
 			return {
 				...artist,
 				performance_count:
@@ -83,6 +110,11 @@ export async function GET(request: NextRequest) {
 					.map((al) => al.labels)
 					.filter(Boolean)
 					.filter((l): l is { id: string; name: string } => l !== null)
+					.sort((a, b) => a.name.localeCompare(b.name)),
+				agencies: (rawAgencies || [])
+					.map((aa) => aa.agencies)
+					.filter(Boolean)
+					.filter((a): a is { id: string; name: string } => a !== null)
 					.sort((a, b) => a.name.localeCompare(b.name)),
 			};
 		});

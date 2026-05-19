@@ -35,6 +35,8 @@ import {
 	Trash2,
 	Loader2,
 	Ticket,
+	Disc3,
+	Building2,
 } from "lucide-react";
 import Link from "next/link";
 import { RiderViewer } from "@/components/rider-viewer";
@@ -62,6 +64,16 @@ interface EventOption {
 	venues?: { name: string } | null;
 }
 
+interface Label {
+	id: string;
+	name: string;
+}
+
+interface Agency {
+	id: string;
+	name: string;
+}
+
 interface Artist {
 	id: string;
 	name: string;
@@ -74,6 +86,8 @@ interface Artist {
 	promo_pack_url: string | null;
 	tech_rider: Record<string, unknown> | null;
 	hospitality_rider: Record<string, unknown> | null;
+	labels: Label[];
+	agencies: Agency[];
 	created_at: string;
 	updated_at: string;
 }
@@ -320,6 +334,37 @@ export default function ArtistDetailPage() {
 									<MapPin className="h-4 w-4 mr-1" />
 									{artist.city}
 								</span>
+							)}
+						</div>
+						{/* Labels & Agencies */}
+						<div className="flex flex-wrap items-center gap-2 mt-1.5">
+							{artist.labels && artist.labels.length > 0 && (
+								<>
+									{artist.labels.map((l) => (
+										<Badge
+											key={l.id}
+											variant="outline"
+											className="border-amber-600/40 text-amber-400 text-[11px]"
+										>
+											<Disc3 className="h-3 w-3 mr-1" />
+											{l.name}
+										</Badge>
+									))}
+								</>
+							)}
+							{artist.agencies && artist.agencies.length > 0 && (
+								<>
+									{artist.agencies.map((a) => (
+										<Badge
+											key={a.id}
+											variant="outline"
+											className="border-blue-600/40 text-blue-400 text-[11px]"
+										>
+											<Building2 className="h-3 w-3 mr-1" />
+											{a.name}
+										</Badge>
+									))}
+								</>
 							)}
 						</div>
 					</div>

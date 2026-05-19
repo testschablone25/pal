@@ -25,14 +25,21 @@ import {
 	Loader2,
 	Mail,
 	Disc3,
+	Building2,
 } from "lucide-react";
 import { SearchFilterBar } from "@/components/search-filter-bar";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { EmptyState } from "@/components/empty-state";
 import { useToast } from "@/hooks/use-toast";
+import { LabelAgencyManager } from "@/components/label-agency-manager";
 
 interface Label {
+	id: string;
+	name: string;
+}
+
+interface Agency {
 	id: string;
 	name: string;
 }
@@ -48,6 +55,7 @@ interface Artist {
 	created_at: string;
 	performance_count: number;
 	labels: Label[];
+	agencies: Agency[];
 }
 
 interface ArtistListResponse {
@@ -58,6 +66,11 @@ interface ArtistListResponse {
 }
 
 interface LabelOption {
+	id: string;
+	name: string;
+}
+
+interface AgencyOption {
 	id: string;
 	name: string;
 }
@@ -84,24 +97,31 @@ export function ArtistList() {
 	const [filterGenre, setFilterGenre] = useState<string>("");
 	const [filterCity, setFilterCity] = useState("");
 	const [filterLabelId, setFilterLabelId] = useState<string>("");
+	const [filterAgencyId, setFilterAgencyId] = useState<string>("");
 	const [total, setTotal] = useState(0);
 	const [currentPage, setCurrentPage] = useState(1);
 	const pageSize = 24;
 	const totalPages = Math.ceil(total / pageSize);
 
-	// Labels list for filter dropdown
+	// Lists for filter dropdowns
 	const [labelOptions, setLabelOptions] = useState<LabelOption[]>([]);
+	const [agencyOptions, setAgencyOptions] = useState<AgencyOption[]>([]);
 
 	// Delete state
 	const [deletingArtist, setDeletingArtist] = useState<Artist | null>(null);
 	const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 	const [deleting, setDeleting] = useState(false);
 
-	// Load labels for filter
+	// Load labels and agencies for filters
 	useEffect(() => {
-		fetch("/api/labels")
-			.then((r) => r.json())
-			.then((data) => setLabelOptions(data.labels || []))
+		Promise.all([
+			fetch("/api/labels").then((r) => r.json()),
+			fetch("/api/agencies").then((r) => r.json()),
+		])
+			.then(([labelData, agencyData]) => {
+				setLabelOptions(labelData.labels || []);
+				setAgencyOptions(agencyData.agencies || []);
+			})
 			.catch(() => {});
 	}, []);
 
@@ -113,6 +133,7 @@ export function ArtistList() {
 			if (filterGenre) params.append("genre", filterGenre);
 			if (filterCity) params.append("city", filterCity);
 			if (filterLabelId) params.append("label_id", filterLabelId);
+			if (filterAgencyId) params.append("agency_id", filterAgencyId);
 			params.append("limit", String(pageSize));
 			params.append("offset", String((currentPage - 1) * pageSize));
 
@@ -129,13 +150,14 @@ export function ArtistList() {
 
 	useEffect(() => {
 		fetchArtists();
-	}, [searchName, filterGenre, filterCity, filterLabelId, currentPage]);
+	}, [searchName, filterGenre, filterCity, filterLabelId, filterAgencyId, currentPage]);
 
 	const clearFilters = () => {
 		setSearchName("");
 		setFilterGenre("");
 		setFilterCity("");
 		setFilterLabelId("");
+		setFilterAgencyId("");
 		setCurrentPage(1);
 		setArtists([]);
 		fetchArtists();
@@ -207,6 +229,16 @@ export function ArtistList() {
 									value: filterLabelId,
 									onChange: setFilterLabelId,
 								},
+								{
+									key: "agency",
+									label: "Agency",
+									options: agencyOptions.map((a) => ({
+										value: a.id,
+										label: a.name,
+									})),
+									value: filterAgencyId,
+									onChange: setFilterAgencyId,
+								},
 							]}
 						/>
 						<div className="flex gap-3">
@@ -218,6 +250,18 @@ export function ArtistList() {
 									className="w-full h-10 px-3 py-2 text-sm bg-zinc-950 border border-zinc-700 rounded-md placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-violet-600/50"
 								/>
 							</div>
+							<LabelAgencyManager
+								trigger={
+									<Button
+										type="button"
+										variant="outline"
+										className="border-zinc-700 text-xs"
+									>
+										<Disc3 className="h-4 w-4 mr-1.5" />
+										Labels &amp; Agencies
+									</Button>
+								}
+							/>
 							<Button
 								type="button"
 								variant="outline"
@@ -338,6 +382,22 @@ export function ArtistList() {
 															className="border-amber-600/40 text-amber-400 text-[11px] px-1.5 py-0"
 														>
 															{label.name}
+														</Badge>
+													))}
+												</div>
+											)}
+
+											{/* Agencies */}
+											{artist.agencies && artist.agencies.length > 0 && (
+												<div className="flex flex-wrap items-center gap-1.5">
+													<Building2 className="h-3.5 w-3.5 text-zinc-500 shrink-0" />
+													{artist.agencies.map((agency) => (
+														<Badge
+															key={agency.id}
+															variant="outline"
+															className="border-blue-600/40 text-blue-400 text-[11px] px-1.5 py-0"
+														>
+															{agency.name}
 														</Badge>
 													))}
 												</div>

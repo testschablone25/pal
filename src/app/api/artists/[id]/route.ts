@@ -19,7 +19,9 @@ export async function GET(
 
 		const { data, error } = await supabase
 			.from("artists")
-			.select("*")
+			.select(
+				`*, artist_labels(label_id, labels(id, name)), artist_agencies(agency_id, agencies(id, name))`,
+			)
 			.eq("id", id)
 			.single();
 
@@ -33,7 +35,29 @@ export async function GET(
 			return NextResponse.json({ error: error.message }, { status: 500 });
 		}
 
-		return NextResponse.json(data);
+		// Normalize subquery formats
+		const rawLabels = data.artist_labels as
+			| { labels: { id: string; name: string } | null }[]
+			| undefined;
+		const rawAgencies = data.artist_agencies as
+			| { agencies: { id: string; name: string } | null }[]
+			| undefined;
+
+		const result = {
+			...data,
+			labels: (rawLabels || [])
+				.map((al) => al.labels)
+				.filter(Boolean)
+				.filter((l): l is { id: string; name: string } => l !== null)
+				.sort((a, b) => a.name.localeCompare(b.name)),
+			agencies: (rawAgencies || [])
+				.map((aa) => aa.agencies)
+				.filter(Boolean)
+				.filter((a): a is { id: string; name: string } => a !== null)
+				.sort((a, b) => a.name.localeCompare(b.name)),
+		};
+
+		return NextResponse.json(result);
 	} catch (error) {
 		console.error("Error fetching artist:", error);
 		return NextResponse.json(
