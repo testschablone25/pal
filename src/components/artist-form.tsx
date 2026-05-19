@@ -52,6 +52,7 @@ interface ArtistFormProps {
 		promo_pack_url?: string | null;
 	};
 	mode?: "create" | "edit";
+	variant?: "card" | "inline";
 	onSuccess?: () => void;
 }
 
@@ -69,7 +70,12 @@ const GENRES = [
 	"Other",
 ];
 
-export function ArtistForm({ artist, mode = "create", onSuccess }: ArtistFormProps) {
+export function ArtistForm({
+	artist,
+	mode = "create",
+	variant = "card",
+	onSuccess,
+}: ArtistFormProps) {
 	const router = useRouter();
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState<string | null>(null);
@@ -81,10 +87,10 @@ export function ArtistForm({ artist, mode = "create", onSuccess }: ArtistFormPro
 			city: artist?.city || "",
 			fee: artist?.fee || undefined,
 			genre: artist?.genre || "",
-			bio: artist?.bio || "",
+			bio: artist?.bio ?? "",
 			contact_email: artist?.contact_email || "",
 			contact_phone: artist?.contact_phone || "",
-			promo_pack_url: artist?.promo_pack_url || "",
+			promo_pack_url: artist?.promo_pack_url ?? "",
 		},
 	});
 
@@ -102,7 +108,6 @@ export function ArtistForm({ artist, mode = "create", onSuccess }: ArtistFormPro
 				body: JSON.stringify({
 					...values,
 					fee: values.fee ? Number(values.fee) : null,
-					documents: {},
 				}),
 			});
 
@@ -123,6 +128,199 @@ export function ArtistForm({ artist, mode = "create", onSuccess }: ArtistFormPro
 		}
 	};
 
+	const formContent = (
+		<Form {...form}>
+			<form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+				<div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+					<FormField
+						control={form.control}
+						name="name"
+						render={({ field }) => (
+							<FormItem>
+								<FormLabel>Name *</FormLabel>
+								<FormControl>
+									<Input
+										{...field}
+										placeholder="Artist/DJ name"
+										className="bg-zinc-950 border-zinc-800"
+									/>
+								</FormControl>
+								<FormMessage />
+							</FormItem>
+						)}
+					/>
+
+					<FormField
+						control={form.control}
+						name="genre"
+						render={({ field }) => (
+							<FormItem>
+								<FormLabel>Genre</FormLabel>
+								<Select
+									onValueChange={field.onChange}
+									defaultValue={field.value}
+								>
+									<FormControl>
+										<SelectTrigger className="bg-zinc-950 border-zinc-800">
+											<SelectValue placeholder="Select genre" />
+										</SelectTrigger>
+									</FormControl>
+									<SelectContent className="bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/70 rounded-lg">
+										{GENRES.map((genre) => (
+											<SelectItem key={genre} value={genre.toLowerCase()}>
+												{genre}
+											</SelectItem>
+										))}
+									</SelectContent>
+								</Select>
+								<FormMessage />
+							</FormItem>
+						)}
+					/>
+
+					<FormField
+						control={form.control}
+						name="city"
+						render={({ field }) => (
+							<FormItem>
+								<FormLabel>City</FormLabel>
+								<FormControl>
+									<Input
+										{...field}
+										placeholder="Berlin, Munich, etc."
+										className="bg-zinc-950 border-zinc-800"
+									/>
+								</FormControl>
+								<FormMessage />
+							</FormItem>
+						)}
+					/>
+
+					<FormField
+						control={form.control}
+						name="fee"
+						render={({ field }) => (
+							<FormItem>
+								<FormLabel>Fee (€)</FormLabel>
+								<FormControl>
+									<Input
+										{...field}
+										type="number"
+										placeholder="500"
+										className="bg-zinc-950 border-zinc-800"
+										onChange={(e) => field.onChange(e.target.valueAsNumber)}
+									/>
+								</FormControl>
+								<p className="text-sm text-zinc-400">Booking fee in EUR</p>
+							</FormItem>
+						)}
+					/>
+
+					<FormField
+						control={form.control}
+						name="contact_email"
+						render={({ field }) => (
+							<FormItem>
+								<FormLabel>Contact Email</FormLabel>
+								<FormControl>
+									<Input
+										{...field}
+										type="email"
+										placeholder="booking@example.com"
+										className="bg-zinc-950 border-zinc-800"
+									/>
+								</FormControl>
+								<FormMessage />
+							</FormItem>
+						)}
+					/>
+
+					<FormField
+						control={form.control}
+						name="contact_phone"
+						render={({ field }) => (
+							<FormItem>
+								<FormLabel>Contact Phone</FormLabel>
+								<FormControl>
+									<Input
+										{...field}
+										placeholder="+49 123 456789"
+										className="bg-zinc-950 border-zinc-800"
+									/>
+								</FormControl>
+								<FormMessage />
+							</FormItem>
+						)}
+					/>
+
+					<FormField
+						control={form.control}
+						name="promo_pack_url"
+						render={({ field }) => (
+							<FormItem>
+								<FormLabel>Promo Pack URL</FormLabel>
+								<FormControl>
+									<Input
+										{...field}
+										type="url"
+										placeholder="https://..."
+										className="bg-zinc-950 border-zinc-800"
+									/>
+								</FormControl>
+								<p className="text-sm text-zinc-400">
+									Link to promo materials, EPK, etc.
+								</p>
+							</FormItem>
+						)}
+					/>
+
+					<FormField
+						control={form.control}
+						name="bio"
+						render={({ field }) => (
+							<FormItem>
+								<FormLabel>Biography</FormLabel>
+								<FormControl>
+									<Textarea
+										{...field}
+										placeholder="Artist biography..."
+										className="bg-zinc-950 border-zinc-800 min-h-[100px]"
+									/>
+								</FormControl>
+								<FormMessage />
+							</FormItem>
+						)}
+					/>
+				</div>
+
+				{error && <div className="text-red-500 text-sm">{error}</div>}
+
+				<div className="flex gap-4">
+					<Button
+						type="submit"
+						className="bg-violet-600 hover:bg-violet-700"
+						disabled={loading}
+					>
+						{loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+						{mode === "create" ? "Create Artist" : "Save Changes"}
+					</Button>
+					<Button
+						type="button"
+						variant="outline"
+						onClick={() => router.back()}
+						className="border-zinc-700"
+					>
+						Cancel
+					</Button>
+				</div>
+			</form>
+		</Form>
+	);
+
+	if (variant === "inline") {
+		return formContent;
+	}
+
 	return (
 		<Card className="bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/70 rounded-lg">
 			<CardHeader>
@@ -130,198 +328,7 @@ export function ArtistForm({ artist, mode = "create", onSuccess }: ArtistFormPro
 					{mode === "create" ? "Add New Artist" : "Edit Artist"}
 				</CardTitle>
 			</CardHeader>
-			<CardContent>
-				<Form {...form}>
-					<form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-						<div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-							<FormField
-								control={form.control}
-								name="name"
-								render={({ field }) => (
-									<FormItem>
-										<FormLabel>Name *</FormLabel>
-										<FormControl>
-											<Input
-												{...field}
-												placeholder="Artist/DJ name"
-												className="bg-zinc-950 border-zinc-800"
-											/>
-										</FormControl>
-										<FormMessage />
-									</FormItem>
-								)}
-							/>
-
-							<FormField
-								control={form.control}
-								name="genre"
-								render={({ field }) => (
-									<FormItem>
-										<FormLabel>Genre</FormLabel>
-										<Select
-											onValueChange={field.onChange}
-											defaultValue={field.value}
-										>
-											<FormControl>
-												<SelectTrigger className="bg-zinc-950 border-zinc-800">
-													<SelectValue placeholder="Select genre" />
-												</SelectTrigger>
-											</FormControl>
-											<SelectContent className="bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/70 rounded-lg">
-												{GENRES.map((genre) => (
-													<SelectItem key={genre} value={genre.toLowerCase()}>
-														{genre}
-													</SelectItem>
-												))}
-											</SelectContent>
-										</Select>
-										<FormMessage />
-									</FormItem>
-								)}
-							/>
-
-							<FormField
-								control={form.control}
-								name="city"
-								render={({ field }) => (
-									<FormItem>
-										<FormLabel>City</FormLabel>
-										<FormControl>
-											<Input
-												{...field}
-												placeholder="Berlin, Munich, etc."
-												className="bg-zinc-950 border-zinc-800"
-											/>
-										</FormControl>
-										<FormMessage />
-									</FormItem>
-								)}
-							/>
-
-							<FormField
-								control={form.control}
-								name="fee"
-								render={({ field }) => (
-									<FormItem>
-										<FormLabel>Fee (€)</FormLabel>
-										<FormControl>
-											<Input
-												{...field}
-												type="number"
-												placeholder="500"
-												className="bg-zinc-950 border-zinc-800"
-												onChange={(e) => field.onChange(e.target.valueAsNumber)}
-											/>
-										</FormControl>
-										<Description>Booking fee in EUR</Description>
-									</FormItem>
-								)}
-							/>
-
-							<FormField
-								control={form.control}
-								name="contact_email"
-								render={({ field }) => (
-									<FormItem>
-										<FormLabel>Contact Email</FormLabel>
-										<FormControl>
-											<Input
-												{...field}
-												type="email"
-												placeholder="booking@example.com"
-												className="bg-zinc-950 border-zinc-800"
-											/>
-										</FormControl>
-										<FormMessage />
-									</FormItem>
-								)}
-							/>
-
-							<FormField
-								control={form.control}
-								name="contact_phone"
-								render={({ field }) => (
-									<FormItem>
-										<FormLabel>Contact Phone</FormLabel>
-										<FormControl>
-											<Input
-												{...field}
-												placeholder="+49 123 456789"
-												className="bg-zinc-950 border-zinc-800"
-											/>
-										</FormControl>
-										<FormMessage />
-									</FormItem>
-								)}
-							/>
-
-							<FormField
-								control={form.control}
-								name="promo_pack_url"
-								render={({ field }) => (
-									<FormItem>
-										<FormLabel>Promo Pack URL</FormLabel>
-										<FormControl>
-											<Input
-												{...field}
-												type="url"
-												placeholder="https://..."
-												className="bg-zinc-950 border-zinc-800"
-											/>
-										</FormControl>
-										<Description>
-											Link to promo materials, EPK, etc.
-										</Description>
-									</FormItem>
-								)}
-							/>
-
-							<FormField
-								control={form.control}
-								name="bio"
-								render={({ field }) => (
-									<FormItem>
-										<FormLabel>Biography</FormLabel>
-										<FormControl>
-											<Textarea
-												{...field}
-												placeholder="Artist biography..."
-												className="bg-zinc-950 border-zinc-800 min-h-[100px]"
-											/>
-										</FormControl>
-										<FormMessage />
-									</FormItem>
-								)}
-							/>
-						</div>
-
-						{error && <div className="text-red-500 text-sm">{error}</div>}
-
-						<div className="flex gap-4">
-							<Button
-								type="submit"
-								className="bg-violet-600 hover:bg-violet-700"
-								disabled={loading}
-							>
-								{loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-								{mode === "create" ? "Create Artist" : "Save Changes"}
-							</Button>
-							<Button
-								type="button"
-								variant="outline"
-								onClick={() => router.back()}
-								className="border-zinc-700"
-							>
-								Cancel
-							</Button>
-						</div>
-					</form>
-				</Form>
-			</CardContent>
+			<CardContent>{formContent}</CardContent>
 		</Card>
 	);
-}
-
-function Description({ children }: { children: React.ReactNode }) {
-	return <p className="text-sm text-zinc-400">{children}</p>;
 }
