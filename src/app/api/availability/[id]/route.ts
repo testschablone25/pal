@@ -2,12 +2,9 @@
 // Zod validation
 
 import { NextRequest, NextResponse } from "next/server";
-import { createClient } from "@supabase/supabase-js";
-import { supabaseConfig } from "@/lib/supabase/config";
-import { requireAuth } from "@/lib/api-auth";
+import { requireAuth, getAuthenticatedClient } from "@/lib/api-auth";
 import { availabilityUpsertSchema } from "@/lib/validations/availability";
 
-const supabase = createClient(supabaseConfig.url, supabaseConfig.serviceKey);
 
 // PUT /api/availability/[id] - Update availability
 export async function PUT(
@@ -17,6 +14,7 @@ export async function PUT(
 	try {
 		const auth = await requireAuth(request, "AVAILABILITY_WRITE");
 		if (!auth.authorized) return auth.response;
+		const supabase = getAuthenticatedClient(request);
 
 		const { id } = await params;
 		const body = await request.json();
@@ -63,6 +61,7 @@ export async function DELETE(
 	try {
 		const auth = await requireAuth(request, "AVAILABILITY_WRITE");
 		if (!auth.authorized) return auth.response;
+		const supabase = getAuthenticatedClient(request);
 
 		const { id } = await params;
 

@@ -2,16 +2,14 @@
 // Avoids the fragile client-side matching of profile_id in the page component.
 
 import { NextRequest, NextResponse } from "next/server";
-import { createClient } from "@supabase/supabase-js";
-import { supabaseConfig } from "@/lib/supabase/config";
-import { requireAuth } from "@/lib/api-auth";
+import { requireAuth, getAuthenticatedClient } from "@/lib/api-auth";
 
-const supabase = createClient(supabaseConfig.url, supabaseConfig.serviceKey);
 
 export async function GET(request: NextRequest) {
 	try {
 		const auth = await requireAuth(request, "STAFF_READ");
 		if (!auth.authorized) return auth.response;
+		const supabase = getAuthenticatedClient(request);
 
 		const { data, error } = await supabase
 			.from("staff")

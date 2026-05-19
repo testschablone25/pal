@@ -271,26 +271,29 @@ export function TaskCard({ task, onClick }: TaskCardProps) {
 						{/* Bottom Row: Assignee + Comment Count */}
 						<div className="flex items-center justify-between">
 							{/* Assignee Avatars — multi-assignee with overflow */}
-							{task.assignees && task.assignees.length > 0 ? (
+							{task.assignees && task.assignees.filter(Boolean).length > 0 ? (
 								<div className="flex items-center">
-									{task.assignees.slice(0, 3).map((a) => (
-										<Avatar
-											key={a.id}
-											className="h-6 w-6 -ml-1 first:ml-0 border-2 border-zinc-900"
-											title={a.full_name || a.email || ""}
-										>
-											<AvatarImage
-												src={
-													a.avatar_url ||
-													`https://api.dicebear.com/7.x/avataaars/svg?seed=${a.full_name}`
-												}
-												className="object-cover"
-											/>
-											<AvatarFallback className="bg-zinc-800 text-zinc-300 text-[9px]">
-												{a.full_name?.charAt(0) || "?"}
-											</AvatarFallback>
-										</Avatar>
-									))}
+									{task.assignees
+										.filter(Boolean)
+										.slice(0, 3)
+										.map((a) => (
+											<Avatar
+												key={a.id}
+												className="h-6 w-6 -ml-1 first:ml-0 border-2 border-zinc-900"
+												title={a.full_name || a.email || ""}
+											>
+												<AvatarImage
+													src={
+														a.avatar_url ||
+														`https://api.dicebear.com/7.x/avataaars/svg?seed=${a.full_name}`
+													}
+													className="object-cover"
+												/>
+												<AvatarFallback className="bg-zinc-800 text-zinc-300 text-[9px]">
+													{a.full_name?.charAt(0) || "?"}
+												</AvatarFallback>
+											</Avatar>
+										))}
 									{task.assignees.length > 3 && (
 										<span className="text-xs text-zinc-500 ml-1.5">
 											+{task.assignees.length - 3}

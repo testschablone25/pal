@@ -123,8 +123,8 @@ export function NavBar() {
 				<div className="flex items-center justify-between h-14">
 					<Link href="/" className="flex items-center gap-2 font-bold text-xl">
 						<span className="text-violet-400">PAL</span>
-						<span className="hidden sm:inline text-zinc-500 text-sm font-normal">
-							Nightclub
+						<span className="self-end text-zinc-500 text-sm font-normal">
+							.tool
 						</span>
 					</Link>
 
@@ -166,7 +166,7 @@ export function NavBar() {
 										<span className="text-violet-400 font-bold text-xl">
 											PAL
 										</span>
-										<span className="text-zinc-500 text-sm font-normal">
+										<span className="self-end text-zinc-500 text-sm font-normal">
 											.tool
 										</span>
 									</div>

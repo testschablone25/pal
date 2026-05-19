@@ -85,7 +85,15 @@ export const ROLE_ROUTE_ACCESS: Record<string, AppRole[]> = {
 		"backoffice",
 	],
 	[ROUTE_GROUPS.GUEST_LISTS]: ["admin", "manager", "booking", "social-media"],
-	[ROUTE_GROUPS.VENUES]: ["admin", "manager"],
+	[ROUTE_GROUPS.VENUES]: [
+		"admin",
+		"manager",
+		"booking",
+		"staff",
+		"tech",
+		"tech-lead",
+		"backoffice",
+	],
 	[ROUTE_GROUPS.INVENTORY]: [
 		"admin",
 		"manager",
@@ -244,7 +252,15 @@ export const FEATURE_PERMISSIONS = {
 	ROLES_MANAGE: ["admin", "backoffice"],
 
 	// Venues
-	VENUES_READ: ["admin", "manager"],
+	VENUES_READ: [
+		"admin",
+		"manager",
+		"booking",
+		"staff",
+		"tech",
+		"tech-lead",
+		"backoffice",
+	],
 	VENUES_WRITE: ["admin", "manager"],
 
 	// Inventory / Items

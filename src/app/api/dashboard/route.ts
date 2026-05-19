@@ -1,17 +1,13 @@
-import { createClient } from "@supabase/supabase-js";
 import { NextRequest, NextResponse } from "next/server";
-import { supabaseConfig } from "@/lib/supabase/config";
-import { authenticate } from "@/lib/api-auth";
+import { authenticate, getAuthenticatedClient } from "@/lib/api-auth";
 import { cacheHeaders } from "@/lib/api-cache";
 
 export async function GET(request: NextRequest) {
 	const auth = await authenticate(request);
 	if (!auth.authorized) return auth.response;
+		const supabase = getAuthenticatedClient(request);
 
-	const supabase = createClient(supabaseConfig.url, supabaseConfig.serviceKey, {
-		auth: { autoRefreshToken: false, persistSession: false },
-	});
-
+	
 	const url = new URL(request.url);
 	const userId = url.searchParams.get("user_id");
 	const today = new Date().toISOString().split("T")[0];

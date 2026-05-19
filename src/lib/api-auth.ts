@@ -116,6 +116,19 @@ function serverErrorResponse(): AuthCheckResult {
 }
 
 /**
+ * Get a user-authenticated Supabase client for a route handler request.
+ * Uses the middleware client pattern (anon key + request cookies) so RLS
+ * or user-scoped queries work correctly.
+ *
+ * Usage:
+ *   const supabase = getAuthenticatedClient(request);
+ */
+export function getAuthenticatedClient(request: NextRequest) {
+	const placeholderResponse = NextResponse.next();
+	return createMiddlewareClient(request, placeholderResponse);
+}
+
+/**
  * Authenticate the request and check if the user has a specific feature permission.
  *
  * Usage:

@@ -1,9 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createClient } from "@supabase/supabase-js";
-import { supabaseConfig } from "@/lib/supabase/config";
-import { requireAuth } from "@/lib/api-auth";
+import { requireAuth, getAuthenticatedClient } from "@/lib/api-auth";
 
-const supabase = createClient(supabaseConfig.url, supabaseConfig.serviceKey);
 
 type SubLocQueryResult = {
 	name: string;
@@ -18,6 +15,7 @@ export async function POST(
 	try {
 		const auth = await requireAuth(request, "TASKS_WRITE");
 		if (!auth.authorized) return auth.response;
+		const supabase = getAuthenticatedClient(request);
 
 		const { id: taskId } = await params;
 		const body = await request.json();

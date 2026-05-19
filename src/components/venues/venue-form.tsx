@@ -96,7 +96,7 @@ export function VenueForm({
 			<div>
 				<label className="text-sm text-zinc-400 mb-1 block">Venue Type</label>
 				<Select
-					value={formData.venue_type}
+					value={formData.venue_type || undefined}
 					onValueChange={(v) => onFormChange({ ...formData, venue_type: v })}
 				>
 					<SelectTrigger className="bg-zinc-950 border-zinc-800">
@@ -116,13 +116,14 @@ export function VenueForm({
 				<Input
 					type="number"
 					min={1}
-					value={formData.capacity || ""}
-					onChange={(e) =>
+					value={formData.capacity ?? ""}
+					onChange={(e) => {
+						const val = e.target.value;
 						onFormChange({
 							...formData,
-							capacity: parseInt(e.target.value) || 0,
-						})
-					}
+							capacity: val === "" ? 0 : parseInt(val, 10) || 0,
+						});
+					}}
 					placeholder="Max capacity"
 					className="bg-zinc-950 border-zinc-800"
 					required

@@ -1,9 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createClient } from "@supabase/supabase-js";
-import { supabaseConfig } from "@/lib/supabase/config";
-import { requireAuth } from "@/lib/api-auth";
+import { requireAuth, getAuthenticatedClient } from "@/lib/api-auth";
 
-const supabase = createClient(supabaseConfig.url, supabaseConfig.serviceKey);
 
 export async function GET(
 	request: NextRequest,
@@ -12,6 +9,7 @@ export async function GET(
 	try {
 		const auth = await requireAuth(request, "INVENTORY_READ");
 		if (!auth.authorized) return auth.response;
+		const supabase = getAuthenticatedClient(request);
 
 		const { id } = await params;
 
@@ -55,6 +53,7 @@ export async function PUT(
 	try {
 		const auth = await requireAuth(request, "INVENTORY_WRITE");
 		if (!auth.authorized) return auth.response;
+		const supabase = getAuthenticatedClient(request);
 
 		const { id } = await params;
 		const body = await request.json();
@@ -111,6 +110,7 @@ export async function DELETE(
 	try {
 		const auth = await requireAuth(request, "INVENTORY_WRITE");
 		if (!auth.authorized) return auth.response;
+		const supabase = getAuthenticatedClient(request);
 
 		const { id } = await params;
 

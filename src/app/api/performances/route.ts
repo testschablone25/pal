@@ -2,17 +2,15 @@
 // Phase 2.3 - Nightclub Booking System
 
 import { NextRequest, NextResponse } from "next/server";
-import { createClient } from "@supabase/supabase-js";
-import { supabaseConfig } from "@/lib/supabase/config";
-import { requireAuth } from "@/lib/api-auth";
+import { requireAuth, getAuthenticatedClient } from "@/lib/api-auth";
 
-const supabase = createClient(supabaseConfig.url, supabaseConfig.serviceKey);
 
 // GET /api/performances - List performances with optional filtering
 export async function GET(request: NextRequest) {
 	try {
 		const auth = await requireAuth(request, "EVENTS_READ");
 		if (!auth.authorized) return auth.response;
+		const supabase = getAuthenticatedClient(request);
 		const searchParams = request.nextUrl.searchParams;
 		const eventId = searchParams.get("event_id");
 		const artistId = searchParams.get("artist_id");
@@ -84,6 +82,7 @@ export async function POST(request: NextRequest) {
 	try {
 		const auth = await requireAuth(request, "EVENTS_WRITE");
 		if (!auth.authorized) return auth.response;
+		const supabase = getAuthenticatedClient(request);
 
 		const body = await request.json();
 

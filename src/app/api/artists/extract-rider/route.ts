@@ -1,12 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createClient } from "@supabase/supabase-js";
 import PDFParser from "pdf2json";
 
 import { generateRiderTasksForArtist } from "@/lib/riders/task-generation";
-import { supabaseConfig } from "@/lib/supabase/config";
-import { requireAuth } from "@/lib/api-auth";
+import { requireAuth, getAuthenticatedClient } from "@/lib/api-auth";
 
-const supabase = createClient(supabaseConfig.url, supabaseConfig.serviceKey);
 
 const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY;
 const OPENROUTER_MODEL = "nvidia/nemotron-3-super-120b-a12b:free";
@@ -1285,6 +1282,7 @@ export async function POST(request: NextRequest) {
   try {
     const auth = await requireAuth(request, "ARTISTS_WRITE");
     if (!auth.authorized) return auth.response;
+		const supabase = getAuthenticatedClient(request);
 
     const formData = await request.formData();
     const file = formData.get("file");
@@ -1405,6 +1403,7 @@ export async function POST(request: NextRequest) {
 export async function GET(request: NextRequest) {
   const auth = await requireAuth(request, "ARTISTS_READ");
   if (!auth.authorized) return auth.response;
+		const supabase = getAuthenticatedClient(request);
 
   if (!OPENROUTER_API_KEY) {
     return NextResponse.json({

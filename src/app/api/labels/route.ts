@@ -2,18 +2,16 @@
 // Many-to-many relationship with artists
 
 import { NextRequest, NextResponse } from "next/server";
-import { createClient } from "@supabase/supabase-js";
-import { supabaseConfig } from "@/lib/supabase/config";
-import { requireAuth } from "@/lib/api-auth";
+import { requireAuth, getAuthenticatedClient } from "@/lib/api-auth";
 import { cacheHeaders } from "@/lib/api-cache";
 
-const supabase = createClient(supabaseConfig.url, supabaseConfig.serviceKey);
 
 // GET /api/labels - List all labels
 export async function GET(request: NextRequest) {
 	try {
 		const auth = await requireAuth(request, "ARTISTS_READ");
 		if (!auth.authorized) return auth.response;
+		const supabase = getAuthenticatedClient(request);
 
 		const { data, error } = await supabase
 			.from("labels")
@@ -42,6 +40,7 @@ export async function POST(request: NextRequest) {
 	try {
 		const auth = await requireAuth(request, "ARTISTS_WRITE");
 		if (!auth.authorized) return auth.response;
+		const supabase = getAuthenticatedClient(request);
 
 		const body = await request.json();
 		const { name } = body;

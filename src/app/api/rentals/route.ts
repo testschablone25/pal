@@ -1,14 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createClient } from "@supabase/supabase-js";
-import { supabaseConfig } from "@/lib/supabase/config";
-import { requireAuth } from "@/lib/api-auth";
+import { requireAuth, getAuthenticatedClient } from "@/lib/api-auth";
 
-const supabase = createClient(supabaseConfig.url, supabaseConfig.serviceKey);
 
 export async function GET(request: NextRequest) {
 	try {
 		const auth = await requireAuth(request, "RENTALS_READ");
 		if (!auth.authorized) return auth.response;
+		const supabase = getAuthenticatedClient(request);
 		const searchParams = request.nextUrl.searchParams;
 		const status = searchParams.get("status");
 		const itemId = searchParams.get("item_id");
@@ -51,6 +49,7 @@ export async function POST(request: NextRequest) {
 	try {
 		const auth = await requireAuth(request, "RENTALS_WRITE");
 		if (!auth.authorized) return auth.response;
+		const supabase = getAuthenticatedClient(request);
 
 		const body = await request.json();
 

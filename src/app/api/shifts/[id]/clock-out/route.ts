@@ -2,11 +2,8 @@
 // Phase 3 - Nightclub Booking System
 
 import { NextRequest, NextResponse } from "next/server";
-import { createClient } from "@supabase/supabase-js";
-import { supabaseConfig } from "@/lib/supabase/config";
-import { requireAuth } from "@/lib/api-auth";
+import { requireAuth, getAuthenticatedClient } from "@/lib/api-auth";
 
-const supabase = createClient(supabaseConfig.url, supabaseConfig.serviceKey);
 
 // POST /api/shifts/[id]/clock-out - Mark a shift as clocked out
 export async function POST(
@@ -16,6 +13,7 @@ export async function POST(
 	try {
 		const auth = await requireAuth(request, "SHIFTS_WRITE");
 		if (!auth.authorized) return auth.response;
+		const supabase = getAuthenticatedClient(request);
 
 		const { id } = await params;
 		const now = new Date().toISOString();

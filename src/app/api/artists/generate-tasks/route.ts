@@ -1,17 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@supabase/supabase-js';
 
 import { generateRiderTasksForArtist } from '@/lib/riders/task-generation';
-import { supabaseConfig } from '@/lib/supabase/config';
-import { requireAuth } from '@/lib/api-auth';
+import { requireAuth, getAuthenticatedClient } from '@/lib/api-auth';
 
-const supabase = createClient(supabaseConfig.url, supabaseConfig.serviceKey);
 
 // POST /api/artists/generate-tasks
 export async function POST(request: NextRequest) {
   try {
     const auth = await requireAuth(request, 'ARTISTS_WRITE');
     if (!auth.authorized) return auth.response;
+		const supabase = getAuthenticatedClient(request);
 
     const { artist_id, event_id } = await request.json();
 

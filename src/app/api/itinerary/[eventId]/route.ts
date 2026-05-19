@@ -2,12 +2,9 @@
 // Phase 2.4 - Nightclub Booking System
 
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@supabase/supabase-js';
-import { supabaseConfig } from '@/lib/supabase/config';
-import { requireAuth } from '@/lib/api-auth';
+import { requireAuth, getAuthenticatedClient } from '@/lib/api-auth';
 import { generateItineraryPDF, formatItineraryData } from '@/lib/itinerary';
 
-const supabase = createClient(supabaseConfig.url, supabaseConfig.serviceKey);
 
 // GET /api/itinerary/[eventId] - Get itinerary data with PDF option
 export async function GET(
@@ -17,6 +14,7 @@ export async function GET(
   try {
     const auth = await requireAuth(request, 'EVENTS_READ');
     if (!auth.authorized) return auth.response;
+		const supabase = getAuthenticatedClient(request);
 
     const { eventId } = await params;
     const searchParams = request.nextUrl.searchParams;
@@ -142,6 +140,7 @@ export async function PUT(
   try {
     const auth = await requireAuth(request, 'EVENTS_WRITE');
     if (!auth.authorized) return auth.response;
+		const supabase = getAuthenticatedClient(request);
 
     const { eventId } = await params;
     const body = await request.json();

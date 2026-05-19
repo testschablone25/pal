@@ -2,11 +2,7 @@
 // Workflow/Kanban Module - Nightclub Booking System
 
 import { NextRequest, NextResponse } from "next/server";
-import { createClient } from "@supabase/supabase-js";
-import { supabaseConfig } from "@/lib/supabase/config";
-import { requireAuth } from "@/lib/api-auth";
-
-const supabase = createClient(supabaseConfig.url, supabaseConfig.serviceKey);
+import { requireAuth, getAuthenticatedClient } from "@/lib/api-auth";
 
 interface TaskItemRow {
 	item_id: string;
@@ -118,6 +114,7 @@ export async function GET(
 	try {
 		const auth = await requireAuth(request, "TASKS_READ");
 		if (!auth.authorized) return auth.response;
+		const supabase = getAuthenticatedClient(request);
 
 		const { id } = await params;
 
@@ -176,7 +173,10 @@ export async function GET(
 
 		return NextResponse.json({
 			...data,
-			assignees: assigneesRaw?.map((ta) => ta.profile_id) || null,
+			assignees:
+				assigneesRaw
+					?.filter((ta) => ta.profile_id)
+					.map((ta) => ta.profile_id) || null,
 			comment_count:
 				(data?.comments as Array<{ count: number }>)?.[0]?.count || 0,
 			comments: undefined,
@@ -200,6 +200,7 @@ export async function PUT(
 	try {
 		const auth = await requireAuth(request, "TASKS_WRITE");
 		if (!auth.authorized) return auth.response;
+		const supabase = getAuthenticatedClient(request);
 
 		const { id } = await params;
 		const body = await request.json();
@@ -428,9 +429,13 @@ export async function PUT(
 			description:
 				description !== undefined ? description : responseData.description,
 			assignees:
-				assigneesRaw?.map(
-					(ta: { profile_id: Record<string, unknown> }) => ta.profile_id,
-				) || null,
+				assigneesRaw
+					?.filter(
+						(ta: { profile_id: Record<string, unknown> }) => ta.profile_id,
+					)
+					.map(
+						(ta: { profile_id: Record<string, unknown> }) => ta.profile_id,
+					) || null,
 			comment_count:
 				(responseData.comments as Array<{ count: number }>)?.[0]?.count || 0,
 			comments: undefined,
@@ -454,6 +459,7 @@ export async function DELETE(
 	try {
 		const auth = await requireAuth(request, "TASKS_WRITE");
 		if (!auth.authorized) return auth.response;
+		const supabase = getAuthenticatedClient(request);
 
 		const { id } = await params;
 

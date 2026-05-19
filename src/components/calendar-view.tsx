@@ -88,7 +88,9 @@ export function CalendarView({
 			});
 			if (venueId) params.append("venue_id", venueId);
 
-			const response = await fetch(`/api/events?${params.toString()}`);
+			const response = await fetch(`/api/events?${params.toString()}`, {
+				cache: "no-cache",
+			});
 			const data = await response.json();
 			setEvents(data.events || []);
 		} catch (error) {

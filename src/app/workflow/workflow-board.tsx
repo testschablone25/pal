@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import {
 	DndContext,
 	DragOverlay,
@@ -97,8 +97,6 @@ export function KanbanBoard({
 	const handleDragStart = useCallback(
 		(event: DragStartEvent) => {
 			const id = event.active.id as string;
-			// Use helper instead of allTasks ref to avoid stale closure
-			// eslint-disable-next-line react-hooks/exhaustive-deps
 			const task = allTasksDFind(id, tasksByStatus);
 			setActiveId(id);
 			setActiveTaskOriginalStatus(task?.status || null);
@@ -215,6 +213,23 @@ export function KanbanBoard({
 		],
 	);
 
+	const scrollContainerRef = useRef<HTMLDivElement>(null);
+
+	// Auto-scroll to the in_progress column on mobile mount
+	useEffect(() => {
+		const el = scrollContainerRef.current;
+		if (!el) return;
+		const inProgressIdx = visibleColumns.findIndex(
+			(c) => c.status === "in_progress",
+		);
+		if (inProgressIdx > 0) {
+			const child = el.children[inProgressIdx] as HTMLElement | undefined;
+			if (child) {
+				el.scrollTo({ left: child.offsetLeft - 16, behavior: "smooth" });
+			}
+		}
+	}, [visibleColumns]);
+
 	return (
 		<DndContext
 			sensors={sensors}
@@ -225,112 +240,117 @@ export function KanbanBoard({
 			autoScroll={false}
 		>
 			<div
-				className="grid gap-4"
-				style={{
-					gridTemplateColumns: `repeat(${visibleColumns.length}, minmax(0, 1fr))`,
-				}}
+				ref={scrollContainerRef}
+				className="sm:overflow-hidden overflow-x-auto pb-2 -mx-4 sm:-mx-0 px-4 sm:px-0 scrollbar-thin scrollbar-thumb-zinc-700 scrollbar-track-transparent"
 			>
-				{visibleColumns.map((column) => {
-					const tasks = tasksByStatus[column.status] || [];
-					const hasBlockedTasks =
-						column.id === "in_progress" && tasks.some((t) => t.blocked);
+				<div
+					className="flex gap-4 sm:grid"
+					style={{
+						gridTemplateColumns: `repeat(${visibleColumns.length}, minmax(0, 1fr))`,
+					}}
+				>
+					{visibleColumns.map((column) => {
+						const tasks = tasksByStatus[column.status] || [];
+						const hasBlockedTasks =
+							column.id === "in_progress" && tasks.some((t) => t.blocked);
 
-					return (
-						<div key={column.id} className="flex flex-col">
-							{/* Column header */}
-							<div className="flex items-center gap-2 mb-3 px-1">
-								<div
-									className={cn(
-										"w-2 h-2 rounded-full",
-										COLUMN_COLORS[column.id],
-									)}
-								/>
-								<h3 className="text-sm font-semibold text-white capitalize">
-									{column.status.replace(/_/g, " ")}
-								</h3>
-								<Badge
-									variant="outline"
-									className="border-zinc-700 text-zinc-500 text-[10px] ml-auto"
-								>
-									{tasks.length}
-								</Badge>
-							</div>
-
-							<SortableContext
-								items={tasks.map((t) => t.id)}
-								strategy={verticalListSortingStrategy}
-							>
-								<DroppableColumn columnId={column.id}>
+						return (
+							<div key={column.id} className="flex flex-col">
+								{/* Column header */}
+								<div className="flex items-center gap-2 mb-3 px-1">
 									<div
 										className={cn(
-											"flex-1 min-h-[200px] p-3 rounded-lg transition-colors",
-											"bg-zinc-950/60 border border-zinc-800/60",
-											activeId && "border-violet-600/40 bg-violet-950/10",
-											hasBlockedTasks && "border-red-800/40 bg-red-950/10",
+											"w-2 h-2 rounded-full",
+											COLUMN_COLORS[column.id],
 										)}
+									/>
+									<h3 className="text-sm font-semibold text-white capitalize">
+										{column.status.replace(/_/g, " ")}
+									</h3>
+									<Badge
+										variant="outline"
+										className="border-zinc-700 text-zinc-500 text-[10px] ml-auto"
 									>
-										{loading ? (
-											<div className="space-y-3">
-												{[...Array(3)].map((_, i) => (
-													<Skeleton
-														key={i}
-														className="h-24 bg-zinc-800/50 rounded-lg"
-													/>
-												))}
-											</div>
-										) : tasks.length === 0 ? (
-											<div className="flex items-center justify-center h-32 text-zinc-600 text-sm">
-												Keine Aufgaben
-											</div>
-										) : groupByVenue ? (
-											<div className="space-y-4">
-												{Object.entries(
-													tasks.reduce(
-														(acc: Record<string, Task[]>, task) => {
-															const venueName =
-																((task.event as Record<string, unknown>)
-																	?.name as string) || "Unbekannt";
-															if (!acc[venueName]) acc[venueName] = [];
-															acc[venueName].push(task);
-															return acc;
-														},
-														{} as Record<string, Task[]>,
-													),
-												).map(([venueName, venueTasks]) => (
-													<div key={venueName}>
-														<div className="flex items-center gap-1.5 mb-2 text-[11px] font-medium text-zinc-500 uppercase tracking-wider">
-															<Building2 className="h-3 w-3" />
-															{venueName}
+										{tasks.length}
+									</Badge>
+								</div>
+
+								<SortableContext
+									items={tasks.map((t) => t.id)}
+									strategy={verticalListSortingStrategy}
+								>
+									<DroppableColumn columnId={column.id}>
+										<div
+											className={cn(
+												"flex-1 min-h-[200px] p-3 rounded-lg transition-colors sm:w-auto w-72",
+												"bg-zinc-950/60 border border-zinc-800/60",
+												activeId && "border-violet-600/40 bg-violet-950/10",
+												hasBlockedTasks && "border-red-800/40 bg-red-950/10",
+											)}
+										>
+											{loading ? (
+												<div className="space-y-3">
+													{[...Array(3)].map((_, i) => (
+														<Skeleton
+															key={i}
+															className="h-24 bg-zinc-800/50 rounded-lg"
+														/>
+													))}
+												</div>
+											) : tasks.length === 0 ? (
+												<div className="flex items-center justify-center h-32 text-zinc-600 text-sm">
+													Keine Aufgaben
+												</div>
+											) : groupByVenue ? (
+												<div className="space-y-4">
+													{Object.entries(
+														tasks.reduce(
+															(acc: Record<string, Task[]>, task) => {
+																const venueName =
+																	((task.event as Record<string, unknown>)
+																		?.name as string) || "Unbekannt";
+																if (!acc[venueName]) acc[venueName] = [];
+																acc[venueName].push(task);
+																return acc;
+															},
+															{} as Record<string, Task[]>,
+														),
+													).map(([venueName, venueTasks]) => (
+														<div key={venueName}>
+															<div className="flex items-center gap-1.5 mb-2 text-[11px] font-medium text-zinc-500 uppercase tracking-wider">
+																<Building2 className="h-3 w-3" />
+																{venueName}
+															</div>
+															<div className="space-y-2">
+																{venueTasks.map((task) => (
+																	<TaskCard
+																		key={task.id}
+																		task={task}
+																		onClick={() => onTaskClick(task)}
+																	/>
+																))}
+															</div>
 														</div>
-														<div className="space-y-2">
-															{venueTasks.map((task) => (
-																<TaskCard
-																	key={task.id}
-																	task={task}
-																	onClick={() => onTaskClick(task)}
-																/>
-															))}
-														</div>
-													</div>
-												))}
-											</div>
-										) : (
-											<div className="space-y-2">
-												{tasks.map((task) => (
-													<TaskCard
-														key={task.id}
-														task={task}
-														onClick={() => onTaskClick(task)}
-													/>
-												))}
-											</div>
-										)}
-									</div>
-								</DroppableColumn>
-							</SortableContext>
-						</div>
-					);
-				})}
+													))}
+												</div>
+											) : (
+												<div className="space-y-2">
+													{tasks.map((task) => (
+														<TaskCard
+															key={task.id}
+															task={task}
+															onClick={() => onTaskClick(task)}
+														/>
+													))}
+												</div>
+											)}
+										</div>
+									</DroppableColumn>
+								</SortableContext>
+							</div>
+						);
+					})}
+				</div>
 			</div>
 
 			<DragOverlay>

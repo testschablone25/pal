@@ -2,11 +2,8 @@
 // Nightclub Booking System
 
 import { NextRequest, NextResponse } from "next/server";
-import { createClient } from "@supabase/supabase-js";
-import { supabaseConfig } from "@/lib/supabase/config";
-import { requireAuth } from "@/lib/api-auth";
+import { requireAuth, getAuthenticatedClient } from "@/lib/api-auth";
 
-const supabase = createClient(supabaseConfig.url, supabaseConfig.serviceKey);
 
 // GET /api/venues/[id] - Get single venue with full detail
 export async function GET(
@@ -16,6 +13,7 @@ export async function GET(
 	try {
 		const auth = await requireAuth(request, "VENUES_READ");
 		if (!auth.authorized) return auth.response;
+		const supabase = getAuthenticatedClient(request);
 
 		const { id } = await params;
 
@@ -189,6 +187,7 @@ export async function PUT(
 	try {
 		const auth = await requireAuth(request, "VENUES_WRITE");
 		if (!auth.authorized) return auth.response;
+		const supabase = getAuthenticatedClient(request);
 
 		const { id } = await params;
 		const body = await request.json();
@@ -259,6 +258,7 @@ export async function DELETE(
 	try {
 		const auth = await requireAuth(request, "VENUES_WRITE");
 		if (!auth.authorized) return auth.response;
+		const supabase = getAuthenticatedClient(request);
 
 		const { id } = await params;
 

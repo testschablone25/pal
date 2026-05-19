@@ -4,11 +4,8 @@
  * Scans artists.tech_rider JSONB for equipment items with matching inventory_item_id.
  */
 import { NextRequest, NextResponse } from "next/server";
-import { createClient } from "@supabase/supabase-js";
-import { supabaseConfig } from "@/lib/supabase/config";
-import { requireAuth } from "@/lib/api-auth";
+import { requireAuth, getAuthenticatedClient } from "@/lib/api-auth";
 
-const supabase = createClient(supabaseConfig.url, supabaseConfig.serviceKey);
 
 interface RiderAssignment {
 	artist_id: string;
@@ -27,6 +24,7 @@ export async function GET(
 	try {
 		const auth = await requireAuth(request, "INVENTORY_READ");
 		if (!auth.authorized) return auth.response;
+		const supabase = getAuthenticatedClient(request);
 
 		const { id } = await params;
 

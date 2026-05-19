@@ -4,11 +4,8 @@
 // Also fetches standalone contacts from the contacts table
 
 import { NextRequest, NextResponse } from "next/server";
-import { createClient } from "@supabase/supabase-js";
-import { supabaseConfig } from "@/lib/supabase/config";
-import { requireAuth } from "@/lib/api-auth";
+import { requireAuth, getAuthenticatedClient } from "@/lib/api-auth";
 
-const supabase = createClient(supabaseConfig.url, supabaseConfig.serviceKey);
 
 interface VenueAssociation {
 	id: string;
@@ -37,6 +34,7 @@ export async function POST(request: NextRequest) {
 	try {
 		const auth = await requireAuth(request, "CONTACTS_WRITE");
 		if (!auth.authorized) return auth.response;
+		const supabase = getAuthenticatedClient(request);
 
 		const body = await request.json();
 		const { name, phone, email, role, company, notes } = body;
@@ -78,6 +76,7 @@ export async function GET(request: NextRequest) {
 	try {
 		const auth = await requireAuth(request, "CONTACTS_READ");
 		if (!auth.authorized) return auth.response;
+		const supabase = getAuthenticatedClient(request);
 
 		const searchParams = request.nextUrl.searchParams;
 		const query = searchParams.get("q")?.toLowerCase().trim() || "";

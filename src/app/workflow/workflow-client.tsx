@@ -118,6 +118,7 @@ export function WorkflowClient({
 
 	const [sortField, setSortField] = useState<SortField>(null);
 	const [groupByVenue, setGroupByVenue] = useState(false);
+	const [showMobileFilters, setShowMobileFilters] = useState(false);
 
 	// ── Re-fetch (after mutations or my-tasks toggle) ───────────────
 	const refetchTasks = useCallback(async () => {
@@ -445,17 +446,19 @@ export function WorkflowClient({
 	return (
 		<div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8">
 			{/* Header */}
-			<div className="flex items-center justify-between mb-8">
+			<div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8">
 				<div>
-					<h1 className="text-3xl font-bold text-white flex items-center gap-3">
-						<Kanban className="h-7 w-7 text-zinc-400" />
+					<h1 className="text-2xl sm:text-3xl font-bold text-white flex items-center gap-3">
+						<Kanban className="h-6 w-6 sm:h-7 sm:w-7 text-zinc-400" />
 						{t("app.title")}
 					</h1>
-					<p className="text-zinc-400 mt-2">{t("app.subtitle")}</p>
+					<p className="text-zinc-400 mt-1 sm:mt-2 text-sm sm:text-base">
+						{t("app.subtitle")}
+					</p>
 				</div>
 				<Button
 					onClick={() => setIsCreateOpen(true)}
-					className="bg-violet-600 hover:bg-violet-700"
+					className="bg-violet-600 hover:bg-violet-700 w-full sm:w-auto"
 				>
 					<Plus className="h-4 w-4 mr-2" />
 					{t("action.new_task")}
@@ -464,9 +467,40 @@ export function WorkflowClient({
 
 			{/* Filter Bar */}
 			<Card className="bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/70 rounded-lg mb-6">
-				<CardContent className="pt-5 pb-4">
-					<div className="flex flex-wrap items-center gap-2 mb-3">
-						<div className="relative w-56">
+				<CardContent className="pt-4 sm:pt-5 pb-4">
+					{/* Mobile filter toggle + search row */}
+					<div className="flex items-center gap-2 sm:hidden mb-3">
+						<div className="relative flex-1">
+							<Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500" />
+							<Input
+								placeholder={t("filter.search_placeholder")}
+								value={searchQuery}
+								onChange={(e) => setSearchQuery(e.target.value)}
+								className="pl-9 bg-zinc-950 border-zinc-700 h-9 text-sm"
+							/>
+						</div>
+						<Button
+							variant="outline"
+							size="sm"
+							onClick={() => setShowMobileFilters(!showMobileFilters)}
+							className={cn(
+								"border-zinc-700 h-9 shrink-0",
+								showMobileFilters && "border-violet-500 text-violet-400",
+							)}
+						>
+							<Filter className="h-4 w-4" />
+						</Button>
+					</div>
+
+					<div
+						className={cn(
+							"flex-wrap items-center gap-2",
+							"hidden sm:flex",
+							showMobileFilters && "flex",
+						)}
+					>
+						{/* Desktop search (hidden on mobile, already shown above) */}
+						<div className="relative w-56 hidden sm:block">
 							<Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500" />
 							<Input
 								placeholder={t("filter.search_placeholder")}
@@ -482,7 +516,7 @@ export function WorkflowClient({
 								setShowMyTasksOnly(!showMyTasksOnly);
 							}}
 							className={cn(
-								"inline-flex items-center gap-1.5 px-3 py-1.5 text-xs rounded-full border transition-all",
+								"inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 text-xs rounded-full border transition-all shrink-0",
 								showMyTasksOnly
 									? "bg-zinc-200 text-zinc-900 border-zinc-200"
 									: "border-zinc-700 text-zinc-400 hover:text-zinc-300 hover:border-zinc-600",
@@ -494,7 +528,7 @@ export function WorkflowClient({
 						<button
 							onClick={() => setFilterBlocked(!filterBlocked)}
 							className={cn(
-								"inline-flex items-center gap-1.5 px-3 py-1.5 text-xs rounded-full border transition-all",
+								"inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 text-xs rounded-full border transition-all shrink-0",
 								filterBlocked
 									? "bg-zinc-200 text-zinc-900 border-zinc-200"
 									: "border-zinc-700 text-zinc-400 hover:text-zinc-300 hover:border-zinc-600",
@@ -506,7 +540,7 @@ export function WorkflowClient({
 						<button
 							onClick={() => setFilterNeedsApproval(!filterNeedsApproval)}
 							className={cn(
-								"inline-flex items-center gap-1.5 px-3 py-1.5 text-xs rounded-full border transition-all",
+								"inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 text-xs rounded-full border transition-all shrink-0",
 								filterNeedsApproval
 									? "bg-zinc-200 text-zinc-900 border-zinc-200"
 									: "border-zinc-700 text-zinc-400 hover:text-zinc-300 hover:border-zinc-600",
@@ -515,7 +549,7 @@ export function WorkflowClient({
 							{t("action.needs_approval")}
 						</button>
 
-						<div className="w-px h-6 bg-zinc-700 mx-1" />
+						<div className="w-px h-6 bg-zinc-700 mx-1 hidden sm:block" />
 
 						{/* Filter dropdowns */}
 						<DropdownMenu>
@@ -526,7 +560,9 @@ export function WorkflowClient({
 									className="border-zinc-700 gap-1.5 text-xs h-8"
 								>
 									<Filter className="h-3 w-3" />
-									{t("field.priority")}
+									<span className="hidden sm:inline">
+										{t("field.priority")}
+									</span>
 									<ChevronDown className="h-3 w-3 opacity-50" />
 								</Button>
 							</DropdownMenuTrigger>
@@ -588,8 +624,8 @@ export function WorkflowClient({
 									size="sm"
 									className="border-zinc-700 gap-1.5 text-xs h-8"
 								>
-									<Building2 className="h-3 w-3" />
-									{t("field.event")}
+									<Building2 className="h-3 w-3 sm:hidden" />
+									<span className="hidden sm:inline">{t("field.event")}</span>
 									<ChevronDown className="h-3 w-3 opacity-50" />
 								</Button>
 							</DropdownMenuTrigger>
@@ -622,7 +658,7 @@ export function WorkflowClient({
 									className="border-zinc-700 gap-1.5 text-xs h-8"
 								>
 									<ArrowUpDown className="h-3 w-3" />
-									{t("app.sort")}
+									<span className="hidden sm:inline">{t("app.sort")}</span>
 									<ChevronDown className="h-3 w-3 opacity-50" />
 								</Button>
 							</DropdownMenuTrigger>
@@ -667,7 +703,7 @@ export function WorkflowClient({
 
 					{/* Active filter chips */}
 					{activeFilters.length > 0 && (
-						<div className="flex flex-wrap gap-1.5">
+						<div className="flex flex-wrap gap-1.5 mt-3">
 							{activeFilters.map((chip, i) => (
 								<Badge
 									key={i}

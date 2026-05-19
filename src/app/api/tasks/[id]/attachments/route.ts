@@ -2,11 +2,8 @@
 // File upload/download for tasks using Supabase Storage
 
 import { NextRequest, NextResponse } from "next/server";
-import { createClient } from "@supabase/supabase-js";
-import { supabaseConfig } from "@/lib/supabase/config";
-import { requireAuth } from "@/lib/api-auth";
+import { requireAuth, getAuthenticatedClient } from "@/lib/api-auth";
 
-const supabase = createClient(supabaseConfig.url, supabaseConfig.serviceKey);
 
 interface Attachment {
 	id: string;
@@ -26,6 +23,7 @@ export async function POST(
 	try {
 		const auth = await requireAuth(request, "TASKS_WRITE");
 		if (!auth.authorized) return auth.response;
+		const supabase = getAuthenticatedClient(request);
 
 		const { id: taskId } = await params;
 
@@ -152,6 +150,7 @@ export async function DELETE(
 	try {
 		const auth = await requireAuth(request, "TASKS_WRITE");
 		if (!auth.authorized) return auth.response;
+		const supabase = getAuthenticatedClient(request);
 
 		const { id: taskId } = await params;
 		const attachmentId = request.nextUrl.searchParams.get("attachment_id");

@@ -2,11 +2,8 @@
 // Nightclub Booking System
 
 import { NextRequest, NextResponse } from "next/server";
-import { createClient } from "@supabase/supabase-js";
-import { supabaseConfig } from "@/lib/supabase/config";
-import { requireAuth } from "@/lib/api-auth";
+import { requireAuth, getAuthenticatedClient } from "@/lib/api-auth";
 
-const supabase = createClient(supabaseConfig.url, supabaseConfig.serviceKey);
 
 // PUT /api/venues/[id]/sublocations/[subId] - Update a sub-location
 export async function PUT(
@@ -16,6 +13,7 @@ export async function PUT(
 	try {
 		const auth = await requireAuth(request, "VENUES_WRITE");
 		if (!auth.authorized) return auth.response;
+		const supabase = getAuthenticatedClient(request);
 
 		const { subId } = await params;
 		const body = await request.json();
@@ -74,6 +72,7 @@ export async function DELETE(
 	try {
 		const auth = await requireAuth(request, "VENUES_WRITE");
 		if (!auth.authorized) return auth.response;
+		const supabase = getAuthenticatedClient(request);
 
 		const { subId } = await params;
 

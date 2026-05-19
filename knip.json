@@ -16,7 +16,8 @@
     "src/test/**"
   ],
   "ignoreDependencies": [
-    "typescript-language-server"
+    "typescript-language-server",
+    "@fontsource-variable/montserrat"
   ],
   "rules": {
     "enumMembers": "warn",
