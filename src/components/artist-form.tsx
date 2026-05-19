@@ -18,7 +18,6 @@ import {
 import {
 	Form,
 	FormControl,
-	FormDescription,
 	FormField,
 	FormItem,
 	FormLabel,
@@ -47,12 +46,13 @@ interface ArtistFormProps {
 		city: string | null;
 		fee: number | null;
 		genre: string | null;
-		bio: string | null;
+		bio?: string | null;
 		contact_email: string | null;
 		contact_phone: string | null;
-		promo_pack_url: string | null;
+		promo_pack_url?: string | null;
 	};
 	mode?: "create" | "edit";
+	onSuccess?: () => void;
 }
 
 const GENRES = [
@@ -69,7 +69,7 @@ const GENRES = [
 	"Other",
 ];
 
-export function ArtistForm({ artist, mode = "create" }: ArtistFormProps) {
+export function ArtistForm({ artist, mode = "create", onSuccess }: ArtistFormProps) {
 	const router = useRouter();
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState<string | null>(null);
@@ -111,7 +111,11 @@ export function ArtistForm({ artist, mode = "create" }: ArtistFormProps) {
 				throw new Error(data.error || "Failed to save artist");
 			}
 
-			router.push("/artists");
+			if (onSuccess) {
+				onSuccess();
+			} else {
+				router.push("/artists");
+			}
 		} catch (err) {
 			setError(err instanceof Error ? err.message : "An error occurred");
 		} finally {

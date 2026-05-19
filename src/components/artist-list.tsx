@@ -33,6 +33,14 @@ import { useRouter } from "next/navigation";
 import { EmptyState } from "@/components/empty-state";
 import { useToast } from "@/hooks/use-toast";
 import { LabelAgencyManager } from "@/components/label-agency-manager";
+import { ArtistForm } from "@/components/artist-form";
+import {
+	Dialog,
+	DialogContent,
+	DialogHeader,
+	DialogTitle,
+	DialogDescription,
+} from "@/components/ui/dialog";
 
 interface Label {
 	id: string;
@@ -107,7 +115,10 @@ export function ArtistList() {
 	const [labelOptions, setLabelOptions] = useState<LabelOption[]>([]);
 	const [agencyOptions, setAgencyOptions] = useState<AgencyOption[]>([]);
 
-	// Delete state
+	// Create / Edit / Delete state
+	const [showCreateDialog, setShowCreateDialog] = useState(false);
+	const [editingArtist, setEditingArtist] = useState<Artist | null>(null);
+	const [showEditDialog, setShowEditDialog] = useState(false);
 	const [deletingArtist, setDeletingArtist] = useState<Artist | null>(null);
 	const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 	const [deleting, setDeleting] = useState(false);
@@ -306,7 +317,7 @@ export function ArtistList() {
 					title="Keine Künstler gefunden"
 					description="Füge deinen ersten Künstler hinzu"
 					actionLabel="Künstler hinzufügen"
-					actionHref="/artists/new"
+					onClick={() => setShowCreateDialog(true)}
 				/>
 			) : (
 				<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -332,18 +343,19 @@ export function ArtistList() {
 													</h3>
 												</div>
 												<div className="flex items-center gap-1 shrink-0">
-													<Link
-														href={`/artists/${artist.id}/edit`}
-														onClick={(e) => e.stopPropagation()}
+													<Button
+														variant="ghost"
+														size="icon"
+														className="h-8 w-8 text-zinc-400 hover:text-white hover:bg-zinc-800"
+														onClick={(e) => {
+															e.preventDefault();
+															e.stopPropagation();
+															setEditingArtist(artist);
+															setShowEditDialog(true);
+														}}
 													>
-														<Button
-															variant="ghost"
-															size="icon"
-															className="h-8 w-8 text-zinc-400 hover:text-white hover:bg-zinc-800"
-														>
-															<Pencil className="h-4 w-4" />
-														</Button>
-													</Link>
+														<Pencil className="h-4 w-4" />
+													</Button>
 													<Button
 														variant="ghost"
 														size="icon"
@@ -438,6 +450,60 @@ export function ArtistList() {
 				}}
 				className="mt-6"
 			/>
+
+			{/* Create Artist Dialog */}
+			<Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
+				<DialogContent className="bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/70 rounded-lg max-w-xl">
+					<DialogHeader>
+						<DialogTitle className="text-white">
+							Add New Artist
+						</DialogTitle>
+						<DialogDescription className="text-zinc-400">
+							Create a new artist or DJ
+						</DialogDescription>
+					</DialogHeader>
+					<ArtistForm
+						mode="create"
+						onSuccess={() => {
+							setShowCreateDialog(false);
+							fetchArtists();
+						}}
+					/>
+				</DialogContent>
+				</Dialog>
+
+			{/* Edit Artist Dialog */}
+			<Dialog open={showEditDialog} onOpenChange={setShowEditDialog}>
+				<DialogContent className="bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/70 rounded-lg max-w-xl">
+					<DialogHeader>
+						<DialogTitle className="text-white">
+							Edit Artist
+						</DialogTitle>
+						<DialogDescription className="text-zinc-400">
+							Update artist information
+						</DialogDescription>
+					</DialogHeader>
+					{editingArtist && (
+						<ArtistForm
+							artist={{
+								id: editingArtist.id,
+								name: editingArtist.name,
+								city: editingArtist.city,
+								fee: editingArtist.fee,
+								genre: editingArtist.genre,
+								contact_email: editingArtist.contact_email,
+								contact_phone: editingArtist.contact_phone,
+							}}
+							mode="edit"
+							onSuccess={() => {
+								setShowEditDialog(false);
+								setEditingArtist(null);
+								fetchArtists();
+							}}
+						/>
+					)}
+				</DialogContent>
+			</Dialog>
 
 			{/* Delete Confirmation */}
 			<AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
