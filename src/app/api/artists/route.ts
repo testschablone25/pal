@@ -106,7 +106,10 @@ export async function GET(request: NextRequest) {
 			if (agencyJunction) {
 				for (const row of agencyJunction) {
 					const aId = row.artist_id as string;
-					const aData = row.agencies as unknown as { id: string; name: string } | null;
+					const aData = row.agencies as unknown as {
+						id: string;
+						name: string;
+					} | null;
 					if (!agencyMap[aId]) agencyMap[aId] = [];
 					if (aData) agencyMap[aId].push(aData);
 				}
@@ -130,8 +133,9 @@ export async function GET(request: NextRequest) {
 					.filter(Boolean)
 					.filter((l): l is { id: string; name: string } => l !== null)
 					.sort((a, b) => a.name.localeCompare(b.name)),
-				agencies: (agencyMap[artistId] || [])
-					.sort((a, b) => a.name.localeCompare(b.name)),
+				agencies: (agencyMap[artistId] || []).sort((a, b) =>
+					a.name.localeCompare(b.name),
+				),
 			};
 		});
 

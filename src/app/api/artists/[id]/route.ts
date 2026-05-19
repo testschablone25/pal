@@ -19,9 +19,7 @@ export async function GET(
 		// Fetch artist with labels (labels table always exists)
 		const { data, error } = await supabase
 			.from("artists")
-			.select(
-				`*, artist_labels(label_id, labels(id, name))`,
-			)
+			.select(`*, artist_labels(label_id, labels(id, name))`)
 			.eq("id", id)
 			.single();
 
@@ -45,7 +43,10 @@ export async function GET(
 
 			if (agencyJunction) {
 				agencies = agencyJunction
-					.map((row) => row.agencies as unknown as { id: string; name: string } | null)
+					.map(
+						(row) =>
+							row.agencies as unknown as { id: string; name: string } | null,
+					)
 					.filter(Boolean)
 					.filter((a): a is { id: string; name: string } => a !== null)
 					.sort((a, b) => a.name.localeCompare(b.name));

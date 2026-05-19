@@ -329,8 +329,7 @@ export function ArtistList() {
 							<div
 								onClick={() => router.push(`/artists/${artist.id}`)}
 								onKeyDown={(e) => {
-									if (e.key === "Enter")
-										router.push(`/artists/${artist.id}`);
+									if (e.key === "Enter") router.push(`/artists/${artist.id}`);
 								}}
 								className="cursor-pointer"
 							>

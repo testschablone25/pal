@@ -68,11 +68,17 @@ async function run() {
 		console.log("\nTrying direct SQL execution via raw query...");
 
 		// Try executing SQL via raw query as fallback
-		const { error: rawError } = await supabase.from("_sql_exec").insert({ query: SQL }).select().single();
+		const { error: rawError } = await supabase
+			.from("_sql_exec")
+			.insert({ query: SQL })
+			.select()
+			.single();
 
 		if (rawError) {
 			console.log("\n⚠️  Could not auto-apply migration.");
-			console.log("\nPlease run this SQL in the Supabase Dashboard → SQL Editor:\n");
+			console.log(
+				"\nPlease run this SQL in the Supabase Dashboard → SQL Editor:\n",
+			);
 			console.log(SQL);
 			process.exit(1);
 		}
@@ -81,10 +87,16 @@ async function run() {
 	console.log("✅ Migration applied successfully!");
 
 	// Verify tables exist
-	const { data: agencies } = await supabase.from("agencies").select("count").limit(1);
+	const { data: agencies } = await supabase
+		.from("agencies")
+		.select("count")
+		.limit(1);
 	console.log("  agencies table: ready", agencies ? "✅" : "❌");
 
-	const { data: junction } = await supabase.from("artist_agencies").select("count").limit(1);
+	const { data: junction } = await supabase
+		.from("artist_agencies")
+		.select("count")
+		.limit(1);
 	console.log("  artist_agencies table: ready", junction ? "✅" : "❌");
 }
 
