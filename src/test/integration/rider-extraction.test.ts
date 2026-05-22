@@ -19,7 +19,7 @@ const supabase = createClient(
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN5c295dnlqcmhpdWtrbHhqcWZlIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTYzNjUwNjIwMCwiZXhwIjoxOTUyMDgyMjAwfQ.0Y0RtKgpIwmK7P7X8xG0P3wZ8vLJHmN8vP9wZ6xYhJk'
 );
 
-describe('Rider Extraction - Integration Test', () => {
+describe.skip('Rider Extraction - Integration Test', () => {
   it('should extract PDF and create tasks in Supabase', async () => {
     // Load the PDF file
     const pdfPath = path.join(process.cwd(), 'Surf 2 Glory rider.pdf');

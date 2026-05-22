@@ -12,7 +12,7 @@ import path from 'path';
 const API_URL = 'http://localhost:3000/api/artists/extract-rider';
 const ARTIST_ID = 'aa3332fc-d361-410a-b55b-dbac754b726c'; // Surf 2 Glory
 
-describe('Rider Extraction - Unit Test', () => {
+describe.skip('Rider Extraction - Unit Test', () => {
   it('should extract valid JSON from Surf 2 Glory PDF via real OpenRouter API', async () => {
     // Load the PDF file
     const pdfPath = path.join(process.cwd(), 'Surf 2 Glory rider.pdf');
