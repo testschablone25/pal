@@ -37,11 +37,6 @@ vi.mock("@/lib/supabase/browser", () => ({
 	resetClient: vi.fn(),
 }));
 
-// We import the real canAccessRoute for accurate tests
-const { canAccessRoute } = await vi.importActual<typeof import("@/lib/permissions")>(
-	"@/lib/permissions",
-);
-
 // Mock useUser to control roles
 const mockUseUser = vi.fn();
 vi.mock("@/lib/user-context", () => ({
