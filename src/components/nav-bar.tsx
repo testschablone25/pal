@@ -7,7 +7,9 @@ import {
 	Calendar,
 	Users,
 	ClipboardList,
+	ClipboardCheck,
 	Music,
+	DoorOpen,
 	Building,
 	Package,
 	Phone,
@@ -39,11 +41,13 @@ import {
 const navItems = [
 	{ href: "/", label: "Dashboard", icon: Home },
 	{ href: "/events", label: "Events", icon: Calendar },
+	{ href: "/door", label: "Door", icon: DoorOpen },
 	{ href: "/artists", label: "Künstler", icon: Music },
 	{ href: "/staff", label: "Staff", icon: Users },
 	{ href: "/workflow", label: "Aufgaben", icon: ClipboardList },
-	{ href: "/inventory", label: "Inventar", icon: Package },
+	{ href: "/guest-lists", label: "Guest Lists", icon: ClipboardCheck },
 	{ href: "/venues", label: "Venues", icon: Building },
+	{ href: "/inventory", label: "Inventar", icon: Package },
 	{ href: "/contacts", label: "Contacts", icon: Phone },
 ];
 
@@ -64,7 +68,7 @@ function NavLink({
 		<Link
 			href={href}
 			className={cn(
-				"flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors",
+				"flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors whitespace-nowrap",
 				isActive
 					? "bg-violet-600 text-white"
 					: "text-zinc-400 hover:text-white hover:bg-zinc-800",
@@ -121,21 +125,23 @@ export function NavBar() {
 		<nav className="sticky top-0 z-50 bg-zinc-950/80 backdrop-blur-lg border-b border-zinc-800">
 			<div className="max-w-7xl mx-auto px-4">
 				<div className="flex items-center justify-between h-14">
-					<Link href="/" className="flex items-center gap-2 font-bold text-xl">
+					<Link href="/" className="flex items-center gap-2 font-bold text-xl flex-shrink-0">
 						<span className="text-violet-400">PAL</span>
 						<span className="self-end text-zinc-500 text-sm font-normal">
 							.tool
 						</span>
 					</Link>
 
-					{/* Desktop nav items */}
-					<div className="hidden md:flex items-center gap-1">
+					{/* Desktop nav items — scrollable on smaller screens */}
+					<div className="hidden md:flex items-center gap-1 overflow-x-auto lg:overflow-x-visible scrollbar-hide flex-nowrap flex-1 min-w-0 mx-2 relative">
 						{filteredNavItems.map((item) => (
 							<NavLink key={item.href} {...item} />
 						))}
+						{/* Gradient fade on right edge when scrollable (hidden on lg+ where overflow is visible) */}
+						<div className="absolute right-0 top-0 bottom-0 w-10 bg-gradient-to-l from-zinc-950/80 to-transparent pointer-events-none lg:hidden" />
 					</div>
 
-					<div className="flex items-center gap-2">
+					<div className="flex items-center gap-2 flex-shrink-0">
 						{/* Desktop language toggle */}
 						<div className="hidden md:block">
 							<LanguageToggle />
