@@ -1,604 +1,157 @@
-"use client";
-
-import { useState, useEffect, useCallback } from "react";
-import { useParams, useRouter } from "next/navigation";
-import { createClient } from "@/lib/supabase/browser";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import {
-	Dialog,
-	DialogContent,
-	DialogHeader,
-	DialogTitle,
-} from "@/components/ui/dialog";
-import {
-	AlertDialog,
-	AlertDialogContent,
-	AlertDialogHeader,
-	AlertDialogFooter,
-	AlertDialogTitle,
-	AlertDialogDescription,
-	AlertDialogCancel,
-	AlertDialogAction,
-} from "@/components/ui/alert-dialog";
-import { RunningOrder } from "@/components/running-order";
-import { TaskForm } from "@/components/task-form";
-import { TaskCard, type Task } from "@/components/task-card";
-import { TaskDetailDialog } from "@/components/task-detail-dialog";
-import { formatDateFull } from "@/lib/dates";
-import {
-	CalendarDays,
-	Clock,
-	MapPin,
-	Users,
-	Edit,
-	Download,
-	Share2,
-	Trash2,
-	Plus,
-	ListTodo,
-	CheckCircle2,
-	XCircle,
-	Ban,
-	UserCheck,
-	DoorOpen,
-} from "lucide-react";
+import { Suspense, cache } from "react";
+import { redirect, notFound } from "next/navigation";
 import Link from "next/link";
-import { useToast } from "@/hooks/use-toast";
+import { createClient } from "@/lib/supabase/server";
+import { createClient as createAdminClient } from "@supabase/supabase-js";
+import { supabaseConfig } from "@/lib/supabase/config";
 import { PageSkeleton } from "@/components/page-skeleton";
-import { statusBadgeClass } from "@/lib/utils";
+import {
+  EventDetailClient,
+  type EventDetailInitialData,
+} from "./event-detail-client";
 
-interface Event {
-	id: string;
-	name: string;
-	date: string;
-	door_time: string | null;
-	end_time: string | null;
-	status: string;
-	max_capacity: number | null;
-	venues: {
-		name: string;
-		address: string;
-		capacity: number;
-	} | null;
+// Cache admin client
+const getAdmin = cache(() =>
+  createAdminClient(supabaseConfig.url, supabaseConfig.serviceKey, {
+    auth: { autoRefreshToken: false, persistSession: false },
+  }),
+);
+
+interface EventDetailPageProps {
+  params: Promise<{ id: string }>;
 }
 
-export default function EventDetailPage() {
-	const params = useParams();
-	const router = useRouter();
-	const eventId = params.id as string;
-	const [event, setEvent] = useState<Event | null>(null);
-	const [loading, setLoading] = useState(true);
-	const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+export default async function EventDetailPage({
+  params,
+}: EventDetailPageProps) {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
-	// Task state
-	const [eventTasks, setEventTasks] = useState<Task[]>([]);
-	const [tasksLoading, setTasksLoading] = useState(true);
-	const [createTaskOpen, setCreateTaskOpen] = useState(false);
-	const [selectedTask, setSelectedTask] = useState<Task | null>(null);
-	const [taskDetailOpen, setTaskDetailOpen] = useState(false);
+  if (!user) redirect("/login");
 
-	const { toast } = useToast();
+  const { id } = await params;
+  const adminClient = getAdmin();
 
-	useEffect(() => {
-		fetchEvent();
-	}, [eventId]);
+  // Parallel adminClient queries
+  const [
+    eventResult,
+    timeSlotsResult,
+    guestListsResult,
+    shiftsResult,
+    tasksResult,
+    staffResult,
+    eventsResult,
+  ] = await Promise.all([
+    // Event details with venue join
+    adminClient
+      .from("events")
+      .select("*, venues:venue_id (id, name, address, capacity)")
+      .eq("id", id)
+      .single(),
 
-	const fetchEvent = async () => {
-		setLoading(true);
-		try {
-			const response = await fetch(`/api/events/${eventId}`);
-			if (!response.ok) {
-				setEvent(null);
-				return;
-			}
-			const data = await response.json();
-			setEvent(data);
-		} catch (error) {
-			console.error("Failed to fetch event:", error);
-			setEvent(null);
-		} finally {
-			setLoading(false);
-		}
-	};
+    // Time slots + performances + artists
+    adminClient
+      .from("time_slots")
+      .select(
+        "*, performances (id, artist_id, stage, order_index, artists:artist_id (id, name, city, genre))",
+      )
+      .eq("event_id", id)
+      .order("slot_index", { ascending: true }),
 
-	const handleDownloadItinerary = async () => {
-		try {
-			const response = await fetch(`/api/itinerary/${eventId}?format=pdf`);
-			const blob = await response.blob();
-			const url = window.URL.createObjectURL(blob);
-			const a = document.createElement("a");
-			a.href = url;
-			a.download = `itinerary_${eventId}.pdf`;
-			document.body.appendChild(a);
-			a.click();
-			document.body.removeChild(a);
-		} catch (error) {
-			console.error("Failed to download itinerary:", error);
-		}
-	};
+    // Guest lists with entries
+    adminClient
+      .from("guest_lists")
+      .select("*, entries:guest_entries(id, status, guest_name, plus_ones)")
+      .eq("event_id", id)
+      .order("created_at", { ascending: false }),
 
-	const handleShare = async () => {
-		try {
-			await navigator.clipboard.writeText(window.location.href);
-			toast({
-				title: "Link copied",
-				description: "Event URL copied to clipboard.",
-			});
-		} catch (error) {
-			console.error("Failed to copy URL:", error);
-			toast({
-				variant: "destructive",
-				title: "Error",
-				description: "Failed to copy URL to clipboard.",
-			});
-		}
-	};
+    // Shifts for this event
+    adminClient
+      .from("shifts")
+      .select("id, staff_id, status, clocked_in_at")
+      .eq("event_id", id),
 
-	const handleStatusChange = async (newStatus: string) => {
-		try {
-			const response = await fetch(`/api/events/${eventId}`, {
-				method: "PUT",
-				headers: { "Content-Type": "application/json" },
-				body: JSON.stringify({ status: newStatus }),
-			});
+    // Tasks filtered to this event
+    adminClient
+      .from("tasks")
+      .select(
+        "*, assignee:assignee_id (id, full_name, email, avatar_url)",
+      )
+      .eq("event_id", id)
+      .order("created_at", { ascending: false })
+      .limit(100),
 
-			if (!response.ok) {
-				const err = await response.json();
-				throw new Error(err.error || "Failed to update status");
-			}
+    // Staff profiles
+    adminClient
+      .from("staff")
+      .select("id, profile_id, role, profiles:profile_id (id, full_name, email)")
+      .limit(100),
 
-			setEvent((prev) => (prev ? { ...prev, status: newStatus } : prev));
-			toast({
-				title: "Status updated",
-				description: `Event is now ${newStatus}.`,
-			});
-		} catch (error) {
-			console.error("Failed to update status:", error);
-			toast({
-				variant: "destructive",
-				title: "Error",
-				description:
-					error instanceof Error ? error.message : "Could not update status",
-			});
-		}
-	};
+    // All events (for task context)
+    adminClient
+      .from("events")
+      .select("id, name")
+      .limit(100),
+  ]);
 
-	const handleDeleteEvent = async () => {
-		try {
-			const response = await fetch(`/api/events/${eventId}`, {
-				method: "DELETE",
-			});
-			if (!response.ok) {
-				const err = await response.json();
-				throw new Error(err.error || "Failed to delete event");
-			}
-			toast({
-				title: "Event deleted",
-				description: "The event has been removed.",
-			});
-			router.push("/events");
-		} catch (error) {
-			console.error("Failed to delete event:", error);
-			toast({
-				variant: "destructive",
-				title: "Delete failed",
-				description:
-					error instanceof Error ? error.message : "Could not delete event",
-			});
-		}
-	};
+  if (eventResult.error || !eventResult.data) {
+    notFound();
+  }
 
-	// ===== Task Functions =====
+  const event = eventResult.data;
 
-	const fetchEventTasks = useCallback(async () => {
-		setTasksLoading(true);
-		try {
-			const response = await fetch(`/api/tasks?event_id=${eventId}&limit=50`);
-			const data = await response.json();
-			setEventTasks(data.tasks || []);
-		} catch (error) {
-			console.error("Failed to fetch tasks:", error);
-		} finally {
-			setTasksLoading(false);
-		}
-	}, [eventId]);
+  const initialData: EventDetailInitialData = {
+    currentUserId: user.id,
+    event: event as EventDetailInitialData["event"],
+    timeSlots: (timeSlotsResult.data as EventDetailInitialData["timeSlots"]) || [],
+    guestLists:
+      (guestListsResult.data as EventDetailInitialData["guestLists"]) || [],
+    shifts: (shiftsResult.data as EventDetailInitialData["shifts"]) || [],
+    tasks: (tasksResult.data as EventDetailInitialData["tasks"]) || [],
+    staff: (staffResult.data as EventDetailInitialData["staff"]) || [],
+    events: (eventsResult.data as EventDetailInitialData["events"]) || [],
+  };
 
-	useEffect(() => {
-		if (eventId) {
-			fetchEventTasks();
-		}
-	}, [eventId, fetchEventTasks]);
+  return (
+    <Suspense
+      fallback={
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8">
+          <PageSkeleton rows={3} />
+        </div>
+      }
+    >
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8">
+        {/* Breadcrumbs */}
+        <nav className="text-sm text-zinc-400 mb-6" aria-label="Breadcrumb">
+          <ol className="flex items-center flex-wrap gap-1">
+            <li>
+              <Link
+                href="/"
+                className="hover:text-violet-400 transition-colors"
+              >
+                Dashboard
+              </Link>
+            </li>
+            <li>
+              <span className="mx-1 text-zinc-600">/</span>
+              <Link
+                href="/events"
+                className="hover:text-violet-400 transition-colors"
+              >
+                Events
+              </Link>
+            </li>
+            <li>
+              <span className="mx-1 text-zinc-600">/</span>
+              <span className="text-white">{event.name}</span>
+            </li>
+          </ol>
+        </nav>
 
-	const handleCreateTask = async (values: {
-		title: string;
-		description?: string;
-		status: string;
-		priority: string;
-		assignee_id?: string;
-		event_id?: string;
-		due_date?: string;
-		needs_approval?: boolean;
-		items?: { item_id: string; goal_sub_location_id?: string | null }[];
-		created_by?: string;
-		parent_task_id?: string | null;
-		task_type?: string | null;
-	}) => {
-		const supabase = createClient();
-		const {
-			data: { user },
-		} = await supabase.auth.getUser();
-
-		const response = await fetch("/api/tasks", {
-			method: "POST",
-			headers: { "Content-Type": "application/json" },
-			body: JSON.stringify({
-				...values,
-				event_id: eventId,
-				created_by: user?.id || values.created_by,
-			}),
-		});
-
-		if (!response.ok) {
-			const err = await response.json();
-			throw new Error(err.error || "Failed to create task");
-		}
-
-		const newTask = await response.json();
-		setEventTasks((prev) => [newTask, ...prev]);
-		setCreateTaskOpen(false);
-		toast({
-			title: "Task created",
-			description: "The task has been added to this event.",
-		});
-	};
-
-	const handleCreateTaskWithFiles = async (
-		values: Record<string, unknown>,
-		files: File[],
-	) => {
-		const supabase = createClient();
-		const {
-			data: { user },
-		} = await supabase.auth.getUser();
-
-		const response = await fetch("/api/tasks", {
-			method: "POST",
-			headers: { "Content-Type": "application/json" },
-			body: JSON.stringify({
-				...values,
-				event_id: eventId,
-				created_by: user?.id || (values.created_by as string) || "",
-			}),
-		});
-
-		if (!response.ok) {
-			const err = await response.json();
-			throw new Error(err.error || "Failed to create task");
-		}
-
-		const newTask = await response.json();
-
-		// Upload each pending file
-		for (const file of files) {
-			const formData = new FormData();
-			formData.append("file", file);
-			const upRes = await fetch(`/api/tasks/${newTask.id}/attachments`, {
-				method: "POST",
-				body: formData,
-			});
-			if (!upRes.ok) {
-				const errData = await upRes.json().catch(() => ({}));
-				console.error("Failed to upload attachment:", errData.error);
-			}
-		}
-
-		setEventTasks((prev) => [newTask, ...prev]);
-		setCreateTaskOpen(false);
-		toast({
-			title: "Task created",
-			description: `Task created with ${files.length} attachment(s).`,
-		});
-	};
-
-	const handleTaskUpdated = (updatedTask: Task) => {
-		setEventTasks((prev) =>
-			prev.map((t) => (t.id === updatedTask.id ? updatedTask : t)),
-		);
-	};
-
-	const handleTaskDeleted = (taskId: string) => {
-		setEventTasks((prev) => prev.filter((t) => t.id !== taskId));
-	};
-
-	if (loading) {
-		return (
-			<div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8">
-				<PageSkeleton rows={3} />
-			</div>
-		);
-	}
-
-	if (!event) {
-		return (
-			<div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8">
-				<Card className="bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/70 rounded-lg">
-					<CardContent className="py-12 text-center">
-						<p className="text-zinc-400">Event not found</p>
-						<Link href="/events">
-							<Button className="mt-4 bg-violet-600 hover:bg-violet-700">
-								Back to Events
-							</Button>
-						</Link>
-					</CardContent>
-				</Card>
-			</div>
-		);
-	}
-
-	return (
-		<div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8">
-			{/* Header */}
-			<div className="flex justify-between items-start mb-8">
-				<div>
-					<div className="flex items-center gap-3 mb-2">
-						<h1 className="text-3xl font-bold text-white">{event.name}</h1>
-						<Badge className={statusBadgeClass(event.status)}>
-							{event.status}
-						</Badge>
-					</div>
-					<div className="flex flex-wrap items-center gap-4 text-zinc-400">
-						<div className="flex items-center gap-1">
-							<CalendarDays className="h-4 w-4" />
-							<span>{formatDateFull(event.date)}</span>
-						</div>
-						{event.venues && (
-							<div className="flex items-center gap-1">
-								<MapPin className="h-4 w-4" />
-								<span>{event.venues.name}</span>
-							</div>
-						)}
-						{event.door_time && event.end_time && (
-							<div className="flex items-center gap-1">
-								<Clock className="h-4 w-4" />
-								<span>
-									{event.door_time} - {event.end_time}
-								</span>
-							</div>
-						)}
-						{event.max_capacity && (
-							<div className="flex items-center gap-1">
-								<Users className="h-4 w-4" />
-								<span>Max {event.max_capacity}</span>
-							</div>
-						)}
-					</div>
-				</div>
-
-				<div className="flex gap-2">
-					<Button
-						variant="outline"
-						onClick={handleDownloadItinerary}
-						className="border-zinc-700"
-					>
-						<Download className="h-4 w-4 mr-2" />
-						Itinerary PDF
-					</Button>
-					<Button
-						variant="outline"
-						onClick={handleShare}
-						className="border-zinc-700"
-					>
-						<Share2 className="h-4 w-4 mr-2" />
-						Share
-					</Button>
-					<Link href={`/events/${eventId}/edit`}>
-						<Button className="bg-violet-600 hover:bg-violet-700">
-							<Edit className="h-4 w-4 mr-2" />
-							Edit
-						</Button>
-					</Link>
-					<Button
-						variant="destructive"
-						onClick={() => setShowDeleteDialog(true)}
-					>
-						<Trash2 className="h-4 w-4" />
-					</Button>
-				</div>
-			</div>
-
-			<AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
-				<AlertDialogContent className="bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/70 rounded-lg">
-					<AlertDialogHeader>
-						<AlertDialogTitle>Löschen bestätigen</AlertDialogTitle>
-						<AlertDialogDescription>
-							Sind Sie sicher? Diese Aktion kann nicht rückgängig gemacht
-							werden.
-						</AlertDialogDescription>
-					</AlertDialogHeader>
-					<AlertDialogFooter>
-						<AlertDialogCancel className="border-zinc-700">
-							Abbrechen
-						</AlertDialogCancel>
-						<AlertDialogAction
-							onClick={handleDeleteEvent}
-							className="bg-red-600 hover:bg-red-700"
-						>
-							Löschen
-						</AlertDialogAction>
-					</AlertDialogFooter>
-				</AlertDialogContent>
-			</AlertDialog>
-
-			{/* Status Management */}
-			{event.status && (
-				<div className="flex flex-wrap gap-2 mb-6">
-					{event.status !== "published" && (
-						<Button
-							size="sm"
-							onClick={() => handleStatusChange("published")}
-							className="bg-emerald-600 hover:bg-emerald-700"
-						>
-							<CheckCircle2 className="h-4 w-4 mr-1.5" />
-							Publish
-						</Button>
-					)}
-					{event.status !== "cancelled" && (
-						<Button
-							size="sm"
-							onClick={() => handleStatusChange("cancelled")}
-							variant="outline"
-							className="border-red-700 text-red-400 hover:bg-red-950"
-						>
-							<XCircle className="h-4 w-4 mr-1.5" />
-							Cancel
-						</Button>
-					)}
-					{event.status !== "completed" && (
-						<Button
-							size="sm"
-							onClick={() => handleStatusChange("completed")}
-							variant="outline"
-							className="border-zinc-700"
-						>
-							<Ban className="h-4 w-4 mr-1.5" />
-							Complete
-						</Button>
-					)}
-					<Button
-						size="sm"
-						variant="outline"
-						className="border-zinc-700"
-						asChild
-					>
-						<Link href={`/guest-lists?event_id=${eventId}`}>
-							<UserCheck className="h-4 w-4 mr-1.5" />
-							Guest List
-						</Link>
-					</Button>
-					<Button
-						size="sm"
-						variant="outline"
-						className="border-zinc-700"
-						asChild
-					>
-						<Link href={`/door?event_id=${eventId}`}>
-							<DoorOpen className="h-4 w-4 mr-1.5" />
-							Door
-						</Link>
-					</Button>
-				</div>
-			)}
-
-			{/* Venue info */}
-			{event.venues && (
-				<Card className="bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/70 mb-6">
-					<CardHeader>
-						<CardTitle className="text-lg">Venue</CardTitle>
-					</CardHeader>
-					<CardContent>
-						<div className="flex items-center gap-2">
-							<MapPin className="h-5 w-5 text-violet-400" />
-							<div>
-								<p className="font-medium">{event.venues.name}</p>
-								<p className="text-sm text-zinc-400">{event.venues.address}</p>
-							</div>
-						</div>
-					</CardContent>
-				</Card>
-			)}
-
-			{/* Running Order */}
-			<RunningOrder eventId={eventId} />
-
-			{/* Tasks Section */}
-			<Card className="bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/70 mb-6">
-				<CardHeader className="flex flex-row items-center justify-between">
-					<CardTitle className="text-lg flex items-center gap-2">
-						<ListTodo className="h-5 w-5 text-violet-400" />
-						Tasks
-						<Badge
-							variant="secondary"
-							className="bg-zinc-800 text-zinc-400 border-zinc-700 ml-1"
-						>
-							{eventTasks.length}
-						</Badge>
-					</CardTitle>
-					<Button
-						onClick={() => setCreateTaskOpen(true)}
-						className="bg-violet-600 hover:bg-violet-700"
-						size="sm"
-					>
-						<Plus className="h-4 w-4 mr-1.5" />
-						Create Task
-					</Button>
-				</CardHeader>
-				<CardContent>
-					{tasksLoading ? (
-						<div className="flex items-center justify-center py-8">
-							<div className="h-6 w-6 animate-spin rounded-full border-2 border-zinc-600 border-t-violet-500" />
-						</div>
-					) : eventTasks.length === 0 ? (
-						<div className="text-center py-8">
-							<ListTodo className="h-8 w-8 text-zinc-600 mx-auto mb-2" />
-							<p className="text-zinc-500 text-sm">
-								No tasks for this event yet.
-							</p>
-							<Button
-								variant="outline"
-								size="sm"
-								onClick={() => setCreateTaskOpen(true)}
-								className="mt-3 border-zinc-700"
-							>
-								<Plus className="h-4 w-4 mr-1.5" />
-								Create first task
-							</Button>
-						</div>
-					) : (
-						<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-							{eventTasks.map((task) => (
-								<TaskCard
-									key={task.id}
-									task={task}
-									onClick={() => {
-										setSelectedTask(task);
-										setTaskDetailOpen(true);
-									}}
-								/>
-							))}
-						</div>
-					)}
-				</CardContent>
-			</Card>
-
-			{/* Create Task Modal */}
-			<Dialog open={createTaskOpen} onOpenChange={setCreateTaskOpen}>
-				<DialogContent className="bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/70 rounded-lg max-w-xl max-h-[90vh] overflow-y-auto">
-					<DialogHeader>
-						<DialogTitle>Create Task for {event.name}</DialogTitle>
-					</DialogHeader>
-					<TaskForm
-						mode="create"
-						parentTask={{ event_id: eventId }}
-						onSubmit={handleCreateTask}
-						onCreateWithFiles={handleCreateTaskWithFiles}
-						onCancel={() => setCreateTaskOpen(false)}
-					/>
-				</DialogContent>
-			</Dialog>
-
-			{/* Task Detail Modal */}
-			<TaskDetailDialog
-				task={selectedTask}
-				open={taskDetailOpen}
-				onOpenChange={(open) => {
-					setTaskDetailOpen(open);
-					if (!open) setSelectedTask(null);
-				}}
-				onTaskUpdated={handleTaskUpdated}
-				onTaskDeleted={handleTaskDeleted}
-			/>
-		</div>
-	);
+        <EventDetailClient initialData={initialData} />
+      </div>
+    </Suspense>
+  );
 }
