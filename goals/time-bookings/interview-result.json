@@ -1,0 +1,17 @@
+{
+  "stage": "interview-result",
+  "title": "Time Bookings — Clock In / Clock Out",
+  "goalSlug": "time-bookings",
+  "answers": {
+    "concept": "Separate time booking system — iPad kiosk for staff to clock in/out, independent of shifts",
+    "who": "Staff clock in/out for themselves. Managers can view all bookings and correct/edit them.",
+    "granularity": "Simple clock in / clock out — one entry per work session. No break tracking for now.",
+    "linkage": "No linkage — free-form time bookings, not tied to shifts, events, or venues. Single venue for now.",
+    "conflicts": "Enforce one active at a time — clocking in auto-clocks-out any previous active booking for that staff member.",
+    "corrections": "Managers/admins can edit or add time bookings retroactively.",
+    "reporting": "Dashboard showing all time bookings with filtering, total hours summary, and export (CSV/PDF).",
+    "manual-entry": "Yes — managers can manually add past time bookings with a reason/notes field.",
+    "device": "iPad kiosk (web app, always-on, accessible in the club). Staff finds their name, taps to clock in/out.",
+    "priority": "Basic clock in/out kiosk + manager dashboard with corrections and export."
+  }
+}

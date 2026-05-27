@@ -1,0 +1,161 @@
+{
+  "stage": "interview",
+  "title": "Time Bookings — Clock In / Clock Out",
+  "goalSlug": "time-bookings",
+  "questions": [
+    {
+      "id": "concept",
+      "prompt": "What exactly are \"time bookings\"? How do they differ from the existing shift clock-in/clock-out?",
+      "description": "PAL already has shift-based clock-in/clock-out (scheduled → confirmed → completed with clocked_in_at/clocked_out_at on the shifts table). Is this about: enhancing the existing shift clocking, building a separate general time-tracking system (like timesheets independent of shifts), or something else entirely?",
+      "answerMode": "single-custom",
+      "recommendedAnswer": "Separate general time-tracking system — staff clock in/out for their overall work hours, independent of specific shifts/events.",
+      "recommendedOptionIds": ["separate"],
+      "options": [
+        { "id": "enhance", "label": "Enhance existing shift clocking (e.g. better UX, multiple clock cycles per shift, break tracking)" },
+        { "id": "separate", "label": "Separate time booking system — general work-hour logging, not tied to shifts" },
+        { "id": "both", "label": "Both — keep shift clocking AND add a separate time booking layer" },
+        { "id": "other", "label": "Something else — I'll describe it below" }
+      ],
+      "required": true
+    },
+    {
+      "id": "who",
+      "prompt": "Who clocks in and out?",
+      "description": "Which user roles should be able to use time bookings?",
+      "answerMode": "multi-custom",
+      "recommendedAnswer": "All staff members can clock in/out for themselves. Managers/admins can view everyone's time bookings.",
+      "recommendedOptionIds": ["self", "manager-view"],
+      "options": [
+        { "id": "self", "label": "Staff clock in/out for themselves" },
+        { "id": "manager-self", "label": "Staff + managers clock for themselves" },
+        { "id": "manager-others", "label": "Managers can clock in/out other staff on their behalf" },
+        { "id": "manager-view", "label": "Managers/admins can view and manage everyone's time bookings" },
+        { "id": "api", "label": "Also expose via API for integrations (e.g. door system auto-clock-in)" }
+      ],
+      "required": true
+    },
+    {
+      "id": "granularity",
+      "prompt": "What level of granularity do you need?",
+      "description": "How detailed should each time booking be?",
+      "answerMode": "single-custom",
+      "recommendedAnswer": "Simple clock in / clock out with optional break pauses. One active booking at a time per user.",
+      "recommendedOptionIds": ["breaks"],
+      "options": [
+        { "id": "simple", "label": "Just clock in and clock out — one entry per work session" },
+        { "id": "breaks", "label": "Clock in, pause (breaks), resume, clock out — tracks total worked time minus breaks" },
+        { "id": "activities", "label": "Clock in/out per activity or task (e.g. 'setup', 'service', 'cleanup')" },
+        { "id": "location", "label": "Also track WHERE they clocked in (venue, zone, sub-location)" }
+      ],
+      "required": true
+    },
+    {
+      "id": "linkage",
+      "prompt": "Should time bookings be linked to shifts, events, or venues?",
+      "description": "When someone clocks in, should the booking be associated with a specific shift/event/venue, or is it free-form?",
+      "answerMode": "single-custom",
+      "recommendedAnswer": "Optional linkage — when a staff member has a scheduled shift for that day, auto-suggest linking. Otherwise free-form.",
+      "recommendedOptionIds": ["optional"],
+      "options": [
+        { "id": "auto-shift", "label": "Auto-link to the active shift if one exists" },
+        { "id": "optional", "label": "Optional — let the user pick a shift/event/venue or leave it unlinked" },
+        { "id": "venue-only", "label": "Always link to a venue (which venue am I at?)" },
+        { "id": "freeform", "label": "No linkage needed — just start/stop times" }
+      ],
+      "required": true
+    },
+    {
+      "id": "conflicts",
+      "prompt": "Should users be able to have multiple active time bookings?",
+      "description": "E.g. can someone be clocked in at two venues simultaneously, or should the system enforce one active booking at a time?",
+      "answerMode": "single",
+      "recommendedAnswer": "Enforce one active booking — clocking in somewhere new should auto-clock-out from the previous one, or block it.",
+      "recommendedOptionIds": ["enforce"],
+      "options": [
+        { "id": "enforce", "label": "Only one active at a time — clocking in elsewhere auto-clocks-out the previous" },
+        { "id": "warn", "label": "Allow multiple but warn the user" },
+        { "id": "allow", "label": "Allow multiple simultaneous bookings without restriction" },
+        { "id": "block", "label": "Block clock-in if already clocked in somewhere" }
+      ],
+      "required": true
+    },
+    {
+      "id": "corrections",
+      "prompt": "Can time bookings be edited or corrected after the fact?",
+      "description": "What if someone forgets to clock in/out, or clocks in at the wrong time?",
+      "answerMode": "multi-custom",
+      "recommendedAnswer": "Staff can request a correction, managers/admins can approve and edit time bookings. All edits are logged.",
+      "recommendedOptionIds": ["manager-edit", "request", "audit"],
+      "options": [
+        { "id": "manager-edit", "label": "Managers/admins can edit or add time bookings retroactively" },
+        { "id": "self-edit", "label": "Staff can edit their own bookings within a time window (e.g. 24h)" },
+        { "id": "request", "label": "Staff can request a correction that needs manager approval" },
+        { "id": "audit", "label": "All edits are logged (audit trail) so changes are visible" },
+        { "id": "none", "label": "No editing allowed — what's recorded is final" }
+      ],
+      "required": true
+    },
+    {
+      "id": "reporting",
+      "prompt": "What do you want to do with the time booking data?",
+      "description": "How will the recorded time be used downstream?",
+      "answerMode": "multi-custom",
+      "recommendedAnswer": "Overview dashboard showing who's currently clocked in, history per staff member, and total hours for payroll/export.",
+      "recommendedOptionIds": ["live", "history", "export", "payroll"],
+      "options": [
+        { "id": "live", "label": "Live dashboard — see who's currently clocked in right now" },
+        { "id": "history", "label": "Per-staff history — see my past time bookings" },
+        { "id": "total", "label": "Total hours summary — per day/week/month per staff" },
+        { "id": "export", "label": "Export for payroll/accounting (CSV, PDF)" },
+        { "id": "payroll", "label": "Integration with payroll — hours feed into compensation calculations" },
+        { "id": "alerts", "label": "Alerts — notify managers if someone hasn't clocked out, worked too long, etc." }
+      ],
+      "required": true
+    },
+    {
+      "id": "manual-entry",
+      "prompt": "Should there be manual time entry (not real-time clocking)?",
+      "description": "E.g. a manager adding a past time booking for someone who forgot their phone or the system was down.",
+      "answerMode": "single",
+      "recommendedAnswer": "Yes, managers should be able to manually add time bookings with a reason field.",
+      "recommendedOptionIds": ["yes"],
+      "options": [
+        { "id": "yes", "label": "Yes — manual entry with reason/notes" },
+        { "id": "no", "label": "No — only real-time clock in/out" }
+      ],
+      "required": true
+    },
+    {
+      "id": "device",
+      "prompt": "How should staff clock in/out?",
+      "description": "What devices/channels should be supported?",
+      "answerMode": "multi-custom",
+      "recommendedAnswer": "Web app (mobile-friendly) as the primary interface. Future: QR code scan at venue, NFC, or door system integration.",
+      "recommendedOptionIds": ["web-mobile"],
+      "options": [
+        { "id": "web-desktop", "label": "Web app on desktop" },
+        { "id": "web-mobile", "label": "Web app on mobile (responsive)" },
+        { "id": "qr", "label": "QR code scan at venue (scan a code to clock in/out)" },
+        { "id": "nfc", "label": "NFC tap (physical card/phone tap)" },
+        { "id": "geo", "label": "Geofencing — auto-clock-in when entering venue area" },
+        { "id": "door", "label": "Door system integration — clock in automatically when badge is scanned at door" }
+      ],
+      "required": true
+    },
+    {
+      "id": "priority",
+      "prompt": "What's the most important part to build first?",
+      "description": "If we can't do everything at once, what's the MVP?",
+      "answerMode": "single",
+      "recommendedAnswer": "Basic clock in/out with a live dashboard showing who's clocked in.",
+      "recommendedOptionIds": ["basic"],
+      "options": [
+        { "id": "basic", "label": "Basic clock in/out + live 'who's here' dashboard" },
+        { "id": "history", "label": "Personal time booking history for each staff member" },
+        { "id": "admin", "label": "Admin view — all time bookings, editing, export" },
+        { "id": "qr", "label": "QR-based clock in/out at venues" }
+      ],
+      "required": true
+    }
+  ]
+}
