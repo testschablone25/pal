@@ -106,6 +106,7 @@ export const ROLE_ROUTE_ACCESS: Record<string, AppRole[]> = {
 	[ROUTE_GROUPS.RENTALS]: ["admin", "manager", "tech", "tech-lead", "booking"],
 	[ROUTE_GROUPS.CONTACTS]: ["admin", "manager", "backoffice", "booking"],
 	[ROUTE_GROUPS.ADMIN]: ["admin", "backoffice"], // Admin panel for role management
+	"/time-bookings": ["admin", "manager", "staff", "backoffice"],
 } as const;
 
 // Role configuration with metadata
@@ -274,6 +275,11 @@ export const FEATURE_PERMISSIONS = {
 		"backoffice",
 	],
 	INVENTORY_WRITE: ["admin", "manager", "tech", "tech-lead"],
+
+	// Time bookings (clock in/out)
+	TIME_BOOKINGS_READ: ["admin", "manager", "staff", "backoffice"],
+	TIME_BOOKINGS_WRITE: ["admin", "manager", "staff", "backoffice"],
+	TIME_BOOKINGS_MANAGE: ["admin", "manager", "backoffice"],
 } as const;
 
 // Type for feature permission keys

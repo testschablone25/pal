@@ -2,12 +2,13 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Users, Clock, CalendarDays } from "lucide-react";
+import { Users, Clock, CalendarDays, BadgeCheck } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const STAFF_TABS = [
 	{ href: "/staff", label: "Mitarbeiter", icon: Users },
 	{ href: "/staff/shifts", label: "Schichtplan", icon: Clock },
+	{ href: "/time-bookings", label: "Zeiterfassung", icon: BadgeCheck },
 	{ href: "/staff/availability", label: "Verfügbarkeit", icon: CalendarDays },
 ] as const;
 

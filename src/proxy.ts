@@ -17,6 +17,7 @@ const PROTECTED_ROUTES = [
 	"/inventory",
 	"/rentals",
 	"/settings",
+	"/time-bookings",
 ];
 
 // Singleton admin client for the edge/middleware runtime
