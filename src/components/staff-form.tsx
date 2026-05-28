@@ -30,8 +30,7 @@ import { Loader2 } from "lucide-react";
 const staffSchema = z.object({
 	profile_id: z.string().uuid("Please select a user"),
 	role: z.string().min(1, "Role is required"),
-	contract_type: z.enum(["permanent", "freelance", "minor"]),
-	is_minor: z.boolean(),
+	contract_type: z.enum(["permanent", "freelance"]),
 });
 
 type StaffFormValues = z.infer<typeof staffSchema>;
@@ -47,8 +46,7 @@ interface StaffFormProps {
 		id: string;
 		profile_id: string | null;
 		role: string;
-		contract_type: "permanent" | "freelance" | "minor";
-		is_minor: boolean;
+		contract_type: "permanent" | "freelance";
 	};
 	mode?: "create" | "edit";
 }
@@ -97,7 +95,7 @@ export function StaffForm({ staff, mode = "create" }: StaffFormProps) {
 			profile_id: staff?.profile_id || "",
 			role: staff?.role || "",
 			contract_type: staff?.contract_type || "permanent",
-			is_minor: staff?.is_minor || false,
+
 		},
 	});
 
@@ -115,7 +113,6 @@ export function StaffForm({ staff, mode = "create" }: StaffFormProps) {
 					profile_id: values.profile_id,
 					role: values.role,
 					contract_type: values.contract_type,
-					is_minor: values.is_minor,
 				}),
 			});
 
@@ -230,7 +227,6 @@ export function StaffForm({ staff, mode = "create" }: StaffFormProps) {
 											<SelectContent className="bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/70 rounded-lg">
 												<SelectItem value="permanent">Permanent</SelectItem>
 												<SelectItem value="freelance">Freelance</SelectItem>
-												<SelectItem value="minor">Minor</SelectItem>
 											</SelectContent>
 										</Select>
 										<FormDescription className="text-zinc-400">
@@ -241,27 +237,6 @@ export function StaffForm({ staff, mode = "create" }: StaffFormProps) {
 								)}
 							/>
 
-							<FormField
-								control={form.control}
-								name="is_minor"
-								render={({ field }) => (
-									<FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border border-zinc-800 p-4">
-										<FormControl>
-											<Checkbox
-												checked={field.value}
-												onCheckedChange={field.onChange}
-												className="border-zinc-600 data-[state=checked]:bg-violet-600 data-[state=checked]:border-violet-600"
-											/>
-										</FormControl>
-										<div className="space-y-1 leading-none">
-											<FormLabel>Minor Employee</FormLabel>
-											<FormDescription className="text-zinc-400">
-												Check if staff member is under 18
-											</FormDescription>
-										</div>
-									</FormItem>
-								)}
-							/>
 						</div>
 
 						{error && <div className="text-red-500 text-sm">{error}</div>}

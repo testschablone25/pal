@@ -1,0 +1,16 @@
+{
+  "stage": "interview-result",
+  "title": "Zeiterfassung PIN System — Production Kiosk",
+  "goalSlug": "time-bookings-pin",
+  "answers": {
+    "kiosk-layout": "Name search → select your name → enter PIN to confirm (two-step: find yourself, prove it's you)",
+    "first-time-flow": "Enter 1111 → system detects first use → forces PIN change immediately before clocking in",
+    "pin-storage": "Reversible encryption on staff table (pin_encrypted column) so managers can see/reset",
+    "forgot-pin": "Manager resets to 1111 from dashboard → staff must change on next use",
+    "feedback": "Big green/red flash with name + 'Eingestempelt'/'Ausgestempelt' → auto-clears after 3 seconds",
+    "security": "Dedicated kiosk user account with minimal permissions, always logged in on iPad",
+    "pin-length": "Always exactly 4 digits",
+    "dashboard-pin-management": "Reset to 1111 + indicator showing who's still on default PIN",
+    "route": "/zeiterfassung as the kiosk page (German URL)"
+  }
+}

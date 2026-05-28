@@ -34,8 +34,7 @@ interface StaffMember {
 	id: string;
 	profile_id: string | null;
 	role: string;
-	contract_type: "permanent" | "freelance" | "minor";
-	is_minor: boolean;
+	contract_type: "permanent" | "freelance";
 	created_at: string;
 	profiles: {
 		id: string;
@@ -160,7 +159,6 @@ export function StaffClient({
 									{ value: "all", label: "All Types" },
 									{ value: "permanent", label: "Permanent" },
 									{ value: "freelance", label: "Freelance" },
-									{ value: "minor", label: "Minor" },
 								],
 								value: filterContractType,
 								onChange: setFilterContractType,
@@ -196,7 +194,6 @@ export function StaffClient({
 									<TableHead className="text-zinc-400">Name</TableHead>
 									<TableHead className="text-zinc-400">Role</TableHead>
 									<TableHead className="text-zinc-400">Contract</TableHead>
-									<TableHead className="text-zinc-400">Minor</TableHead>
 									<TableHead className="text-zinc-400 text-right">
 										Actions
 									</TableHead>
@@ -228,13 +225,6 @@ export function StaffClient({
 											</TableCell>
 											<TableCell className="text-zinc-300">
 												{(s.contract_type as string) || "-"}
-											</TableCell>
-											<TableCell>
-												{(s.is_minor as boolean) ? (
-													<Badge className="bg-amber-600">Yes</Badge>
-												) : (
-													<span className="text-zinc-500">No</span>
-												)}
 											</TableCell>
 											<TableCell className="text-right">
 												<div className="flex justify-end gap-1">

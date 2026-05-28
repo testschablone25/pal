@@ -37,7 +37,7 @@ const events = [
 ];
 
 const staffRoles = ['bar', 'security', 'door', 'vip', 'cloakroom', 'sound', 'light'];
-const contractTypes = ['permanent', 'freelance', 'minor'];
+const contractTypes = ['permanent', 'freelance'];
 
 const staffMembers = [
   { full_name: 'Max Müller', role: 'bar', contract_type: 'permanent', hourly_rate: 18 },
@@ -49,7 +49,6 @@ const staffMembers = [
   { full_name: 'Felix Klein', role: 'cloakroom', contract_type: 'freelance', hourly_rate: 15 },
   { full_name: 'Mia Wagner', role: 'sound', contract_type: 'permanent', hourly_rate: 25 },
   { full_name: 'Luca Becker', role: 'light', contract_type: 'permanent', hourly_rate: 24 },
-  { full_name: 'Emilia Schulz', role: 'bar', contract_type: 'minor', hourly_rate: 15, is_minor: true },
 ];
 
 async function seedDatabase() {
@@ -228,7 +227,7 @@ async function seedDatabase() {
           role: staff.role,
           contract_type: staff.contract_type,
           hourly_rate: staff.hourly_rate,
-          is_minor: staff.is_minor || false,
+          
         })
         .select('id')
         .single();

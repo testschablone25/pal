@@ -39,7 +39,6 @@ const staffData = [
   { full_name: 'Felix Bauer', email: null, role: 'cloakroom', contract_type: 'freelance', hourly_rate: 15 },
   { full_name: 'Mia Hoffmann', email: null, role: 'sound', contract_type: 'permanent', hourly_rate: 25 },
   { full_name: 'Luca Richter', email: null, role: 'light', contract_type: 'permanent', hourly_rate: 24 },
-  { full_name: 'Emilia Schulz', email: null, role: 'bar', contract_type: 'minor', hourly_rate: 15, is_minor: true },
   { full_name: 'Kai Neumann', email: null, role: 'security', contract_type: 'freelance', hourly_rate: 22 },
   { full_name: 'Anna Becker', email: null, role: 'cloakroom', contract_type: 'freelance', hourly_rate: 15 },
 ];
@@ -100,7 +99,7 @@ async function populateTestData() {
         role: staff.role,
         contract_type: staff.contract_type,
         hourly_rate: staff.hourly_rate,
-        is_minor: staff.is_minor || false,
+        
       })
       .select('id')
       .single();
@@ -130,7 +129,6 @@ async function populateTestData() {
       // Bar staff (2)
       { staff_name: 'Marcus Weber', role: 'bar', start_offset: -2, end_offset: 6 },  // 20:00 - 04:00
       { staff_name: 'Sophia Schneider', role: 'bar', start_offset: -2, end_offset: 6 },
-      { staff_name: 'Emilia Schulz', role: 'bar', start_offset: 0, end_offset: 4 },  // 22:00 - 02:00 (minor hours)
       
       // Security (3)
       { staff_name: 'Jan-Ole Fischer', role: 'security', start_offset: -1, end_offset: 7 },  // 21:00 - 05:00

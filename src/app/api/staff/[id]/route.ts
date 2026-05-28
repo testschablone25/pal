@@ -64,7 +64,7 @@ export async function PUT(
 		const { id } = await params;
 		const body = await request.json();
 
-		const { profile_id, role, contract_type, is_minor } = body;
+		const { profile_id, role, contract_type } = body;
 
 		const { data, error } = await supabase
 			.from("staff")
@@ -72,7 +72,6 @@ export async function PUT(
 				profile_id,
 				role,
 				contract_type,
-				is_minor,
 			})
 			.eq("id", id)
 			.select()

@@ -10,9 +10,8 @@ interface StaffMember {
 	id: string;
 	profile_id: string | null;
 	role: string;
-	contract_type: "permanent" | "freelance" | "minor";
+	contract_type: "permanent" | "freelance";
 	hourly_rate: number | null;
-	is_minor: boolean;
 }
 
 export default function EditStaffPage() {

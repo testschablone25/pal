@@ -95,7 +95,7 @@ export async function POST(request: NextRequest) {
 
 		const body = await request.json();
 
-		const { profile_id, role, contract_type, is_minor } = body;
+		const { profile_id, role, contract_type } = body;
 
 		// Validate required fields
 		if (!profile_id) {
@@ -122,7 +122,6 @@ export async function POST(request: NextRequest) {
 				profile_id,
 				role,
 				contract_type,
-				is_minor: is_minor || false,
 			})
 			.select()
 			.single();
