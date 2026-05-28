@@ -24,6 +24,7 @@ export async function GET(
 				*,
 				staff:staff_id (
 					id,
+					full_name,
 					role,
 					contract_type,
 					profiles:profile_id (
@@ -154,6 +155,7 @@ export async function PUT(
 				*,
 				staff:staff_id (
 					id,
+					full_name,
 					role,
 					contract_type,
 					profiles:profile_id (

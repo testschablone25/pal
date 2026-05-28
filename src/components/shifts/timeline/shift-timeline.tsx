@@ -231,9 +231,9 @@ export function ShiftTimeline({
 										<div key={shift.id} className="h-10 flex items-center">
 											<p
 												className="text-sm text-white truncate pr-2"
-												title={shift.staff?.profiles?.full_name || "Unknown"}
+												title={shift.staff?.full_name || shift.staff?.profiles?.full_name || "Unknown"}
 											>
-												{shift.staff?.profiles?.full_name || "Unknown"}
+												{shift.staff?.full_name || shift.staff?.profiles?.full_name || "Unknown"}
 											</p>
 											{shift.role && (
 												<p className="text-[10px] text-zinc-500">

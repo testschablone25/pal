@@ -107,7 +107,7 @@ export async function GET(
 				.from("shifts")
 				.select(
 					`id, role, start_time, end_time, status,
-					 staff:staff_id (id, role, profiles:profile_id (full_name, email)),
+					 staff:staff_id (id, full_name, role, profiles:profile_id (full_name, email)),
 					 event:event_id (id, name, date)`,
 				)
 				.in("event_id", eventIds)

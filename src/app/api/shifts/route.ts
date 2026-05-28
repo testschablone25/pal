@@ -92,6 +92,7 @@ export async function GET(request: NextRequest) {
 				*,
 				staff:staff_id (
 					id,
+					full_name,
 					role,
 					contract_type,
 					profiles:profile_id (
@@ -218,6 +219,7 @@ export async function POST(request: NextRequest) {
 				*,
 				staff:staff_id (
 					id,
+					full_name,
 					role,
 					contract_type,
 					profiles:profile_id (
