@@ -4,7 +4,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requireAuth, getAuthenticatedClient } from "@/lib/api-auth";
 
-
 // GET /api/staff/[id] - Get single staff member
 export async function GET(
 	request: NextRequest,
@@ -64,15 +63,33 @@ export async function PUT(
 		const { id } = await params;
 		const body = await request.json();
 
-		const { profile_id, role, contract_type } = body;
+		const { profile_id, full_name, role, contract_type } = body;
+
+		// If full_name is provided, update the profile too
+		if (full_name) {
+			// First get the current profile_id
+			const { data: currentStaff } = await supabase
+				.from("staff")
+				.select("profile_id")
+				.eq("id", id)
+				.single();
+
+			if (currentStaff?.profile_id) {
+				await supabase
+					.from("profiles")
+					.update({ full_name: full_name.trim() })
+					.eq("id", currentStaff.profile_id);
+			}
+		}
+
+		const updates: Record<string, string | null> = {};
+		if (role !== undefined) updates.role = role;
+		if (contract_type !== undefined) updates.contract_type = contract_type;
+		if (profile_id !== undefined) updates.profile_id = profile_id;
 
 		const { data, error } = await supabase
 			.from("staff")
-			.update({
-				profile_id,
-				role,
-				contract_type,
-			})
+			.update(updates)
 			.eq("id", id)
 			.select()
 			.single();

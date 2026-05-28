@@ -5,7 +5,6 @@ import { NextRequest, NextResponse } from "next/server";
 import { requireAuth, getAuthenticatedClient } from "@/lib/api-auth";
 import { cacheHeaders } from "@/lib/api-cache";
 
-
 // GET /api/staff - List all staff with optional filtering
 export async function GET(request: NextRequest) {
 	try {
@@ -94,21 +93,17 @@ export async function POST(request: NextRequest) {
 		const supabase = getAuthenticatedClient(request);
 
 		const body = await request.json();
+		const { profile_id, full_name, role, contract_type } = body;
 
-		const { profile_id, role, contract_type } = body;
-
-		// Validate required fields
-		if (!profile_id) {
+		if (!full_name?.trim()) {
 			return NextResponse.json(
-				{ error: "Profile ID is required" },
+				{ error: "Full name is required" },
 				{ status: 400 },
 			);
 		}
-
 		if (!role) {
 			return NextResponse.json({ error: "Role is required" }, { status: 400 });
 		}
-
 		if (!contract_type) {
 			return NextResponse.json(
 				{ error: "Contract type is required" },
@@ -116,14 +111,46 @@ export async function POST(request: NextRequest) {
 			);
 		}
 
+		let effectiveProfileId = profile_id;
+
+		// If no profile_id provided, create a shadow profile
+		if (!effectiveProfileId) {
+			const shadowEmail = `staff-${crypto.randomUUID()}@pal.club`;
+			const { data: shadowProfile, error: profileError } = await supabase
+				.from("profiles")
+				.insert({
+					full_name: full_name.trim(),
+					email: shadowEmail,
+				})
+				.select("id")
+				.single();
+
+			if (profileError || !shadowProfile) {
+				return NextResponse.json(
+					{ error: "Failed to create staff profile" },
+					{ status: 500 },
+				);
+			}
+			effectiveProfileId = shadowProfile.id;
+		}
+
 		const { data, error } = await supabase
 			.from("staff")
 			.insert({
-				profile_id,
+				profile_id: effectiveProfileId,
 				role,
 				contract_type,
 			})
-			.select()
+			.select(
+				`
+				*,
+				profiles:profile_id (
+					id,
+					full_name,
+					email
+				)
+			`,
+			)
 			.single();
 
 		if (error) {

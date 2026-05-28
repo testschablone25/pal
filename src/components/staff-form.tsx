@@ -7,7 +7,6 @@ import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Checkbox } from "@/components/ui/checkbox";
 import {
 	Select,
 	SelectContent,
@@ -24,13 +23,16 @@ import {
 	FormLabel,
 	FormMessage,
 } from "@/components/ui/form";
+import { Checkbox } from "@/components/ui/checkbox";
 import { useRouter } from "next/navigation";
-import { Loader2 } from "lucide-react";
+import { Loader2, UserPlus } from "lucide-react";
 
 const staffSchema = z.object({
-	profile_id: z.string().uuid("Please select a user"),
+	full_name: z.string().min(1, "Name is required"),
+	profile_id: z.string().uuid().optional().or(z.literal("")),
 	role: z.string().min(1, "Role is required"),
 	contract_type: z.enum(["permanent", "freelance"]),
+	link_user: z.boolean().optional(),
 });
 
 type StaffFormValues = z.infer<typeof staffSchema>;
@@ -47,6 +49,10 @@ interface StaffFormProps {
 		profile_id: string | null;
 		role: string;
 		contract_type: "permanent" | "freelance";
+		profiles?: {
+			full_name: string | null;
+			email: string | null;
+		} | null;
 	};
 	mode?: "create" | "edit";
 }
@@ -72,6 +78,7 @@ const STAFF_ROLES = [
 	"Social Media",
 	"Label",
 	"Staff",
+	"Extern",
 ];
 
 export function StaffForm({ staff, mode = "create" }: StaffFormProps) {
@@ -92,12 +99,15 @@ export function StaffForm({ staff, mode = "create" }: StaffFormProps) {
 	const form = useForm<StaffFormValues>({
 		resolver: zodResolver(staffSchema),
 		defaultValues: {
+			full_name: staff?.profiles?.full_name || staff?.profiles?.email || "",
 			profile_id: staff?.profile_id || "",
 			role: staff?.role || "",
 			contract_type: staff?.contract_type || "permanent",
-
+			link_user: !!staff?.profile_id,
 		},
 	});
+
+	const linkUser = form.watch("link_user");
 
 	const onSubmit = async (values: StaffFormValues) => {
 		setLoading(true);
@@ -110,7 +120,8 @@ export function StaffForm({ staff, mode = "create" }: StaffFormProps) {
 				method: mode === "create" ? "POST" : "PUT",
 				headers: { "Content-Type": "application/json" },
 				body: JSON.stringify({
-					profile_id: values.profile_id,
+					full_name: values.full_name.trim(),
+					profile_id: linkUser ? values.profile_id || undefined : undefined,
 					role: values.role,
 					contract_type: values.contract_type,
 				}),
@@ -141,45 +152,101 @@ export function StaffForm({ staff, mode = "create" }: StaffFormProps) {
 				<Form {...form}>
 					<form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
 						<div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+							{/* Full Name — always required */}
 							<FormField
 								control={form.control}
-								name="profile_id"
+								name="full_name"
 								render={({ field }) => (
 									<FormItem className="md:col-span-2">
-										<FormLabel>User *</FormLabel>
-										<Select
-											onValueChange={field.onChange}
-											defaultValue={field.value}
-											disabled={profilesLoading}
-										>
-											<FormControl>
-												<SelectTrigger className="bg-zinc-950 border-zinc-800">
-													<SelectValue
-														placeholder={
-															profilesLoading
-																? "Loading users..."
-																: "Select a user"
-														}
-													/>
-												</SelectTrigger>
-											</FormControl>
-											<SelectContent className="bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/70 rounded-lg">
-												{profiles.map((profile) => (
-													<SelectItem key={profile.id} value={profile.id}>
-														{profile.full_name ||
-															profile.email ||
-															profile.id.substring(0, 8)}
-													</SelectItem>
-												))}
-											</SelectContent>
-										</Select>
+										<FormLabel>Full Name *</FormLabel>
+										<FormControl>
+											<Input
+												placeholder="e.g. Max Mustermann"
+												{...field}
+												className="bg-zinc-950 border-zinc-800"
+											/>
+										</FormControl>
 										<FormDescription className="text-zinc-400">
-											Link this staff record to a user account
+											The staff member&apos;s display name
 										</FormDescription>
 										<FormMessage />
 									</FormItem>
 								)}
 							/>
+
+							{/* Optional user account linking */}
+							<FormField
+								control={form.control}
+								name="link_user"
+								render={({ field }) => (
+									<FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border border-zinc-800 p-4 md:col-span-2">
+										<FormControl>
+											<Checkbox
+												checked={field.value}
+												onCheckedChange={field.onChange}
+												className="border-zinc-600 data-[state=checked]:bg-violet-600 data-[state=checked]:border-violet-600"
+											/>
+										</FormControl>
+										<div className="space-y-1 leading-none">
+											<FormLabel className="flex items-center gap-1">
+												<UserPlus className="h-3 w-3" />
+												Link to existing user account
+											</FormLabel>
+											<FormDescription className="text-zinc-400">
+												Only needed if this person logs into PAL
+											</FormDescription>
+										</div>
+									</FormItem>
+								)}
+							/>
+
+							{linkUser && (
+								<FormField
+									control={form.control}
+									name="profile_id"
+									render={({ field }) => (
+										<FormItem className="md:col-span-2">
+											<FormLabel>Select User *</FormLabel>
+											<Select
+												onValueChange={field.onChange}
+												defaultValue={field.value}
+												disabled={profilesLoading}
+											>
+												<FormControl>
+													<SelectTrigger className="bg-zinc-950 border-zinc-800">
+														<SelectValue
+															placeholder={
+																profilesLoading
+																	? "Loading users..."
+																	: "Select a user"
+															}
+														/>
+													</SelectTrigger>
+												</FormControl>
+												<SelectContent className="bg-zinc-900/70 backdrop-blur-sm border border-zinc-800/70 rounded-lg">
+													{profiles
+														.filter(
+															(p) =>
+																!p.email?.startsWith("staff-") ||
+																p.email?.endsWith("@pal.club"),
+														)
+														.map((profile) => (
+															<SelectItem key={profile.id} value={profile.id}>
+																{profile.full_name ||
+																	profile.email ||
+																	profile.id.substring(0, 8)}
+															</SelectItem>
+														))}
+												</SelectContent>
+											</Select>
+											<FormDescription className="text-zinc-400">
+												Link to a registered PAL user
+											</FormDescription>
+											<FormMessage />
+										</FormItem>
+									)}
+								/>
+							)}
 
 							<FormField
 								control={form.control}
@@ -236,7 +303,6 @@ export function StaffForm({ staff, mode = "create" }: StaffFormProps) {
 									</FormItem>
 								)}
 							/>
-
 						</div>
 
 						{error && <div className="text-red-500 text-sm">{error}</div>}
