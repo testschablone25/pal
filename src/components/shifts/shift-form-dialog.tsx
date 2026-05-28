@@ -140,7 +140,9 @@ export function ShiftFormDialog({
 												return (
 													<SelectItem key={member.id} value={member.id}>
 														<div className="flex items-center gap-2">
-															{member.full_name || member.profiles?.full_name || "Unknown"}
+															{member.full_name ||
+																member.profiles?.full_name ||
+																"Unknown"}
 															{unavailable && (
 																<AlertTriangle className="h-3 w-3 text-amber-400" />
 															)}

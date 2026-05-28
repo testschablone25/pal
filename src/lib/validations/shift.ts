@@ -13,8 +13,8 @@ export const shiftCreateSchema = z.object({
 	staff_id: z.string().uuid(),
 	role: z.string().min(1),
 	sub_location_id: z.string().uuid().nullable().optional(),
-	start_time: z.string().datetime(),
-	end_time: z.string().datetime(),
+	start_time: z.string().datetime({ offset: true }),
+	end_time: z.string().datetime({ offset: true }),
 	break_minutes: z.number().int().min(0).default(0),
 	status: shiftStatusEnum.default("draft"),
 });
@@ -25,8 +25,8 @@ export const shiftUpdateSchema = z.object({
 	staff_id: z.string().uuid().optional(),
 	role: z.string().min(1).optional(),
 	sub_location_id: z.string().uuid().nullable().optional(),
-	start_time: z.string().datetime().optional(),
-	end_time: z.string().datetime().optional(),
+	start_time: z.string().datetime({ offset: true }).optional(),
+	end_time: z.string().datetime({ offset: true }).optional(),
 	break_minutes: z.number().int().min(0).optional(),
 	status: shiftStatusEnum.optional(),
 });

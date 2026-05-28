@@ -146,7 +146,9 @@ export function ShiftBulkCreate({
 													className="rounded border-zinc-700 bg-zinc-800 text-violet-600"
 												/>
 												<span className="text-sm text-zinc-300">
-													{member.full_name || member.profiles?.full_name || "Unknown"}
+													{member.full_name ||
+														member.profiles?.full_name ||
+														"Unknown"}
 												</span>
 												<span className="text-xs text-zinc-500 ml-auto">
 													{member.role}
