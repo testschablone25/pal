@@ -6,7 +6,6 @@ import { requireAuth, getAuthenticatedClient } from "@/lib/api-auth";
 import { cacheHeaders } from "@/lib/api-cache";
 import { shiftCreateSchema, shiftFilterSchema } from "@/lib/validations/shift";
 
-
 // GET /api/shifts - List all shifts with optional filtering
 // GET /api/shifts?check_conflict=true&staff_id=X&event_id=Y&start_time=Z&end_time=W&exclude_shift_id=OPTIONAL - Check for overlapping shifts
 export async function GET(request: NextRequest) {

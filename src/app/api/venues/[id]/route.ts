@@ -4,7 +4,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requireAuth, getAuthenticatedClient } from "@/lib/api-auth";
 
-
 // GET /api/venues/[id] - Get single venue with full detail
 export async function GET(
 	request: NextRequest,

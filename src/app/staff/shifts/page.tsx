@@ -131,9 +131,6 @@ export default function ShiftsPage() {
 	const [clockingOut, setClockingOut] = useState<string | null>(null);
 
 	// Hydration guard: prevent SSR/CSR mismatch on boolean HTML attributes
-	const [mounted, setMounted] = useState(false);
-	useEffect(() => setMounted(true), []);
-
 	useEffect(() => {
 		fetchEvents();
 		fetchStaff();
@@ -726,7 +723,7 @@ export default function ShiftsPage() {
 						<div className="flex gap-2">
 							<Button
 								onClick={() => setBulkDialogOpen(true)}
-								disabled={!mounted || !selectedEventId}
+								disabled={!selectedEventId}
 								variant="outline"
 								className="border-zinc-800"
 							>
@@ -735,7 +732,7 @@ export default function ShiftsPage() {
 							</Button>
 							<Button
 								onClick={() => setTemplateDialogOpen(true)}
-								disabled={!mounted || !selectedEventId}
+								disabled={!selectedEventId}
 								variant="outline"
 								className="border-zinc-800"
 							>
@@ -744,7 +741,7 @@ export default function ShiftsPage() {
 							</Button>
 							<Button
 								onClick={openCreateDialog}
-								disabled={!mounted || !selectedEventId}
+								disabled={!selectedEventId}
 								className="bg-violet-600 hover:bg-violet-700"
 							>
 								<Plus className="h-4 w-4 mr-2" />
@@ -753,7 +750,7 @@ export default function ShiftsPage() {
 							<DropdownMenu>
 								<DropdownMenuTrigger asChild>
 									<Button
-										disabled={!mounted || !selectedEventId}
+										disabled={!selectedEventId}
 										variant="outline"
 										className="border-zinc-800"
 									>

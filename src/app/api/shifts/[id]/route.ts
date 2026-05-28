@@ -5,7 +5,6 @@ import { NextRequest, NextResponse } from "next/server";
 import { requireAuth, getAuthenticatedClient } from "@/lib/api-auth";
 import { shiftUpdateSchema } from "@/lib/validations/shift";
 
-
 // GET /api/shifts/[id] - Get single shift
 export async function GET(
 	request: NextRequest,
