@@ -1,13 +1,13 @@
 // Time Bookings — iPad Kiosk
 // /time-bookings — Staff clock in/out page
 
-import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { KioskView } from "@/components/time-bookings/kiosk-view";
 import { StaffSubNav } from "@/components/staff/staff-sub-nav";
 import type { StaffForKiosk } from "@/lib/time-bookings/types";
 
 export default async function TimeBookingsPage() {
-	const supabase = await createClient();
+	const supabase = await createAdminClient();
 
 	const { data: staff } = await supabase
 		.from("staff")
