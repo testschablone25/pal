@@ -721,39 +721,44 @@ export default function ShiftsPage() {
 							</Select>
 						</div>
 						<div className="flex gap-2">
-							<Button
-								onClick={() => setBulkDialogOpen(true)}
-								disabled={!selectedEventId}
-								variant="outline"
-								className="border-zinc-800"
-							>
+						<Button
+							onClick={() => {
+								if (!selectedEventId) return;
+								setBulkDialogOpen(true);
+							}}
+							variant="outline"
+							className="border-zinc-800"
+						>
 								<Users className="h-4 w-4 mr-2" />
 								Bulk Assign
 							</Button>
-							<Button
-								onClick={() => setTemplateDialogOpen(true)}
-								disabled={!selectedEventId}
-								variant="outline"
-								className="border-zinc-800"
-							>
+						<Button
+							onClick={() => {
+								if (!selectedEventId) return;
+								setTemplateDialogOpen(true);
+							}}
+							variant="outline"
+							className="border-zinc-800"
+						>
 								<Puzzle className="h-4 w-4 mr-2" />
 								Apply Template
 							</Button>
-							<Button
-								onClick={openCreateDialog}
-								disabled={!selectedEventId}
-								className="bg-violet-600 hover:bg-violet-700"
-							>
+						<Button
+							onClick={() => {
+								if (!selectedEventId) return;
+								openCreateDialog();
+							}}
+							className="bg-violet-600 hover:bg-violet-700"
+						>
 								<Plus className="h-4 w-4 mr-2" />
 								Add Shift
 							</Button>
 							<DropdownMenu>
 								<DropdownMenuTrigger asChild>
-									<Button
-										disabled={!selectedEventId}
-										variant="outline"
-										className="border-zinc-800"
-									>
+								<Button
+									variant="outline"
+									className="border-zinc-800"
+								>
 										<Download className="h-4 w-4 mr-2" />
 										Export
 									</Button>
