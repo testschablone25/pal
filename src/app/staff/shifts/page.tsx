@@ -555,7 +555,7 @@ export default function ShiftsPage() {
 			requestedToStaffId: swapSelectedStaff,
 			status: "pending",
 			reason: swapReason || undefined,
-			requestedByName: requestingStaffMember?.profiles?.full_name || "Unknown",
+			requestedByName: requestingStaffMember?.full_name || requestingStaffMember?.profiles?.full_name || "Unknown",
 		};
 		setSwapRequests((prev) => [...prev, newSwapRequest]);
 		setSwapDialogOpen(false);
@@ -617,7 +617,7 @@ export default function ShiftsPage() {
 				(1000 * 60 * 60)
 			).toFixed(1);
 			return [
-				shift.staff?.profiles?.full_name || "Unknown",
+				shift.staff?.full_name || shift.staff?.profiles?.full_name || "Unknown",
 				shift.role,
 				getTimeInputValue(shift.start_time),
 				getTimeInputValue(shift.end_time),
@@ -669,7 +669,7 @@ export default function ShiftsPage() {
 			}
 			xPos = 10;
 			[
-				shift.staff?.profiles?.full_name || "Unknown",
+				shift.staff?.full_name || shift.staff?.profiles?.full_name || "Unknown",
 				shift.role,
 				getTimeInputValue(shift.start_time),
 				getTimeInputValue(shift.end_time),
@@ -896,7 +896,7 @@ export default function ShiftsPage() {
 													<div>
 														<div className="flex items-center gap-2">
 															<p className="font-medium text-white">
-																{shift.staff?.profiles?.full_name ||
+																{shift.staff?.full_name || shift.staff?.profiles?.full_name ||
 																	"Unknown Staff"}
 															</p>
 															{isUnavailable && (
@@ -978,7 +978,7 @@ export default function ShiftsPage() {
 															requestingStaff?.profiles?.full_name ||
 															"Someone"}{" "}
 														wants to swap with{" "}
-														{targetStaff?.profiles?.full_name || "Unknown"}
+														{targetStaff?.full_name || targetStaff?.profiles?.full_name || "Unknown"}
 													</p>
 													<p className="text-xs text-zinc-400 mt-1">
 														Shift:{" "}
@@ -1172,7 +1172,7 @@ export default function ShiftsPage() {
 										)
 										.map((member) => (
 											<SelectItem key={member.id} value={member.id}>
-												{member.profiles?.full_name || "Unknown"}
+												{member.full_name || member.profiles?.full_name || "Unknown"}
 											</SelectItem>
 										))}
 								</SelectContent>

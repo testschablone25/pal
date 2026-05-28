@@ -10,6 +10,7 @@ export interface Event {
 
 export interface StaffMember {
 	id: string;
+	full_name: string | null;
 	role: string;
 	contract_type: string;
 	profiles?: {
