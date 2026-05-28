@@ -38,21 +38,7 @@ export async function GET(request: NextRequest) {
 
 		// Apply filters
 		if (name) {
-			const { data: matchingProfiles } = await supabase
-				.from("profiles")
-				.select("id")
-				.ilike("full_name", `%${name}%`);
-			const profileIds = matchingProfiles?.map((p) => p.id) || [];
-			if (profileIds.length > 0) {
-				query = query.in("profile_id", profileIds);
-			} else {
-				return NextResponse.json({
-					staff: [],
-					total: 0,
-					limit: parseInt(limit),
-					offset: parseInt(offset),
-				});
-			}
+			query = query.ilike("full_name", `%${name}%`);
 		}
 		if (role) {
 			query = query.eq("role", role);
@@ -111,33 +97,14 @@ export async function POST(request: NextRequest) {
 			);
 		}
 
-		let effectiveProfileId = profile_id;
-
-		// If no profile_id provided, create a shadow profile
-		if (!effectiveProfileId) {
-			const shadowEmail = `staff-${crypto.randomUUID()}@pal.club`;
-			const { data: shadowProfile, error: profileError } = await supabase
-				.from("profiles")
-				.insert({
-					full_name: full_name.trim(),
-					email: shadowEmail,
-				})
-				.select("id")
-				.single();
-
-			if (profileError || !shadowProfile) {
-				return NextResponse.json(
-					{ error: "Failed to create staff profile" },
-					{ status: 500 },
-				);
-			}
-			effectiveProfileId = shadowProfile.id;
-		}
+		// Store full_name directly on staff; profile_id is optional
+		// (only set when linking to a PAL user account)
 
 		const { data, error } = await supabase
 			.from("staff")
 			.insert({
-				profile_id: effectiveProfileId,
+				full_name: full_name.trim(),
+				profile_id: profile_id || null,
 				role,
 				contract_type,
 			})

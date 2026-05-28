@@ -63,35 +63,26 @@ export async function PUT(
 		const { id } = await params;
 		const body = await request.json();
 
-		const { profile_id, full_name, role, contract_type } = body;
+		const { full_name, role, contract_type, profile_id } = body;
 
-		// If full_name is provided, update the profile too
-		if (full_name) {
-			// First get the current profile_id
-			const { data: currentStaff } = await supabase
-				.from("staff")
-				.select("profile_id")
-				.eq("id", id)
-				.single();
-
-			if (currentStaff?.profile_id) {
-				await supabase
-					.from("profiles")
-					.update({ full_name: full_name.trim() })
-					.eq("id", currentStaff.profile_id);
-			}
-		}
-
-		const updates: Record<string, string | null> = {};
+		const updates: Record<string, unknown> = {};
+		if (full_name !== undefined) updates.full_name = full_name.trim() || null;
 		if (role !== undefined) updates.role = role;
 		if (contract_type !== undefined) updates.contract_type = contract_type;
-		if (profile_id !== undefined) updates.profile_id = profile_id;
+		if (profile_id !== undefined) updates.profile_id = profile_id || null;
 
 		const { data, error } = await supabase
 			.from("staff")
 			.update(updates)
 			.eq("id", id)
-			.select()
+			.select(`
+				*,
+				profiles:profile_id (
+					id,
+					full_name,
+					email
+				)
+			`)
 			.single();
 
 		if (error) {

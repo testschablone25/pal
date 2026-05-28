@@ -8,7 +8,8 @@ import { Card, CardContent } from "@/components/ui/card";
 
 interface StaffMember {
 	id: string;
-	profile_id: string;
+	full_name: string | null;
+	profile_id: string | null;
 	role: string;
 	contract_type: "permanent" | "freelance";
 	hourly_rate: number | null;

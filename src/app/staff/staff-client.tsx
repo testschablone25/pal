@@ -32,6 +32,7 @@ import { StaffSubNav } from "@/components/staff/staff-sub-nav";
 
 interface StaffMember {
 	id: string;
+	full_name: string | null;
 	profile_id: string | null;
 	role: string;
 	contract_type: "permanent" | "freelance";
@@ -67,7 +68,8 @@ export function StaffClient({
 	const filtered = useMemo(() => {
 		return staff.filter((s) => {
 			const profile = s.profiles as StaffMember["profiles"] | null;
-			const name = profile?.full_name || profile?.email || "";
+			const name =
+				(s.full_name as string) || profile?.full_name || profile?.email || "";
 			const role = (s.role as string) || "";
 			const contract = (s.contract_type as string) || "";
 
@@ -202,6 +204,11 @@ export function StaffClient({
 							<TableBody>
 								{filtered.map((s) => {
 									const profile = s.profiles as StaffMember["profiles"] | null;
+									const displayName =
+										(s.full_name as string) ||
+										profile?.full_name ||
+										profile?.email ||
+										"Unknown";
 									return (
 										<TableRow
 											key={s.id as string}
@@ -212,7 +219,7 @@ export function StaffClient({
 													href={`/staff/${s.id}/edit`}
 													className="text-white hover:text-violet-400 transition-colors"
 												>
-													{profile?.full_name || profile?.email || "Unknown"}
+													{displayName}
 												</Link>
 											</TableCell>
 											<TableCell>

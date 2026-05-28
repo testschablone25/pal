@@ -37,6 +37,7 @@ type StaffFormValues = z.infer<typeof staffSchema>;
 interface StaffFormProps {
 	staff?: {
 		id: string;
+		full_name: string | null;
 		profile_id: string | null;
 		role: string;
 		contract_type: "permanent" | "freelance";
@@ -80,7 +81,11 @@ export function StaffForm({ staff, mode = "create" }: StaffFormProps) {
 	const form = useForm<StaffFormValues>({
 		resolver: zodResolver(staffSchema),
 		defaultValues: {
-			full_name: staff?.profiles?.full_name || staff?.profiles?.email || "",
+			full_name:
+				staff?.full_name ||
+				staff?.profiles?.full_name ||
+				staff?.profiles?.email ||
+				"",
 			role: staff?.role || "",
 			contract_type: staff?.contract_type || "permanent",
 		},
