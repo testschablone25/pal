@@ -15,7 +15,8 @@ export type AppRole =
 	| "gastro"
 	| "backoffice"
 	| "awareness"
-	| "azubi";
+	| "azubi"
+	| "extern";
 
 // All available roles
 export const ALL_ROLES: AppRole[] = [
@@ -32,6 +33,7 @@ export const ALL_ROLES: AppRole[] = [
 	"backoffice",
 	"awareness",
 	"azubi",
+	"extern",
 ];
 
 // Route groups for middleware protection
@@ -106,7 +108,7 @@ export const ROLE_ROUTE_ACCESS: Record<string, AppRole[]> = {
 	[ROUTE_GROUPS.RENTALS]: ["admin", "manager", "tech", "tech-lead", "booking"],
 	[ROUTE_GROUPS.CONTACTS]: ["admin", "manager", "backoffice", "booking"],
 	[ROUTE_GROUPS.ADMIN]: ["admin", "backoffice"], // Admin panel for role management
-	"/time-bookings": ["admin", "manager", "staff", "backoffice"],
+	"/time-bookings": ["admin", "manager", "staff", "backoffice", "extern"],
 } as const;
 
 // Role configuration with metadata
@@ -192,6 +194,12 @@ export const ROLE_CONFIG: Record<
 		badgeColor: "bg-zinc-600",
 		rank: 10,
 		description: "Auszubildende / Praktikanten",
+	},
+	extern: {
+		label: "Extern",
+		badgeColor: "bg-orange-500",
+		rank: 5,
+		description: "Externe Aushilfe für Events",
 	},
 } as const;
 
