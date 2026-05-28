@@ -88,6 +88,7 @@ export const STAFF_ROLES = [
 	"Social Media",
 	"Label",
 	"Staff",
+	"Extern",
 ];
 
 export const ROLE_COLORS: Record<string, string> = {
@@ -111,6 +112,7 @@ export const ROLE_COLORS: Record<string, string> = {
 	"Social Media": "bg-pink-600",
 	Label: "bg-violet-600",
 	Staff: "bg-cyan-600",
+	Extern: "bg-orange-500",
 };
 
 const FALLBACK_COLORS = [
